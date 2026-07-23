@@ -11,7 +11,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 {% if site.posts.size > 0 %}
 <div class="feature-tiles">
   {% for post in site.posts %}
-    <a class="feature-tile" href="{{ post.url | relative_url }}" style="--feature-accent: #f783ac;">
+    <a class="feature-tile{% if forloop.first %} feature-tile--featured{% endif %}" href="{{ post.url | relative_url }}" style="--feature-accent: #f783ac;">
       <header class="feature-tile__header">
         <span class="feature-tile__icon">{% include feature-icon.html name="note" %}</span>
         <span>

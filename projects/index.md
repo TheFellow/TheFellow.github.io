@@ -6,7 +6,7 @@ author_profile: true
 classes: wide
 ---
 
-These are the projects currently pinned on [my GitHub profile](https://github.com/TheFellow). Each page adds context beyond the repository README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
+These are selected projects from [my GitHub work](https://github.com/TheFellow), beginning with the repositories pinned on my profile and expanding to smaller tools worth explaining. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
 <div class="feature-tiles">
   {% assign sorted_projects = site.projects | sort: "order" %}
