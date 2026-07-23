@@ -2,6 +2,11 @@
 title: "Building High-Quality Software"
 excerpt: "A planned ten-part written and video series using Mixology to show how simple, enforced rules produce clean architecture."
 permalink: /guides/building-high-quality-software/
+order: 10
+status: "Outline ready"
+icon: "book"
+accent: "#ffa94d"
+topics: ["10 lessons", "Written + video", "Go architecture"]
 ---
 
 <div class="notice--series" markdown="1">
@@ -79,4 +84,3 @@ Each finished lesson will include:
 3. a code walkthrough and an experiment readers can repeat;
 4. tradeoffs and the conditions under which the technique does not fit; and
 5. an embedded companion video when it is available.
-

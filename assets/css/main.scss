@@ -30,14 +30,14 @@
   border-left: 0.25rem solid $link-color;
 }
 
-.project-tiles {
+.feature-tiles {
   display: grid;
   gap: 1.25rem;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
   margin-top: 2rem;
 }
 
-.project-tile {
+.feature-tile {
   background: linear-gradient(145deg, mix($background-color, $text-color, 92%), $background-color);
   border: 1px solid mix($background-color, $text-color, 78%);
   border-radius: 1rem;
@@ -54,33 +54,39 @@
   transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
 
-.project-tile::before {
-  background: var(--project-accent);
+.feature-tile::before {
+  background: var(--feature-accent);
   content: "";
   height: 0.3rem;
   inset: 0 0 auto;
   position: absolute;
 }
 
-.project-tile:hover {
-  border-color: var(--project-accent);
+.feature-tile:hover {
+  border-color: var(--feature-accent);
   box-shadow: 0 1.25rem 3rem rgba(#000, 0.32);
   color: $text-color;
   transform: translateY(-0.3rem);
 }
 
-.project-tile__header {
+.feature-tile--static:hover {
+  border-color: mix($background-color, $text-color, 78%);
+  box-shadow: 0 1rem 2.5rem rgba(#000, 0.18);
+  transform: none;
+}
+
+.feature-tile__header {
   align-items: center;
   display: flex;
   gap: 1rem;
 }
 
-.project-tile__icon {
+.feature-tile__icon {
   align-items: center;
   background: rgba(#000, 0.24);
-  border: 1px solid var(--project-accent);
+  border: 1px solid var(--feature-accent);
   border-radius: 0.85rem;
-  color: var(--project-accent);
+  color: var(--feature-accent);
   display: inline-flex;
   flex: 0 0 3.25rem;
   font-size: 1.35rem;
@@ -88,14 +94,14 @@
   justify-content: center;
 }
 
-.project-tile__icon svg {
+.feature-tile__icon svg {
   height: 1.55rem;
   stroke-width: 1.8;
   width: 1.55rem;
 }
 
-.project-tile__language {
-  color: var(--project-accent);
+.feature-tile__eyebrow {
+  color: var(--feature-accent);
   display: block;
   font-size: 0.7rem;
   font-weight: 700;
@@ -104,7 +110,7 @@
   text-transform: uppercase;
 }
 
-.project-tile__title {
+.feature-tile__title {
   color: $text-color;
   display: block;
   font-family: $header-font-family;
@@ -113,20 +119,20 @@
   line-height: 1.15;
 }
 
-.project-tile__description {
+.feature-tile__description {
   color: mix($text-color, $background-color, 78%);
   display: block;
   font-size: 0.95rem;
   line-height: 1.65;
 }
 
-.project-tile__topics {
+.feature-tile__topics {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
 }
 
-.project-tile__topics span {
+.feature-tile__topics span {
   background: rgba(#000, 0.2);
   border-radius: 999px;
   color: mix($text-color, $background-color, 80%);
@@ -134,44 +140,50 @@
   padding: 0.3rem 0.65rem;
 }
 
-.project-tile__cta {
+.feature-tile__cta {
   align-items: center;
-  color: var(--project-accent);
+  color: var(--feature-accent);
   display: flex;
   font-size: 0.78rem;
   font-weight: 700;
   gap: 0.55rem;
   margin-top: auto;
+  text-decoration: none;
   text-transform: uppercase;
+  width: fit-content;
 }
 
-.project-tile__arrow {
+.feature-tile__cta:hover {
+  color: var(--feature-accent);
+}
+
+.feature-tile__arrow {
   font-size: 1.2em;
   transition: transform 180ms ease;
 }
 
-.project-tile:hover .project-tile__arrow {
+.feature-tile:hover .feature-tile__arrow {
   transform: translateX(0.3rem);
 }
 
 @media (min-width: 64em) {
-  .project-tiles {
+  .feature-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .project-tile--featured {
+  .feature-tile--featured {
     grid-column: 1 / -1;
     min-height: 16rem;
   }
 
-  .project-tile--featured .project-tile__description {
+  .feature-tile--featured .feature-tile__description {
     max-width: 58rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-tile,
-  .project-tile__arrow {
+  .feature-tile,
+  .feature-tile__arrow {
     transition: none;
   }
 }
