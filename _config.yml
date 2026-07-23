@@ -1,0 +1,97 @@
+# Site identity
+locale: "en-US"
+title: "Ryan Harris"
+title_separator: "·"
+subtitle: "Software notes and project guides"
+description: >-
+  Notes, tutorials, and project commentary from software engineer Ryan Harris.
+url: "https://thefellow.github.io"
+baseurl: ""
+repository: "TheFellow/TheFellow.github.io"
+
+# Theme
+# Change this one value to switch the site's palette. Available skins:
+# default, air, aqua, contrast, dark, dirt, neon, mint, plum, sunrise.
+minimal_mistakes_skin: "dark"
+remote_theme: "mmistakes/minimal-mistakes@4.28.0"
+
+# Site behavior
+search: true
+search_full_content: true
+breadcrumbs: true
+enable_copy_code_button: true
+atom_feed:
+  hide: true
+
+author:
+  name: "Ryan Harris"
+  bio: "Software engineer exploring architecture, developer tools, authorization, and AI workflows."
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/TheFellow"
+
+footer:
+  links:
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/TheFellow"
+
+collections:
+  projects:
+    output: true
+    permalink: /projects/:path/
+  guides:
+    output: true
+    permalink: /guides/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      share: true
+      related: true
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: single
+      author_profile: true
+      show_date: false
+  - scope:
+      path: ""
+      type: guides
+    values:
+      layout: single
+      author_profile: true
+      toc: true
+      toc_sticky: true
+  - scope:
+      path: ""
+      type: pages
+    values:
+      layout: single
+      author_profile: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-include-cache
+  - jekyll-remote-theme
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
+

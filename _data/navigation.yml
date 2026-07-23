@@ -1,0 +1,12 @@
+main:
+  - title: "Projects"
+    url: /projects/
+  - title: "Guides"
+    url: /guides/
+  - title: "Notes"
+    url: /notes/
+  - title: "Resume"
+    url: /resume/
+  - title: "GitHub"
+    url: https://github.com/TheFellow
+
