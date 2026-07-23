@@ -12,7 +12,7 @@ repository: "TheFellow/TheFellow.github.io"
 # Theme
 # Change this one value to switch the site's palette. Available skins:
 # default, air, aqua, contrast, dark, dirt, neon, mint, plum, sunrise.
-minimal_mistakes_skin: "dark"
+minimal_mistakes_skin: "neon"
 remote_theme: "mmistakes/minimal-mistakes@4.28.0"
 
 # Site behavior
@@ -94,4 +94,3 @@ exclude:
   - Gemfile.lock
   - README.md
   - vendor
-

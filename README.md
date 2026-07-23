@@ -19,7 +19,7 @@ The site uses the free [Minimal Mistakes](https://jekyllthemes.io/theme/minimal-
 For a new color scheme, change this single line in `_config.yml`:
 
 ```yaml
-minimal_mistakes_skin: "dark"
+minimal_mistakes_skin: "neon"
 ```
 
 Available built-in values are `default`, `air`, `aqua`, `contrast`, `dark`, `dirt`, `neon`, `mint`, `plum`, and `sunrise`. To upgrade the theme itself, change the version on the adjacent `remote_theme` line and test the site.
