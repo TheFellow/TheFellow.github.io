@@ -35,7 +35,7 @@ author_profile: false
     </article>
     <article>
       <h3>Technical leadership</h3>
-      <p>Architecture documents, cross-team migrations, mentoring, incident response, internal training, and AI-assisted development workflows.</p>
+      <p>Requirements refinement, architecture documents, cross-functional delivery planning, migrations, mentoring, incident response, and internal training.</p>
     </article>
   </div>
 </section>
@@ -51,15 +51,14 @@ author_profile: false
     </div>
     <div class="resume-role__body">
       <h3>Staff Software Engineer</h3>
-      <p class="resume-role__subtitle">Promoted from Senior Software Engineer</p>
       <ul>
+        <li>Lead cross-functional authorization initiatives across product, security, design, and engineering: refine ambiguous requirements into reviewed technical models, decompose them into sequenced deliverables, and coordinate implementation and production rollout.</li>
         <li>Own major portions of the access-request and approval domain, from data model and policy evaluation through API, CLI, administrative UI, notifications, audit, and production operation.</li>
-        <li>Designed fine-grained and context-aware authorization architectures that unify standing access, just-in-time requests, conditional policy, and reusable configuration behind a coherent model.</li>
         <li>Led a backward-compatible production migration that separated hierarchical group membership from role assignment while preserving behavior across services, SDKs, CLI workflows, audit, and existing customer configurations.</li>
-        <li>Extended policy enforcement and discovery for Kubernetes and delivered third-party incident-response integrations with resilient synchronization, lifecycle cleanup, permissions, rate limits, and end-to-end tests.</li>
+        <li>Designed a terminal protocol parser that reconstructs interactive commands across SSH and Kubernetes streams for structured query logging, accounting for escape sequences, resizing, pasted input, command history, and interactive applications.</li>
         <li>Evolved multi-language SDK and Terraform code generation to support versioned APIs and complex union types without exposing transport plumbing or breaking existing clients.</li>
-        <li>Operate the production system through on-call rotations and incident response, carrying design decisions through deployment, observability, failure recovery, and long-term maintenance.</li>
-        <li>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build and maintain F#kYeah, an open-source F# implementation of the Attractor pipeline model.</li>
+        <li>Delivered third-party incident-response integrations with resilient synchronization and lifecycle handling; operate the production system through on-call rotations, incident response, observability, and failure recovery.</li>
+        <li>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build and maintain F#kYeah, an open-source F# implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</li>
       </ul>
     </div>
   </article>
@@ -72,7 +71,6 @@ author_profile: false
     </div>
     <div class="resume-role__body">
       <h3>Software Development Team Leader II</h3>
-      <p class="resume-role__subtitle">Progressed from Financial Technical Analyst through Team Leader I and II</p>
       <ul>
         <li>Translated complex business and regulatory requirements into maintainable software, data models, and operational processes across thick-client, service, and REST API systems.</li>
         <li>Introduced domain-driven design, CQRS, functional techniques, and explicit architectural boundaries while modernizing long-lived applications under significant compatibility constraints.</li>
@@ -92,7 +90,7 @@ author_profile: false
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/fkyeah">F#kYeah</a></h3>
-      <p>An F# engine for graph-defined, multi-stage AI workflows with checkpoints, simulation, multi-provider execution, and a broad conformance suite.</p>
+      <p>An F# implementation listed among the community implementations of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>, with checkpoints, simulation, and multi-provider execution.</p>
     </article>
     <article>
       <h3><a href="https://github.com/cedar-policy/cedar-go">cedar-go contributor</a></h3>
