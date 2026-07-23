@@ -4,6 +4,10 @@ excerpt: "A C# implementation of the Cedar policy language and authorization mod
 language: "C#"
 license: "Apache-2.0"
 repository_url: "https://github.com/TheFellow/cedar-dotnet"
+order: 20
+icon: "shield"
+accent: "#b197fc"
+topics: ["Authorization", "Language tooling"]
 ---
 
 <div class="project-meta"><span>C#</span><span>Authorization</span><span>Cedar</span><span>Apache-2.0</span></div>
@@ -21,4 +25,3 @@ What makes this project especially useful is the separation between policy and a
 - It offers .NET applications an authorization approach that keeps policy decisions out of business-logic conditionals.
 
 The quickest path through the code is the README authorization example, followed by the policy parser and authorization engine under `src`.
-

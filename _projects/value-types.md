@@ -4,6 +4,10 @@ excerpt: "A small C# library for expressing structural equality in domain-driven
 language: "C#"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/ValueTypes"
+order: 60
+icon: "values"
+accent: "#ffa94d"
+topics: ["Domain modeling", "Structural equality"]
 ---
 
 <div class="project-meta"><span>C#</span><span>Domain-driven design</span><span>MIT</span></div>
@@ -21,4 +25,3 @@ The most interesting part is the vocabulary it develops for different kinds of c
 - The small surface area makes it approachable for readers learning value objects or structural equality.
 
 Start with the repository's `Value` and `ValueBase` types, then follow the tests for `Yield`, `Group`, `AsValues`, and `AsGroup`.
-

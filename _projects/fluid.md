@@ -3,6 +3,10 @@ title: "fluid"
 excerpt: "An interactive 2D fluid simulator and visualization playground written in Go."
 language: "Go"
 repository_url: "https://github.com/TheFellow/fluid"
+order: 50
+icon: "fluid"
+accent: "#74c0fc"
+topics: ["Simulation", "Visualization"]
 ---
 
 <div class="project-meta"><span>Go</span><span>Simulation</span><span>Visualization</span></div>
@@ -20,4 +24,3 @@ The interactivity is what turns the numerical method into an effective learning 
 - The controls make it a useful test bench for comparing stability, sharpness, and performance choices.
 
 Begin with the grid and simulation-step code, then trace how the visualization modes turn solver fields into something inspectable.
-

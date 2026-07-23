@@ -30,3 +30,148 @@
   border-left: 0.25rem solid $link-color;
 }
 
+.project-tiles {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  margin-top: 2rem;
+}
+
+.project-tile {
+  background: linear-gradient(145deg, mix($background-color, $text-color, 92%), $background-color);
+  border: 1px solid mix($background-color, $text-color, 78%);
+  border-radius: 1rem;
+  box-shadow: 0 1rem 2.5rem rgba(#000, 0.18);
+  color: $text-color;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  min-height: 19rem;
+  overflow: hidden;
+  padding: 1.5rem;
+  position: relative;
+  text-decoration: none;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.project-tile::before {
+  background: var(--project-accent);
+  content: "";
+  height: 0.3rem;
+  inset: 0 0 auto;
+  position: absolute;
+}
+
+.project-tile:hover {
+  border-color: var(--project-accent);
+  box-shadow: 0 1.25rem 3rem rgba(#000, 0.32);
+  color: $text-color;
+  transform: translateY(-0.3rem);
+}
+
+.project-tile__header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+}
+
+.project-tile__icon {
+  align-items: center;
+  background: rgba(#000, 0.24);
+  border: 1px solid var(--project-accent);
+  border-radius: 0.85rem;
+  color: var(--project-accent);
+  display: inline-flex;
+  flex: 0 0 3.25rem;
+  font-size: 1.35rem;
+  height: 3.25rem;
+  justify-content: center;
+}
+
+.project-tile__icon svg {
+  height: 1.55rem;
+  stroke-width: 1.8;
+  width: 1.55rem;
+}
+
+.project-tile__language {
+  color: var(--project-accent);
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  margin-bottom: 0.15rem;
+  text-transform: uppercase;
+}
+
+.project-tile__title {
+  color: $text-color;
+  display: block;
+  font-family: $header-font-family;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.project-tile__description {
+  color: mix($text-color, $background-color, 78%);
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+
+.project-tile__topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.project-tile__topics span {
+  background: rgba(#000, 0.2);
+  border-radius: 999px;
+  color: mix($text-color, $background-color, 80%);
+  font-size: 0.68rem;
+  padding: 0.3rem 0.65rem;
+}
+
+.project-tile__cta {
+  align-items: center;
+  color: var(--project-accent);
+  display: flex;
+  font-size: 0.78rem;
+  font-weight: 700;
+  gap: 0.55rem;
+  margin-top: auto;
+  text-transform: uppercase;
+}
+
+.project-tile__arrow {
+  font-size: 1.2em;
+  transition: transform 180ms ease;
+}
+
+.project-tile:hover .project-tile__arrow {
+  transform: translateX(0.3rem);
+}
+
+@media (min-width: 64em) {
+  .project-tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .project-tile--featured {
+    grid-column: 1 / -1;
+    min-height: 16rem;
+  }
+
+  .project-tile--featured .project-tile__description {
+    max-width: 58rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-tile,
+  .project-tile__arrow {
+    transition: none;
+  }
+}

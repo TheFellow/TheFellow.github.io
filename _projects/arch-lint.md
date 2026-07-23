@@ -4,6 +4,10 @@ excerpt: "A Go analyzer that turns architectural dependency rules into build-tim
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/arch-lint"
+order: 30
+icon: "boundaries"
+accent: "#66d9e8"
+topics: ["Static analysis", "Architecture"]
 ---
 
 <div class="project-meta"><span>Go</span><span>Static analysis</span><span>Architecture</span><span>MIT</span></div>
@@ -21,4 +25,3 @@ Its glob captures are the feature that moves it beyond a simple deny list. Rules
 - It is used by the Mixology modular-monolith sample, providing a concrete example rather than an abstract linter demo.
 
 Read the configuration schema and matcher first, then see `.arch-lint.yaml` in [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith) for a real rule set.
-

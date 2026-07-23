@@ -4,6 +4,11 @@ excerpt: "An F# pipeline engine for multi-stage AI workflows described as execut
 language: "F#"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/fkyeah"
+order: 40
+featured: true
+icon: "route"
+accent: "#f783ac"
+topics: ["AI workflows", "Pipeline engine", "F#"]
 ---
 
 <div class="project-meta"><span>F#</span><span>AI workflows</span><span>Pipeline engine</span><span>MIT</span></div>
@@ -21,4 +26,3 @@ DOT is a strong fit because it keeps control flow declarative and inspectable. A
 - The unified model client separates pipeline semantics from any single provider.
 
 Start with a small graph under `examples`, use the schema command to understand its attributes, and then follow graph parsing into the execution engine.
-

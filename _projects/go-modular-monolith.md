@@ -5,6 +5,11 @@ language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/go-modular-monolith"
 guide_url: "/guides/building-high-quality-software/"
+order: 10
+featured: true
+icon: "modules"
+accent: "#63e6be"
+topics: ["Architecture", "Reference app", "Cedar"]
 ---
 
 <div class="project-meta"><span>Go</span><span>Software architecture</span><span>Cedar</span><span>MIT</span></div>
@@ -23,4 +28,3 @@ The repository's central argument is that important rules should be executable. 
 - It provides the worked example for the planned **Building High-Quality Software** written and video series.
 
 The best entry point is the [guide outline](/guides/building-high-quality-software/), which maps each architectural idea to specific files in the repository.
-
