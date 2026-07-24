@@ -146,8 +146,8 @@ author_profile: false
       <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a> with durable graph execution and checkpoint-and-resume support.</p>
     </article>
     <article>
-      <h3><a href="https://github.com/TheFellow/go-modular-monolith#authorization">Authorization as executable design</a></h3>
-      <p>A working demonstration that authorization can be rich, expressive, and precise. Domain-owned Cedar policies make entity visibility and valid state transitions explicit, testable parts of the architecture.</p>
+      <h3><a href="https://github.com/TheFellow/go-modular-monolith">go-modular-monolith</a></h3>
+      <p>A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and <a href="https://github.com/TheFellow/go-modular-monolith#authorization">rich, expressive, and precise authorization</a>.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>
