@@ -14,9 +14,9 @@ topics: ["Authorization", "Language tooling"]
 
 [View the repository](https://github.com/TheFellow/cedar-dotnet){: .btn .btn--primary }
 
-cedar-dotnet brings Cedar's policy language and authorization model into the .NET ecosystem. It is a semantic port rather than a thin wrapper: applications can parse policies, construct them through an AST, load entity graphs, and evaluate authorization requests entirely in C#.
+cedar-dotnet is a full semantic port of Cedar's policy language and authorization model into the .NET ecosystem. Applications can parse policies, construct them through an AST, load entity graphs, and evaluate authorization requests entirely in C#.
 
-What makes this project especially useful is the separation between policy and application code. Permissions become independently readable and auditable data while the application supplies principals, actions, resources, and context. The AST-building API also gives strongly typed code a route to generate policies without assembling policy text by hand.
+Keeping policy separate from application code gives the project much of its practical value. Permissions become independently readable and auditable data while the application supplies principals, actions, resources, and context. The AST-building API also gives strongly typed code a route to generate policies without assembling policy text by hand.
 
 ### Why it is worth exploring
 

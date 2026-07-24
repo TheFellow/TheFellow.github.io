@@ -13,9 +13,9 @@ topics: ["10 lessons", "Written + video", "Go architecture"]
 **Series status:** outline ready; written chapters and companion videos are planned. Track the source material in [GitHub issue #23](https://github.com/TheFellow/go-modular-monolith/issues/23).
 </div>
 
-This series uses the [Mixology modular monolith](https://github.com/TheFellow/go-modular-monolith) as a teaching vehicle. The goal is not to narrate every line. Each lesson isolates one principle, shows the mechanism that enforces it, and points to a small part of the repository where the idea can be tested.
+This series uses the [Mixology modular monolith](https://github.com/TheFellow/go-modular-monolith) as a teaching vehicle. Each lesson isolates one principle, shows the mechanism that enforces it, and points to a small part of the repository where the idea can be tested.
 
-## 1. Boundaries Are Walls, Not Lines
+## 1. Enforce Boundaries as Walls
 
 A boundary that can be crossed accidentally is only a suggestion. This lesson uses the seven rules in `.arch-lint.yaml` to show how package isolation becomes a build-time constraint, then deliberately introduces an illegal import to make the feedback loop concrete.
 
@@ -41,7 +41,7 @@ Events carry the changed aggregate so independent handlers can react without rel
 
 ## 5. Generate the Boring Parts
 
-Four focused generators own dispatcher routing, Cedar policy assembly, typed IDs, and error helpers. This chapter looks at the repeated structure each generator replaces and at the discipline of keeping a small generator, rather than hand-edited generated output, as the source of truth.
+Four focused generators own dispatcher routing, Cedar policy assembly, typed IDs, and error helpers. This chapter looks at the repeated structure each generator replaces and at the discipline required to keep a small generator as the source of truth.
 
 **Code route:** `pkg/dispatcher/gen` → `pkg/authz/gen` → `app/kernel/entity/gen` → `pkg/errors/gen`.
 
@@ -51,7 +51,7 @@ One typed error vocabulary maps failures to HTTP statuses, gRPC codes, CLI exit 
 
 **Code route:** `pkg/errors/kind.go` → `pkg/errors/error.go` → `pkg/errors/gen`.
 
-## 7. Authorization as Policy, Not Code
+## 7. Put Authorization in Policy
 
 Cedar policy files make permission rules readable independently of Go control flow. This lesson traces a policy from a domain's `authz` directory through assembly and evaluation, then compares get semantics with list filtering and command checks against both input and output state.
 
@@ -59,11 +59,11 @@ Cedar policy files make permission rules readable independently of Go control fl
 
 ## 8. One Binary, Every Surface
 
-The CLI and Bubble Tea TUI call the same application operations through the same middleware. Their job is input mapping and presentation. A future HTTP or gRPC surface should be another shell around that core, not a reason to rewrite business logic.
+The CLI and Bubble Tea TUI call the same application operations through the same middleware. Their job is input mapping and presentation. A future HTTP or gRPC surface can remain another shell around that core.
 
 **Code route:** a domain's `surfaces/cli/` and `surfaces/tui/` → `main/cli/cli.go`.
 
-## 9. Test the Pipeline, Not the Plumbing
+## 9. Test Through the Pipeline
 
 Tests use the real middleware, authorization, event dispatch, database transactions, audit tracking, and public module methods. Fast isolated fixtures make it practical to test the system that ships instead of a parallel architecture assembled from mocks.
 

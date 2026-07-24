@@ -4,7 +4,7 @@ title: "Engineering in public"
 permalink: /
 author_profile: true
 classes: wide
-excerpt: "Software architecture, developer tools, and experiments explained through the projects that made the ideas concrete."
+excerpt: "Project commentary, tutorials, technical notes, and professional experience from software engineer Ryan Harris."
 ---
 
 Software architecture, developer tools, and experiments explained through the projects that made the ideas concrete. This site connects implementation details to the constraints, tradeoffs, and lessons behind them.

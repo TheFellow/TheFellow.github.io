@@ -8,9 +8,9 @@ tags: ["Cedar", "Authorization", "Go", ".NET"]
 
 I contribute to [cedar-go](https://github.com/cedar-policy/cedar-go), the Cedar project's official Go implementation. [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet) is my C# implementation, shaped for the .NET ecosystem while preserving the same semantics.
 
-## A semantic dependency, not a runtime dependency
+## A semantic dependency
 
-cedar-dotnet does not wrap a Go binary or call cedar-go at runtime. The projects share the Cedar model, including policies, entities, schemas, requests, authorization decisions, and serialization contracts, but each implementation owns its language-facing API.
+cedar-dotnet doesn't wrap a Go binary or call cedar-go at runtime. The projects share the Cedar model, including policies, entities, schemas, requests, authorization decisions, and serialization contracts, but each implementation owns its language-facing API.
 
 A direct transliteration would preserve the wrong things. Go package boundaries, error-return conventions, and type patterns are not automatically good C# APIs. The port instead uses C# records, interfaces, collections, exceptions, and builders where they make the model clearer, while preserving the behavior that applications and policy authors depend on.
 

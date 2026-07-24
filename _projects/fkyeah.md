@@ -21,7 +21,7 @@ DOT is a strong fit because it keeps control flow declarative and inspectable. A
 
 ### Why it is worth exploring
 
-- It treats agent workflows as explicit programs rather than opaque prompt loops.
+- It models agent workflows as inspectable programs with explicit control flow.
 - Simulation, validation, checkpoints, and conformance tests make workflow behavior testable without spending model tokens on every iteration.
 - The unified model client separates pipeline semantics from any single provider.
 

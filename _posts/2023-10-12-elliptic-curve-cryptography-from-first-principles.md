@@ -8,16 +8,16 @@ tags: ["Cryptography", "ECDSA", "Mathematics"]
 
 Elliptic-curve cryptography is a form of public-key cryptography. At the API level, signing and verification can look like black boxes. At the mathematical level, the notation can become dense before it explains anything useful.
 
-The goal here is to take a route between those extremes. We will build ECDSA one layer at a time: groups, finite fields, elliptic-curve point addition, scalar multiplication, and finally the signature algorithm itself. By the end, a verifier's ability to check a signature without learning the private key should follow from the arithmetic rather than feel like magic.
+The goal here is to take a route between those extremes. We will build ECDSA one layer at a time: groups, finite fields, elliptic-curve point addition, scalar multiplication, and finally the signature algorithm itself. By the end, a verifier's ability to check a signature without learning the private key should emerge naturally from the arithmetic.
 
-## Start with an operation, not a curve
+## Begin with the group operation
 
 Elliptic-curve cryptography depends on groups, but the formal definition feels more remote than the idea itself. Start with ordinary addition and the claim that zero is the unique additive identity. If `a` and `b` are both identities, then `a = a + b = b`. That short proof introduces the identity using an operation we already understand.
 
 A group is a set with an operation that has four useful guarantees:
 
 1. combining two members produces another member of the set;
-2. the order of evaluation does not change the result;
+2. how successive operations are grouped does not change the result;
 3. an identity leaves a value unchanged; and
 4. every value has an inverse that returns it to the identity.
 
@@ -30,11 +30,11 @@ The next useful idea is a cyclic group. Starting from one generator and repeated
   <figcaption>The prime-order group Z₅ makes every nonzero element a generator.</figcaption>
 </figure>
 
-With that framing, elliptic-curve points become another collection of values with predictable rules for combining them, not a leap into unrelated mathematics.
+With that framing, elliptic-curve points become another collection of values governed by predictable rules for combination.
 
 ## Move arithmetic into a finite field
 
-Cryptographic curves do not use the smooth, continuous number line shown in the familiar curve diagrams. Their coordinates live in a finite field.
+Cryptographic curves don't use the smooth, continuous number line shown in the familiar curve diagrams. Their coordinates live in a finite field.
 
 For a prime `p`, arithmetic in the field `F_p` wraps modulo `p`. Addition, subtraction, and multiplication stay inside a finite set of values. Division is multiplication by a modular inverse. Every nonzero value has such an inverse because `p` is prime.
 
@@ -44,7 +44,7 @@ Now consider `secp256k1`, the curve defined by `y² = x³ + 7`. Its production f
 
 <figure class="ecc-figure ecc-figure--square">
   <img src="{{ '/assets/images/notes/ecc/original/secp256k1-f223.png' | relative_url }}" alt="The points satisfying the secp256k1 equation over the finite field modulo 223.">
-  <figcaption>The secp256k1 equation over F₂₂₃ is a finite set of points rather than a smooth curve.</figcaption>
+  <figcaption>The secp256k1 equation over F₂₂₃ produces a finite set of points; the familiar smooth curve disappears.</figcaption>
 </figure>
 
 ## Turn curve points into a group
@@ -116,7 +116,7 @@ X = zs⁻¹G + rs⁻¹eG
   = kG
 ```
 
-The verifier reconstructs the same point the signer uses without knowing either `e` or `k`. This cancellation is the payoff. The preceding layers let us read these few lines as group arithmetic rather than magic.
+The verifier reconstructs the same point the signer uses without knowing either `e` or `k`. This cancellation is the payoff. The preceding layers reveal these few lines as group arithmetic.
 
 <figure class="ecc-figure ecc-figure--compact">
   <img src="{{ '/assets/images/notes/ecc/ecdsa-verification.png' | relative_url }}" alt="A verification flow that calculates u and v, reconstructs the point R, and compares its x-coordinate to r.">
@@ -125,7 +125,7 @@ The verifier reconstructs the same point the signer uses without knowing either 
 
 ## The nonce is part of the secret
 
-The private key is not the only value that must remain protected. The nonce `k` must be secret, unpredictable, and never reused with the same private key.
+The private key isn't the only value that must remain protected. The nonce `k` must be secret, unpredictable, and never reused with the same private key.
 
 If two messages are signed with the same `k`, their signatures share enough algebraic structure to recover the nonce and then the private key. Biased or partially exposed nonces can also be dangerous. This is why production ECDSA implementations deserve the same scrutiny around randomness and side channels as they receive around curve selection.
 
@@ -150,13 +150,13 @@ Each layer answers one question and introduces the vocabulary needed for the nex
 
 Skipping a layer makes the final formula shorter on the page but harder to understand. Spending time on every theorem has the opposite problem. The useful path preserves the dependency chain while choosing the smallest example that makes each dependency concrete.
 
-Start with the behavior a design needs, introduce the mechanism that provides it, and keep the connections visible. Good abstractions compress an idea after it is understood; they do not hide the idea before it has been examined.
+Start with the behavior a design needs, introduce the mechanism that provides it, and keep the connections visible. Good abstractions compress an idea after it is understood; they don't hide the idea before it has been examined.
 
 ## The practical boundary
 
 Understanding ECDSA is valuable. Implementing it for production is a separate matter.
 
-Real cryptographic libraries must address constant-time operations, secure nonce generation, validation of points and parameters, serialization rules, malformed input, and many other details that a conceptual walkthrough intentionally omits. Application code should use maintained, reviewed implementations rather than translating the equations above.
+Real cryptographic libraries must address constant-time operations, secure nonce generation, validation of points and parameters, serialization rules, malformed input, and many other details that a conceptual walkthrough intentionally omits. Application code should rely on maintained, reviewed implementations of the algorithm.
 
 For the complete specifications and a production API example, see:
 
