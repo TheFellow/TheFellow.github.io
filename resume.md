@@ -92,7 +92,9 @@ author_profile: false
         </article>
         <article>
           <h4>AI enablement</h4>
-          <p>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build an open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a> used to <a href="https://factory.strongdm.ai/techniques/semport">semantically port</a> a Cedar authorization language implementation.</p>
+          <p>Co-facilitate AI engineering bootcamps designed to build teammates' fluency in specification-driven development and <a href="https://factory.strongdm.ai/techniques/shift-work">Shift Work</a>.</p>
+          <p>Build and maintain <a href="https://github.com/TheFellow/fkyeah">F#kYeah</a>, an open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</p>
+          <p>Use Attractor to execute a <a href="https://factory.strongdm.ai/techniques/semport">Semport</a> of the Cedar authorization language from Go to C#, preserving behavior against the upstream conformance suite.</p>
         </article>
       </div>
     </div>
@@ -137,7 +139,7 @@ author_profile: false
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/fkyeah">F#kYeah</a></h3>
-      <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>, used to <a href="https://factory.strongdm.ai/techniques/semport">semantically port</a> a Cedar authorization language implementation.</p>
+      <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a> with durable graph execution and checkpoint-and-resume support.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/go-modular-monolith#authorization">Fine-grained authorization reference</a></h3>

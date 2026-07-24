@@ -389,6 +389,10 @@
   margin: 0;
 }
 
+.resume-achievements p + p {
+  margin-top: 0.55rem;
+}
+
 .resume-section--split {
   display: grid;
   gap: 2.5rem;
