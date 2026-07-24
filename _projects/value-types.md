@@ -4,13 +4,14 @@ excerpt: "A small C# library for expressing structural equality in domain-driven
 language: "C#"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/ValueTypes"
+last_updated: 2021-04-14
 order: 60
 icon: "values"
 accent: "#ffa94d"
 topics: ["Domain modeling", "Structural equality"]
 ---
 
-<div class="project-meta"><span>C#</span><span>Domain-driven design</span><span>MIT</span></div>
+<div class="project-meta"><span>C#</span><span>Domain-driven design</span><span>MIT</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/ValueTypes){: .btn .btn--primary }
 

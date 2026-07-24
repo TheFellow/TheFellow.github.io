@@ -3,13 +3,14 @@ title: "fluid"
 excerpt: "An interactive 2D fluid simulator and visualization playground written in Go."
 language: "Go"
 repository_url: "https://github.com/TheFellow/fluid"
+last_updated: 2026-02-17
 order: 50
 icon: "fluid"
 accent: "#74c0fc"
 topics: ["Simulation", "Visualization"]
 ---
 
-<div class="project-meta"><span>Go</span><span>Simulation</span><span>Visualization</span></div>
+<div class="project-meta"><span>Go</span><span>Simulation</span><span>Visualization</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/fluid){: .btn .btn--primary }
 

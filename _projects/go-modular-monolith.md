@@ -4,6 +4,7 @@ excerpt: "A Go reference application that makes modular boundaries and cross-cut
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/go-modular-monolith"
+last_updated: 2026-07-23
 guide_url: "/guides/building-high-quality-software/"
 order: 10
 featured: true
@@ -12,7 +13,7 @@ accent: "#63e6be"
 topics: ["Architecture", "Reference app", "Cedar"]
 ---
 
-<div class="project-meta"><span>Go</span><span>Software architecture</span><span>Cedar</span><span>MIT</span></div>
+<div class="project-meta"><span>Go</span><span>Software architecture</span><span>Cedar</span><span>MIT</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn .btn--primary }
 [Open the guide outline](/guides/building-high-quality-software/){: .btn }

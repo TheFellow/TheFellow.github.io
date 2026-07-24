@@ -4,13 +4,14 @@ excerpt: "A C# implementation of the Cedar policy language and authorization mod
 language: "C#"
 license: "Apache-2.0"
 repository_url: "https://github.com/TheFellow/cedar-dotnet"
+last_updated: 2026-06-01
 order: 20
 icon: "shield"
 accent: "#b197fc"
 topics: ["Authorization", "Language tooling"]
 ---
 
-<div class="project-meta"><span>C#</span><span>Authorization</span><span>Cedar</span><span>Apache-2.0</span></div>
+<div class="project-meta"><span>C#</span><span>Authorization</span><span>Cedar</span><span>Apache-2.0</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/cedar-dotnet){: .btn .btn--primary }
 
