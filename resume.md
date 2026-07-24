@@ -142,12 +142,12 @@ author_profile: false
       <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a> with durable graph execution and checkpoint-and-resume support.</p>
     </article>
     <article>
-      <h3><a href="https://github.com/TheFellow/go-modular-monolith#authorization">Fine-grained authorization reference</a></h3>
-      <p>An executable authorization model for a modular monolith. Domain-owned Cedar policies filter reads by entity and authorize both sides of each state transition.</p>
+      <h3><a href="https://github.com/TheFellow/go-modular-monolith#authorization">Authorization as executable design</a></h3>
+      <p>A working demonstration that authorization can be rich, expressive, and precise. Domain-owned Cedar policies make entity visibility and valid state transitions explicit, testable parts of the architecture.</p>
     </article>
     <article>
-      <h3><a href="https://github.com/TheFellow">Architecture and analysis tools</a></h3>
-      <p>Open-source work includes architectural dependency enforcement, exhaustive union handling, and simulation projects.</p>
+      <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>
+      <p>Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.</p>
     </article>
   </div>
 </section>
