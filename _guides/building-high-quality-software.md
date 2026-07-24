@@ -41,7 +41,7 @@ Events carry the changed aggregate so independent handlers can react without rel
 
 ## 5. Generate the Boring Parts
 
-Four focused generators own dispatcher routing, Cedar policy assembly, typed IDs, and error helpers. This chapter looks at the repeated structure each generator replaces and at the discipline of keeping a small generator—not hand-edited generated output—as the source of truth.
+Four focused generators own dispatcher routing, Cedar policy assembly, typed IDs, and error helpers. This chapter looks at the repeated structure each generator replaces and at the discipline of keeping a small generator, rather than hand-edited generated output, as the source of truth.
 
 **Code route:** `pkg/dispatcher/gen` → `pkg/authz/gen` → `app/kernel/entity/gen` → `pkg/errors/gen`.
 
@@ -71,7 +71,7 @@ Tests use the real middleware, authorization, event dispatch, database transacti
 
 ## 10. The Simplest Thing That Works
 
-The application is one binary backed by one embedded transactional database. The closing lesson inventories what is intentionally absent—service mesh, broker, orchestration—and asks what evidence would justify adding any of it without weakening the invariants already in place.
+The application is one binary backed by one embedded transactional database. The closing lesson inventories what is intentionally absent, including a service mesh, broker, and orchestration, and asks what evidence would justify adding any of it without weakening the invariants already in place.
 
 **Code route:** application bootstrap → `pkg/middleware` unit of work → bstore persistence.
 

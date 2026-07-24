@@ -374,6 +374,11 @@
   padding-top: 0.85rem;
 }
 
+.resume-achievements--no-leading-rule > article:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
 .resume-achievement--band {
   grid-column: 1 / -1;
 }

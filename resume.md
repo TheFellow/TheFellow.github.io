@@ -51,13 +51,17 @@ author_profile: false
 
   <article class="resume-role">
     <div class="resume-role__meta">
-      <span class="resume-role__date">2022 — Present</span>
+      <span class="resume-role__date">2022–Present</span>
       <strong>StrongDM</strong>
-      <span>Access and authorization platform</span>
+      <span>Access and authorization platform · Acquired by Delinea</span>
     </div>
     <div class="resume-role__body">
       <h3>Staff Software Engineer</h3>
       <div class="resume-achievements">
+        <article class="resume-achievement--band">
+          <h4>Post-acquisition platform integration</h4>
+          <p>Help spearhead the integration of StrongDM's proxy and core access architecture into Delinea's microservice platform. Selectively preserve and adapt the highest-value product IP while moving from an AWS, Go, and PostgreSQL monolith to an Azure stack built on RabbitMQ, SQL Server, and Cosmos DB, aligning architecture and delivery across newly combined teams.</p>
+        </article>
         <article>
           <h4>Cross-functional delivery</h4>
           <p>Lead authorization initiatives with cross-functional partners, turning ambiguous requirements into reviewed technical models and carrying them through sequenced delivery and safe rollout.</p>
@@ -65,10 +69,6 @@ author_profile: false
         <article>
           <h4>Access lifecycle ownership</h4>
           <p>Own the access-request and ephemeral approval domain end to end, from policy design through production operation.</p>
-        </article>
-        <article class="resume-achievement--band">
-          <h4>Post-acquisition platform integration</h4>
-          <p>Help spearhead the integration of StrongDM's proxy and core access architecture into Delinea's microservice platform. Selectively preserve and adapt the highest-value product IP while moving from an AWS, Go, and PostgreSQL monolith to an Azure stack built on RabbitMQ, SQL Server, and Cosmos DB, aligning architecture and delivery across newly combined teams.</p>
         </article>
         <article>
           <h4>Fine-grained access control</h4>
@@ -96,9 +96,9 @@ author_profile: false
         </article>
         <article>
           <h4>AI enablement</h4>
-          <p>Facilitator at week-long AI engineering bootcamps focusing on a deep dive into the <a href="https://factory.strongdm.ai/techniques">techniques researched and devised by StrongDM</a>. Help teammates level up and use their tokens intelligently and efficiently.</p>
+          <p>Facilitated week-long AI engineering bootcamps focused on <a href="https://factory.strongdm.ai/techniques">techniques developed and documented by StrongDM</a>. Help teammates apply those techniques effectively in day-to-day engineering work.</p>
           <p>Build and maintain <a href="https://github.com/TheFellow/fkyeah">F#kYeah</a>, an open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</p>
-          <p>Apply <a href="https://factory.strongdm.ai/techniques/semport">Semport</a> within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and <a href="{{ '/notes/porting-cedar-semantics-from-go-to-dotnet/' | relative_url }}">learning</a> a few things along the way.</p>
+          <p>Apply <a href="https://factory.strongdm.ai/techniques/semport">Semport</a> within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the <a href="{{ '/notes/porting-cedar-semantics-from-go-to-dotnet/' | relative_url }}">engineering lessons</a> from that work.</p>
         </article>
       </div>
     </div>
@@ -106,7 +106,7 @@ author_profile: false
 
   <article class="resume-role">
     <div class="resume-role__meta">
-      <span class="resume-role__date">2010 — 2022</span>
+      <span class="resume-role__date">2010–2022</span>
       <strong>Applied Underwriters</strong>
       <span>Financial services technology</span>
     </div>
@@ -159,7 +159,7 @@ author_profile: false
 <section class="resume-section resume-section--split">
   <div>
     <h2>Teaching and communication</h2>
-    <div class="resume-achievements resume-achievements--compact">
+    <div class="resume-achievements resume-achievements--compact resume-achievements--no-leading-rule">
       <article>
         <h4>AI engineering enablement</h4>
         <p>Facilitator for internal AI engineering bootcamps focused on specification-driven development and durable agent workflows.</p>
@@ -189,7 +189,7 @@ author_profile: false
       </article>
       <article>
         <h4>Mathematical modeling</h4>
-        <p>Received a Meritorious designation representing Cal Poly in the Mathematical Contest in Modeling.</p>
+        <p>Meritorious designation in the Mathematical Contest in Modeling while representing Cal Poly.</p>
       </article>
       <article>
         <h4>Summer research</h4>
@@ -201,5 +201,5 @@ author_profile: false
 
 <section class="resume-section resume-technology">
   <h2>Technology</h2>
-  <p>Go · C# · F# · PostgreSQL · Cedar · GraphQL · gRPC and Protocol Buffers · Terraform · Kubernetes · domain-driven design · static analysis · API and SDK design · CI/CD · production operations</p>
+  <p>Go · C# · F# · PSQL · MSSQL · Cedar · GraphQL · gRPC and Protocol Buffers · Terraform · Kubernetes · domain-driven design · static analysis · API and SDK design · CI/CD · production operations</p>
 </section>
