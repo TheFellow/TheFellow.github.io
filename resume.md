@@ -140,12 +140,12 @@ author_profile: false
       <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>, used to <a href="https://factory.strongdm.ai/techniques/semport">semantically port</a> a Cedar authorization language implementation.</p>
     </article>
     <article>
-      <h3><a href="https://github.com/cedar-policy/cedar-go">cedar-go contributor</a></h3>
-      <p>Contributions to the official Go implementation include EntityUID serialization and stricter parsing behavior for Cedar extension types.</p>
+      <h3><a href="https://github.com/TheFellow/go-modular-monolith#authorization">Fine-grained authorization reference</a></h3>
+      <p>An executable authorization model for a modular monolith. Domain-owned Cedar policies filter reads by entity and authorize both sides of each state transition.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow">Architecture and analysis tools</a></h3>
-      <p>Open-source work includes architectural dependency enforcement, exhaustive union handling, modular-monolith reference applications, and simulation projects.</p>
+      <p>Open-source work includes architectural dependency enforcement, exhaustive union handling, and simulation projects.</p>
     </article>
   </div>
 </section>
