@@ -4,6 +4,7 @@ excerpt: "A Go analyzer that makes pointer-union switches exhaustive, catching m
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/enumstruct"
+last_updated: 2026-03-04
 order: 45
 featured: true
 icon: "exhaustive"
@@ -11,7 +12,7 @@ accent: "#ffd43b"
 topics: ["Static analysis", "Exhaustiveness", "GraphQL"]
 ---
 
-<div class="project-meta"><span>Go</span><span>Static analysis</span><span>GraphQL</span><span>MIT</span></div>
+<div class="project-meta"><span>Go</span><span>Static analysis</span><span>GraphQL</span><span>MIT</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/enumstruct){: .btn .btn--primary }
 

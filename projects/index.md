@@ -23,6 +23,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
       <span class="feature-tile__topics">
         {% for topic in project.topics %}<span>{{ topic }}</span>{% endfor %}
       </span>
+      <span class="feature-tile__updated">Updated {{ project.last_updated | date: "%B %-d, %Y" }}</span>
       <span class="feature-tile__cta">Explore project <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
     </a>
   {% endfor %}

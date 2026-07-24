@@ -4,13 +4,14 @@ excerpt: "A Go analyzer that turns architectural dependency rules into build-tim
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/arch-lint"
+last_updated: 2026-03-29
 order: 30
 icon: "boundaries"
 accent: "#66d9e8"
 topics: ["Static analysis", "Architecture"]
 ---
 
-<div class="project-meta"><span>Go</span><span>Static analysis</span><span>Architecture</span><span>MIT</span></div>
+<div class="project-meta"><span>Go</span><span>Static analysis</span><span>Architecture</span><span>MIT</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/arch-lint){: .btn .btn--primary }
 

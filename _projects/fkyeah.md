@@ -4,6 +4,7 @@ excerpt: "An F# pipeline engine for multi-stage AI workflows described as execut
 language: "F#"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/fkyeah"
+last_updated: 2026-07-15
 order: 40
 featured: true
 icon: "route"
@@ -11,7 +12,7 @@ accent: "#f783ac"
 topics: ["AI workflows", "Pipeline engine", "F#"]
 ---
 
-<div class="project-meta"><span>F#</span><span>AI workflows</span><span>Pipeline engine</span><span>MIT</span></div>
+<div class="project-meta"><span>F#</span><span>AI workflows</span><span>Pipeline engine</span><span>MIT</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/fkyeah){: .btn .btn--primary }
 
