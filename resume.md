@@ -57,15 +57,36 @@ author_profile: false
     </div>
     <div class="resume-role__body">
       <h3>Staff Software Engineer</h3>
-      <ul>
-        <li>Lead cross-functional authorization initiatives across product, security, design, and engineering: refine ambiguous requirements into reviewed technical models, decompose them into sequenced deliverables, and coordinate implementation and production rollout.</li>
-        <li>Own major portions of the access-request and approval domain, from data model and policy evaluation through API, CLI, administrative UI, notifications, audit, and production operation.</li>
-        <li>Led a backward-compatible production migration that separated hierarchical group membership from role assignment while preserving behavior across services, SDKs, CLI workflows, audit, and existing customer configurations.</li>
-        <li>Designed a terminal protocol parser that reconstructs interactive commands across SSH and Kubernetes streams for structured query logging, accounting for escape sequences, resizing, pasted input, command history, and interactive applications.</li>
-        <li>Evolved multi-language SDK and Terraform code generation to support versioned APIs and complex union types without exposing transport plumbing or breaking existing clients.</li>
-        <li>Delivered third-party incident-response integrations with resilient synchronization and lifecycle handling; operate the production system through on-call rotations, incident response, observability, and failure recovery.</li>
-        <li>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build and maintain F#kYeah, an open-source F# implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</li>
-      </ul>
+      <div class="resume-achievements">
+        <article>
+          <h4>Cross-functional delivery</h4>
+          <p>Lead authorization initiatives across product, security, design, and engineering: refine ambiguous requirements into reviewed technical models, sequence the deliverables, and coordinate implementation and production rollout.</p>
+        </article>
+        <article>
+          <h4>Access lifecycle ownership</h4>
+          <p>Own major portions of the access-request and approval domain, from data model and policy evaluation through API, CLI, administrative UI, notifications, audit, and production operation.</p>
+        </article>
+        <article>
+          <h4>Production migration</h4>
+          <p>Led a backward-compatible migration that separated hierarchical group membership from role assignment while preserving behavior across services, SDKs, CLI workflows, audit, and existing customer configurations.</p>
+        </article>
+        <article>
+          <h4>Protocol observability</h4>
+          <p>Designed a terminal protocol parser that reconstructs interactive commands across SSH and Kubernetes streams for structured query logging, accounting for escape sequences, resizing, pasted input, command history, and interactive applications.</p>
+        </article>
+        <article>
+          <h4>API evolution</h4>
+          <p>Evolved multi-language SDK and Terraform code generation to support versioned APIs and complex union types without exposing transport plumbing or breaking existing clients.</p>
+        </article>
+        <article>
+          <h4>Integrations &amp; operations</h4>
+          <p>Delivered incident-response integrations with resilient synchronization and lifecycle handling; operate the production system through on-call rotations, incident response, observability, and failure recovery.</p>
+        </article>
+        <article>
+          <h4>AI enablement</h4>
+          <p>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build and maintain F#kYeah, an open-source F# implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</p>
+        </article>
+      </div>
     </div>
   </article>
 
@@ -77,12 +98,24 @@ author_profile: false
     </div>
     <div class="resume-role__body">
       <h3>Software Development Team Leader II</h3>
-      <ul>
-        <li>Translated complex business and regulatory requirements into maintainable software, data models, and operational processes across thick-client, service, and REST API systems.</li>
-        <li>Introduced domain-driven design, CQRS, functional techniques, and explicit architectural boundaries while modernizing long-lived applications under significant compatibility constraints.</li>
-        <li>Built and led two development teams, mentored future team leaders, and rewrote the department training program around object-oriented design, SOLID, GRASP, refactoring, and testability.</li>
-        <li>Designed relational schemas and queries, administered production SQL systems, coordinated high-availability migrations, and owned source-control, build, release, and audit workflows.</li>
-      </ul>
+      <div class="resume-achievements">
+        <article>
+          <h4>Solution architecture</h4>
+          <p>Translated complex business and regulatory requirements into maintainable software, data models, and operational processes across thick-client, service, and REST API systems.</p>
+        </article>
+        <article>
+          <h4>System modernization</h4>
+          <p>Introduced domain-driven design, CQRS, functional techniques, and explicit architectural boundaries while modernizing long-lived applications under significant compatibility constraints.</p>
+        </article>
+        <article>
+          <h4>Team building</h4>
+          <p>Built and led two development teams, mentored future team leaders, and rewrote the department training program around object-oriented design, SOLID, GRASP, refactoring, and testability.</p>
+        </article>
+        <article>
+          <h4>Data &amp; delivery operations</h4>
+          <p>Designed relational schemas and queries, administered production SQL systems, coordinated high-availability migrations, and owned source-control, build, release, and audit workflows.</p>
+        </article>
+      </div>
     </div>
   </article>
 </section>
