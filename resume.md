@@ -53,7 +53,7 @@ author_profile: false
     <div class="resume-role__meta">
       <span class="resume-role__date">2022–Present</span>
       <strong>StrongDM</strong>
-      <span>Access and authorization platform · Acquired by Delinea</span>
+      <span>Access and authorization platform · Acquired by <a href="https://delinea.com/news/delinea-acquires-strongdm-to-secure-ai-with-continuous-authorization">Delinea</a></span>
     </div>
     <div class="resume-role__body">
       <h3>Staff Software Engineer</h3>
