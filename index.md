@@ -1,35 +1,64 @@
 ---
-layout: splash
-title: "Ryan Harris"
-excerpt: "Software architecture, developer tools, and experiments—explained through the projects that made the ideas concrete."
-header:
-  overlay_color: "#121820"
-  actions:
-    - label: "Explore the projects"
-      url: "/projects/"
-    - label: "Read the guides"
-      url: "/guides/"
-feature_row:
-  - title: "Projects"
-    excerpt: "Context and commentary on libraries, tools, simulations, and reference applications across Go, C#, and F#."
-    url: "/projects/"
-    btn_label: "Browse projects"
-    btn_class: "btn--primary"
-  - title: "Guides"
-    excerpt: "Long-form, code-backed walkthroughs, beginning with a modular-monolith architecture series."
-    url: "/guides/"
-    btn_label: "View guides"
-    btn_class: "btn--primary"
-  - title: "Notes"
-    excerpt: "Shorter observations and working notes drawn from building and maintaining real software."
-    url: "/notes/"
-    btn_label: "Read notes"
-    btn_class: "btn--primary"
+layout: single
+title: "Engineering in public"
+permalink: /
+author_profile: true
+classes: wide
+excerpt: "Software architecture, developer tools, and experiments explained through the projects that made the ideas concrete."
 ---
 
-{% include feature_row %}
+Software architecture, developer tools, and experiments explained through the projects that made the ideas concrete. This site connects implementation details to the constraints, tradeoffs, and lessons behind them.
 
-## Building in public
+<div class="feature-tiles">
+  <a class="feature-tile feature-tile--featured" href="{{ '/projects/' | relative_url }}" style="--feature-accent: #63e6be;">
+    <header class="feature-tile__header">
+      <span class="feature-tile__icon">{% include feature-icon.html name="modules" %}</span>
+      <span>
+        <span class="feature-tile__eyebrow">Open-source work</span>
+        <span class="feature-tile__title">Projects</span>
+      </span>
+    </header>
+    <span class="feature-tile__description">Explore reference applications, authorization systems, language ports, and developer tools with context beyond their READMEs.</span>
+    <span class="feature-tile__topics"><span>Architecture</span><span>Authorization</span><span>Developer tools</span></span>
+    <span class="feature-tile__cta">Browse projects <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
+  </a>
 
-This site is the narrative layer for my GitHub work: why a project exists, which design constraints shaped it, what I learned, and where to look in the code. The source remains in each repository; the material here connects those details into reusable explanations.
+  <a class="feature-tile" href="{{ '/guides/' | relative_url }}" style="--feature-accent: #ffa94d;">
+    <header class="feature-tile__header">
+      <span class="feature-tile__icon">{% include feature-icon.html name="book" %}</span>
+      <span>
+        <span class="feature-tile__eyebrow">Tutorials and walkthroughs</span>
+        <span class="feature-tile__title">Guides</span>
+      </span>
+    </header>
+    <span class="feature-tile__description">Follow code-backed walkthroughs that turn architectural principles into practical, testable designs.</span>
+    <span class="feature-tile__topics"><span>Tutorials</span><span>Architecture</span><span>Video series</span></span>
+    <span class="feature-tile__cta">Open guides <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
+  </a>
 
+  <a class="feature-tile" href="{{ '/notes/' | relative_url }}" style="--feature-accent: #f783ac;">
+    <header class="feature-tile__header">
+      <span class="feature-tile__icon">{% include feature-icon.html name="note" %}</span>
+      <span>
+        <span class="feature-tile__eyebrow">Project notes</span>
+        <span class="feature-tile__title">Notes</span>
+      </span>
+    </header>
+    <span class="feature-tile__description">Read focused observations about implementation details, design decisions, and lessons learned from active projects.</span>
+    <span class="feature-tile__topics"><span>Cedar</span><span>Engineering</span><span>AI workflows</span></span>
+    <span class="feature-tile__cta">Read notes <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
+  </a>
+
+  <a class="feature-tile feature-tile--featured" href="{{ '/resume/' | relative_url }}" style="--feature-accent: #74c0fc;">
+    <header class="feature-tile__header">
+      <span class="feature-tile__icon">{% include feature-icon.html name="resume" %}</span>
+      <span>
+        <span class="feature-tile__eyebrow">Experience</span>
+        <span class="feature-tile__title">Resume</span>
+      </span>
+    </header>
+    <span class="feature-tile__description">Staff-level engineering work spanning authorization architecture, cross-functional delivery, platform evolution, and technical leadership.</span>
+    <span class="feature-tile__topics"><span>Authorization</span><span>Architecture</span><span>Leadership</span></span>
+    <span class="feature-tile__cta">View resume <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
+  </a>
+</div>
