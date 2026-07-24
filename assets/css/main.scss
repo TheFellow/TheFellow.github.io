@@ -389,11 +389,6 @@
   margin: 0;
 }
 
-.resume-section--split li {
-  line-height: 1.6;
-  margin-bottom: 0.65rem;
-}
-
 .resume-section--split {
   display: grid;
   gap: 2.5rem;
@@ -404,8 +399,7 @@
   font-size: 0.95rem;
 }
 
-.resume-section--split p,
-.resume-section--split li {
+.resume-section--split > div > p {
   font-size: 0.8rem;
 }
 
@@ -431,5 +425,9 @@
 
   .resume-achievements > article:last-child:nth-child(odd) {
     grid-column: 1 / -1;
+  }
+
+  .resume-achievements--compact {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

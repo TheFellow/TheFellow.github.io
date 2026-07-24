@@ -145,22 +145,43 @@ author_profile: false
 <section class="resume-section resume-section--split">
   <div>
     <h2>Teaching and communication</h2>
-    <ul>
-      <li>Facilitator for internal AI engineering bootcamps focused on specification-driven development and durable agent workflows.</li>
-      <li>Presenter of technical talks that make difficult material approachable, including a ground-up tour of elliptic-curve cryptography from groups and finite fields through ECDSA.</li>
-      <li>Created more than 60 programming tutorials on neural networks, machine learning, and regular expressions, reaching more than 830,000 views and 5,000 subscribers.</li>
-      <li>Former Cal Poly teaching associate for calculus, trigonometry, and algebra.</li>
-    </ul>
+    <div class="resume-achievements resume-achievements--compact">
+      <article>
+        <h4>AI engineering enablement</h4>
+        <p>Facilitator for internal AI engineering bootcamps focused on specification-driven development and durable agent workflows.</p>
+      </article>
+      <article>
+        <h4>Technical presentations</h4>
+        <p>Make difficult material approachable, including a ground-up tour of elliptic-curve cryptography from groups and finite fields through ECDSA.</p>
+      </article>
+      <article>
+        <h4>Programming education</h4>
+        <p>Created more than 60 tutorials on neural networks, machine learning, and regular expressions, reaching more than 830,000 views and 5,000 subscribers.</p>
+      </article>
+      <article>
+        <h4>Mathematics instruction</h4>
+        <p>Former Cal Poly teaching associate for calculus, trigonometry, and algebra.</p>
+      </article>
+    </div>
   </div>
   <div>
     <h2>Education</h2>
     <h3>California Polytechnic State University, San Luis Obispo</h3>
     <p><strong>Master of Science, Mathematics</strong><br><strong>Bachelor of Science, Mathematics</strong></p>
-    <ul>
-      <li>Published peer-reviewed research in <em>Linear Algebra and its Applications</em>.</li>
-      <li>Received a Meritorious designation representing Cal Poly in the Mathematical Contest in Modeling.</li>
-      <li>Summer research participant, 2008.</li>
-    </ul>
+    <div class="resume-achievements resume-achievements--compact">
+      <article>
+        <h4>Peer-reviewed research</h4>
+        <p>Published in <em>Linear Algebra and its Applications</em>.</p>
+      </article>
+      <article>
+        <h4>Mathematical modeling</h4>
+        <p>Received a Meritorious designation representing Cal Poly in the Mathematical Contest in Modeling.</p>
+      </article>
+      <article>
+        <h4>Summer research</h4>
+        <p>Selected as a research participant in 2008.</p>
+      </article>
+    </div>
   </div>
 </section>
 
