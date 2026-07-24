@@ -60,31 +60,31 @@ author_profile: false
       <div class="resume-achievements">
         <article>
           <h4>Cross-functional delivery</h4>
-          <p>Lead authorization initiatives across product, security, design, and engineering: refine ambiguous requirements into reviewed technical models, sequence the deliverables, and coordinate implementation and production rollout.</p>
+          <p>Lead authorization initiatives with cross-functional partners, turning ambiguous requirements into reviewed technical models and carrying them through sequenced delivery and safe rollout.</p>
         </article>
         <article>
           <h4>Access lifecycle ownership</h4>
-          <p>Own major portions of the access-request and approval domain, from data model and policy evaluation through API, CLI, administrative UI, notifications, audit, and production operation.</p>
+          <p>Own the access-request and ephemeral approval domain end to end, from policy design through production operation.</p>
         </article>
         <article>
           <h4>Production migration</h4>
-          <p>Led a backward-compatible migration that separated hierarchical group membership from role assignment while preserving behavior across services, SDKs, CLI workflows, audit, and existing customer configurations.</p>
+          <p>Led a backward-compatible migration separating hierarchical group membership from role assignment without disrupting existing behavior or customer configurations.</p>
         </article>
         <article>
           <h4>Protocol observability</h4>
-          <p>Designed a terminal protocol parser that reconstructs interactive commands across SSH and Kubernetes streams for structured query logging, accounting for escape sequences, resizing, pasted input, command history, and interactive applications.</p>
+          <p>Designed a terminal protocol parser that reconstructs interactive commands across SSH and Kubernetes streams for structured query logging.</p>
         </article>
         <article>
           <h4>API evolution</h4>
-          <p>Evolved multi-language SDK and Terraform code generation to support versioned APIs and complex union types without exposing transport plumbing or breaking existing clients.</p>
+          <p>Evolved SDK and Terraform code generation for versioned APIs while preserving stable client ergonomics and backward compatibility.</p>
         </article>
         <article>
           <h4>Integrations &amp; operations</h4>
-          <p>Delivered incident-response integrations with resilient synchronization and lifecycle handling; operate the production system through on-call rotations, incident response, observability, and failure recovery.</p>
+          <p>Delivered reliable incident-response integrations and share on-call ownership of the production system.</p>
         </article>
         <article>
           <h4>AI enablement</h4>
-          <p>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build and maintain F#kYeah, an open-source F# implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</p>
+          <p>Facilitate internal AI engineering bootcamps and apply specification-driven agent workflows to production work; build an open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a> used to <a href="https://factory.strongdm.ai/techniques/semport">semantically port</a> a Cedar authorization language implementation.</p>
         </article>
       </div>
     </div>
@@ -125,11 +125,11 @@ author_profile: false
   <div class="resume-work-grid">
     <article>
       <h3><a href="https://github.com/TheFellow/cedar-dotnet">cedar-dotnet</a></h3>
-      <p>A C# implementation of the Cedar policy language, semantically ported from cedar-go and validated against the official conformance corpus.</p>
+      <p>A semantic port of the Cedar policy language, maintained against its upstream implementation and validated with the official conformance corpus.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/fkyeah">F#kYeah</a></h3>
-      <p>An F# implementation listed among the community implementations of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>, with checkpoints, simulation, and multi-provider execution.</p>
+      <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>, used to <a href="https://factory.strongdm.ai/techniques/semport">semantically port</a> a Cedar authorization language implementation.</p>
     </article>
     <article>
       <h3><a href="https://github.com/cedar-policy/cedar-go">cedar-go contributor</a></h3>
