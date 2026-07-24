@@ -6,6 +6,17 @@
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
 @import "minimal-mistakes";
 
+/* Avoid replaying the theme's staggered entrance animation after every navigation. */
+.masthead,
+.breadcrumbs,
+#main,
+.page__hero,
+.page__hero--overlay,
+.page__footer {
+  -webkit-animation: none;
+  animation: none;
+}
+
 .page__hero--overlay {
   padding-block: 5rem;
 }
