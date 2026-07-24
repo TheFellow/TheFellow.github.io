@@ -30,6 +30,30 @@
   border-left: 0.25rem solid $link-color;
 }
 
+.ecc-figure {
+  margin: 2rem 0;
+}
+
+.ecc-figure img {
+  background: #fff;
+  border-radius: 0.75rem;
+  display: block;
+  width: 100%;
+}
+
+.ecc-figure--square img,
+.ecc-figure--compact img {
+  margin-inline: auto;
+  max-width: 42rem;
+}
+
+.ecc-figure figcaption {
+  color: mix($text-color, $background-color, 72%);
+  font-size: 0.75rem;
+  margin-top: 0.65rem;
+  text-align: center;
+}
+
 .feature-tiles {
   display: grid;
   gap: 1.25rem;
