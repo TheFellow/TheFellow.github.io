@@ -374,6 +374,10 @@
   padding-top: 0.85rem;
 }
 
+.resume-achievement--band {
+  grid-column: 1 / -1;
+}
+
 .resume-achievements h4 {
   color: #74c0fc;
   font-size: 0.68rem;
@@ -428,6 +432,10 @@
   }
 
   .resume-achievements > article:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .resume-role:first-of-type .resume-achievements > article:last-child {
     grid-column: 1 / -1;
   }
 

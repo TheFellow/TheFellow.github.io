@@ -66,6 +66,10 @@ author_profile: false
           <h4>Access lifecycle ownership</h4>
           <p>Own the access-request and ephemeral approval domain end to end, from policy design through production operation.</p>
         </article>
+        <article class="resume-achievement--band">
+          <h4>Post-acquisition platform integration</h4>
+          <p>Help spearhead the integration of StrongDM's proxy and core access architecture into Delinea's microservice platform. Selectively preserve and adapt the highest-value product IP while moving from an AWS, Go, and PostgreSQL monolith to an Azure stack built on RabbitMQ, SQL Server, and Cosmos DB, aligning architecture and delivery across newly combined teams.</p>
+        </article>
         <article>
           <h4>Fine-grained access control</h4>
           <p>Designed and implemented delegated administrative access control that scopes permissions by resource context without granting full administration. Defined policy-safe state transitions and carried the model through every product surface and a backward-compatible migration path.</p>
