@@ -60,7 +60,7 @@ author_profile: false
       <div class="resume-achievements">
         <article class="resume-achievement--band">
           <h4>Post-acquisition platform integration</h4>
-          <p>Help spearhead the integration of StrongDM's proxy and core access architecture into Delinea's microservice platform. Selectively preserve and adapt the highest-value product IP while moving from an AWS, Go, and PostgreSQL monolith to an Azure stack built on RabbitMQ, SQL Server, and Cosmos DB, aligning architecture and delivery across newly combined teams.</p>
+          <p>Help lead the integration of StrongDM's proxy and core access architecture into Delinea's microservice platform. Selectively preserve and adapt the highest-value product IP while moving from an AWS, Go, and PostgreSQL monolith to an Azure stack built on RabbitMQ, SQL Server, and Cosmos DB, aligning architecture and delivery across newly combined teams.</p>
         </article>
         <article>
           <h4>Cross-functional delivery</h4>
@@ -92,11 +92,11 @@ author_profile: false
         </article>
         <article>
           <h4>Integrations &amp; operations</h4>
-          <p>Delivered reliable incident-response integrations and share on-call ownership of the production system.</p>
+          <p>Delivered reliable incident-response integrations. Share on-call ownership of the production system.</p>
         </article>
         <article>
           <h4>AI enablement</h4>
-          <p>Facilitated week-long AI engineering bootcamps focused on <a href="https://factory.strongdm.ai/techniques">techniques developed and documented by StrongDM</a>. Help teammates apply those techniques effectively in day-to-day engineering work.</p>
+          <p>Facilitated week-long AI engineering bootcamps focused on <a href="https://factory.strongdm.ai/techniques">techniques developed and documented by StrongDM</a>. Helped teammates apply those techniques effectively in day-to-day engineering work.</p>
           <p>Build and maintain <a href="https://github.com/TheFellow/fkyeah">F#kYeah</a>, an open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</p>
           <p>Apply <a href="https://factory.strongdm.ai/techniques/semport">Semport</a> within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the <a href="{{ '/notes/porting-cedar-semantics-from-go-to-dotnet/' | relative_url }}">engineering lessons</a> from that work.</p>
         </article>
@@ -190,10 +190,6 @@ author_profile: false
       <article>
         <h4>Mathematical modeling</h4>
         <p>Meritorious designation in the Mathematical Contest in Modeling while representing Cal Poly.</p>
-      </article>
-      <article>
-        <h4>Summer research</h4>
-        <p>Selected as a research participant in 2008.</p>
       </article>
     </div>
   </div>

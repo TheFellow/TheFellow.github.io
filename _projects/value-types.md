@@ -16,7 +16,7 @@ topics: ["Domain modeling", "Structural equality"]
 
 ValueTypes tackles a deceptively important modeling problem: two domain values should be equal because their meaningful components are equal, not because they happen to be the same object. The library makes that intent explicit without forcing every type to repeat equality and hashing boilerplate.
 
-The most interesting part is the vocabulary it develops for different kinds of composition. `Yield` captures ordered components, `Group` captures components whose order should not matter, and sequence helpers let nested values retain the right equality semantics. A line segment, a roll call, and a wallet do not mean “same” in quite the same way; the API makes those differences visible in the model.
+Its vocabulary distinguishes several kinds of composition. `Yield` captures ordered components, `Group` captures components whose order should not matter, and sequence helpers let nested values retain the right equality semantics. A line segment, a roll call, and a wallet don't mean “same” in quite the same way; the API makes those differences visible in the model.
 
 ### Why it is worth exploring
 

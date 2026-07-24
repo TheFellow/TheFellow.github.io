@@ -15,7 +15,7 @@ topics: ["Simulation", "Visualization"]
 
 fluid is an interactive Eulerian fluid simulation built on a staggered grid. It combines semi-Lagrangian advection with optional BFECC correction and exposes the solver through visual modes for smoke, pressure, velocity magnitude, and vorticity.
 
-The interactivity is what turns the numerical method into an effective learning tool. Walls, forces, sources, sinks, particles, border conditions, and presets can all be changed while the simulation runs. Toggling BFECC or vorticity confinement makes tradeoffs such as numerical diffusion visible rather than leaving them buried in an equation or benchmark.
+Live controls turn the numerical method into an effective learning tool. Walls, forces, sources, sinks, particles, border conditions, and presets can all be changed while the simulation runs. Toggling BFECC or vorticity confinement exposes tradeoffs such as numerical diffusion directly in the simulation.
 
 ### Why it is worth exploring
 

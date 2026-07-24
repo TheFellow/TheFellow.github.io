@@ -17,7 +17,7 @@ topics: ["Static analysis", "Exhaustiveness", "GraphQL"]
 
 enumstruct closes a type-safety gap that appears when a “one of these” value is represented as a struct whose fields are all pointers. GraphQL generators commonly use this shape for union-like inputs. When a generator adds a field, an existing nil-check switch still compiles, even if it silently forgets the new variant.
 
-The analyzer makes that switch exhaustive. Types can opt in through a source annotation or configuration, which also covers generated and imported models. It recognizes real-world nil-check forms, reports duplicate cases, and uses Go analysis facts to carry declarations across package boundaries rather than matching fields by name.
+The analyzer makes that switch exhaustive. Types can opt in through a source annotation or configuration, which also covers generated and imported models. It recognizes real-world nil-check forms, reports duplicate cases, and uses Go analysis facts so declarations retain their identity across package boundaries.
 
 ### Why it is worth exploring
 
