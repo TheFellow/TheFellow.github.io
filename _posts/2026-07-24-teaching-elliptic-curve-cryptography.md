@@ -43,6 +43,11 @@ y² = x³ + 2x + 2  (mod 17)
 
 Only coordinate pairs from `0` through `16` are candidates. The equation selects a finite collection of points, including `(5, 1)`. There is no continuous arc between those points, but the same algebraic addition rules still apply.
 
+<figure class="ecc-figure ecc-figure--square">
+  <img src="{{ '/assets/images/notes/ecc/finite-field-curve.png' | relative_url }}" alt="The eighteen affine points satisfying y squared equals x cubed plus 2x plus 2 modulo 17, with the point G at 5 comma 1 highlighted.">
+  <figcaption>The toy curve has eighteen affine points. Including the point at infinity gives a group of order nineteen.</figcaption>
+</figure>
+
 ## Turn curve points into a group
 
 Over the real numbers, the point-addition construction is visual. Draw a line through two points on the curve. It intersects the curve at a third point. Reflect that point across the horizontal axis, and the result is the sum.
@@ -52,6 +57,11 @@ The special cases complete the operation:
 - a tangent line handles adding a point to itself;
 - a vertical line sends a point and its inverse to the point at infinity; and
 - the point at infinity acts as the identity.
+
+<figure class="ecc-figure">
+  <img src="{{ '/assets/images/notes/ecc/curve-addition.png' | relative_url }}" alt="A line through points P and Q intersects a real elliptic curve at negative P plus Q, which is reflected across the horizontal axis to obtain P plus Q.">
+  <figcaption>Point addition is easiest to introduce geometrically: intersect, then reflect.</figcaption>
+</figure>
 
 Over a finite field, the picture becomes a set of dots, so the geometry is no longer something we literally draw between coordinates. The formulas survive. Slope, intersection, and reflection are computed with field arithmetic, including modular inverses.
 
@@ -101,6 +111,11 @@ X = zs⁻¹G + rs⁻¹dG
 ```
 
 The verifier reconstructs the same point the signer used without knowing either `d` or `k`. That cancellation was the destination of the presentation. Everything before it existed so that these few lines could be read as group arithmetic rather than magic.
+
+<figure class="ecc-figure">
+  <img src="{{ '/assets/images/notes/ecc/ecdsa-verification.png' | relative_url }}" alt="A flow diagram showing a private scalar producing a public point, signing producing r and s, and verification reconstructing the nonce point kG.">
+  <figcaption>The public key and signature give the verifier enough information to reconstruct the nonce point, but not the private scalar.</figcaption>
+</figure>
 
 ## The nonce is part of the secret
 
