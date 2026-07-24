@@ -41,7 +41,8 @@
   width: 100%;
 }
 
-.ecc-figure--square img {
+.ecc-figure--square img,
+.ecc-figure--compact img {
   margin-inline: auto;
   max-width: 42rem;
 }

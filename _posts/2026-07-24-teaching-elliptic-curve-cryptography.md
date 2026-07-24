@@ -8,13 +8,13 @@ tags: ["Cryptography", "ECDSA", "Mathematics", "Teaching"]
 
 Cryptography talks often start at one of two unhelpful altitudes. They either stay at the API level, where signing and verification remain black boxes, or begin with enough notation to lose anyone who has not recently studied abstract algebra.
 
-For an internal presentation at StrongDM, I wanted a route between those extremes. The goal was not to teach people to implement cryptography. It was to make the structure underneath ECDSA understandable: what the objects are, which operations are allowed, where the asymmetry comes from, and why a verifier can check a signature without learning the private key.
+In October 2023, I devised and presented an internal StrongDM talk that took a route between those extremes. The goal was not to teach people to implement cryptography. It was to make the structure underneath ECDSA understandable: what the objects are, which operations are allowed, where the asymmetry comes from, and why a verifier can check a signature without learning the private key.
 
 The slides built that argument one layer at a time.
 
 ## Start with an operation, not a curve
 
-Elliptic-curve cryptography depends on groups, but opening a talk with the formal definition of a group makes the subject feel more remote than it is. I started with familiar operations and then named the properties we needed.
+Elliptic-curve cryptography depends on groups, but opening a talk with the formal definition of a group makes the subject feel more remote than it is. I started with a short proof that zero is the unique additive identity. That gave the audience a familiar operation, introduced the role of an identity, and demonstrated that the talk would derive its claims rather than ask everyone to accept a wall of notation.
 
 A group is a set with an operation that has four useful guarantees:
 
@@ -25,6 +25,13 @@ A group is a set with an operation that has four useful guarantees:
 
 The integers under addition already provide most of the intuition. Zero is the identity, the inverse of `5` is `-5`, and repeated addition gives scalar multiplication. The vocabulary is abstract, but the behavior is ordinary.
 
+The next useful idea is a cyclic group. Starting from one generator and repeatedly applying the operation enumerates the group. The slides compared addition modulo `4` and modulo `5` to make the role of prime order visible. In a cyclic group of prime order, every element except the identity is a generator.
+
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="{{ '/assets/images/notes/ecc/original/cyclic-group-z5.png' | relative_url }}" alt="The original slide showing that each nonzero element generates the additive group modulo 5.">
+  <figcaption>The prime-order group Z₅ makes every nonzero element a generator.</figcaption>
+</figure>
+
 That framing mattered for the rest of the presentation. Once the audience understood that a group is a collection of values with predictable rules for combining them, elliptic-curve points could become another example rather than a leap into unfamiliar mathematics.
 
 ## Move arithmetic into a finite field
@@ -33,19 +40,13 @@ Cryptographic curves do not use the smooth, continuous number line shown in the 
 
 For a prime `p`, arithmetic in the field `F_p` wraps modulo `p`. Addition, subtraction, and multiplication stay inside a finite set of values. Division is multiplication by a modular inverse. Every nonzero value has such an inverse because `p` is prime.
 
-This is the point where modular arithmetic stops being a programming trick and becomes part of the design. The field gives us a finite space with enough algebraic structure to define point addition consistently.
+This is the point where modular arithmetic stops being a programming trick and becomes part of the design. The field gives us a finite space with enough algebraic structure to define point addition consistently. Fermat's little theorem supplies a practical way to find multiplicative inverses, so division remains available.
 
-A small example is easier to reason about than a production curve. Consider:
-
-```text
-y² = x³ + 2x + 2  (mod 17)
-```
-
-Only coordinate pairs from `0` through `16` are candidates. The equation selects a finite collection of points, including `(5, 1)`. There is no continuous arc between those points, but the same algebraic addition rules still apply.
+The deck eventually used `secp256k1`, the curve defined by `y² = x³ + 7`. Its production field is far too large to plot usefully, so I first showed the same equation over `F₂₂₃`. There is no continuous arc between the resulting points, but the same algebraic addition rules still apply.
 
 <figure class="ecc-figure ecc-figure--square">
-  <img src="{{ '/assets/images/notes/ecc/finite-field-curve.png' | relative_url }}" alt="The eighteen affine points satisfying y squared equals x cubed plus 2x plus 2 modulo 17, with the point G at 5 comma 1 highlighted.">
-  <figcaption>The toy curve has eighteen affine points. Including the point at infinity gives a group of order nineteen.</figcaption>
+  <img src="{{ '/assets/images/notes/ecc/original/secp256k1-f223.png' | relative_url }}" alt="The original slide plotting the points satisfying the secp256k1 equation over the finite field modulo 223.">
+  <figcaption>The secp256k1 equation over F₂₂₃ is a finite set of points rather than a smooth curve.</figcaption>
 </figure>
 
 ## Turn curve points into a group
@@ -59,8 +60,8 @@ The special cases complete the operation:
 - the point at infinity acts as the identity.
 
 <figure class="ecc-figure">
-  <img src="{{ '/assets/images/notes/ecc/curve-addition.png' | relative_url }}" alt="A line through points P and Q intersects a real elliptic curve at negative P plus Q, which is reflected across the horizontal axis to obtain P plus Q.">
-  <figcaption>Point addition is easiest to introduce geometrically: intersect, then reflect.</figcaption>
+  <img src="{{ '/assets/images/notes/ecc/original/point-addition.png' | relative_url }}" alt="The original slide showing a line through points A and B, its third intersection C, and the reflection labeled A plus B.">
+  <figcaption>The original point-addition slide: intersect at C, then reflect to obtain A+B.</figcaption>
 </figure>
 
 Over a finite field, the picture becomes a set of dots, so the geometry is no longer something we literally draw between coordinates. The formulas survive. Slope, intersection, and reflection are computed with field arithmetic, including modular inverses.
@@ -69,13 +70,20 @@ This was the central transition in the slides. The points are not merely coordin
 
 ## Scalar multiplication creates the useful asymmetry
 
-Choose a public base point `G` with a large prime order `n`. A private key is an integer `d`, and the corresponding public key is:
+Choose a public base point `G` with a large prime order `n`. The slides used `e` for the private scalar and `P` for the public point:
 
 ```text
-Q = dG
+P = eG
 ```
 
-Here `dG` means adding `G` to itself `d` times, although real implementations use much faster algorithms. Computing `Q` from `d` and `G` is efficient. Recovering `d` from `G` and `Q` is the elliptic-curve discrete logarithm problem.
+Here `eG` means adding `G` to itself `e` times, although real implementations use much faster algorithms. The deck made this concrete with a point on the `F₂₂₃` example and the first few results of repeated addition.
+
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="{{ '/assets/images/notes/ecc/original/generated-points.png' | relative_url }}" alt="The original slide listing the first seven scalar multiples of the point 47 comma 71 on secp256k1 over the field modulo 223.">
+  <figcaption>Scalar multiplication is repeated point addition, shown here with the deck's toy field.</figcaption>
+</figure>
+
+Computing `P` from `e` and `G` is efficient. Recovering `e` from `G` and `P` is the elliptic-curve discrete logarithm problem.
 
 That difference is the security boundary. The public key is a point everyone may know. The private key is the scalar that produced it. Properly selected curves and key sizes make recovering that scalar computationally infeasible with known classical methods.
 
@@ -89,32 +97,32 @@ Signing follows this outline:
 
 1. Compute the point `R = kG`.
 2. Let `r` be the x-coordinate of `R`, reduced modulo `n`.
-3. Compute `s = k⁻¹(z + rd) mod n`.
+3. Compute `s = k⁻¹(z + re) mod n`.
 4. Publish `(r, s)` as the signature.
 
-Verification first computes `w = s⁻¹ mod n`, then:
+The deck named the verification scalars `u` and `v`:
 
 ```text
-u₁ = zw mod n
-u₂ = rw mod n
-X  = u₁G + u₂Q
+u = z/s mod n
+v = r/s mod n
+X = uG + vP
 ```
 
 The signature is valid when the x-coordinate of `X`, reduced modulo `n`, equals `r`.
 
-The formulas can look arbitrary until the substitutions are written out. Since `Q = dG`:
+The formulas can look arbitrary until the substitutions are written out. Since `P = eG`:
 
 ```text
-X = zs⁻¹G + rs⁻¹dG
-  = (z + rd)s⁻¹G
+X = zs⁻¹G + rs⁻¹eG
+  = (z + re)s⁻¹G
   = kG
 ```
 
-The verifier reconstructs the same point the signer used without knowing either `d` or `k`. That cancellation was the destination of the presentation. Everything before it existed so that these few lines could be read as group arithmetic rather than magic.
+The verifier reconstructs the same point the signer used without knowing either `e` or `k`. That cancellation was the destination of the presentation. Everything before it existed so that these few lines could be read as group arithmetic rather than magic.
 
-<figure class="ecc-figure">
-  <img src="{{ '/assets/images/notes/ecc/ecdsa-verification.png' | relative_url }}" alt="A flow diagram showing a private scalar producing a public point, signing producing r and s, and verification reconstructing the nonce point kG.">
-  <figcaption>The public key and signature give the verifier enough information to reconstruct the nonce point, but not the private scalar.</figcaption>
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="{{ '/assets/images/notes/ecc/original/ecdsa-verification.png' | relative_url }}" alt="The original verification slide listing the signature, digest, public key, calculation of u and v, reconstruction of R, and comparison of its x-coordinate to r.">
+  <figcaption>The original verification recipe reconstructs R and checks that its x-coordinate is r.</figcaption>
 </figure>
 
 ## The nonce is part of the secret
@@ -123,7 +131,12 @@ The private key is not the only value that must remain protected. The nonce `k` 
 
 If two messages are signed with the same `k`, their signatures share enough algebraic structure to recover the nonce and then the private key. Biased or partially exposed nonces can also be dangerous. This is why production ECDSA implementations deserve the same scrutiny around randomness and side channels as they receive around curve selection.
 
-It is also a useful engineering lesson. A value described as temporary may still carry the full security weight of a long-lived credential. Lifetime and sensitivity are different properties.
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="{{ '/assets/images/notes/ecc/original/nonce-reuse.png' | relative_url }}" alt="The original slide deriving the private key e from two signatures that reused the same nonce k.">
+  <figcaption>Reusing k makes the private key an algebraic consequence of two signatures.</figcaption>
+</figure>
+
+The deck connected that failure directly to the [2010 PlayStation 3 compromise](https://arstechnica.com/gaming/2010/12/ps3-hacked-through-poor-implementation-of-cryptography/). It is also a useful engineering lesson. A value described as temporary may still carry the full security weight of a long-lived credential. Lifetime and sensitivity are different properties.
 
 ## What I wanted the slides to demonstrate
 
