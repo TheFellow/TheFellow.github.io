@@ -67,6 +67,14 @@ author_profile: false
           <p>Own the access-request and ephemeral approval domain end to end, from policy design through production operation.</p>
         </article>
         <article>
+          <h4>Fine-grained access control</h4>
+          <p>Designed and implemented delegated administrative access control that scopes permissions by resource context without granting full administration. Defined policy-safe state transitions and carried the model through every product surface and a backward-compatible migration path.</p>
+        </article>
+        <article>
+          <h4>Unified authorization</h4>
+          <p>Designed and implemented a context-aware authorization model that unifies standing, requestable, and time-bound access at a single policy decision point. Established canonical modeling and deterministic projections so intent remains consistent across every user and automation surface.</p>
+        </article>
+        <article>
           <h4>Production migration</h4>
           <p>Led a backward-compatible migration separating hierarchical group membership from role assignment without disrupting existing behavior or customer configurations.</p>
         </article>
