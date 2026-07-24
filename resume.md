@@ -92,7 +92,7 @@ author_profile: false
         </article>
         <article>
           <h4>AI enablement</h4>
-          <p>Co-facilitate AI engineering bootcamps centered on the <a href="https://factory.strongdm.ai/techniques">collection of techniques researched and devised at StrongDM</a>, helping teammates level up while using token budgets deliberately and efficiently.</p>
+          <p>Helped facilitate week-long AI engineering bootcamps—focused deep dives into the <a href="https://factory.strongdm.ai/techniques">collection of techniques researched and devised at StrongDM</a>—so teammates could level up and use token budgets more efficiently.</p>
           <p>Build and maintain <a href="https://github.com/TheFellow/fkyeah">F#kYeah</a>, an open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a>.</p>
           <p>Apply <a href="https://factory.strongdm.ai/techniques/semport">Semport</a> within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and <a href="{{ '/notes/porting-cedar-semantics-from-go-to-dotnet/' | relative_url }}">learning</a> a few things along the way.</p>
         </article>
