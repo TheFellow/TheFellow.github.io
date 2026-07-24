@@ -20,7 +20,7 @@ The interactivity is what turns the numerical method into an effective learning 
 ### Why it is worth exploring
 
 - It connects numerical techniques to immediate visual feedback.
-- Multiple presets—jet flow, a lid-driven cavity, and a Kármán vortex street—exercise the same solver under different conditions.
+- Multiple presets, including jet flow, a lid-driven cavity, and a Kármán vortex street, exercise the same solver under different conditions.
 - The controls make it a useful test bench for comparing stability, sharpness, and performance choices.
 
 Begin with the grid and simulation-step code, then trace how the visualization modes turn solver fields into something inspectable.

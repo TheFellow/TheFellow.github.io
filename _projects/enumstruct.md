@@ -15,7 +15,7 @@ topics: ["Static analysis", "Exhaustiveness", "GraphQL"]
 
 [View the repository](https://github.com/TheFellow/enumstruct){: .btn .btn--primary }
 
-enumstruct closes a type-safety gap that appears when a “one of these” value is represented as a struct whose fields are all pointers. GraphQL generators commonly use this shape for union-like inputs. When a generator adds a field, an existing nil-check switch still compiles—even if it silently forgets the new variant.
+enumstruct closes a type-safety gap that appears when a “one of these” value is represented as a struct whose fields are all pointers. GraphQL generators commonly use this shape for union-like inputs. When a generator adds a field, an existing nil-check switch still compiles, even if it silently forgets the new variant.
 
 The analyzer makes that switch exhaustive. Types can opt in through a source annotation or configuration, which also covers generated and imported models. It recognizes real-world nil-check forms, reports duplicate cases, and uses Go analysis facts to carry declarations across package boundaries rather than matching fields by name.
 
@@ -26,4 +26,3 @@ The analyzer makes that switch exhaustive. Types can opt in through a source ann
 - The analyzer is deliberately narrow, making its AST and `go/types` reasoning approachable for readers learning Go static analysis.
 
 Start with `pkg/enumstruct/analyzer.go`, then use the focused cases under `pkg/enumstruct/testdata/src` to see how missing, duplicate, cross-package, suppressed, and alternate nil-check forms are handled.
-
