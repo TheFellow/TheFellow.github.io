@@ -1,12 +1,12 @@
 ---
 title: "Building High-Quality Software"
-excerpt: "A preview of ten lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
+excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10
 status: "Series preview"
 icon: "book"
 accent: "#ffa94d"
-topics: ["10 lessons", "Written + video", "Go architecture"]
+topics: ["11 lessons", "Written + video", "Go architecture"]
 ---
 
 <div class="notice--series" markdown="1">
@@ -99,7 +99,37 @@ Filtering provides a useful test of the boundary. A human-readable expression be
 
 The lesson will implement the same operation from both existing surfaces, then sketch a third. If that third surface requires new business logic, the exercise has found a leak.
 
-## 9. Test the system that will run
+## 9. Give cross-cutting features an owned seam
+
+Tags belong to drinks, ingredients, inventory, menus, and orders, but they are not business state
+owned by any one of those domains. Copying tag persistence and commands into all five modules
+would make one feature five implementations. Letting a central tagging package reach into every
+domain's private storage would erase the boundaries the application is meant to preserve.
+
+Mixology splits the responsibility instead. The shared [`tag` value
+type](https://github.com/TheFellow/go-modular-monolith/tree/main/app/kernel/tag) defines canonical
+labels and key/value tags. The [tagging
+domain](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/tagging) owns their
+polymorphic associations and the uniform add, remove, list, and replace workflows. Each operational
+domain registers a loader and its own get, tag, and untag actions, so the generic workflow can load
+complete domain-owned state and authorize it without importing private models or persistence.
+
+That seam has to hold on reads as well as writes. Domain DAOs hydrate tags for a candidate set in
+one type-scoped query and within the same transaction, avoiding both inconsistent snapshots and an
+N+1 query per result. Complete-set replacements calculate whether the change needs tag permission,
+untag permission, or both, then commit the domain mutation and tag delta atomically through the
+ordinary command pipeline.
+
+Once hydrated, the same tags serve presentation, filtering, and policy without acquiring implicit
+application meaning. A CLI filter can select `tags contains "service=dinner"`, while Cedar can grant
+access with `resource.hasTag("audience")` and `resource.getTag("audience") == "sommelier"`. The
+application reserves neither key; policy gives the metadata meaning where meaning is required.
+
+This lesson will follow one tag from CSV input through canonicalization, centralized persistence,
+domain-owned hydration, Cedar authorization, and two user surfaces. The broader question is how to
+build a feature that crosses every boundary without becoming permission to bypass any of them.
+
+## 10. Test the system that will run
 
 An integration test becomes expensive when the application depends on a collection of remote infrastructure. In a one-process application with an embedded database, exercising the real stack can be the default.
 
@@ -109,7 +139,7 @@ The ingredient deletion test is only a few dozen lines. It creates an ingredient
 
 This lesson will use the same fixture at three scales: a focused permission check, a cross-domain behavior test, and an audit assertion that names every touched entity. The aim is not to argue that every test should be an integration test. It is to keep the real path fast and accessible enough that the most important guarantees can be tested together.
 
-## 10. Spend complexity only once the problem exists
+## 11. Spend complexity only once the problem exists
 
 Mixology has bounded contexts, policies, events, multiple surfaces, metrics, and transactional coordination. It also has one process and one embedded bstore database. There is no broker, service mesh, deployment orchestrator, or distributed transaction protocol.
 
