@@ -111,8 +111,9 @@ type](https://github.com/TheFellow/go-modular-monolith/tree/main/app/kernel/tag)
 labels and key/value tags. The [tagging
 domain](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/tagging) owns their
 polymorphic associations and the uniform add, remove, list, and replace workflows. Each operational
-domain registers a loader and its own get, tag, and untag actions, so the generic workflow can load
-complete domain-owned state and authorize it without importing private models or persistence.
+domain registers a loader, a bulk active-ID query, and its own get, tag, and untag actions. The
+generic workflow can therefore load complete domain-owned state, authorize mutations, and respect
+each domain's lifecycle without importing private models or persistence.
 
 That seam has to hold on reads as well as writes. Domain DAOs hydrate tags for a candidate set in
 one type-scoped query and within the same transaction, avoiding both inconsistent snapshots and an
@@ -120,14 +121,22 @@ N+1 query per result. Complete-set replacements calculate whether the change nee
 untag permission, or both, then commit the domain mutation and tag delta atomically through the
 ordinary command pipeline.
 
+Cross-domain discovery makes the ownership choice especially visible. `tags show` finds active
+entities carrying one exact tag or any value for a key, while `tags summary` aggregates active use
+by tag and entity type. These queries have tagging-domain Cedar actions of their own. Granting them
+intentionally reveals matching entity types and IDs without reapplying five domains' read policies;
+associations retained for soft-deleted entities remain hidden because each domain decides which IDs
+are active in one bulk query. The distinction is part of the contract, not an accidental shortcut.
+
 Once hydrated, the same tags serve presentation, filtering, and policy without acquiring implicit
 application meaning. A CLI filter can select `tags contains "service=dinner"`, while Cedar can grant
 access with `resource.hasTag("audience")` and `resource.getTag("audience") == "sommelier"`. The
 application reserves neither key; policy gives the metadata meaning where meaning is required.
 
-This lesson will follow one tag from CSV input through canonicalization, centralized persistence,
-domain-owned hydration, Cedar authorization, and two user surfaces. The broader question is how to
-build a feature that crosses every boundary without becoming permission to bypass any of them.
+This lesson will follow seeded tags through canonicalization, centralized persistence,
+domain-owned hydration and lifecycle checks, Cedar authorization, and discovery in both the CLI and
+TUI. The broader question is how to build a feature that crosses every boundary while making each
+intentional disclosure and ownership decision explicit.
 
 ## 10. Test the system that will run
 
