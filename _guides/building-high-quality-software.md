@@ -95,20 +95,30 @@ Mixology ships as one binary with two ways to use it. The CLI handles commands a
 
 That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. The TUI keeps an explicit application session because login persists between messages. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
 
-The TUI makes that separation concrete with an MVVM-like design. Domain view models own their
-presentation state and produce declarative views; the root model owns only application-wide
-navigation, help, and layout. The boundary is behavioral as well as structural. A focused view
-model declares when it owns text input or the back key, so printable global shortcuts do not steal
-keystrokes from a filter or form. Async results carry an entity identity and are accepted only by
-the editor that started them. Saving disables duplicate submission and cancellation until the
-result returns. These small protocols prevent stale messages and root-level conveniences from
-silently corrupting local UI state.
+The TUI makes that separation concrete with an MVVM-like design. Domain view models own typed
+selection, workflow state, commands, and domain-specific rendering. The root model owns
+application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
+as searchable list/detail state, loading, and pane sizing live in `pkg/tui`; forms and dialogs keep
+their own local input behavior. That three-way split matters: sharing presentation machinery does
+not move domain decisions into a generic base view model, while every domain does not have to
+rediscover the same viewport arithmetic.
+
+The boundary is behavioral as well as structural. Every view model returns an `Interaction`
+contract declaring whether its current state captures printable text or handles the back key, so
+global shortcuts do not steal keystrokes from a filter, form, or dialog. A newly selected view is
+sized before its initialization command can yield a renderable result, avoiding a transient
+unbounded frame. Async results carry an entity identity and are accepted only by the editor that
+started them. Saving disables duplicate submission and cancellation until the result returns.
+These small protocols make input, message, and viewport ownership explicit instead of depending on
+event-loop timing.
 
 That is the useful part of MVVM here, rather than a literal translation of a XAML framework:
 separate the visible rendering from testable presentation logic, keep view models independent of a
 concrete view, and use explicit messages for coordination. Reusable components such as the tag
-editor stay narrow instead of allowing one large view model to accumulate navigation, persistence,
-rendering, and every command. The approach follows the separation and testability described in
+editor stay narrow, while shared mechanics are extracted only after multiple views establish the
+same need. This keeps one large view model from accumulating navigation, persistence, rendering,
+and every command without creating a framework in anticipation of reuse. The approach follows the
+separation and testability described in
 [CODE Magazine's MVVM overview](https://www.codemag.com/article/1201081/Windows-Phone-7-Development-Using-MVVM-and-Unit-Testing),
 while treating its warning about duplicated or oversized presentation logic as an architectural
 constraint.
@@ -116,9 +126,9 @@ constraint.
 Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into bstore while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
 
 The lesson will implement the same operation from both existing surfaces, exercise the TUI through
-its real Bubble Tea program, then sketch a third surface. If that third surface requires new
-business logic—or a TUI interaction can only be tested by bypassing its message loop—the exercise
-has found a leak.
+its real Bubble Tea program, and render after every message and generated command before sketching
+a third surface. If that third surface requires new business logic—or a TUI interaction can only be
+tested by bypassing its message loop—the exercise has found a leak.
 
 ## 9. Give cross-cutting features an owned seam
 
