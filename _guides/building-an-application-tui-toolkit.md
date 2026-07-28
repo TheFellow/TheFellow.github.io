@@ -224,4 +224,3 @@ The toolkit should grow when a proven application pattern deserves one implement
 That limit keeps the code legible. The shell is an application shell, not a plugin host. `ListDetail` is a standard Mixology presentation, not a universal layout engine. Forms and dialogs expose the options their consumers have earned. Domain view models remain ordinary structs that can be read from top to bottom.
 
 The result is richer than “some Bubble Tea screens” and smaller than an MVVM framework. It is a testable application interface with an enforced dependency direction, a common interaction language, and enough standard presentation to make the whole terminal experience feel intentional. CODE Framework supplied proven questions about shells, standard views, and presentation reuse. Bubble Tea supplied the runtime. Go made every dependency and message concrete. Mixology keeps only the parts that solve problems the application actually has.
-
