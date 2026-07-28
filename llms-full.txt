@@ -912,7 +912,7 @@ $$
 \longrightarrow \mathbb{R}^{r \times c}.
 $$
 
-Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. Trying to multiply it by a `Matrix<D4,D2>` does not reach the loop that computes the result; the program does not type-check.
+Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. By contrast, multiplying a `Matrix<D2,D3>` by a `Matrix<D4,D2>` does not compile, so the result-computing loop never runs.
 
 Transpose, addition, and vectors extend the same idea. Transpose witnesses $\mathbb{R}^{r \times c} \to \mathbb{R}^{c \times r}$. Addition requires both operands to inhabit the same $\mathbb{R}^{r \times c}$. A column vector is simply a matrix with `D1` as its column dimension, so matrix-vector multiplication needs no separate rule.
 
