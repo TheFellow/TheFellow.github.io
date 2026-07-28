@@ -110,4 +110,4 @@ $$
 
 The satisfying part of the experiment is that those multiplicities and charges are computed from the algebra rather than stored in a lookup table. The program also checks the fermionic anti-commutation relations on a sample state, connecting the ladder-operator notation back to executable operations.
 
-This script is a guided computational model, not a derivation of the full Standard Model. It does not construct all particles, interactions, gauge structure, or physical predictions. Its narrower value is to make a surprising mathematical proposal inspectable: the non-associativity of the octonions is not an obstacle to work around, but the feature that makes ordered operator composition meaningful.
+This guided computational model makes a surprising mathematical proposal inspectable. The non-associativity of the octonions becomes the feature that makes ordered operator composition meaningful, while F# turns the algebraic structure into an executable demonstration whose intermediate steps can be examined directly.

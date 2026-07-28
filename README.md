@@ -32,6 +32,12 @@ compact index, page-level context, and full text remain synchronized.
 
 Every content file begins with YAML front matter. Copy a nearby file when adding a project, guide, or note so the theme applies the right layout automatically.
 
+## Writing style
+
+- Use commas, periods, parentheses, or semicolons instead of em dashes.
+- Describe demonstrations in terms of what they explore and show. Do not add defensive disclaimers about what they are not or compare their scope with a production system unless that distinction is essential to understanding the work.
+- Match the direct, first-person engineering voice of the surrounding content. Prefer concrete descriptions over promotional or generic explanatory language.
+
 ## Changing the theme appearance
 
 The site uses the free [Minimal Mistakes](https://jekyllthemes.io/theme/minimal-mistakes) theme, pinned as a remote theme so its source does not have to be copied into this repository.

@@ -15,7 +15,7 @@ $$
 
 Most compact matrix types store those dimensions only in their data, so an invalid multiplication remains possible until a runtime check rejects it.
 
-The [complete F# gist](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) is an experiment in moving that check into the type system. It is deliberately small—just enough matrix arithmetic to show where types can carry the proof.
+The [complete F# gist](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) is an experiment in moving that check into the type system. Its compact set of matrix operations shows where types can carry the proof.
 
 ## Dimensions that occupy no space
 
@@ -83,8 +83,8 @@ $$
 
 Changing the operator changes the parse, and therefore the result.
 
-## What this buys
+## What the types demonstrate
 
-This is not a full linear-algebra library. The constructors do not verify that the runtime array shape agrees with the phantom markers, and a production design would need to protect that boundary. The useful part is the shape of the API: validate once when constructing a value, then let function signatures preserve dimensional correctness through the rest of the computation.
+The shape of the API is the interesting part of the demonstration. Phantom markers make dimensional requirements explicit, and function signatures preserve those dimensions from one operation to the next. Matrix expressions then carry their own evidence of dimensional correctness as the compiler checks them.
 
 The larger lesson is that a type parameter does not need runtime data to be useful. It can carry a fact from one operation to the next, turning a comment such as “these dimensions must agree” into a constraint the compiler enforces.
