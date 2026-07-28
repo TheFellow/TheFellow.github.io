@@ -12,7 +12,7 @@ Source: [https://thefellow.github.io/](https://thefellow.github.io/)
 
 ## Full content
 
-- [Projects](/projects/) ([Markdown](/projects.md)): Open-source projects with design context beyond their repository READMEs.
-- [Guides](/guides/) ([Markdown](/guides.md)): Long-form guides turning architecture principles into testable working designs.
-- [Notes](/notes/) ([Markdown](/notes.md)): Focused observations drawn from active projects, experiments, and research.
-- [Resume](/resume/) ([Markdown](/resume.md)): Staff-level experience in authorization, architecture, delivery, and technical leadership.
+- [Projects](/projects.md): Open-source projects with design context beyond their repository READMEs.
+- [Guides](/guides.md): Long-form guides turning architecture principles into testable working designs.
+- [Notes](/notes.md): Focused observations drawn from active projects, experiments, and research.
+- [Resume](/resume.md): Staff-level experience in authorization, architecture, delivery, and technical leadership.

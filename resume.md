@@ -71,7 +71,7 @@ Facilitated week-long AI engineering bootcamps focused on [techniques developed 
 
 Build and maintain [F#kYeah](https://github.com/TheFellow/fkyeah), an open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor).
 
-Apply [Semport](https://factory.strongdm.ai/techniques/semport) within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the [engineering lessons](/notes/porting-cedar-semantics-from-go-to-dotnet/) from that work.
+Apply [Semport](https://factory.strongdm.ai/techniques/semport) within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the [engineering lessons](/notes/porting-cedar-semantics-from-go-to-dotnet.md) from that work.
 
 2010–2022
 **Applied Underwriters**

@@ -16,10 +16,10 @@ Source: [https://thefellow.github.io/](https://thefellow.github.io/)
 
 ## Full content
 
-- [Projects](/projects/) ([Markdown](/projects.md)): Open-source projects with design context beyond their repository READMEs.
-- [Guides](/guides/) ([Markdown](/guides.md)): Long-form guides turning architecture principles into testable working designs.
-- [Notes](/notes/) ([Markdown](/notes.md)): Focused observations drawn from active projects, experiments, and research.
-- [Resume](/resume/) ([Markdown](/resume.md)): Staff-level experience in authorization, architecture, delivery, and technical leadership.
+- [Projects](/projects.md): Open-source projects with design context beyond their repository READMEs.
+- [Guides](/guides.md): Long-form guides turning architecture principles into testable working designs.
+- [Notes](/notes.md): Focused observations drawn from active projects, experiments, and research.
+- [Resume](/resume.md): Staff-level experience in authorization, architecture, delivery, and technical leadership.
 
 
 ---
@@ -40,8 +40,8 @@ Source: [https://thefellow.github.io/guides/](https://thefellow.github.io/guides
 
 Long-form tutorials connect design principles to running code. Each series is structured so written chapters can stand on their own and later pair with video walkthroughs.
 
-- [Building High-Quality Software](/guides/building-high-quality-software/) ([Markdown](/guides/building-high-quality-software.md)): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
-- [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/) ([Markdown](/guides/building-an-application-tui-toolkit.md)): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
+- [Building High-Quality Software](/guides/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
+- [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
 
 
 ---
@@ -375,7 +375,7 @@ This lesson will trace one policy through command authorization, a single-entity
 
 ## 8. Keep surfaces at the edge
 
-For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/).
+For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md).
 
 Mixology ships as one binary with two ways to use it. The CLI handles commands and formatted output; `--tui` launches a persistent Bubble Tea application. Both call the same domain modules and enter the same pipeline.
 
@@ -501,10 +501,10 @@ Source: [https://thefellow.github.io/notes/](https://thefellow.github.io/notes/)
 
 Shorter technical observations, implementation details, and working ideas drawn from the projects and guide series.
 
-- [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](/notes/elliptic-curve-cryptography-from-first-principles/) ([Markdown](/notes/elliptic-curve-cryptography-from-first-principles.md)): A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication.
-- [Octonions and the Standard Model in F#](/notes/octonions-and-the-standard-model-in-fsharp/) ([Markdown](/notes/octonions-and-the-standard-model-in-fsharp.md)): An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern.
-- [Type-Safe Linear Algebra in F#](/notes/type-safe-linear-algebra-in-fsharp/) ([Markdown](/notes/type-safe-linear-algebra-in-fsharp.md)): Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time.
-- [Porting Cedar from Go to .NET: Semantics Before Syntax](/notes/porting-cedar-semantics-from-go-to-dotnet/) ([Markdown](/notes/porting-cedar-semantics-from-go-to-dotnet.md)): How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
+- [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](/notes/elliptic-curve-cryptography-from-first-principles.md): A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication.
+- [Octonions and the Standard Model in F#](/notes/octonions-and-the-standard-model-in-fsharp.md): An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern.
+- [Type-Safe Linear Algebra in F#](/notes/type-safe-linear-algebra-in-fsharp.md): Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time.
+- [Porting Cedar from Go to .NET: Semantics Before Syntax](/notes/porting-cedar-semantics-from-go-to-dotnet.md): How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
 
 
 ---
@@ -912,7 +912,7 @@ $$
 \longrightarrow \mathbb{R}^{r \times c}.
 $$
 
-Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. Trying to multiply it by a `Matrix<D4,D2>` does not reach the loop that computes the result; the program does not type-check.
+Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. By contrast, multiplying a `Matrix<D2,D3>` by a `Matrix<D4,D2>` does not compile, so the result-computing loop never runs.
 
 Transpose, addition, and vectors extend the same idea. Transpose witnesses $\mathbb{R}^{r \times c} \to \mathbb{R}^{c \times r}$. Addition requires both operands to inhabit the same $\mathbb{R}^{r \times c}$. A column vector is simply a matrix with `D1` as its column dimension, so matrix-vector multiplication needs no separate rule.
 
@@ -978,13 +978,13 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), beginning with the repositories pinned on my profile and expanding to smaller tools worth explaining. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
-- [go-modular-monolith](/projects/go-modular-monolith/) ([Markdown](/projects/go-modular-monolith.md)): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
-- [cedar-dotnet](/projects/cedar-dotnet/) ([Markdown](/projects/cedar-dotnet.md)): A C# implementation of the Cedar policy language and authorization model.
-- [arch-lint](/projects/arch-lint/) ([Markdown](/projects/arch-lint.md)): A Go analyzer that turns architectural dependency rules into build-time checks.
-- [F#kYeah](/projects/fkyeah/) ([Markdown](/projects/fkyeah.md)): An F# pipeline engine for multi-stage AI workflows described as executable graphs.
-- [enumstruct](/projects/enumstruct/) ([Markdown](/projects/enumstruct.md)): A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.
-- [fluid](/projects/fluid/) ([Markdown](/projects/fluid.md)): An interactive 2D fluid simulator and visualization playground written in Go.
-- [ValueTypes](/projects/value-types/) ([Markdown](/projects/value-types.md)): A small C# library for expressing structural equality in domain-driven value objects.
+- [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
+- [cedar-dotnet](/projects/cedar-dotnet.md): A C# implementation of the Cedar policy language and authorization model.
+- [arch-lint](/projects/arch-lint.md): A Go analyzer that turns architectural dependency rules into build-time checks.
+- [F#kYeah](/projects/fkyeah.md): An F# pipeline engine for multi-stage AI workflows described as executable graphs.
+- [enumstruct](/projects/enumstruct.md): A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.
+- [fluid](/projects/fluid.md): An interactive 2D fluid simulator and visualization playground written in Go.
+- [ValueTypes](/projects/value-types.md): A small C# library for expressing structural equality in domain-driven value objects.
 
 
 ---
@@ -1159,7 +1159,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 ## Full content
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
-[Preview the tutorial series](/guides/building-high-quality-software/)
+[Preview the tutorial series](/guides/building-high-quality-software.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. It deliberately uses one binary and one embedded database, leaving the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -1169,7 +1169,7 @@ Deleting an ingredient makes those claims concrete. The command can affect inven
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
-The [Building High-Quality Software preview](/guides/building-high-quality-software/) follows that
+The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
 shared operation pipeline, transactional events, focused code generation, error contracts,
 policy-based authorization, interchangeable CLI and MVVM-style TUI surfaces, an owned seam for
@@ -1283,7 +1283,7 @@ Facilitated week-long AI engineering bootcamps focused on [techniques developed 
 
 Build and maintain [F#kYeah](https://github.com/TheFellow/fkyeah), an open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor).
 
-Apply [Semport](https://factory.strongdm.ai/techniques/semport) within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the [engineering lessons](/notes/porting-cedar-semantics-from-go-to-dotnet/) from that work.
+Apply [Semport](https://factory.strongdm.ai/techniques/semport) within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the [engineering lessons](/notes/porting-cedar-semantics-from-go-to-dotnet.md) from that work.
 
 2010–2022
 **Applied Underwriters**

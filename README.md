@@ -2,6 +2,9 @@
 
 Source for Ryan Harris's project notes, tutorials, and resume site at <https://thefellow.github.io>.
 
+Repository-wide content, routing, and validation rules for automated contributors
+are codified in [`AGENTS.md`](AGENTS.md).
+
 ## Editing content
 
 - Project commentary is in `_projects/`.
