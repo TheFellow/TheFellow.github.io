@@ -1,6 +1,6 @@
 ---
 title: "Octonions and the Standard Model in F#"
-date: 2026-07-28 12:01:00 -0700
+date: 2026-03-06 18:10:26 -0800
 permalink: /notes/octonions-and-the-standard-model-in-fsharp/
 excerpt: "An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern."
 tags: ["F#", "Octonions", "Mathematical Physics"]
