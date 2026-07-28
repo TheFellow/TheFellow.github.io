@@ -2,7 +2,7 @@
 
 > Generated full-text companion to [llms.txt](https://thefellow.github.io/llms.txt). Prefer the compact index when context is limited.
 
-<!-- Generated from https://thefellow.github.io/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Engineering in public
 
@@ -24,7 +24,7 @@ Source: [https://thefellow.github.io/](https://thefellow.github.io/)
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/guides/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Guides
 
@@ -46,7 +46,7 @@ Long-form tutorials connect design principles to running code. Each series is st
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/building-an-application-tui-toolkit/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/guides/building-an-application-tui-toolkit/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building an Application TUI Toolkit
 
@@ -281,7 +281,7 @@ The result is richer than “some Bubble Tea screens” and smaller than an MVVM
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/building-high-quality-software/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/guides/building-high-quality-software/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building High-Quality Software
 
@@ -485,7 +485,7 @@ For now, the repository is the complete worked example. Start with the [ingredie
 
 ---
 
-<!-- Generated from https://thefellow.github.io/notes/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/notes/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Notes
 
@@ -507,7 +507,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/ by scripts/generate_llm_content.py; do not edit. -->
 
 # From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles
 
@@ -682,7 +682,7 @@ For the complete specifications and a production API example, see:
 
 ---
 
-<!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Porting Cedar from Go to .NET: Semantics Before Syntax
 
@@ -739,7 +739,7 @@ The result should feel native to .NET without drifting from Cedar's contract: sh
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Projects
 
@@ -766,7 +766,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/arch-lint/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/arch-lint/ by scripts/generate_llm_content.py; do not edit. -->
 
 # arch-lint
 
@@ -797,7 +797,7 @@ Read the configuration schema and matcher first, then see `.arch-lint.yaml` in [
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/cedar-dotnet/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/cedar-dotnet/ by scripts/generate_llm_content.py; do not edit. -->
 
 # cedar-dotnet
 
@@ -828,7 +828,7 @@ The quickest path through the code is the README authorization example, followed
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/enumstruct/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/enumstruct/ by scripts/generate_llm_content.py; do not edit. -->
 
 # enumstruct
 
@@ -859,7 +859,7 @@ Start with `pkg/enumstruct/analyzer.go`, then use the focused cases under `pkg/e
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/fkyeah/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/fkyeah/ by scripts/generate_llm_content.py; do not edit. -->
 
 # F#kYeah
 
@@ -890,7 +890,7 @@ Start with a small graph under `examples`, use the schema command to understand 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/fluid/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/fluid/ by scripts/generate_llm_content.py; do not edit. -->
 
 # fluid
 
@@ -921,7 +921,7 @@ Begin with the grid and simulation-step code, then trace how the visualization m
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/go-modular-monolith/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/go-modular-monolith/ by scripts/generate_llm_content.py; do not edit. -->
 
 # go-modular-monolith
 
@@ -956,7 +956,7 @@ simple becomes simplistic.
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/value-types/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/value-types/ by scripts/generate_llm_content.py; do not edit. -->
 
 # ValueTypes
 
@@ -987,7 +987,7 @@ Start with the repository's `Value` and `ValueBase` types, then follow the tests
 
 ---
 
-<!-- Generated from https://thefellow.github.io/resume/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/resume/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Resume
 

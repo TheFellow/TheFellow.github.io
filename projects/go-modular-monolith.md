@@ -1,4 +1,4 @@
-<!-- Generated from https://thefellow.github.io/projects/go-modular-monolith/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/projects/go-modular-monolith/ by scripts/generate_llm_content.py; do not edit. -->
 
 # go-modular-monolith
 

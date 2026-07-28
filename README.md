@@ -20,8 +20,12 @@ append `.md` (the home page is `/index.md`). The site also publishes a concise
 After editing or adding content, regenerate these files and commit the result:
 
 ```sh
-ruby scripts/generate_llm_content.rb
+uv run scripts/generate_llm_content.py
 ```
+
+The script uses [PEP 723](https://peps.python.org/pep-0723/) inline metadata,
+so `uv` creates an isolated environment and installs its declared dependency
+without requiring a project-wide Python environment.
 
 The generator fails if a public source page lacks a pyramid summary, so the
 compact index, page-level context, and full text remain synchronized.

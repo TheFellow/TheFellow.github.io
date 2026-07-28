@@ -1,4 +1,4 @@
-<!-- Generated from https://thefellow.github.io/guides/building-high-quality-software/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/guides/building-high-quality-software/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building High-Quality Software
 

@@ -1,4 +1,4 @@
-<!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Porting Cedar from Go to .NET: Semantics Before Syntax
 

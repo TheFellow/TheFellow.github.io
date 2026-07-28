@@ -1,4 +1,4 @@
-<!-- Generated from https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/ by scripts/generate_llm_content.py; do not edit. -->
 
 # From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles
 

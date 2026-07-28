@@ -1,4 +1,4 @@
-<!-- Generated from https://thefellow.github.io/guides/building-an-application-tui-toolkit/ by scripts/generate_llm_content.rb; do not edit. -->
+<!-- Generated from https://thefellow.github.io/guides/building-an-application-tui-toolkit/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building an Application TUI Toolkit
 
