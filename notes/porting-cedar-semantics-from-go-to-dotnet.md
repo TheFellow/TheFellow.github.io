@@ -1,10 +1,16 @@
----
-title: "Porting Cedar from Go to .NET: Semantics Before Syntax"
-date: 2026-03-27 12:00:00 -0700
-permalink: /notes/porting-cedar-semantics-from-go-to-dotnet/
-excerpt: "How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast."
-tags: ["Cedar", "Authorization", "Go", ".NET"]
----
+<!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.rb; do not edit. -->
+
+# Porting Cedar from Go to .NET: Semantics Before Syntax
+
+Source: [https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/](https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/)
+
+## Pyramid summary
+
+- **~2 words:** Semantic porting
+- **~8 words:** How conformance tests preserve Cedar behavior while C# APIs remain idiomatic.
+- **Expanded:** How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
+
+## Full content
 
 I contribute to [cedar-go](https://github.com/cedar-policy/cedar-go), the Cedar project's official Go implementation. [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet) is my C# implementation, shaped for the .NET ecosystem while preserving the same semantics.
 

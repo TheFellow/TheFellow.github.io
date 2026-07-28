@@ -1,0 +1,33 @@
+# Ryan Harris — Engineering in Public
+
+> Software architecture, developer tools, authorization, and AI workflow notes connected to working open-source projects.
+
+This is the compact level of a three-level context pyramid: follow a Markdown link for a page summary and full article, or use [llms-full.txt](https://thefellow.github.io/llms-full.txt) for the complete site corpus. Source repositories are linked from their project pages.
+
+## Start Here
+
+- [Engineering in public](https://thefellow.github.io/index.md): Public notes connecting software architecture to working projects.
+- [Guides](https://thefellow.github.io/guides.md): Long-form guides turning architecture principles into testable working designs.
+- [Notes](https://thefellow.github.io/notes.md): Focused observations drawn from active projects, experiments, and research.
+- [Projects](https://thefellow.github.io/projects.md): Open-source projects with design context beyond their repository READMEs.
+- [Resume](https://thefellow.github.io/resume.md): Staff-level experience in authorization, architecture, delivery, and technical leadership.
+
+## Projects
+
+- [arch-lint](https://thefellow.github.io/projects/arch-lint.md): A Go analyzer that makes architectural dependency rules build-time checks.
+- [cedar-dotnet](https://thefellow.github.io/projects/cedar-dotnet.md): A semantic Cedar implementation with idiomatic C# APIs and conformance tests.
+- [enumstruct](https://thefellow.github.io/projects/enumstruct.md): A Go analyzer that detects missing pointer-union cases as models evolve.
+- [F#kYeah](https://thefellow.github.io/projects/fkyeah.md): An F# engine executing inspectable, resumable AI workflows from DOT graphs.
+- [fluid](https://thefellow.github.io/projects/fluid.md): An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics.
+- [go-modular-monolith](https://thefellow.github.io/projects/go-modular-monolith.md): A Go reference app enforcing modular boundaries and cross-cutting concerns.
+- [ValueTypes](https://thefellow.github.io/projects/value-types.md): A compact C# library for modeling value-object equality and composition.
+
+## Guides
+
+- [Building an Application TUI Toolkit](https://thefellow.github.io/guides/building-an-application-tui-toolkit.md): How Mixology adapts MVVM and Elm ideas into an application toolkit.
+- [Building High-Quality Software](https://thefellow.github.io/guides/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
+
+## Notes
+
+- [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles.md): A ground-up route through groups, finite fields, curves, and signatures.
+- [Porting Cedar from Go to .NET: Semantics Before Syntax](https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet.md): How conformance tests preserve Cedar behavior while C# APIs remain idiomatic.

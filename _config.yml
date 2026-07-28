@@ -38,6 +38,8 @@ footer:
       url: "https://github.com/TheFellow"
 
 collections:
+  site_pages:
+    output: true
   projects:
     output: true
     permalink: /projects/:path/
@@ -72,7 +74,7 @@ defaults:
       toc_sticky: true
   - scope:
       path: ""
-      type: pages
+      type: site_pages
     values:
       layout: single
       author_profile: true
@@ -94,3 +96,4 @@ exclude:
   - Gemfile.lock
   - README.md
   - vendor
+  - scripts
