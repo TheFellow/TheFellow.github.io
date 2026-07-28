@@ -503,6 +503,8 @@ Shorter technical observations, implementation details, and working ideas drawn 
 
 - [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](/notes/elliptic-curve-cryptography-from-first-principles/) ([Markdown](/notes/elliptic-curve-cryptography-from-first-principles.md)): A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication.
 - [Porting Cedar from Go to .NET: Semantics Before Syntax](/notes/porting-cedar-semantics-from-go-to-dotnet/) ([Markdown](/notes/porting-cedar-semantics-from-go-to-dotnet.md)): How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
+- [Octonions and the Standard Model in F#](/notes/octonions-and-the-standard-model-in-fsharp/) ([Markdown](/notes/octonions-and-the-standard-model-in-fsharp.md)): An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern.
+- [Type-Safe Linear Algebra in F#](/notes/type-safe-linear-algebra-in-fsharp/) ([Markdown](/notes/type-safe-linear-algebra-in-fsharp.md)): Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time.
 
 
 ---
@@ -682,6 +684,76 @@ For the complete specifications and a production API example, see:
 
 ---
 
+<!-- Generated from https://thefellow.github.io/notes/octonions-and-the-standard-model-in-fsharp/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Octonions and the Standard Model in F#
+
+Source: [https://thefellow.github.io/notes/octonions-and-the-standard-model-in-fsharp/](https://thefellow.github.io/notes/octonions-and-the-standard-model-in-fsharp/)
+
+## Pyramid summary
+
+- **~2 words:** Executable octonions
+- **~8 words:** Non-associative multiplication produces a Furey-inspired eight-state particle pattern.
+- **Expanded:** An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern.
+
+## Full content
+
+There is a familiar progression through the normed division algebras. The real numbers give way to complex numbers, then quaternions, then octonions. Each step doubles the dimension and gives up a familiar law: complex numbers cannot be ordered like the reals, quaternion multiplication is not commutative, and octonion multiplication is not associative.
+
+The [complete F# gist](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc070da71633) turns that last loss into something executable. It starts with the octonion multiplication table, then follows a small part of Cohl Furey's algebraic approach toward the `1 + 3 + 3 + 1` pattern of one Standard Model generation.
+
+## Build the multiplication table
+
+An octonion has one real component and seven imaginary components. The gist stores those eight coefficients in an array and derives multiplication from seven oriented triples in the Fano plane:
+
+```fsharp
+let private fano =
+    [| (1,2,3); (1,4,5); (1,7,6); (2,4,6);
+       (2,5,7); (3,4,7); (3,6,5) |]
+```
+
+For a triple `(i,j,k)`, the orientation gives `e_i e_j = e_k`; reversing the order changes the sign. Together with `e_i² = -1`, those few rules fill the complete basis multiplication table.
+
+Once multiplication is code, the unusual laws become tests rather than slogans. The script prints `e₁e₂` beside `e₂e₁`, compares `(e₁e₂)e₄` with `e₁(e₂e₄)`, and computes their associator. It then checks the weaker structure octonions retain: alternativity, the Moufang identities, and multiplicativity of the norm.
+
+F# makes grouping unusually easy to see. The `*.` operator associates left and the `^*` operator associates right, so these two expressions use the same multiplication function but construct different syntax trees:
+
+```fsharp
+e1 *. e2 *. e4   // (e1 e2) e4
+e1 ^* e2 ^* e4   // e1 (e2 e4)
+```
+
+For octonions, that is an observable distinction.
+
+## Add complex coefficients
+
+The next layer is the complexified octonions, `ℂ⊗𝕆`. The implementation represents an element as a real octonion plus an imaginary octonion. The external complex unit commutes with the octonion units, while octonion multiplication keeps its non-associative behavior.
+
+From there the script introduces the idempotent
+
+```text
+ω = ½(1 + ie₇)
+```
+
+and three pairs of ladder operators. The annihilation operators kill `ω`; their conjugates act as creation operators. Applying zero, one, two, or three creation operators produces eight states:
+
+```text
+1 + 3 + 3 + 1
+```
+
+Because multiplication is non-associative, “apply one operator after another” must mean composed left multiplication: `a · (b · x)`. Replacing that chain with `(ab) · x` would silently change the construction. The parentheses are part of the model.
+
+## Read charge from the number operator
+
+The final step applies a number operator assembled from the ladder operators. Its eigenvalues on the eight states are `0`, `1`, `2`, and `3`, with multiplicities `1`, `3`, `3`, and `1`. Dividing by three gives the charge pattern used to label the states as a neutrino, three anti-down colors, three up colors, and a positron.
+
+The satisfying part of the experiment is that those multiplicities and charges are computed from the algebra rather than stored in a lookup table. The program also checks the fermionic anti-commutation relations on a sample state, connecting the ladder-operator notation back to executable operations.
+
+This script is a guided computational model, not a derivation of the full Standard Model. It does not construct all particles, interactions, gauge structure, or physical predictions. Its narrower value is to make a surprising mathematical proposal inspectable: the non-associativity of the octonions is not an obstacle to work around, but the feature that makes ordered operator composition meaningful.
+
+
+---
+
 <!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Porting Cedar from Go to .NET: Semantics Before Syntax
@@ -735,6 +807,68 @@ The result should feel native to .NET without drifting from Cedar's contract: sh
 - [cedar-go](https://github.com/cedar-policy/cedar-go) for the official Go implementation and upstream development.
 - [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet) for the C# API, conformance suite, and semantic-porting workflow.
 - [`cedar-dotnet/semport`](https://github.com/TheFellow/cedar-dotnet/tree/main/semport) for the pipeline that follows upstream changes.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/notes/type-safe-linear-algebra-in-fsharp/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Type-Safe Linear Algebra in F#
+
+Source: [https://thefellow.github.io/notes/type-safe-linear-algebra-in-fsharp/](https://thefellow.github.io/notes/type-safe-linear-algebra-in-fsharp/)
+
+## Pyramid summary
+
+- **~2 words:** Typed dimensions
+- **~8 words:** Phantom dimensions make invalid matrix arithmetic fail at compile time.
+- **Expanded:** Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time.
+
+## Full content
+
+Matrix multiplication has a small but important precondition: the left matrix's column count must equal the right matrix's row count. Most compact matrix types store those dimensions only in their data, so an invalid multiplication remains possible until a runtime check rejects it.
+
+The [complete F# gist](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) is an experiment in moving that check into the type system. It is deliberately small—just enough matrix arithmetic to show where types can carry the proof.
+
+## Dimensions that occupy no space
+
+The example begins with four marker types, `D1` through `D4`, and a matrix whose row and column dimensions are type parameters:
+
+```fsharp
+type Matrix<'rows, 'cols> = { Data: float[,] }
+type Vec<'n> = Matrix<'n, D1>
+```
+
+These are phantom dimensions. A value of `D2` is never stored in a matrix, and the runtime representation is still a two-dimensional array. The markers exist only while the compiler checks the program.
+
+That makes the signature of multiplication do the interesting work:
+
+```fsharp
+let mul (a: Matrix<'r,'k>)
+        (b: Matrix<'k,'c>) : Matrix<'r,'c>
+```
+
+The shared `'k` says that the inner dimensions must be the same. Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. Trying to multiply it by a `Matrix<D4,D2>` does not reach the loop that computes the result; the program does not type-check.
+
+Transpose, addition, and vectors extend the same idea. Transpose swaps the two type parameters. Addition requires both operands to have the same pair. A column vector is simply a matrix with `D1` as its column dimension, so matrix-vector multiplication needs no separate rule.
+
+## Let the expression preserve the proof
+
+Custom operators make the examples read like their algebra. `*.` delegates to matrix multiplication, while `+.` delegates to addition:
+
+```fsharp
+let left = a *. b *. c
+let av : Vec<D2> = a *. v
+```
+
+F# infers every intermediate dimension. In the first expression, `a *. b` must produce something that can be multiplied by `c`. In the second, the declared result type records that a 2-by-3 matrix maps a three-dimensional vector to a two-dimensional one.
+
+The gist also uses the language's operator naming rules to make associativity visible. An operator beginning with `*` associates to the left, while one beginning with `^` associates to the right. Matrix multiplication is associative, so `(A B) C` and `A (B C)` produce the same answer when both are defined. The cross-product example at the end uses the same two spellings to show why grouping still matters for a non-associative operation: changing the operator changes the parse, and therefore the result.
+
+## What this buys
+
+This is not a full linear-algebra library. The constructors do not verify that the runtime array shape agrees with the phantom markers, and a production design would need to protect that boundary. The useful part is the shape of the API: validate once when constructing a value, then let function signatures preserve dimensional correctness through the rest of the computation.
+
+The larger lesson is that a type parameter does not need runtime data to be useful. It can carry a fact from one operation to the next, turning a comment such as “these dimensions must agree” into a constraint the compiler enforces.
 
 
 ---
