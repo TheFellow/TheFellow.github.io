@@ -3,3 +3,11 @@
 <link rel="icon" type="image/png" sizes="16x16" href="{{ '/assets/images/favicon-16x16.png' | relative_url }}">
 <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/apple-touch-icon.png' | relative_url }}">
 
+{% if page.url == '/' %}
+  {% assign markdown_url = '/index.md' %}
+{% else %}
+  {% assign markdown_base = page.url | reverse | remove_first: '/' | reverse %}
+  {% assign markdown_url = markdown_base | append: '.md' %}
+{% endif %}
+<link rel="alternate" type="text/markdown" href="{{ markdown_url | absolute_url }}" title="Markdown version">
+<link rel="alternate" type="text/plain" href="{{ '/llms.txt' | absolute_url }}" title="LLM content index">

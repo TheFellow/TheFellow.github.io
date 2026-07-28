@@ -1,0 +1,1126 @@
+# Ryan Harris — Full Site Context
+
+> Generated full-text companion to [llms.txt](https://thefellow.github.io/llms.txt). Prefer the compact index when context is limited.
+
+<!-- Generated from https://thefellow.github.io/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Engineering in public
+
+Source: [https://thefellow.github.io/](https://thefellow.github.io/)
+
+## Pyramid summary
+
+- **~2 words:** Engineering notes
+- **~8 words:** Public notes connecting software architecture to working projects.
+- **Expanded:** Project commentary, tutorials, technical notes, and professional experience from software engineer Ryan Harris.
+
+## Full content
+
+- [Projects](/projects/) ([Markdown](/projects.md)): Open-source projects with design context beyond their repository READMEs.
+- [Guides](/guides/) ([Markdown](/guides.md)): Long-form guides turning architecture principles into testable working designs.
+- [Notes](/notes/) ([Markdown](/notes.md)): Focused observations drawn from active projects, experiments, and research.
+- [Resume](/resume/) ([Markdown](/resume.md)): Staff-level experience in authorization, architecture, delivery, and technical leadership.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Guides
+
+Source: [https://thefellow.github.io/guides/](https://thefellow.github.io/guides/)
+
+## Pyramid summary
+
+- **~2 words:** Practical guides
+- **~8 words:** Long-form guides turning architecture principles into testable working designs.
+- **Expanded:** Long-form guides turning architecture principles into testable working designs.
+
+## Full content
+
+Long-form tutorials connect design principles to running code. Each series is structured so written chapters can stand on their own and later pair with video walkthroughs.
+
+- [Building High-Quality Software](/guides/building-high-quality-software/) ([Markdown](/guides/building-high-quality-software.md)): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
+- [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/) ([Markdown](/guides/building-an-application-tui-toolkit.md)): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/building-an-application-tui-toolkit/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Building an Application TUI Toolkit
+
+Source: [https://thefellow.github.io/guides/building-an-application-tui-toolkit/](https://thefellow.github.io/guides/building-an-application-tui-toolkit/)
+
+## Pyramid summary
+
+- **~2 words:** Testable TUI
+- **~8 words:** How Mixology adapts MVVM and Elm ideas into an application toolkit.
+- **Expanded:** How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
+
+## Full content
+
+A terminal application can become a pile of `switch` statements surprisingly quickly. The first screen owns a list and a few keys. The second needs a form. Then Escape means “go back” in one place, “close the dialog” in another, and a literal character in a filter. Loading completes after the user has left a screen. Every feature still works, but no one can say with confidence who owns the next message.
+
+[Mixology](https://github.com/TheFellow/go-modular-monolith) takes a different route. Its TUI has a root application shell, domain-owned view models, and a small reusable presentation toolkit. Those choices borrow deliberately from [CODE Framework's standard views and view-models](https://docs.codeframework.io/Standard-Views-and-View--Models), while the program actually runs through [Bubble Tea's implementation of The Elm Architecture](https://github.com/charmbracelet/bubbletea#the-elm-architecture). Go supplies the final shape: interfaces instead of base classes, typed messages instead of binding notifications, explicit constructors instead of runtime discovery, and package rules instead of architectural wishes.
+
+This is not an attempt to build a universal MVVM framework. It is an application toolkit: enough shared vocabulary to make Mixology feel like one product, with domain behavior left where it belongs.
+
+## Two lineages, one deliberate adaptation
+
+CODE Framework is useful here for its application-level ideas. A shell coordinates the experience. Standard views turn recurring business-application layouts into known conventions. View models supply state and actions without knowing a particular visual representation. Shared controls and themes create a common language without requiring every screen to have identical behavior. CODE's [WPF overview](https://docs.codeframework.io/Understanding-WPF) describes that combination of MVVM, standard views, and application infrastructure.
+
+Bubble Tea contributes a different kind of foundation. A model holds state; `Update` consumes a message and returns a new model plus an optional command; `View` renders the current state. Commands perform asynchronous work and return more messages. [Bubbles](https://github.com/charmbracelet/bubbles) demonstrates how smaller models, key maps, help, lists, text inputs, and spinners compose inside that loop.
+
+Mixology uses both, but copies neither literally. It has no XAML, binding engine, `INotifyPropertyChanged`, command base class, or dependency-injection container. A Go view model is an ordinary struct. A change becomes visible because `Update` changes the struct and Bubble Tea calls `View` again. An action is a `tea.Cmd`, and its result is a typed `tea.Msg`.
+
+```mermaid
+flowchart LR
+    Code[CODE ideas<br/>shell + standard views] --> Mix[Mixology TUI]
+    Elm[Bubble Tea / Elm<br/>messages + commands] --> Mix
+    Go[Idiomatic Go<br/>interfaces + packages] --> Mix
+```
+
+Other MVVM libraries have concepts that look similar, but resemblance is not provenance. There is no repository evidence that Prism, Caliburn.Micro, ReactiveUI, or another upstream framework drove this design. CODE Framework and Bubble Tea are the lineages the implementation can support directly.
+
+## The shell owns the application
+
+The [`App` root model](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/app.go) is the terminal equivalent of an application shell. It owns the current route, back stack, cached view models, outer title and status bars, global help, terminal dimensions, and application-wide keys. It also constructs each domain surface explicitly.
+
+That ownership answers questions that otherwise leak into every screen:
+
+- Which view is active, and what was active before it?
+- Should returning to a view preserve its local selection and filter?
+- How much vertical space remains after the title, status, and help areas?
+- Does Escape navigate globally or belong to the current modal interaction?
+- Which help bindings should the footer display now?
+
+Views are initialized lazily and cached in a map. Navigation to an existing view restores its presentation state; a new view is sized before its initialization command can produce a renderable result. The dashboard is deliberately rebuilt when revisited because its summary should be fresh. These are application policies, not responsibilities of a generic list component.
+
+The shell also keeps the application session in one place. Domain surfaces receive that session and call public modules, so CLI and TUI operations travel through the same authorization, transaction, audit, and event pipeline.
+
+## A small view-model contract
+
+Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/views/view.go):
+
+```go
+type ViewModel interface {
+    Init() tea.Cmd
+    Update(tea.Msg) (ViewModel, tea.Cmd)
+    View() string
+    ShortHelp() []key.Binding
+    FullHelp() [][]key.Binding
+    Interaction() Interaction
+}
+```
+
+The first three methods follow Bubble Tea. The help methods let the shell render a consistent footer without knowing a domain's commands. `Interaction` is the application-specific addition:
+
+```go
+type Interaction struct {
+    CapturesText bool
+    HandlesBack  bool
+}
+```
+
+Input ownership changes with state. A list that is filtering captures printable characters. A form or dialog handles Escape itself. A browsing list can leave Escape to the shell. The shell asks the active view before interpreting a global key, which prevents an application shortcut from stealing text or dismissing the wrong layer.
+
+This tiny protocol does work that desktop frameworks often hide in focus systems, routed commands, and modal window ownership. Making it explicit fits a terminal event loop: the active view declares what it owns *now*, and tests can assert the declaration directly.
+
+## Domain surfaces remain domain-owned
+
+Top-level domain view models live below [`app/domains/*/surfaces/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains). Drinks knows how to create a recipe, Menus knows what publishing means, and Orders knows whether completion or cancellation is available. Those decisions do not belong in `pkg/tui` simply because they happen to be triggered by a key.
+
+A typical list view model combines four kinds of state:
+
+- A reusable list/detail model for terminal mechanics.
+- Typed domain selection and detail state.
+- An explicit workflow mode such as browsing, creating, editing, tagging, or confirming deletion.
+- Commands that call public application modules and return typed result messages.
+
+The mode is a small state machine in ordinary Go. It determines which child receives a message, which help is visible, and whether the view owns Back. This is the practical replacement for a collection of visibility bindings and enabled-command expressions.
+
+Commands obtain a fresh operation context when they execute. The long-lived TUI session preserves the authenticated principal, but middleware state such as touched entities and pending events must not leak from one click to the next. A surface therefore calls the session's context factory for each public module operation rather than retaining one mutable middleware context for the lifetime of the screen.
+
+The package boundary is equally important. Surfaces call exported domain modules and queries; they do not reach into a DAO or private command implementation. Presentation logic can coordinate an application operation without becoming another route around the application.
+
+## Standard views, translated into terminal mechanics
+
+CODE Framework's standard views are not copied as a catalog of WPF templates. Their underlying lesson is retained: when several business screens share presentation mechanics, give those mechanics one tested implementation and let each domain supply the meaning.
+
+[`pkg/tui.ListDetail`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/tui/list_detail.go) is the clearest example. It owns:
+
+- Bubbles list configuration, filtering, pagination, and selection.
+- Loading and spinner state.
+- Error presentation.
+- Window sizing and the list/detail pane split.
+- The final horizontal composition of the panes.
+
+It deliberately does not load drinks, decide whether a menu can be published, format an order, or choose what happens after deletion. Its caller retains the command, typed selection, detail renderer, and workflow state.
+
+[`ListItem[T]`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/tui/item.go) completes the adapter. It keeps the real typed domain value while supplying the title, description, and filter text Bubbles expects. A caller does not surrender type safety merely to enter a general list.
+
+That division gives Mixology a standard list/detail language without creating a giant base view model:
+
+```mermaid
+flowchart TD
+    Shell[Application shell] --> VM[Domain view model]
+    VM --> LD[ListDetail mechanics]
+    VM --> API[Public domain module]
+    LD --> LI[Typed ListItem]
+    VM --> Detail[Domain detail rendering]
+```
+
+The abstraction is intentionally opinionated. `ListDetail` implements Mixology's searchable split-pane experience, including its proportions and Bubbles choices. Reusable does not have to mean configurable in every conceivable direction.
+
+## Small controls, explicit dependencies
+
+The rest of [`pkg/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/tui) forms the lower-level toolkit:
+
+- `forms` manages field focus, validation, dirty and submitted state, sizing, and text, number, and select fields.
+- `dialog` implements confirmation and cancellation as messages rather than domain callbacks.
+- `Spinner` owns loading animation and its label.
+- Layout helpers calculate pane and content widths consistently.
+
+These packages depend on Bubble Tea, Bubbles, and Lip Gloss, but not on Mixology's application or domains. Styles and key maps arrive as ordinary constructor values or options. That is both theming and dependency injection in a form natural to Go: no global service locator and no runtime resource lookup.
+
+Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they remain in [`main/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`main/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui/presentation), not beside generic layout arithmetic.
+
+This distinction is the boundary between a toolkit and an accidental framework. `/pkg` contains mechanics that another Bubble Tea application could sensibly reuse. `main/tui` composes those mechanics into Mixology's design language. Domain surfaces add behavior and vocabulary that only their bounded context understands.
+
+## The tag editor shows composition at work
+
+The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/components/tag_editor.go) is reusable across Mixology's domains but intentionally remains an application component. It knows the application session, Cedar entity identity, canonical tag syntax, global styles, and the tagging module. Underneath, it composes the generic form toolkit.
+
+The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, calls the public `Tags.Replace` operation, and returns a `TagsSavedMsg`. It does not mutate its parent view model directly. The parent decides how the successful entity update affects its typed list and detail.
+
+Async ownership matters here. A save result carries the target entity identity, and an editor accepts only results it owns. Duplicate submission and cancellation are disabled while a save is in flight. At the broader tags workspace, asynchronous messages carry a monotonically increasing request ID as well as captured operation and target values. Navigating back invalidates the old generation; a late response is ignored instead of replacing a newer screen.
+
+```mermaid
+sequenceDiagram
+    participant V as View model
+    participant C as tea.Cmd
+    participant A as Public module
+    V->>C: capture request ID + target
+    C->>A: fresh context, run operation
+    A-->>V: typed result message
+    V->>V: accept only current owner/generation
+```
+
+That protocol is easy to miss in a synchronous mock. In a real terminal program, a user can leave a loading screen or begin another operation before the first command returns. Identity and generation make correctness independent of timing.
+
+## One visual language without one universal screen
+
+Consistency comes from several narrow contracts working together:
+
+- The shell always owns the frame, navigation, sizing, status, and help.
+- Every top-level view reports help and current input ownership the same way.
+- Shared styles and keys are injected into reusable controls.
+- List/detail, forms, dialogs, spinners, and layout use established mechanics.
+- Domain view models retain domain actions, modes, typed values, and detail text.
+- Application components such as tag editing can sit between generic controls and domain surfaces.
+
+This gives a newcomer predictable landmarks. A new list surface can reuse loading, filtering, selection, layout, and help conventions, yet it need not pretend that ordering a drink and auditing an operation are the same workflow. Common design is a vocabulary, not a requirement that every sentence be identical.
+
+## Tests follow the ownership boundaries
+
+The toolkit is valuable because each boundary is observable without a live terminal, while important workflows can still be exercised through the real event loop.
+
+At the component level, tests send messages directly to forms, dialogs, list/detail models, layout helpers, and the tag editor. They assert focus changes, validation, emitted messages, loading transitions, widths, and result ownership. Generic tests provide their own styles and keys, which also proves that the toolkit does not require the application theme.
+
+At the view-model level, domain tests construct the production application fixture, drive modes and messages, execute returned commands, and inspect both rendered state and persisted behavior. Typed messages make success, failure, and stale results straightforward to express.
+
+[`pkg/testutil/tuitest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/tuitest) drives a real Bubble Tea program when routing and ordering matter. Rendering after each message and command catches assumptions that a direct `Update` call could hide. Root tests cover navigation, help, terminal resizing, and input ownership through the shell rather than bypassing it.
+
+Rendered text has structure of its own. A table row can fit as plain text and still overflow after cell padding and selection styles are applied; truncating the styled result can expose fragments of an ANSI color sequence instead of readable content. The driver therefore removes valid escape sequences and rejects any malformed styling fragments left behind on every rendered frame. A root test visits every top-level view at minimum and expanded terminal sizes, while focused table tests exercise each result shape across several widths. Width accounting and terminal control data become tested presentation contracts rather than visual details left to manual inspection.
+
+Finally, [cross-surface tag tests](https://github.com/TheFellow/go-modular-monolith/blob/main/main/cli/tags_test.go) perform a mutation through the CLI and observe it through the root TUI, then reverse the direction. The assertion is not that two screens happen to print similar text. It is that both adapters reach the same application behavior and persisted state.
+
+A practical testing ladder is therefore:
+
+1. Test a reusable component with messages and injected dependencies.
+2. Test domain presentation state through its view model and real application fixture.
+3. Use the Bubble Tea driver for shell routing, command ordering, and rendering behavior.
+4. Use cross-surface tests where equivalence between adapters is the contract.
+
+## Make the package boundary executable
+
+Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
+
+Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rule Go cannot infer. One specification prevents `pkg/tui/**` from importing `app/**` or `main/**`, preserving the reusable toolkit boundary. Another prevents domain TUI surfaces from importing domain internals, preserving the public application path even where Go visibility would permit the dependency.
+
+The distinction is worth stating plainly:
+
+- Go `internal` enforces visibility for an entire parent directory tree.
+- Arch-lint enforces the intended layers *within* that permitted tree.
+
+Both rules are tested by introducing a violating import and confirming that lint fails. Architecture becomes part of the feedback loop rather than a comment that can drift away from the imports.
+
+## How to add a surface without weakening the design
+
+Start with the domain behavior, not a generic abstraction. Add a view model below the domain's `surfaces/tui` package and have it call the public module with a fresh context. Implement the small shell contract, declare interaction ownership for each mode, and return typed messages from commands.
+
+Reuse `ListDetail`, a form, or a dialog when the mechanics fit. Supply the application styles and keys from the composition edge. Keep the selected value typed, and keep domain-specific actions and detail rendering in the domain surface. Register the view explicitly in the shell so navigation and construction remain searchable.
+
+When new repetition appears, ask three questions before moving it into `/pkg`:
+
+1. Is this terminal interaction machinery, or does it encode application or domain policy?
+2. Can its styles, keys, and results be explicit values and messages?
+3. Can it be tested without constructing Mixology's application session?
+
+Three independent uses are stronger evidence than one ambitious component. A shared application component may also be the correct destination: the tag editor is valuable across domains without pretending that canonical tags are a generic concern for every TUI.
+
+## The useful limit
+
+The toolkit should grow when a proven application pattern deserves one implementation. It should not grow merely because a framework could have another extension point.
+
+That limit keeps the code legible. The shell is an application shell, not a plugin host. `ListDetail` is a standard Mixology presentation, not a universal layout engine. Forms and dialogs expose the options their consumers have earned. Domain view models remain ordinary structs that can be read from top to bottom.
+
+The result is richer than “some Bubble Tea screens” and smaller than an MVVM framework. It is a testable application interface with an enforced dependency direction, a common interaction language, and enough standard presentation to make the whole terminal experience feel intentional. CODE Framework supplied proven questions about shells, standard views, and presentation reuse. Bubble Tea supplied the runtime. Go made every dependency and message concrete. Mixology keeps only the parts that solve problems the application actually has.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/building-high-quality-software/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Building High-Quality Software
+
+Source: [https://thefellow.github.io/guides/building-high-quality-software/](https://thefellow.github.io/guides/building-high-quality-software/)
+
+## Pyramid summary
+
+- **~2 words:** Architecture lessons
+- **~8 words:** Eleven lessons that turn architectural intent into executable software constraints.
+- **Expanded:** A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
+
+## Full content
+
+**Series status:** this is a preview of a planned written and video series. Follow its development in [GitHub issue #23](https://github.com/TheFellow/go-modular-monolith/issues/23), or [explore the application](https://github.com/TheFellow/go-modular-monolith) now.
+
+Architecture is easy to describe after the fact. Draw a few boxes, give each one a careful name, and the dependencies all point in the right direction. The harder question is what happens on an ordinary Tuesday, when the fastest way to finish a feature is to reach across one of those boxes.
+
+[Mixology](https://github.com/TheFellow/go-modular-monolith) is a cocktail-bar application built to examine that question. The domain is intentionally approachable: ingredients become drinks, drinks appear on menus, menus receive orders, and inventory changes as those orders are completed. The interesting part is not the cocktail bar. It is the small set of rules that lets those parts cooperate without slowly becoming one undifferentiated package.
+
+Consider deleting an ingredient. The ingredient may be held in inventory, used by several drinks, and exposed through several menus. One command has to remove or retire all of that dependent state. It must check whether the actor is allowed to do so, leave an audit trail, and roll everything back if any step fails. That is enough behavior to make the architecture real.
+
+In Mixology, the request enters the same application pipeline whether it came from the CLI or TUI. The ingredient module loads the current entity, Cedar authorizes the transition, and the command records an `IngredientDeleted` event. Generated dispatch sends that event to the Drinks, Inventory, and Menus domains. Every handler works through its own persistence boundary, all of them share the original transaction, and none can emit another event. One integration test exercises the whole path.
+
+That single operation contains most of the series. The lessons below pull it apart, one decision at a time.
+
+## 1. A boundary should resist the shortest path
+
+A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
+
+Mixology treats the repository's dependency rules as source code. Seven declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, keep one domain out of another domain's internals, and protect events, models, queries, and handlers from dependencies that would compromise their roles. The patterns are broad enough to cover a new domain without adding another matrix of package names.
+
+The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
+
+## 2. Let the compiler carry the rules it can
+
+Some mistakes are too cheap to make. A `DrinkID` and a `MenuID` may have the same representation, but accepting either in the same parameter gives a bug somewhere to hide. Mixology generates distinct ID types from one [entity definition](https://github.com/TheFellow/go-modular-monolith/blob/main/app/kernel/entity/entities.go), so exchanging them accidentally is a compile error rather than a test case someone has to remember.
+
+The more interesting example is an ability that is missing. Commands receive a full middleware context and may add domain events. Event handlers receive the narrower [`HandlerContext`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/context.go), which exposes the transaction, principal, and audit tracking but has no `AddEvent` method. A handler can update its own domain in response to an event; it cannot start an unbounded chain of new events.
+
+Not every business rule belongs in a type, and forcing all of them there can make a design harder to read. This lesson is about recognizing the rules that do: distinctions and capabilities the compiler can enforce continuously, at almost no cost to the next person changing the system.
+
+## 3. Make one path through the application
+
+Logging, metrics, authorization, transaction management, event dispatch, and audit recording apply to almost every operation. Repeating them in every handler would not make the behavior explicit. It would make the differences between handlers accidental.
+
+Mixology composes those concerns into a shared [middleware pipeline](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/chains.go). A domain method describes the operation it needs to perform; the pipeline supplies the surrounding guarantees. For a command, [`RunCommand`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/run.go) loads the current resource inside the unit of work, authorizes it, invokes the command, and authorizes the resulting resource before anything commits.
+
+That second authorization check matters. Permission is sometimes a property of a transition, not merely an action name. A policy may allow someone to edit a draft menu without allowing the same edit to produce a published menu. Looking at both sides gives policy enough information to express that distinction while the command remains concerned with menu behavior.
+
+The tutorial will follow a command and a query through the chain and then remove one middleware at a time. The shape of the pipeline is less important than the property it creates: every surface and every domain operation gets the same application semantics by default.
+
+## 4. Use events to coordinate, not to escape
+
+Events are often introduced with a broker, eventual consistency, retries, and a new set of operational problems. None of those is required to benefit from event-shaped coordination.
+
+`IngredientDeleted` carries the ingredient state that changed. The generated dispatcher gives it independently to Drinks, Inventory, and Menus. The Drinks handler discovers recipes that use the ingredient, while the Menus handler discovers menus containing those drinks. Before any handler mutates data, every handler with a preparation phase runs its [`Handling`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/menus/handlers/ingredient-deleted.go) method. Only then does dispatch begin applying changes. This prevents the first mutation from erasing information a later handler still needs to query.
+
+All of that work remains inside the transaction opened for the original delete. If removing an affected menu item fails, the ingredient, inventory, drinks, menus, and audit record return to their previous state together. The event separates knowledge between domains without giving up immediate consistency.
+
+This is a deliberately constrained event model. Handlers are leaf nodes, event payloads carry useful state, and delivery is in-process. The lesson will explore what those constraints buy, where fat events become uncomfortable, and which pressures would justify crossing the boundary into asynchronous messaging.
+
+## 5. Generate repetition, preserve decisions
+
+Code generation can remove work, or it can conceal a framework no one wants to debug. The useful dividing line is whether the generated code contains decisions.
+
+Mixology's generators handle structure: routing event types to handlers, assembling per-domain Cedar policies, producing typed entity IDs, and keeping error constructors aligned with their test assertions. The decisions remain in ordinary Go, Cedar, and a few small definitions. The generated output is intentionally plain enough to open and read.
+
+The dispatcher makes the tradeoff visible. Its generator scans event and handler declarations, then writes a direct type switch in [`dispatcher_gen.go`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/dispatcher/dispatcher_gen.go). There is no runtime registry to misconfigure and no reflection in the dispatch path. Adding a handler changes the declarations; regeneration produces the boring wiring.
+
+This lesson will build one of those generators from its inputs to its output. The broader subject is not how to generate more code. It is how to identify repetition that should have one source of truth without moving the system's meaning into a template.
+
+## 6. Treat errors as part of the application contract
+
+`"not found"` looks adequate until a second surface needs to interpret it. Then a string quietly becomes an API, and every caller invents its own way to parse or replace it.
+
+Mixology defines a small error vocabulary in [`pkg/errors`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/errors). A `NotFound` error is one application fact with several possible presentations: an HTTP 404, a gRPC `NotFound` code, CLI exit code 20, or a warning style in the TUI. Domain code chooses the fact. The surface chooses how that fact appears in its protocol.
+
+The shared payload also separates diagnostic detail from a message safe to show to a user. Generated constructors and assertions keep the common cases easy enough that developers do not fall back to matching strings.
+
+The eventual lesson will start with a single failing lookup and carry it through each representation. Errors are control flow at the point of failure, part of the public contract at a boundary, and presentation at the edge. Keeping those roles distinct makes all three easier to reason about.
+
+## 7. Make authorization readable on its own
+
+Authorization hidden inside business logic has two failure modes. It is difficult to audit because the rule is scattered through control flow, and it is difficult to reuse because every new surface has to reach the same branches in the same way.
+
+Each Mixology domain keeps its permission rules in [Cedar policies](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/drinks/authz). Go code supplies a principal, action, and resource; Cedar decides whether the relationship is allowed. A reviewer can read what a bartender or sommelier may do without first reconstructing a command handler.
+
+The surrounding application still has important choices to make. A denied command returns a permission error. A list query silently omits entities the principal cannot see and keeps reading until it fills a page, so a hidden item neither fails the request nor creates mysteriously short pages. Counts and cursors must describe the visible result, not leak the existence of filtered data.
+
+This lesson will trace one policy through command authorization, a single-entity query, and a paged list. The interesting part is not merely adopting a policy language. It is defining consistent authorization semantics everywhere data enters or leaves the application.
+
+## 8. Keep surfaces at the edge
+
+For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/).
+
+Mixology ships as one binary with two ways to use it. The CLI handles commands and formatted output; `--tui` launches a persistent Bubble Tea application. Both call the same domain modules and enter the same pipeline.
+
+That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. The TUI keeps an explicit application session because login persists between messages. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
+
+The TUI makes that separation concrete with an MVVM-like design. Domain view models own typed
+selection, workflow state, commands, and domain-specific rendering. The root model owns
+application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
+as searchable list/detail state, loading, and pane sizing live in `pkg/tui`; forms and dialogs keep
+their own local input behavior. That three-way split matters: sharing presentation machinery does
+not move domain decisions into a generic base view model, while every domain does not have to
+rediscover the same viewport arithmetic.
+
+The boundary is behavioral as well as structural. Every view model returns an `Interaction`
+contract declaring whether its current state captures printable text or handles the back key, so
+global shortcuts do not steal keystrokes from a filter, form, or dialog. A newly selected view is
+sized before its initialization command can yield a renderable result, avoiding a transient
+unbounded frame. Async results carry an entity identity and are accepted only by the editor that
+started them. Saving disables duplicate submission and cancellation until the result returns.
+These small protocols make input, message, and viewport ownership explicit instead of depending on
+event-loop timing.
+
+That is the useful part of MVVM here, rather than a literal translation of a XAML framework:
+separate the visible rendering from testable presentation logic, keep view models independent of a
+concrete view, and use explicit messages for coordination. Reusable components such as the tag
+editor stay narrow, while shared mechanics are extracted only after multiple views establish the
+same need. This keeps one large view model from accumulating navigation, persistence, rendering,
+and every command without creating a framework in anticipation of reuse. The approach follows the
+separation and testability described in
+[CODE Magazine's MVVM overview](https://www.codemag.com/article/1201081/Windows-Phone-7-Development-Using-MVVM-and-Unit-Testing),
+while treating its warning about duplicated or oversized presentation logic as an architectural
+constraint.
+
+Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into bstore while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
+
+The lesson will implement the same operation from both existing surfaces, exercise the TUI through
+its real Bubble Tea program, and render after every message and generated command before sketching
+a third surface. If that third surface requires new business logic—or a TUI interaction can only be
+tested by bypassing its message loop—the exercise has found a leak.
+
+## 9. Give cross-cutting features an owned seam
+
+Tags belong to drinks, ingredients, inventory, menus, and orders, but they are not business state
+owned by any one of those domains. Copying tag persistence and commands into all five modules
+would make one feature five implementations. Letting a central tagging package reach into every
+domain's private storage would erase the boundaries the application is meant to preserve.
+
+Mixology splits the responsibility instead. The shared [`tag` value
+type](https://github.com/TheFellow/go-modular-monolith/tree/main/app/kernel/tag) defines canonical
+labels and key/value tags. The [tagging
+domain](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/tagging) owns their
+polymorphic associations and the uniform add, remove, list, and replace workflows. Each operational
+domain registers a loader, a bulk active-ID query, and its own get, tag, and untag actions. The
+generic workflow can therefore load complete domain-owned state, authorize mutations, and respect
+each domain's lifecycle without importing private models or persistence.
+
+That seam has to hold on reads as well as writes. Domain DAOs hydrate tags for a candidate set in
+one type-scoped query and within the same transaction, avoiding both inconsistent snapshots and an
+N+1 query per result. Complete-set replacements calculate whether the change needs tag permission,
+untag permission, or both, then commit the domain mutation and tag delta atomically through the
+ordinary command pipeline.
+
+Cross-domain discovery makes the ownership choice especially visible. `tags show` finds active
+entities carrying one exact tag or any value for a key, while `tags summary` aggregates active use
+by tag and entity type. These queries have tagging-domain Cedar actions of their own. Granting them
+intentionally reveals matching entity types and IDs without reapplying five domains' read policies;
+associations retained for soft-deleted entities remain hidden because each domain decides which IDs
+are active in one bulk query. The distinction is part of the contract, not an accidental shortcut.
+
+Once hydrated, the same tags serve presentation, filtering, and policy without acquiring implicit
+application meaning. A CLI filter can select `tags contains "service=dinner"`, while Cedar can grant
+access with `resource.hasTag("audience")` and `resource.getTag("audience") == "sommelier"`. The
+application reserves neither key; policy gives the metadata meaning where meaning is required.
+
+This lesson will follow seeded tags through canonicalization, centralized persistence,
+domain-owned hydration and lifecycle checks, Cedar authorization, and discovery and editing in
+both the CLI and TUI. Cross-surface end-to-end tests assert equivalent persisted results rather
+than merely similar output. The broader question is how to build a feature that crosses every
+boundary while making each intentional disclosure and ownership decision explicit.
+
+## 10. Test the system that will run
+
+An integration test becomes expensive when the application depends on a collection of remote infrastructure. In a one-process application with an embedded database, exercising the real stack can be the default.
+
+[`testutil.NewFixture`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/testutil/fixture.go) creates an isolated database and constructs the production application around it. Tests call public module methods with real authorization, transactions, dispatch, handlers, audit recording, and in-memory metrics. Builders make domain setup concise, but they do not bypass the application to insert convenient rows.
+
+The ingredient deletion test is only a few dozen lines. It creates an ingredient, inventory, a drink, and a published menu; deletes the ingredient; then observes that inventory and the drink are gone and the menu no longer contains it. That test is compact because the architecture is already doing the orchestration. It does not recreate that orchestration with mocks.
+
+This lesson will use the same fixture at three scales: a focused permission check, a cross-domain behavior test, and an audit assertion that names every touched entity. The aim is not to argue that every test should be an integration test. It is to keep the real path fast and accessible enough that the most important guarantees can be tested together.
+
+## 11. Spend complexity only once the problem exists
+
+Mixology has bounded contexts, policies, events, multiple surfaces, metrics, and transactional coordination. It also has one process and one embedded bstore database. There is no broker, service mesh, deployment orchestrator, or distributed transaction protocol.
+
+That combination is the point. A modular monolith is not a refusal to draw boundaries. It is a way to make those boundaries useful before paying the cost of putting a network between them. A failed event handler can roll back the originating command because both share a transaction. A test can construct the entire system because the entire system fits in a process.
+
+The closing lesson will ask what evidence would justify changing that arrangement. Independent scaling, deployment ownership, fault isolation, or durability requirements may eventually outweigh the guarantees of a local transaction. If that day comes, enforced package boundaries and explicit events provide better seams than a monolith held together by convention.
+
+Simple does not mean unfinished. It means every piece of complexity can point to the problem that earned it.
+
+## Where the series will go next
+
+The finished chapters will slow these ideas down. Each will begin with a failure mode, walk a small route through the repository, and end with an experiment that changes the code so the design can push back. They will also spend time on the limits: when the technique stops fitting, what it costs, and what a different system might choose instead.
+
+For now, the repository is the complete worked example. Start with the [ingredient deletion test](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/ingredients/delete_test.go), follow the event into the generated dispatcher, and see how far one ordinary operation travels without dissolving the boundaries around it.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/notes/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Notes
+
+Source: [https://thefellow.github.io/notes/](https://thefellow.github.io/notes/)
+
+## Pyramid summary
+
+- **~2 words:** Technical notes
+- **~8 words:** Focused observations drawn from active projects, experiments, and research.
+- **Expanded:** Focused observations drawn from active projects, experiments, and research.
+
+## Full content
+
+Shorter technical observations, implementation details, and working ideas drawn from the projects and guide series.
+
+- [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](/notes/elliptic-curve-cryptography-from-first-principles/) ([Markdown](/notes/elliptic-curve-cryptography-from-first-principles.md)): A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication.
+- [Porting Cedar from Go to .NET: Semantics Before Syntax](/notes/porting-cedar-semantics-from-go-to-dotnet/) ([Markdown](/notes/porting-cedar-semantics-from-go-to-dotnet.md)): How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/ by scripts/generate_llm_content.py; do not edit. -->
+
+# From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles
+
+Source: [https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/](https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles/)
+
+## Pyramid summary
+
+- **~2 words:** ECDSA foundations
+- **~8 words:** A ground-up route through groups, finite fields, curves, and signatures.
+- **Expanded:** A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication.
+
+## Full content
+
+Elliptic-curve cryptography is a form of public-key cryptography. At the API level, signing and verification can look like black boxes. At the mathematical level, the notation can become dense before it explains anything useful.
+
+The goal here is to take a route between those extremes. We will build ECDSA one layer at a time: groups, finite fields, elliptic-curve point addition, scalar multiplication, and finally the signature algorithm itself. By the end, a verifier's ability to check a signature without learning the private key should emerge naturally from the arithmetic.
+
+## Begin with the group operation
+
+Elliptic-curve cryptography depends on groups, but the formal definition feels more remote than the idea itself. Start with ordinary addition and the claim that zero is the unique additive identity. If `a` and `b` are both identities, then `a = a + b = b`. That short proof introduces the identity using an operation we already understand.
+
+A group is a set with an operation that has four useful guarantees:
+
+1. combining two members produces another member of the set;
+2. how successive operations are grouped does not change the result;
+3. an identity leaves a value unchanged; and
+4. every value has an inverse that returns it to the identity.
+
+The integers under addition already provide most of the intuition. Zero is the identity, the inverse of `5` is `-5`, and repeated addition gives scalar multiplication. The vocabulary is abstract, but the behavior is ordinary.
+
+The next useful idea is a cyclic group. Starting from one generator and repeatedly applying the operation enumerates the group. Compare addition modulo `4` with addition modulo `5` to make the role of prime order visible. In a cyclic group of prime order, every element except the identity is a generator.
+
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="/assets/images/notes/ecc/cyclic-group-z5.png" alt="A pentagon representing addition modulo 5 alongside the sequences generated by each nonzero element.">
+  <figcaption>The prime-order group Z₅ makes every nonzero element a generator.</figcaption>
+</figure>
+
+With that framing, elliptic-curve points become another collection of values governed by predictable rules for combination.
+
+## Move arithmetic into a finite field
+
+Cryptographic curves don't use the smooth, continuous number line shown in the familiar curve diagrams. Their coordinates live in a finite field.
+
+For a prime `p`, arithmetic in the field `F_p` wraps modulo `p`. Addition, subtraction, and multiplication stay inside a finite set of values. Division is multiplication by a modular inverse. Every nonzero value has such an inverse because `p` is prime.
+
+This is the point where modular arithmetic stops being a programming trick and becomes part of the design. The field gives us a finite space with enough algebraic structure to define point addition consistently. Fermat's little theorem supplies a practical way to find multiplicative inverses, so division remains available.
+
+Now consider `secp256k1`, the curve defined by `y² = x³ + 7`. Its production field is far too large to plot usefully, so use the same equation over `F₂₂₃` first. There is no continuous arc between the resulting points, but the same algebraic addition rules still apply.
+
+<figure class="ecc-figure ecc-figure--square">
+  <img src="/assets/images/notes/ecc/original/secp256k1-f223.png" alt="The points satisfying the secp256k1 equation over the finite field modulo 223.">
+  <figcaption>The secp256k1 equation over F₂₂₃ produces a finite set of points; the familiar smooth curve disappears.</figcaption>
+</figure>
+
+## Turn curve points into a group
+
+Over the real numbers, the point-addition construction is visual. Draw a line through two points on the curve. It intersects the curve at a third point. Reflect that point across the horizontal axis, and the result is the sum.
+
+The special cases complete the operation:
+
+- a tangent line handles adding a point to itself;
+- a vertical line sends a point and its inverse to the point at infinity; and
+- the point at infinity acts as the identity.
+
+<figure class="ecc-figure">
+  <img src="/assets/images/notes/ecc/curve-addition.png" alt="A line through points A and B intersects an elliptic curve at C, which is reflected across the horizontal axis to obtain A plus B.">
+  <figcaption>Point addition: intersect at C, then reflect to obtain A+B.</figcaption>
+</figure>
+
+Over a finite field, the picture becomes a set of dots, so the geometry is no longer something we literally draw between coordinates. The formulas survive. Slope, intersection, and reflection are computed with field arithmetic, including modular inverses.
+
+The points are not merely coordinates satisfying an equation. Together with point addition, they form a group. That gives us an identity, inverses, addition, and repeated addition, which is exactly the machinery public-key cryptography needs.
+
+## Scalar multiplication creates the useful asymmetry
+
+Choose a public base point `G` with a large prime order `n`. Let `e` be the private scalar and `P` the public point:
+
+```text
+P = eG
+```
+
+Here `eG` means adding `G` to itself `e` times, although real implementations use much faster algorithms. A point on the `F₂₂₃` example makes the first few results of repeated addition concrete.
+
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="/assets/images/notes/ecc/original/generated-points.png" alt="The first seven scalar multiples of the point 47 comma 71 on secp256k1 over the field modulo 223.">
+  <figcaption>Scalar multiplication is repeated point addition over the toy field.</figcaption>
+</figure>
+
+Computing `P` from `e` and `G` is efficient. Recovering `e` from `G` and `P` is the elliptic-curve discrete logarithm problem.
+
+That difference is the security boundary. The public key is a point everyone may know. The private key is the scalar that produces it. Properly selected curves and key sizes make recovering that scalar computationally infeasible with known classical methods.
+
+At this point, the public-key construction requires no new kind of object, only a new use for repeated group addition.
+
+## ECDSA is arranged so verification reconstructs the same point
+
+ECDSA adds a message hash and a fresh per-signature scalar. Let `z` be an integer derived from the message digest, and let `k` be a secret nonce selected for this signature.
+
+Signing follows this outline:
+
+1. Compute the point `R = kG`.
+2. Let `r` be the x-coordinate of `R`, reduced modulo `n`.
+3. Compute `s = k⁻¹(z + re) mod n`.
+4. Publish `(r, s)` as the signature.
+
+Define the verification scalars `u` and `v`:
+
+```text
+u = z/s mod n
+v = r/s mod n
+X = uG + vP
+```
+
+The signature is valid when the x-coordinate of `X`, reduced modulo `n`, equals `r`.
+
+The formulas can look arbitrary until the substitutions are written out. Since `P = eG`:
+
+```text
+X = zs⁻¹G + rs⁻¹eG
+  = (z + re)s⁻¹G
+  = kG
+```
+
+The verifier reconstructs the same point the signer uses without knowing either `e` or `k`. This cancellation is the payoff. The preceding layers reveal these few lines as group arithmetic.
+
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="/assets/images/notes/ecc/ecdsa-verification.png" alt="A verification flow that calculates u and v, reconstructs the point R, and compares its x-coordinate to r.">
+  <figcaption>The verification recipe reconstructs R and checks that its x-coordinate is r.</figcaption>
+</figure>
+
+## The nonce is part of the secret
+
+The private key isn't the only value that must remain protected. The nonce `k` must be secret, unpredictable, and never reused with the same private key.
+
+If two messages are signed with the same `k`, their signatures share enough algebraic structure to recover the nonce and then the private key. Biased or partially exposed nonces can also be dangerous. This is why production ECDSA implementations deserve the same scrutiny around randomness and side channels as they receive around curve selection.
+
+<figure class="ecc-figure ecc-figure--compact">
+  <img src="/assets/images/notes/ecc/nonce-reuse.png" alt="A derivation of the private key e from two signatures that reused the same nonce k.">
+  <figcaption>Reusing k makes the private key an algebraic consequence of two signatures.</figcaption>
+</figure>
+
+This exact failure enabled the [2010 PlayStation 3 compromise](https://arstechnica.com/gaming/2010/12/ps3-hacked-through-poor-implementation-of-cryptography/). It also gives us a broader engineering lesson. A value described as temporary may still carry the full security weight of a long-lived credential. Lifetime and sensitivity are different properties.
+
+## Why the layers matter
+
+The point is larger than one signature algorithm. Each abstraction must earn its place in the stack.
+
+Each layer answers one question and introduces the vocabulary needed for the next:
+
+- groups explain the required behavior of an operation;
+- finite fields supply a closed arithmetic system;
+- elliptic curves supply a useful group of points;
+- scalar multiplication produces a public value from a private scalar; and
+- ECDSA combines those pieces so a signature can be verified publicly.
+
+Skipping a layer makes the final formula shorter on the page but harder to understand. Spending time on every theorem has the opposite problem. The useful path preserves the dependency chain while choosing the smallest example that makes each dependency concrete.
+
+Start with the behavior a design needs, introduce the mechanism that provides it, and keep the connections visible. Good abstractions compress an idea after it is understood; they don't hide the idea before it has been examined.
+
+## The practical boundary
+
+Understanding ECDSA is valuable. Implementing it for production is a separate matter.
+
+Real cryptographic libraries must address constant-time operations, secure nonce generation, validation of points and parameters, serialization rules, malformed input, and many other details that a conceptual walkthrough intentionally omits. Application code should rely on maintained, reviewed implementations of the algorithm.
+
+For the complete specifications and a production API example, see:
+
+- [NIST FIPS 186-5, Digital Signature Standard](https://csrc.nist.gov/pubs/fips/186-5/final)
+- [SEC 1: Elliptic Curve Cryptography](https://www.secg.org/sec1-v2.pdf)
+- [Go's `crypto/ecdsa` package](https://pkg.go.dev/crypto/ecdsa)
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Porting Cedar from Go to .NET: Semantics Before Syntax
+
+Source: [https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/](https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet/)
+
+## Pyramid summary
+
+- **~2 words:** Semantic porting
+- **~8 words:** How conformance tests preserve Cedar behavior while C# APIs remain idiomatic.
+- **Expanded:** How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
+
+## Full content
+
+I contribute to [cedar-go](https://github.com/cedar-policy/cedar-go), the Cedar project's official Go implementation. [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet) is my C# implementation, shaped for the .NET ecosystem while preserving the same semantics.
+
+## A semantic dependency
+
+cedar-dotnet doesn't wrap a Go binary or call cedar-go at runtime. The projects share the Cedar model, including policies, entities, schemas, requests, authorization decisions, and serialization contracts, but each implementation owns its language-facing API.
+
+A direct transliteration would preserve the wrong things. Go package boundaries, error-return conventions, and type patterns are not automatically good C# APIs. The port instead uses C# records, interfaces, collections, exceptions, and builders where they make the model clearer, while preserving the behavior that applications and policy authors depend on.
+
+The useful question is not “does this C# file resemble the Go file?” It is “given the same Cedar input, do both implementations reach the same result?”
+
+## Correctness first, then performance
+
+The first obligation is behavioral correctness. Recent work has included accepting annotations without values, handling cyclic entity-type parent declarations, supporting shorthand common-type names in schema JSON, rejecting IPv6 zone identifiers, and correctly classifying IPv4-mapped IPv6 addresses. These cases may look small in isolation, but each closes a gap where valid input could fail or invalid input could slip through.
+
+Only after that behavior is pinned down by tests does optimization make sense. Benchmarks can then identify expensive paths without making performance a matter of guesswork. One recent pass cached compiled policy evaluators, removed allocations from common evaluator results, replaced LINQ in hot paths, and used stack allocation while hashing. Depending on the scenario, those changes made authorization up to 12 times faster and reduced allocations by as much as 98 percent, with the full test suite still passing.
+
+That ordering matters: tests establish what the implementation must do, and benchmarks show where it can do the same work more efficiently. Performance work is valuable only while the behavioral contract remains intact.
+
+## Conformance is the shared language
+
+Source code is a useful reference, but tests are a better agreement. At the time of writing, cedar-dotnet runs 124,000 cases from the official Cedar conformance corpus alongside 2,462 project tests: 126,462 tests in total. The corpus is also exercised by cedar-go and the Rust reference implementation.
+
+This gives the port an external definition of success. Parser choices, AST shapes, and public APIs can remain idiomatic to C#, while authorization and validation behavior are checked against the same scenarios as the other implementations.
+
+It also makes upstream work more actionable. A semantic change in cedar-go should lead to a focused question: which behavior changed, which corpus or unit cases demonstrate it, and what is the most natural way to express that behavior in C#?
+
+## Keeping pace without copying blindly
+
+cedar-dotnet tracks cedar-go through a daily semantic-porting pipeline. The pipeline analyzes upstream commits, identifies behaviorally relevant changes, and ports them while respecting C# idioms. It is described as a DOT workflow and executed with [F#kYeah](https://github.com/TheFellow/fkyeah), the pipeline engine that is also featured on this site.
+
+Automation helps with attention, not judgment. An upstream commit can mix refactoring, tests, API changes, and new semantics. The important work is separating those concerns and deciding what the .NET implementation should adopt, adapt, or ignore.
+
+The result should feel native to .NET without drifting from Cedar's contract: shared behavior first, deliberate API and performance work on top.
+
+## Where to look
+
+- [cedar-go](https://github.com/cedar-policy/cedar-go) for the official Go implementation and upstream development.
+- [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet) for the C# API, conformance suite, and semantic-porting workflow.
+- [`cedar-dotnet/semport`](https://github.com/TheFellow/cedar-dotnet/tree/main/semport) for the pipeline that follows upstream changes.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Projects
+
+Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/projects/)
+
+## Pyramid summary
+
+- **~2 words:** Project catalog
+- **~8 words:** Open-source projects with design context beyond their repository READMEs.
+- **Expanded:** Open-source projects with design context beyond their repository READMEs.
+
+## Full content
+
+These are selected projects from [my GitHub work](https://github.com/TheFellow), beginning with the repositories pinned on my profile and expanding to smaller tools worth explaining. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
+
+- [go-modular-monolith](/projects/go-modular-monolith/) ([Markdown](/projects/go-modular-monolith.md)): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
+- [cedar-dotnet](/projects/cedar-dotnet/) ([Markdown](/projects/cedar-dotnet.md)): A C# implementation of the Cedar policy language and authorization model.
+- [arch-lint](/projects/arch-lint/) ([Markdown](/projects/arch-lint.md)): A Go analyzer that turns architectural dependency rules into build-time checks.
+- [F#kYeah](/projects/fkyeah/) ([Markdown](/projects/fkyeah.md)): An F# pipeline engine for multi-stage AI workflows described as executable graphs.
+- [enumstruct](/projects/enumstruct/) ([Markdown](/projects/enumstruct.md)): A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.
+- [fluid](/projects/fluid/) ([Markdown](/projects/fluid.md)): An interactive 2D fluid simulator and visualization playground written in Go.
+- [ValueTypes](/projects/value-types/) ([Markdown](/projects/value-types.md)): A small C# library for expressing structural equality in domain-driven value objects.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/arch-lint/ by scripts/generate_llm_content.py; do not edit. -->
+
+# arch-lint
+
+Source: [https://thefellow.github.io/projects/arch-lint/](https://thefellow.github.io/projects/arch-lint/)
+
+## Pyramid summary
+
+- **~2 words:** Enforced boundaries
+- **~8 words:** A Go analyzer that makes architectural dependency rules build-time checks.
+- **Expanded:** A Go analyzer that turns architectural dependency rules into build-time checks.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/arch-lint)
+
+Architecture diagrams and conventions are useful, but they drift when nothing checks them. arch-lint makes package-boundary rules executable: a YAML specification selects packages, forbids dependency patterns, and records narrowly scoped exceptions or exemptions.
+
+Glob captures move arch-lint beyond a simple deny list. Rules can express relationships such as “one module must not import another module's internals” without spelling out every module pair. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
+
+### Why it is worth exploring
+
+- It demonstrates architecture as an automatically tested property of a repository.
+- Its pattern language balances broad rules with explicit, reviewable exceptions.
+- It is used by the Mixology modular-monolith sample, showing the rules at work in a real codebase.
+
+Read the configuration schema and matcher first, then see `.arch-lint.yaml` in [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith) for a real rule set.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/cedar-dotnet/ by scripts/generate_llm_content.py; do not edit. -->
+
+# cedar-dotnet
+
+Source: [https://thefellow.github.io/projects/cedar-dotnet/](https://thefellow.github.io/projects/cedar-dotnet/)
+
+## Pyramid summary
+
+- **~2 words:** Cedar for .NET
+- **~8 words:** A semantic Cedar implementation with idiomatic C# APIs and conformance tests.
+- **Expanded:** A C# implementation of the Cedar policy language and authorization model.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/cedar-dotnet)
+
+cedar-dotnet is a full semantic port of Cedar's policy language and authorization model into the .NET ecosystem. Applications can parse policies, construct them through an AST, load entity graphs, and evaluate authorization requests entirely in C#.
+
+Keeping policy separate from application code gives the project much of its practical value. Permissions become independently readable and auditable data while the application supplies principals, actions, resources, and context. The AST-building API also gives strongly typed code a route to generate policies without assembling policy text by hand.
+
+### Why it is worth exploring
+
+- It shows how to port behavior across language ecosystems while preserving the source model's semantics.
+- The parser, AST, evaluator, entity graph, and diagnostics form a substantial language-tooling case study.
+- It offers .NET applications an authorization approach that keeps policy decisions out of business-logic conditionals.
+
+The quickest path through the code is the README authorization example, followed by the policy parser and authorization engine under `src`.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/enumstruct/ by scripts/generate_llm_content.py; do not edit. -->
+
+# enumstruct
+
+Source: [https://thefellow.github.io/projects/enumstruct/](https://thefellow.github.io/projects/enumstruct/)
+
+## Pyramid summary
+
+- **~2 words:** Exhaustive unions
+- **~8 words:** A Go analyzer that detects missing pointer-union cases as models evolve.
+- **Expanded:** A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/enumstruct)
+
+enumstruct closes a type-safety gap that appears when a “one of these” value is represented as a struct whose fields are all pointers. GraphQL generators commonly use this shape for union-like inputs. When a generator adds a field, an existing nil-check switch still compiles, even if it silently forgets the new variant.
+
+The analyzer makes that switch exhaustive. Types can opt in through a source annotation or configuration, which also covers generated and imported models. It recognizes real-world nil-check forms, reports duplicate cases, and uses Go analysis facts so declarations retain their identity across package boundaries.
+
+### Why it is worth exploring
+
+- It turns a limitation of generated models into a build-time guarantee without replacing those models.
+- Strict and lenient modes make the meaning of a `default` case explicit instead of guessing intent.
+- The analyzer is deliberately narrow, making its AST and `go/types` reasoning approachable for readers learning Go static analysis.
+
+Start with `pkg/enumstruct/analyzer.go`, then use the focused cases under `pkg/enumstruct/testdata/src` to see how missing, duplicate, cross-package, suppressed, and alternate nil-check forms are handled.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/fkyeah/ by scripts/generate_llm_content.py; do not edit. -->
+
+# F#kYeah
+
+Source: [https://thefellow.github.io/projects/fkyeah/](https://thefellow.github.io/projects/fkyeah/)
+
+## Pyramid summary
+
+- **~2 words:** Agent pipelines
+- **~8 words:** An F# engine executing inspectable, resumable AI workflows from DOT graphs.
+- **Expanded:** An F# pipeline engine for multi-stage AI workflows described as executable graphs.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/fkyeah)
+
+F#kYeah implements the StrongDM Attractor specifications as a DOT-driven pipeline runner. A graph describes stages, transitions, conditions, retries, human gates, and tool execution; the engine runs that graph against multiple LLM providers and checkpoints progress so interrupted workflows can resume.
+
+DOT is a strong fit because it keeps control flow declarative and inspectable. A workflow can be rendered as a diagram, validated before execution, and versioned as text. F# adds a second layer of clarity: discriminated unions and pattern matching are natural tools for representing stage types and execution outcomes that should be handled exhaustively.
+
+### Why it is worth exploring
+
+- It models agent workflows as inspectable programs with explicit control flow.
+- Simulation, validation, checkpoints, and conformance tests make workflow behavior testable without spending model tokens on every iteration.
+- The unified model client separates pipeline semantics from any single provider.
+
+Start with a small graph under `examples`, use the schema command to understand its attributes, and then follow graph parsing into the execution engine.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/fluid/ by scripts/generate_llm_content.py; do not edit. -->
+
+# fluid
+
+Source: [https://thefellow.github.io/projects/fluid/](https://thefellow.github.io/projects/fluid/)
+
+## Pyramid summary
+
+- **~2 words:** Fluid simulation
+- **~8 words:** An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics.
+- **Expanded:** An interactive 2D fluid simulator and visualization playground written in Go.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/fluid)
+
+fluid is an interactive Eulerian fluid simulation built on a staggered grid. It combines semi-Lagrangian advection with optional BFECC correction and exposes the solver through visual modes for smoke, pressure, velocity magnitude, and vorticity.
+
+Live controls turn the numerical method into an effective learning tool. Walls, forces, sources, sinks, particles, border conditions, and presets can all be changed while the simulation runs. Toggling BFECC or vorticity confinement exposes tradeoffs such as numerical diffusion directly in the simulation.
+
+### Why it is worth exploring
+
+- It connects numerical techniques to immediate visual feedback.
+- Multiple presets, including jet flow, a lid-driven cavity, and a Kármán vortex street, exercise the same solver under different conditions.
+- The controls make it a useful test bench for comparing stability, sharpness, and performance choices.
+
+Begin with the grid and simulation-step code, then trace how the visualization modes turn solver fields into something inspectable.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/go-modular-monolith/ by scripts/generate_llm_content.py; do not edit. -->
+
+# go-modular-monolith
+
+Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thefellow.github.io/projects/go-modular-monolith/)
+
+## Pyramid summary
+
+- **~2 words:** Executable architecture
+- **~8 words:** A Go reference app enforcing modular boundaries and cross-cutting concerns.
+- **Expanded:** A Go reference application that makes modular boundaries and cross-cutting concerns executable.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/go-modular-monolith)
+[Preview the tutorial series](/guides/building-high-quality-software/)
+
+go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. It deliberately uses one binary and one embedded database, leaving the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
+
+The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI or TUI.
+
+Deleting an ingredient makes those claims concrete. The command can affect inventory, every drink that uses the ingredient, and every menu carrying those drinks. Independent event handlers prepare their work before any of them mutate state, then apply the complete change inside the originating transaction. If one handler fails, the ingredient and all of its dependent state remain untouched. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
+
+That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
+
+The [Building High-Quality Software preview](/guides/building-high-quality-software/) follows that
+thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
+shared operation pipeline, transactional events, focused code generation, error contracts,
+policy-based authorization, interchangeable CLI and MVVM-style TUI surfaces, an owned seam for
+cross-domain features such as tags, production-shaped tests, and the discipline to stop before
+simple becomes simplistic.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/value-types/ by scripts/generate_llm_content.py; do not edit. -->
+
+# ValueTypes
+
+Source: [https://thefellow.github.io/projects/value-types/](https://thefellow.github.io/projects/value-types/)
+
+## Pyramid summary
+
+- **~2 words:** Structural equality
+- **~8 words:** A compact C# library for modeling value-object equality and composition.
+- **Expanded:** A small C# library for expressing structural equality in domain-driven value objects.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/ValueTypes)
+
+ValueTypes tackles a deceptively important modeling problem: two domain values should be equal because their meaningful components are equal, not because they happen to be the same object. The library makes that intent explicit without forcing every type to repeat equality and hashing boilerplate.
+
+Its vocabulary distinguishes several kinds of composition. `Yield` captures ordered components, `Group` captures components whose order should not matter, and sequence helpers let nested values retain the right equality semantics. A line segment, a roll call, and a wallet don't mean “same” in quite the same way; the API makes those differences visible in the model.
+
+### Why it is worth exploring
+
+- It is a compact example of turning a domain concept into a reusable type-level abstraction.
+- Its examples show why collection ordering is part of semantics, not merely an implementation detail.
+- The small surface area makes it approachable for readers learning value objects or structural equality.
+
+Start with the repository's `Value` and `ValueBase` types, then follow the tests for `Yield`, `Group`, `AsValues`, and `AsGroup`.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/resume/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Resume
+
+Source: [https://thefellow.github.io/resume/](https://thefellow.github.io/resume/)
+
+## Pyramid summary
+
+- **~2 words:** Engineering experience
+- **~8 words:** Staff-level experience in authorization, architecture, delivery, and technical leadership.
+- **Expanded:** Staff software engineer specializing in authorization, platform architecture, API evolution, and durable systems.
+
+## Full content
+
+Staff Software Engineer
+
+## Architecture, authorization, and durable systems under real-world constraints
+I design and deliver systems that have to remain understandable while they evolve. My work spans the full lifecycle: turning ambiguous requirements into technical models, building across product and platform surfaces, migrating production safely, operating what ships, and raising the engineering quality bar around it.
+
+## Areas of focus
+
+### Authorization systems
+Fine-grained and context-aware access control, policy modeling, request-and-approval lifecycles, and Cedar-based evaluation.
+
+### Platform architecture
+Modular systems, domain boundaries, event-driven coordination, relational data modeling, and backward-compatible evolution.
+
+### Developer platforms
+Multi-language SDK and Terraform generation, API versioning, static analysis, CI, test infrastructure, and operational tooling.
+
+### Technical leadership
+Requirements refinement, architecture documents, cross-functional delivery planning, migrations, mentoring, incident response, and internal training.
+
+## Experience
+
+2022–Present
+**StrongDM**
+Access and authorization platform · Acquired by [Delinea](https://delinea.com/news/delinea-acquires-strongdm-to-secure-ai-with-continuous-authorization)
+
+### Staff Software Engineer
+
+#### Post-acquisition platform integration
+Help lead the integration of StrongDM's proxy and core access architecture into Delinea's microservice platform. Selectively preserve and adapt the highest-value product IP while moving from an AWS, Go, and PostgreSQL monolith to an Azure stack built on RabbitMQ, SQL Server, and Cosmos DB, aligning architecture and delivery across newly combined teams.
+
+#### Cross-functional delivery
+Lead authorization initiatives with cross-functional partners, turning ambiguous requirements into reviewed technical models and carrying them through sequenced delivery and safe rollout.
+
+#### Access lifecycle ownership
+Own the access-request and ephemeral approval domain end to end, from policy design through production operation.
+
+#### Fine-grained access control
+Designed and implemented delegated administrative access control that scopes permissions by resource context without granting full administration. Defined policy-safe state transitions and carried the model through every product surface and a backward-compatible migration path.
+
+#### Unified authorization
+Designed and implemented a context-aware authorization model that unifies standing, requestable, and time-bound access at a single policy decision point. Established canonical modeling and deterministic projections so intent remains consistent across every user and automation surface.
+
+#### Production migration
+Led a backward-compatible migration separating hierarchical group membership from role assignment without disrupting existing behavior or customer configurations.
+
+#### Protocol observability
+Designed a terminal protocol parser that reconstructs interactive commands across SSH and Kubernetes streams for structured query logging.
+
+#### API evolution
+Evolved SDK and Terraform code generation for versioned APIs while preserving stable client ergonomics and backward compatibility.
+
+#### Integrations & operations
+Delivered reliable incident-response integrations. Share on-call ownership of the production system.
+
+#### AI enablement
+Facilitated week-long AI engineering bootcamps focused on [techniques developed and documented by StrongDM](https://factory.strongdm.ai/techniques). Helped teammates apply those techniques effectively in day-to-day engineering work.
+
+Build and maintain [F#kYeah](https://github.com/TheFellow/fkyeah), an open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor).
+
+Apply [Semport](https://factory.strongdm.ai/techniques/semport) within an Attractor flow to maintain the C# port of the Cedar authorization language from its Go upstream, preserving behavior against the upstream conformance suite and documenting the [engineering lessons](/notes/porting-cedar-semantics-from-go-to-dotnet/) from that work.
+
+2010–2022
+**Applied Underwriters**
+Financial services technology
+
+### Software Development Team Leader II
+
+#### Solution architecture
+Translated complex business and regulatory requirements into maintainable software, data models, and operational processes across thick-client, service, and REST API systems.
+
+#### System modernization
+Introduced domain-driven design, CQRS, functional techniques, and explicit architectural boundaries while modernizing long-lived applications under significant compatibility constraints.
+
+#### Team building
+Built and led two development teams, mentored future team leaders, and rewrote the department training program around object-oriented design, SOLID, GRASP, refactoring, and testability.
+
+#### Data & delivery operations
+Designed relational schemas and queries, administered production SQL systems, coordinated high-availability migrations, and owned source-control, build, release, and audit workflows.
+
+## Selected engineering work
+
+### [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet)
+A semantic port of the Cedar policy language, maintained against its upstream implementation and validated with the official conformance corpus.
+
+### [F#kYeah](https://github.com/TheFellow/fkyeah)
+An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
+
+### [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith)
+A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and [rich, expressive, and precise authorization](https://github.com/TheFellow/go-modular-monolith#authorization).
+
+### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
+Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.
+
+## Teaching and communication
+
+#### AI engineering enablement
+Facilitator for internal AI engineering bootcamps focused on specification-driven development and durable agent workflows.
+
+#### Technical presentations
+Make difficult material approachable, including a ground-up tour of elliptic-curve cryptography from groups and finite fields through ECDSA.
+
+#### Programming education
+Created more than 60 tutorials on neural networks, machine learning, and regular expressions, reaching more than 830,000 views and 5,000 subscribers.
+
+#### Mathematics instruction
+Former Cal Poly teaching associate for calculus, trigonometry, and algebra.
+
+## Education
+### California Polytechnic State University, San Luis Obispo
+**Master of Science, Mathematics**<br>**Bachelor of Science, Mathematics**
+
+#### Peer-reviewed research
+Published in <em>Linear Algebra and its Applications</em>.
+
+#### Mathematical modeling
+Meritorious designation in the Mathematical Contest in Modeling while representing Cal Poly.
+
+## Technology
+Go · C# · F# · PSQL · MSSQL · Cedar · GraphQL · gRPC and Protocol Buffers · Terraform · Kubernetes · domain-driven design · static analysis · API and SDK design · CI/CD · production operations
+
+
+---
+

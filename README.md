@@ -8,7 +8,27 @@ Source for Ryan Harris's project notes, tutorials, and resume site at <https://t
 - Long-form series are in `_guides/`.
 - Dated notes go in `_posts/` using `YYYY-MM-DD-title.md` filenames.
 - Top navigation is in `_data/navigation.yml`.
-- The future resume lives at `resume.md`.
+- Standalone pages live in `_site_pages/`.
+
+## LLM-readable site
+
+Every public page has a generated Markdown alternate: remove a trailing slash and
+append `.md` (the home page is `/index.md`). The site also publishes a concise
+[`llms.txt`](https://thefellow.github.io/llms.txt) index and an expanded
+[`llms-full.txt`](https://thefellow.github.io/llms-full.txt) corpus.
+
+After editing or adding content, regenerate these files and commit the result:
+
+```sh
+uv run scripts/generate_llm_content.py
+```
+
+The script uses [PEP 723](https://peps.python.org/pep-0723/) inline metadata,
+so `uv` creates an isolated environment and installs its declared dependency
+without requiring a project-wide Python environment.
+
+The generator fails if a public source page lacks a pyramid summary, so the
+compact index, page-level context, and full text remain synchronized.
 
 Every content file begins with YAML front matter. Copy a nearby file when adding a project, guide, or note so the theme applies the right layout automatically.
 
