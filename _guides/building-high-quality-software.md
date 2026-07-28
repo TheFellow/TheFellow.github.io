@@ -91,6 +91,8 @@ This lesson will trace one policy through command authorization, a single-entity
 
 ## 8. Keep surfaces at the edge
 
+For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/).
+
 Mixology ships as one binary with two ways to use it. The CLI handles commands and formatted output; `--tui` launches a persistent Bubble Tea application. Both call the same domain modules and enter the same pipeline.
 
 That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. The TUI keeps an explicit application session because login persists between messages. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
