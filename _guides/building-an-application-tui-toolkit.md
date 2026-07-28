@@ -181,6 +181,8 @@ At the view-model level, domain tests construct the production application fixtu
 
 [`pkg/testutil/tuitest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/tuitest) drives a real Bubble Tea program when routing and ordering matter. Rendering after each message and command catches assumptions that a direct `Update` call could hide. Root tests cover navigation, help, terminal resizing, and input ownership through the shell rather than bypassing it.
 
+Rendered text has structure of its own. A table row can fit as plain text and still overflow after cell padding and selection styles are applied; truncating the styled result can expose fragments of an ANSI color sequence instead of readable content. The driver therefore removes valid escape sequences and rejects any malformed styling fragments left behind on every rendered frame. A root test visits every top-level view at minimum and expanded terminal sizes, while focused table tests exercise each result shape across several widths. Width accounting and terminal control data become tested presentation contracts rather than visual details left to manual inspection.
+
 Finally, [cross-surface tag tests](https://github.com/TheFellow/go-modular-monolith/blob/main/main/cli/tags_test.go) perform a mutation through the CLI and observe it through the root TUI, then reverse the direction. The assertion is not that two screens happen to print similar text. It is that both adapters reach the same application behavior and persisted state.
 
 A practical testing ladder is therefore:
