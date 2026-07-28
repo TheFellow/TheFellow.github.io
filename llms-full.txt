@@ -698,9 +698,15 @@ Source: [https://thefellow.github.io/notes/octonions-and-the-standard-model-in-f
 
 ## Full content
 
-There is a familiar progression through the normed division algebras. The real numbers give way to complex numbers, then quaternions, then octonions. Each step doubles the dimension and gives up a familiar law: complex numbers cannot be ordered like the reals, quaternion multiplication is not commutative, and octonion multiplication is not associative.
+There is a familiar progression through the normed division algebras:
 
-The [complete F# gist](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc070da71633) turns that last loss into something executable. It starts with the octonion multiplication table, then follows a small part of Cohl Furey's algebraic approach toward the `1 + 3 + 3 + 1` pattern of one Standard Model generation.
+$$
+\mathbb{R} \subset \mathbb{C} \subset \mathbb{H} \subset \mathbb{O}.
+$$
+
+Each step doubles the dimension and gives up a familiar law. The complex numbers cannot be ordered like the reals, quaternion multiplication is not commutative, and octonion multiplication is not associative. Hurwitz's theorem says the chain ends here: these are the only finite-dimensional normed division algebras over $\mathbb{R}$.
+
+The [complete F# gist](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc070da71633) turns that last loss into something executable. It starts with the octonion multiplication table, then follows a small part of Cohl Furey's algebraic approach toward the $1+3+3+1$ pattern of one Standard Model generation.
 
 ## Build the multiplication table
 
@@ -712,9 +718,25 @@ let private fano =
        (2,5,7); (3,4,7); (3,6,5) |]
 ```
 
-For a triple `(i,j,k)`, the orientation gives `e_i e_j = e_k`; reversing the order changes the sign. Together with `e_i² = -1`, those few rules fill the complete basis multiplication table.
+For an oriented triple $(i,j,k)$, the rule is
 
-Once multiplication is code, the unusual laws become tests rather than slogans. The script prints `e₁e₂` beside `e₂e₁`, compares `(e₁e₂)e₄` with `e₁(e₂e₄)`, and computes their associator. It then checks the weaker structure octonions retain: alternativity, the Moufang identities, and multiplicativity of the norm.
+$$
+e_i e_j=e_k, \qquad e_j e_i=-e_k,
+$$
+
+with cyclic permutations preserving the sign. Together with $e_i^2=-1$, those few rules fill the complete basis multiplication table.
+
+Once multiplication is code, the unusual laws become tests rather than slogans. The script prints $e_1e_2$ beside $e_2e_1$, compares $(e_1e_2)e_4$ with $e_1(e_2e_4)$, and computes their associator
+
+$$
+[a,b,c] = (ab)c-a(bc).
+$$
+
+It then checks the weaker structure octonions retain: alternativity, the Moufang identities, and multiplicativity of the norm,
+
+$$
+\lVert ab\rVert=\lVert a\rVert\,\lVert b\rVert.
+$$
 
 F# makes grouping unusually easy to see. The `*.` operator associates left and the `^*` operator associates right, so these two expressions use the same multiplication function but construct different syntax trees:
 
@@ -727,25 +749,55 @@ For octonions, that is an observable distinction.
 
 ## Add complex coefficients
 
-The next layer is the complexified octonions, `ℂ⊗𝕆`. The implementation represents an element as a real octonion plus an imaginary octonion. The external complex unit commutes with the octonion units, while octonion multiplication keeps its non-associative behavior.
+The next layer is the complexified octonions, $\mathbb{C}\otimes\mathbb{O}$. The implementation represents an element as $a+ib$, where $a,b\in\mathbb{O}$. The external complex unit commutes with the octonion units, while octonion multiplication keeps its non-associative behavior:
+
+$$
+(a+ib)(c+id)=(ac-bd)+i(ad+bc).
+$$
 
 From there the script introduces the idempotent
 
-```text
-ω = ½(1 + ie₇)
-```
+$$
+\omega=\frac{1}{2}(1+ie_7), \qquad \omega^2=\omega,
+$$
 
-and three pairs of ladder operators. The annihilation operators kill `ω`; their conjugates act as creation operators. Applying zero, one, two, or three creation operators produces eight states:
+and three pairs of ladder operators $\alpha_k,\alpha_k^\dagger$. The annihilation operators kill the vacuum, $\alpha_k\omega=0$, while their conjugates act as creation operators. Applying zero, one, two, or three creation operators produces
 
-```text
-1 + 3 + 3 + 1
-```
+$$
+\binom{3}{0}+\binom{3}{1}+\binom{3}{2}+\binom{3}{3}
+=1+3+3+1=8
+$$
 
-Because multiplication is non-associative, “apply one operator after another” must mean composed left multiplication: `a · (b · x)`. Replacing that chain with `(ab) · x` would silently change the construction. The parentheses are part of the model.
+states.
+
+Because multiplication is non-associative, “apply one operator after another” must mean composed left multiplication:
+
+$$
+L_a\!\left(L_b(x)\right)=a(bx) \ne (ab)x=L_{ab}(x)
+$$
+
+in general. The parentheses are part of the model.
 
 ## Read charge from the number operator
 
-The final step applies a number operator assembled from the ladder operators. Its eigenvalues on the eight states are `0`, `1`, `2`, and `3`, with multiplicities `1`, `3`, `3`, and `1`. Dividing by three gives the charge pattern used to label the states as a neutrino, three anti-down colors, three up colors, and a positron.
+The final step applies the number operator assembled from the ladder operators,
+
+$$
+N(x)=-\sum_{k=1}^{3}\alpha_k^\dagger\!\left(\alpha_k(x)\right).
+$$
+
+Its eigenvalues on the eight states are $0,1,2,3$, with multiplicities $1,3,3,1$. With $Q=N/3$, the resulting spectrum is
+
+$$
+\begin{array}{c|c|c}
+\text{multiplicity} & Q & \text{particle label} \\
+\hline
+1 & 0 & \nu \\
+3 & \tfrac{1}{3} & \bar d_r,\bar d_g,\bar d_b \\
+3 & \tfrac{2}{3} & u_r,u_g,u_b \\
+1 & 1 & e^+
+\end{array}
+$$
 
 The satisfying part of the experiment is that those multiplicities and charges are computed from the algebra rather than stored in a lookup table. The program also checks the fermionic anti-commutation relations on a sample state, connecting the ladder-operator notation back to executable operations.
 
@@ -825,7 +877,13 @@ Source: [https://thefellow.github.io/notes/type-safe-linear-algebra-in-fsharp/](
 
 ## Full content
 
-Matrix multiplication has a small but important precondition: the left matrix's column count must equal the right matrix's row count. Most compact matrix types store those dimensions only in their data, so an invalid multiplication remains possible until a runtime check rejects it.
+Matrix multiplication has a small but important precondition. If $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{p \times q}$, then the product $AB$ exists only when $n=p$, in which case
+
+$$
+AB \in \mathbb{R}^{m \times q}.
+$$
+
+Most compact matrix types store those dimensions only in their data, so an invalid multiplication remains possible until a runtime check rejects it.
 
 The [complete F# gist](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) is an experiment in moving that check into the type system. It is deliberately small—just enough matrix arithmetic to show where types can carry the proof.
 
@@ -847,9 +905,16 @@ let mul (a: Matrix<'r,'k>)
         (b: Matrix<'k,'c>) : Matrix<'r,'c>
 ```
 
-The shared `'k` says that the inner dimensions must be the same. Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. Trying to multiply it by a `Matrix<D4,D2>` does not reach the loop that computes the result; the program does not type-check.
+The shared `'k` says that the inner dimensions must be the same. At the type level, the function encodes
 
-Transpose, addition, and vectors extend the same idea. Transpose swaps the two type parameters. Addition requires both operands to have the same pair. A column vector is simply a matrix with `D1` as its column dimension, so matrix-vector multiplication needs no separate rule.
+$$
+\mathbb{R}^{r \times k} \times \mathbb{R}^{k \times c}
+\longrightarrow \mathbb{R}^{r \times c}.
+$$
+
+Multiplying a `Matrix<D2,D3>` by a `Matrix<D3,D4>` produces a `Matrix<D2,D4>`. Trying to multiply it by a `Matrix<D4,D2>` does not reach the loop that computes the result; the program does not type-check.
+
+Transpose, addition, and vectors extend the same idea. Transpose witnesses $\mathbb{R}^{r \times c} \to \mathbb{R}^{c \times r}$. Addition requires both operands to inhabit the same $\mathbb{R}^{r \times c}$. A column vector is simply a matrix with `D1` as its column dimension, so matrix-vector multiplication needs no separate rule.
 
 ## Let the expression preserve the proof
 
@@ -860,9 +925,33 @@ let left = a *. b *. c
 let av : Vec<D2> = a *. v
 ```
 
-F# infers every intermediate dimension. In the first expression, `a *. b` must produce something that can be multiplied by `c`. In the second, the declared result type records that a 2-by-3 matrix maps a three-dimensional vector to a two-dimensional one.
+F# infers every intermediate dimension. In the first expression, `a *. b` must produce something that can be multiplied by `c`. In the second, the declared result type records the linear map
 
-The gist also uses the language's operator naming rules to make associativity visible. An operator beginning with `*` associates to the left, while one beginning with `^` associates to the right. Matrix multiplication is associative, so `(A B) C` and `A (B C)` produce the same answer when both are defined. The cross-product example at the end uses the same two spellings to show why grouping still matters for a non-associative operation: changing the operator changes the parse, and therefore the result.
+$$
+A : \mathbb{R}^{3} \longrightarrow \mathbb{R}^{2}.
+$$
+
+The gist also uses the language's operator naming rules to make associativity visible. An operator beginning with `*` associates to the left, while one beginning with `^` associates to the right. Matrix multiplication is associative,
+
+$$
+(AB)C = A(BC),
+$$
+
+so both parses produce the same answer when their dimensions fit. The transpose example similarly checks the contravariant reversal
+
+$$
+(AB)^{\mathsf T}=B^{\mathsf T}A^{\mathsf T}.
+$$
+
+The cross-product example at the end uses the same two operator spellings to show why grouping still matters for a non-associative operation: in general,
+
+$$
+(\mathbf u \times \mathbf v) \times \mathbf w
+\ne
+\mathbf u \times (\mathbf v \times \mathbf w).
+$$
+
+Changing the operator changes the parse, and therefore the result.
 
 ## What this buys
 
