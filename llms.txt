@@ -32,4 +32,5 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles.md): A ground-up route through groups, finite fields, curves, and signatures.
 - [Octonions and the Standard Model in F#](https://thefellow.github.io/notes/octonions-and-the-standard-model-in-fsharp.md): Non-associative multiplication produces a Furey-inspired eight-state particle pattern.
 - [Porting Cedar from Go to .NET: Semantics Before Syntax](https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet.md): How conformance tests preserve Cedar behavior while C# APIs remain idiomatic.
+- [Building a Generic RIBLT in Go](https://thefellow.github.io/notes/riblt-in-go.md): A generic Go RIBLT reveals streaming set reconciliation step by step.
 - [Type-Safe Linear Algebra in F#](https://thefellow.github.io/notes/type-safe-linear-algebra-in-fsharp.md): Phantom dimensions make invalid matrix arithmetic fail at compile time.

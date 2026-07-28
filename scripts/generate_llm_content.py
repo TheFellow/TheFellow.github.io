@@ -43,6 +43,7 @@ SUMMARIES = {
     "/notes/porting-cedar-semantics-from-go-to-dotnet/": ("Semantic porting", "How conformance tests preserve Cedar behavior while C# APIs remain idiomatic."),
     "/notes/type-safe-linear-algebra-in-fsharp/": ("Typed dimensions", "Phantom dimensions make invalid matrix arithmetic fail at compile time."),
     "/notes/octonions-and-the-standard-model-in-fsharp/": ("Executable octonions", "Non-associative multiplication produces a Furey-inspired eight-state particle pattern."),
+    "/notes/riblt-in-go/": ("Rateless reconciliation", "A generic Go RIBLT reveals streaming set reconciliation step by step."),
 }
 
 Document = dict[str, Any]

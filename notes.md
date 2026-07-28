@@ -18,3 +18,4 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Octonions and the Standard Model in F#](/notes/octonions-and-the-standard-model-in-fsharp.md): An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern.
 - [Type-Safe Linear Algebra in F#](/notes/type-safe-linear-algebra-in-fsharp.md): Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time.
 - [Porting Cedar from Go to .NET: Semantics Before Syntax](/notes/porting-cedar-semantics-from-go-to-dotnet.md): How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
+- [Building a Generic RIBLT in Go](/notes/riblt-in-go.md): A step-by-step implementation of generic, rateless set reconciliation in Go, from XOR-coded cells through peeling and measured communication.
