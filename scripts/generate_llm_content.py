@@ -41,6 +41,8 @@ SUMMARIES = {
     "/guides/building-an-application-tui-toolkit/": ("Testable TUI", "How Mixology adapts MVVM and Elm ideas into an application toolkit."),
     "/notes/elliptic-curve-cryptography-from-first-principles/": ("ECDSA foundations", "A ground-up route through groups, finite fields, curves, and signatures."),
     "/notes/porting-cedar-semantics-from-go-to-dotnet/": ("Semantic porting", "How conformance tests preserve Cedar behavior while C# APIs remain idiomatic."),
+    "/notes/type-safe-linear-algebra-in-fsharp/": ("Typed dimensions", "Phantom dimensions make invalid matrix arithmetic fail at compile time."),
+    "/notes/octonions-and-the-standard-model-in-fsharp/": ("Executable octonions", "Non-associative multiplication produces a Furey-inspired eight-state particle pattern."),
 }
 
 Document = dict[str, Any]

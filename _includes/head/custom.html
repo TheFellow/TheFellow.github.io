@@ -11,3 +11,15 @@
 {% endif %}
 <link rel="alternate" type="text/markdown" href="{{ markdown_url | absolute_url }}" title="Markdown version">
 <link rel="alternate" type="text/plain" href="{{ '/llms.txt' | absolute_url }}" title="LLM content index">
+
+{% if page.math %}
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      processEscapes: true
+    }
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+{% endif %}
