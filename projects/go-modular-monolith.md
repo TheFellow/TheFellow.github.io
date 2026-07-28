@@ -13,7 +13,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 ## Full content
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
-[Preview the tutorial series](/guides/building-high-quality-software/)
+[Preview the tutorial series](/guides/building-high-quality-software.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. It deliberately uses one binary and one embedded database, leaving the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -23,7 +23,7 @@ Deleting an ingredient makes those claims concrete. The command can affect inven
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
-The [Building High-Quality Software preview](/guides/building-high-quality-software/) follows that
+The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
 shared operation pipeline, transactional events, focused code generation, error contracts,
 policy-based authorization, interchangeable CLI and MVVM-style TUI surfaces, an owned seam for

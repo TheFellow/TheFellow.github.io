@@ -85,6 +85,43 @@ def markdown_path(route: str) -> Path:
     return Path(f"{route.removeprefix('/').removesuffix('/')}.md")
 
 
+def markdown_url(route: str) -> str:
+    return f"/{markdown_path(route)}"
+
+
+def link_markdown_alternates(body: str, all_docs: list[Document]) -> str:
+    alternate_by_route = {
+        route_for(doc): markdown_url(route_for(doc)) for doc in all_docs
+    }
+
+    def replace_link(match: re.Match[str]) -> str:
+        target = match.group("target")
+        path, separator, fragment = target.partition("#")
+        alternate = alternate_by_route.get(path)
+        if alternate is None:
+            return match.group(0)
+        suffix = f"{separator}{fragment}" if separator else ""
+        return f"]({alternate}{suffix})"
+
+    return re.sub(r"\]\((?P<target>/[^)\s]+)\)", replace_link, body)
+
+
+def validate_markdown_navigation(
+    rendered: dict[str, str], routes: dict[str, Document]
+) -> None:
+    html_links = []
+    for alternate_route, content in rendered.items():
+        for match in re.finditer(r"\]\((?P<target>/[^)\s]+)\)", content):
+            target = match.group("target").partition("#")[0]
+            if target in routes:
+                html_links.append(f"{markdown_url(alternate_route)} -> {target}")
+    if html_links:
+        raise ValueError(
+            "LLM alternates must link to explicit .md routes: "
+            + ", ".join(html_links)
+        )
+
+
 def clean_body(body: str) -> str:
     strip_layout_indentation = 'class="resume-hero"' in body
     replacements = (
@@ -139,8 +176,7 @@ def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
     for item in selected:
         item_route = route_for(item)
         links.append(
-            f"- [{item['title']}]({item_route}) "
-            f"([Markdown](/{markdown_path(item_route)})): {item['excerpt']}"
+            f"- [{item['title']}]({markdown_url(item_route)}): {item['excerpt']}"
         )
     return f"{intro}\n\n{'\n'.join(links)}"
 
@@ -150,7 +186,7 @@ def home_body(all_docs: list[Document]) -> str:
     for route in ("/projects/", "/guides/", "/notes/", "/resume/"):
         doc = next(item for item in all_docs if route_for(item) == route)
         lines.append(
-            f"- [{doc['title']}]({route}) ([Markdown](/{markdown_path(route)})): "
+            f"- [{doc['title']}]({markdown_url(route)}): "
             f"{SUMMARIES[route][1]}"
         )
     return "\n".join(lines)
@@ -164,6 +200,7 @@ def render_page(doc: Document, all_docs: list[Document]) -> str:
         raise ValueError(f"Missing pyramid summary for {route}") from error
 
     body = home_body(all_docs) if route == "/" else collection_index(doc, all_docs) or clean_body(doc["body"])
+    body = link_markdown_alternates(body, all_docs)
     excerpt = doc.get("excerpt", medium)
     return f"""<!-- Generated from {SITE_URL}{route} by {GENERATOR_NAME}; do not edit. -->
 
@@ -213,6 +250,7 @@ def main() -> None:
         raise ValueError(f"Stale summaries: {', '.join(sorted(stale))}")
 
     rendered = {route: render_page(doc, docs) for route, doc in routes.items()}
+    validate_markdown_navigation(rendered, routes)
     for route, content in rendered.items():
         write_if_changed(markdown_path(route), content)
 
