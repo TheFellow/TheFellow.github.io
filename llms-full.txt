@@ -81,7 +81,7 @@ flowchart LR
     Go[Idiomatic Go<br/>interfaces + packages] --> Mix
 ```
 
-Other MVVM libraries have concepts that look similar, but resemblance is not provenance. There is no repository evidence that Prism, Caliburn.Micro, ReactiveUI, or another upstream framework drove this design. CODE Framework and Bubble Tea are the lineages the implementation can support directly.
+Together, these influences give Mixology both an application structure and a runtime discipline. CODE Framework inspires the shell, standard-view conventions, and view-model boundaries; Bubble Tea supplies the message loop, commands, and composable models; and Go turns those ideas into explicit interfaces, typed messages, and package boundaries.
 
 ## The shell owns the application
 
