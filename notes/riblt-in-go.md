@@ -27,15 +27,19 @@ The answer is small: add `101` and `103` downstream, then remove `104`.
 
 ## Start with the algebra a symbol needs
 
-The RIBLT does not need to know what a symbol means. It needs an identity, a reversible way to combine symbols, and two hashes with separate jobs. Go generics let the library state that contract without requiring methods on `T`:
+The RIBLT does not need to know what a symbol means. It does need an identity, a reversible way to combine symbols, a clear ownership boundary, and two hashes with separate jobs. Go generics let the library state that contract without requiring methods on `T`:
 
 ```go
 type Codec[T any] interface {
     Zero() T
     IsZero(T) bool
+    Clone(T) T
+    Equal(a, b T) bool
+    Validate(T) error
     XOR(a, b T) T
     MappingHash(T) uint64
     Checksum(T) uint64
+    CompatibilityID() [32]byte
 }
 ```
 
@@ -47,13 +51,23 @@ x XOR x = 0
 (a XOR b) XOR b = a
 ```
 
-The demonstration's `Symbol` contains one `uint64`, so its XOR is ordinary bitwise XOR. A richer record still works when its codec has a fixed-width, reversible representation. The operation must be pure. For a slice, map, or pointer-backed `T`, the codec must return independent storage rather than mutating or retaining either argument.
+The demonstration's `Symbol` contains one `uint64`, so its XOR is ordinary bitwise XOR. A richer record still works when its codec has a fixed-width, reversible representation. `XOR` must be pure. `Clone` gives the library independent storage for a slice or other mutable representation, `Equal` distinguishes actual duplicates even when both hashes collide, and `Validate` rejects values outside the algebra before they enter a sketch. `CompatibilityID` identifies the complete codec configuration, including its key and representation parameters.
 
-This is the central generic design choice. `Encoder[T]`, `Decoder[T]`, `Sketch[T]`, `HashedSymbol[T]`, and `CodedSymbol[T]` carry the application's symbol type, while `Codec[T]` injects the operations the algorithm actually uses. Built-in and third-party types need no RIBLT-specific methods.
+This pluggability is the central generic design choice, rather than an optional abstraction around the algorithm. Go cannot derive a reversible XOR for `T any`. A struct may contain padding, a string has variable length, a map has no canonical order, and a slice needs an ownership policy. `Encoder[T]`, `Decoder[T]`, `Sketch[T]`, `HashedSymbol[T]`, and `CodedSymbol[T]` carry the application's symbol type, while `Codec[T]` supplies the exact algebra the algorithm uses.
+
+Most applications do not need to write that contract themselves. The package includes keyed defaults for `uint64` and fixed-width byte strings:
+
+```go
+key := []byte("0123456789abcdef0123456789abcdef")
+uints, _ := riblt.NewUint64Codec(key)
+ids, _ := riblt.NewBytesCodec(32, key)
+```
+
+The example key is deliberately visible, so it is only suitable for a walkthrough. A real deployment provisions at least 16 bytes of secret key material through its authenticated surrounding protocol. `BytesCodec` requires one width because zero-padding variable-length values would make XOR ambiguous.
 
 ## Give the two hashes different responsibilities
 
-`Hash` computes both hashes once and packages them with the original value:
+`Hash` validates and clones a value, computes both hashes, and packages them for diagnostics:
 
 ```go
 type HashedSymbol[T any] struct {
@@ -63,9 +77,9 @@ type HashedSymbol[T any] struct {
 }
 ```
 
-The mapping hash seeds a deterministic sequence of cell indexes. Every symbol begins in cell zero, then follows an increasingly sparse sequence generated with the gap distribution from the RIBLT paper. The implementation keeps each symbol's next index in a min-heap. To emit cell `i`, the encoder XORs precisely the symbols whose next index is `i`, advances those mappings, and moves on to `i+1`.
+Insertion does not accept a `HashedSymbol`. Each public insertion boundary validates, clones, and hashes the value itself, so a caller cannot inject cached hashes that disagree with the symbol. The mapping hash seeds a deterministic sequence of cell indexes. Every symbol begins in cell zero, then follows an increasingly sparse sequence generated with the gap distribution from the RIBLT paper. The implementation keeps each symbol's next index in a min-heap. To emit cell `i`, the encoder XORs precisely the symbols whose next index is `i`, advances those mappings, and moves on to `i+1`.
 
-The checksum has a separate role. A coded cell has three fields:
+The checksum has a separate role. The built-in codecs derive both 64-bit hashes with HMAC-SHA-256, using separate domains for placement and singleton validation. A coded cell has three fields:
 
 ```go
 type CodedSymbol[T any] struct {
@@ -75,14 +89,15 @@ type CodedSymbol[T any] struct {
 }
 ```
 
-The symbol and checksum fields are accumulated with XOR. The signed count is accumulated with addition. A count of `+1` or `-1` only suggests that the XOR field contains one remaining symbol. The decoder accepts it as a singleton only when `Checksum(cell.Symbol)` equals the accumulated checksum. Domain separation between placement and validation matters because these are independent decisions.
+The symbol and checksum fields are accumulated with XOR. The signed count is accumulated with addition. A count of `+1` or `-1` only suggests that the XOR field contains one remaining symbol. The decoder accepts it as a singleton only when `Checksum(cell.Symbol)` equals the accumulated checksum. Domain separation between placement and validation matters because these are independent decisions. A 64-bit checksum collision remains possible, but a secret keyed checksum prevents an untrusted sender from cheaply choosing collisions in advance.
 
 ## Stream cells without guessing a table size
 
 The upstream registers its complete set, then starts the stream:
 
 ```go
-encoder, _ := riblt.NewEncoder[Symbol](codec)
+codec, _ := riblt.NewUint64Codec(key)
+encoder, _ := riblt.NewEncoder[uint64](codec)
 for _, value := range upstream {
     _ = encoder.Add(value)
 }
@@ -95,7 +110,11 @@ Calling `Next` produces the next cell, so the sender can continue for as long as
 The downstream similarly registers its local set before the first coded cell:
 
 ```go
-decoder, _ := riblt.NewDecoder[Symbol](codec)
+decoder, _ := riblt.NewDecoderWithLimits[uint64](codec, riblt.DecoderLimits{
+    MaxCells:          10_000,
+    MaxLocalSymbols:   1_000_000,
+    MaxDecodedSymbols: 10_000,
+})
 for _, value := range downstream {
     _ = decoder.AddLocal(value)
 }
@@ -103,7 +122,7 @@ for _, value := range downstream {
 
 For each incoming cell, `AddCoded` subtracts the initial downstream symbols scheduled for that index. Because subtraction and addition are the same operation for the XOR fields, the sign appears in `Count`. Shared symbols cancel, an upstream-only symbol contributes `+1`, and a downstream-only symbol contributes `-1`.
 
-Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgement so the upstream knows when to stop.
+Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgement so the upstream knows when to stop. The decoder limits bound cells admitted, local symbols registered, and symbols peeled. The transport must separately bound bytes and time.
 
 ## Peel one discovery into the rest of the sketch
 
@@ -142,9 +161,9 @@ add := decoder.Remote()
 remove := decoder.Local()
 ```
 
-`Remote` is what exists only at the upstream, and `Local` is what exists only at the downstream. Those names describe the decoder's perspective, which is worth keeping explicit when the result becomes an application update.
+`Remote` is what exists only at the upstream, and `Local` is what exists only at the downstream. Those names describe the decoder's perspective, which is worth keeping explicit when the result becomes an application update. The library clones mutable symbols on ingestion, storage, coded-cell output, and decoded-result output. Mutating a caller-owned byte slice after `Add`, or mutating a returned result, does not change internal state.
 
-The package also includes `Sketch[T]` for a fixed-length prefix. Two sketches of the same length can be built independently, subtracted cell by cell, and decoded. That is useful when a prefix length is already part of the surrounding protocol. The streaming encoder and decoder preserve the rateless advantage: no table length has to be chosen before seeing whether peeling succeeds.
+The package also includes `Sketch[T]` for a fixed-length prefix. Two sketches of the same length and `CompatibilityID` can be built independently, subtracted cell by cell, and decoded. A mismatch in codec semantics, key, byte width, or protocol version is rejected instead of producing meaningless cells. That is useful when a prefix length is already part of the surrounding protocol. The streaming encoder and decoder preserve the rateless advantage: no table length has to be chosen before seeing whether peeling succeeds.
 
 ## Measure difference rather than set size
 
@@ -162,20 +181,24 @@ set size  difference  cells sent  cells/difference
 
 These are deterministic observations for the demonstration's generated sets and hashes. They show the behavior I wanted to inspect: a tenfold increase in total set size did not produce a tenfold increase in transmitted cells. They are not a proof of an exact ratio for every set.
 
-The Go benchmark uses 10,000 shared entries and varies the symmetric difference. On an Intel i5-1038NG7, one run reported between `1.000` and `1.906 coded/difference` for differences from 1 through 1,024. Its end-to-end timings ranged from about 7.7 ms to 61.6 ms per reconciliation. The same output reports roughly 7.2 to 7.5 MB and 20,000 to 22,000 allocations per operation because the benchmark deliberately rebuilds and hashes both 10,000-entry inputs on every iteration. Those figures establish a baseline and expose optimization opportunities; they do not isolate network cost or only the peeling loop. The mapping microbenchmark reported about 10 ns with zero allocations for one mapping step on that machine.
+The Go benchmark uses 10,000 shared entries and varies the symmetric difference. On an Intel i5-1038NG7, the original deterministic demonstration codec reported between `1.000` and `1.906 coded/difference` for differences from 1 through 1,024. Its end-to-end timings ranged from about 7.7 ms to 61.6 ms per reconciliation. The benchmark deliberately rebuilds and hashes both 10,000-entry inputs on every iteration, so it measures setup and hashing as well as peeling.
+
+The safer default changes that profile. A local microbenchmark of `Uint64Codec` computing both HMAC-SHA-256 hashes took about 1.94 microseconds, 1,088 bytes, and 16 allocations per value, while one mapping step took about 14 ns with no allocations. The default favors an understandable keyed boundary over maximum throughput. A deployment should benchmark its complete workload, then consider an audited custom codec or internal immutable hash caching when that cost matters. Public insertion still recomputes hashes at the trust boundary.
 
 ## What the tests establish
 
-`go test ./...` exercises more than the happy path. The suite checks known reconciliation results, equal sets, fixed-length sketch subtraction, deterministic mapping vectors, reset behavior, duplicate and lifecycle errors, and 100 seeded random set constructions. A fuzz target generates additional shared and one-sided values and checks that both decoded difference sizes are recovered.
+`go test ./...` exercises more than the happy path. The suite checks known reconciliation results, equal sets, fixed-length sketch subtraction, deterministic mapping and keyed-hash vectors, reset behavior, duplicate and lifecycle errors, and 100 seeded random set constructions. It also verifies mutable-value ownership, wrong-width rejection, weak-key rejection, collision-correct duplicate detection, incompatible sketch rejection, and decoder limits. Fuzz targets generate additional set constructions and malformed coded byte symbols.
 
 Together, those tests demonstrate the implementation's behavior for the exercised codecs and inputs. The probabilistic algorithm still depends on good mapping hashes, and checksum collisions remain possible in principle.
 
 ## Keep the algorithm inside a complete protocol
 
-The demonstration hashes are deterministic and useful for repeatable examples. They are not an adversarial security boundary. With untrusted input, an unkeyed checksum allows an attacker to search for collisions that can make a false singleton look valid. A deployed design should use a keyed, domain-separated checksum, authenticate messages, and enforce bounds on cells, memory, and work.
+The built-in codecs provide keyed, domain-separated hashing and the decoder can enforce finite symbol and cell limits. Those properties make the library a more suitable component for a deployed design, but they do not turn the component into a complete synchronization protocol.
 
-RIBLT also reconciles sets, not arbitrary collections or application state. The implementation rejects duplicate symbol identities. If multiplicity matters, I would encode a unique occurrence identifier or choose a multiset protocol. A synchronization system still has to define serialization, versions, ordering, retransmission, acknowledgement, and how additions and removals are applied atomically.
+`ProtocolVersion`, currently `go-riblt/v1`, fixes mapping constants, floating-point gap calculation, cell semantics, and built-in hash domains. A surrounding authenticated handshake should exchange that version and `CompatibilityID`, then reject either mismatch. The synchronization protocol still has to define canonical cell serialization and framing, authentication and key agreement, byte limits and deadlines, ordering and retransmission, completion acknowledgement, and atomic application of additions and removals. The mutable encoder, decoder, and sketch types are not safe for concurrent method calls, so callers must also serialize access or provide their own synchronization.
 
-Those boundaries do not diminish the useful result. The generic core is small because the algorithm needs only XOR, two hashes, counts, deterministic sparse placement, and peeling. Running the walkthrough turns those pieces from a paper description into a sequence I can inspect: combine symbols, subtract local state, validate a singleton, propagate it, and stop when every received cell is resolved.
+RIBLT reconciles sets, not arbitrary collections or application state. The implementation rejects true duplicates using `Equal` within a hash bucket rather than treating a hash pair as identity. If multiplicity matters, I would encode a unique occurrence identifier or choose a multiset protocol.
+
+The result is a hardened reconciliation primitive with explicit algebra, ownership, compatibility, and resource contracts. Running the walkthrough turns those pieces from a paper description into a sequence I can inspect: combine symbols, subtract local state, validate a singleton, propagate it, and stop when every received cell is resolved. Building a production synchronization system still means supplying the wire and state-transition guarantees around that primitive.
 
 The [go-riblt repository](https://github.com/TheFellow/go-riblt) contains the implementation and every command discussed here. Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. That path follows the same dependency chain as the algorithm itself.
