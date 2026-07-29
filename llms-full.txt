@@ -968,10 +968,21 @@ for _, value := range upstream {
     _ = encoder.Add(value)
 }
 
-cell, _ := encoder.Next()
+cells := encoder.Cells()
 ```
 
-Calling `Next` produces the next cell, so the sender can continue for as long as decoding requires. Adding another source symbol after streaming starts is rejected because it would change cells the receiver has already consumed.
+`Cells` returns an `iter.Seq2[CodedSymbol[T], error]`. Constructing the sequence does not emit anything. Each range iteration asks for exactly one more coded cell, which fits the rateless algorithm directly: computation follows demand, and breaking the range stops production without preparing another cell. The sequence is tied to the encoder's current position rather than replayable. A later range resumes with the following cell.
+
+The encoder exposes this iterator as its only streaming interface. A transport or event loop that needs pull-style control can adapt it with the standard library rather than requiring a second encoder API:
+
+```go
+next, stop := iter.Pull2(encoder.Cells())
+defer stop()
+
+cell, err, ok := next()
+```
+
+The caller must invoke `stop` when it finishes early. Starting iteration also seals the source set. Adding another source symbol after the first cell is requested is rejected because it would change cells the receiver has already consumed.
 
 The downstream similarly registers its local set before the first coded cell:
 
@@ -1017,15 +1028,26 @@ The 96-byte figure uses the demonstration's accounting convention of three eight
 With setup complete, reconciliation is this loop:
 
 ```go
-for !decoder.Complete() {
-    cell, _ := encoder.Next()
-    _ = decoder.AddCoded(cell)
-    _ = decoder.TryDecode()
+for cell, err := range encoder.Cells() {
+    if err != nil {
+        return err
+    }
+    if err := decoder.AddCoded(cell); err != nil {
+        return err
+    }
+    if err := decoder.TryDecode(); err != nil {
+        return err
+    }
+    if decoder.Complete() {
+        break
+    }
 }
 
 add := decoder.Remote()
 remove := decoder.Local()
 ```
+
+The early `break` is the downstream's completion signal inside this in-process example. Over a network, the receiver sends that acknowledgement to the upstream, which stops pulling from the same sequence.
 
 `Remote` is what exists only at the upstream, and `Local` is what exists only at the downstream. Those names describe the decoder's perspective, which is worth keeping explicit when the result becomes an application update. The library clones mutable symbols on ingestion, storage, coded-cell output, and decoded-result output. Mutating a caller-owned byte slice after `Add`, or mutating a returned result, does not change internal state.
 
