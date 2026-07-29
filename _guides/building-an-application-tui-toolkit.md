@@ -1,5 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
+date: 2026-07-28 12:13:21 -0700
+last_modified_at: 2026-07-28 15:21:23 -0700
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /guides/building-an-application-tui-toolkit/
 order: 20

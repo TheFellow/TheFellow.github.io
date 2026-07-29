@@ -1,6 +1,7 @@
 ---
 title: "Type-Safe Linear Algebra in F#"
 date: 2026-03-06 18:10:08 -0800
+last_modified_at: 2026-07-28 15:45:40 -0700
 permalink: /notes/type-safe-linear-algebra-in-fsharp/
 excerpt: "Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time."
 tags: ["F#", "Linear Algebra", "Type Systems"]

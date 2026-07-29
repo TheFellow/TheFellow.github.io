@@ -67,6 +67,32 @@ def documents() -> list[Document]:
     return [parse_document(path) for path in paths]
 
 
+def validate_page_dates(docs: list[Document]) -> None:
+    def is_date(value: object) -> bool:
+        return isinstance(value, (date, datetime)) or (
+            isinstance(value, str)
+            and re.fullmatch(
+                r"\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}:\d{2}(?: [+-]\d{4})?)?",
+                value,
+            )
+            is not None
+        )
+
+    invalid = []
+    for doc in docs:
+        published = doc.get("date")
+        modified = doc.get("last_modified_at")
+        if not is_date(published):
+            invalid.append(f"{doc['source']}: missing date")
+        if not is_date(modified):
+            invalid.append(f"{doc['source']}: missing last_modified_at")
+    if invalid:
+        raise ValueError(
+            "Public pages need explicit dates to prevent build-time SEO metadata: "
+            + ", ".join(invalid)
+        )
+
+
 def route_for(doc: Document) -> str:
     if permalink := doc.get("permalink"):
         return str(permalink)
@@ -242,6 +268,7 @@ def remove_obsolete_alternates() -> None:
 def main() -> None:
     remove_obsolete_alternates()
     docs = documents()
+    validate_page_dates(docs)
     routes = {route_for(doc): doc for doc in docs}
     missing = routes.keys() - SUMMARIES.keys()
     stale = SUMMARIES.keys() - routes.keys()

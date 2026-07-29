@@ -1,5 +1,7 @@
 ---
 title: "arch-lint"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-24 15:15:38 -0700
 excerpt: "A Go analyzer that turns architectural dependency rules into build-time checks."
 language: "Go"
 license: "MIT"

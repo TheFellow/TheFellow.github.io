@@ -1,6 +1,8 @@
 ---
 layout: single
 title: "Engineering in public"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-28 15:11:58 -0700
 permalink: /
 author_profile: true
 classes: wide

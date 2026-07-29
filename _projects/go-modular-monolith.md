@@ -1,5 +1,7 @@
 ---
 title: "go-modular-monolith"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-27 00:22:16 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
