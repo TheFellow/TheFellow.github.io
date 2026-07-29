@@ -16,3 +16,4 @@ Long-form tutorials connect design principles to running code. Each series is st
 
 - [Building High-Quality Software](/guides/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 - [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
+- [Growing Mixology with a Fyne Desktop Surface](/guides/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
