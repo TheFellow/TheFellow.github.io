@@ -1,5 +1,7 @@
 ---
 title: "fluid"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-24 15:15:38 -0700
 excerpt: "An interactive 2D fluid simulator and visualization playground written in Go."
 language: "Go"
 repository_url: "https://github.com/TheFellow/fluid"

@@ -1,5 +1,7 @@
 ---
 title: "F#kYeah"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-24 15:15:38 -0700
 excerpt: "An F# pipeline engine for multi-stage AI workflows described as executable graphs."
 language: "F#"
 license: "MIT"

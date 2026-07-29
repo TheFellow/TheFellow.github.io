@@ -1,5 +1,7 @@
 ---
 title: "enumstruct"
+date: 2026-07-23 12:52:18 -0700
+last_modified_at: 2026-07-24 15:15:38 -0700
 excerpt: "A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve."
 language: "Go"
 license: "MIT"

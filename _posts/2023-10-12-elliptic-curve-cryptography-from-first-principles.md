@@ -1,6 +1,7 @@
 ---
 title: "From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles"
 date: 2023-10-12 12:00:00 -0700
+last_modified_at: 2026-07-24 14:19:34 -0700
 permalink: /notes/elliptic-curve-cryptography-from-first-principles/
 excerpt: "A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication."
 tags: ["Cryptography", "ECDSA", "Mathematics"]

@@ -1,5 +1,7 @@
 ---
 title: "cedar-dotnet"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-24 15:15:38 -0700
 excerpt: "A C# implementation of the Cedar policy language and authorization model."
 language: "C#"
 license: "Apache-2.0"

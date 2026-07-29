@@ -1,5 +1,7 @@
 ---
 title: "Building High-Quality Software"
+date: 2026-07-23 12:03:42 -0700
+last_modified_at: 2026-07-28 12:13:21 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10

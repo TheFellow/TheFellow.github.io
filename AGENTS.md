@@ -20,6 +20,9 @@ human-facing Jekyll site and the generated Markdown site for LLM consumption.
 - Begin authored content files with YAML front matter. Copy the structure of a
   nearby file in the same collection so layouts and collection behavior remain
   consistent.
+- Give every public authored page a `date` and `last_modified_at` in its YAML
+  front matter. Update `last_modified_at` only for substantive page changes so
+  SEO metadata and the sitemap never fall back to the site build time.
 
 ## Parallel-site routing contract
 
