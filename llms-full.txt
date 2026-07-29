@@ -882,7 +882,7 @@ Suppose an upstream and a downstream each hold a large set, most entries agree, 
 
 A Rateless Invertible Bloom Lookup Table, or RIBLT, changes that relationship. The upstream emits an open-ended stream of coded cells. The downstream folds its local set into those cells and keeps peeling. Once the prefix contains enough information, it has both sides of the symmetric difference and tells the upstream to stop. Neither side has to estimate the difference before transmission begins.
 
-I built [go-riblt](https://github.com/TheFellow/go-riblt) to make that process executable. The repository has a generic library, a cell-by-cell walkthrough, a scaling experiment, property and fuzz tests, and benchmarks. I will follow the walkthrough's concrete sets throughout this note:
+I built [go-riblt](https://github.com/TheFellow/go-riblt) to make that process executable. The repository has a generic library, a cell-by-cell walkthrough, examples for records and documents, a scaling experiment, property and fuzz tests, and benchmarks. I will follow the walkthrough's concrete sets throughout this note:
 
 ```text
 upstream:   [100 101 102 103]
@@ -1031,6 +1031,102 @@ remove := decoder.Local()
 
 The package also includes `Sketch[T]` for a fixed-length prefix. Two sketches of the same length and `CompatibilityID` can be built independently, subtracted cell by cell, and decoded. A mismatch in codec semantics, key, byte width, or protocol version is rejected instead of producing meaningless cells. That is useful when a prefix length is already part of the surrounding protocol. The streaming encoder and decoder preserve the rateless advantage: no table length has to be chosen before seeing whether peeling succeeds.
 
+## Choose a symbol representation for the project
+
+The integer walkthrough isolates the algorithm, but a project still has to decide what one set member means. The representation must have a fixed-width XOR algebra because an encoded cell can contain a combination of several symbols. It is not enough for only the original application values to be valid. Every intermediate bit pattern produced by XOR must also be accepted by the codec.
+
+That gives me four useful patterns:
+
+| Project value | RIBLT symbol | Encoding choice |
+| --- | --- | --- |
+| Numeric ID or version | `uint64` | Use `NewUint64Codec`. |
+| UUID, digest, or fixed binary key | fixed-width `[]byte` | Use `NewBytesCodec`. |
+| Fixed-layout record | the complete struct | XOR each fixed-width field and hash one canonical encoding. |
+| Large or variable value | content digest | Reconcile digests, then transfer missing bodies separately. |
+
+Strings, maps, pointers, and variable-length slices do not directly provide that algebra. I can place a small bounded value into a fixed-width byte slot, or I can move the variable value out of the RIBLT and use its digest as the symbol.
+
+### Carry a complete record
+
+The records example runs an `Encoder[Record]` and `Decoder[Record]` where the symbol is the whole application value:
+
+```go
+type Record struct {
+    ID       uint64
+    Revision uint64
+    Owner    [16]byte
+    Digest   [32]byte
+}
+```
+
+Its custom codec XORs `ID` and `Revision` as integers, XORs each byte of `Owner` and `Digest`, and hashes a canonical 64-byte encoding through `BytesCodec`. The codec's `CompatibilityID` also includes a record-specific version, so it cannot be confused with an unrelated 64-byte representation.
+
+The example gives record `2` revision `2` downstream and revision `3` upstream. Because the complete record is the set member, a mutation is a set difference. Decoding reports the old record in `Local` and the new record in `Remote`:
+
+```text
+add or replace from upstream:
+  id=2 revision=3 owner="Grace" digest=24571a7d
+  id=3 revision=1 owner="Linus" digest=1dcefb97
+remove downstream versions:
+  id=2 revision=2 owner="Grace" digest=100802fe
+decoded after 4 coded cells
+```
+
+The application can pair those values by `ID` and apply them as one update. This keeps conflict and update semantics outside the set-reconciliation primitive while preserving the complete values needed to make that decision.
+
+```sh
+go run ./cmd/structs
+```
+
+### Carry a bounded text value
+
+The documents example places an actual UTF-8 body in a 256-byte slot. The first two bytes hold the payload length, the body follows, and the remaining bytes are zero padding. `BytesCodec` then treats the entire slot as one symbol. The explicit length distinguishes the text from its padding and permits embedded zero bytes.
+
+This pattern fits a project with a meaningful maximum record size. One changed sentence appears as one downstream-only slot and one upstream-only slot, just like the mutated struct:
+
+```text
+documents to add:
+  "Go generics let the algorithm remain independent of its symbols."
+  "This paragraph exists only upstream."
+documents to remove:
+  "Go generics separate the algorithm from its symbols."
+decoded after 3 coded cells
+```
+
+```sh
+go run ./cmd/documents
+```
+
+Padding every large document to one shared maximum would waste coded-cell bandwidth. Large values need another layer.
+
+### Reconcile content-addressed chunks
+
+The chunks example splits a document into fixed-size pieces and computes a SHA-256 digest for each piece. Those 32-byte digests are the RIBLT symbols. An ordered manifest stores the digest sequence, while a content-addressed map stores one body per digest:
+
+```text
+manifest: [digest-A digest-new digest-B digest-added]
+chunks:   digest -> body
+```
+
+This separation matters because RIBLT reconciles sets. The chunk store naturally deduplicates repeated content, but the manifest preserves ordering and repeated occurrences. After decoding, `Remote` is precisely the set of chunk bodies the downstream should request. Each received body is checked against its digest, then the complete rebuilt document is checked against the document digest.
+
+The runnable example shares two of four upstream chunks. It discovers two chunks to fetch and one old downstream chunk that the new manifest no longer references:
+
+```text
+upstream manifest: 4 chunks, 128 bytes
+missing downstream: 2 chunks
+obsolete downstream: 1 chunks
+RIBLT decoded after 5 coded cells
+transferred 64 chunk bytes instead of 128 document bytes
+rebuilt document verified: true
+```
+
+```sh
+go run ./cmd/chunks
+```
+
+The demonstration uses fixed-size chunks, so an insertion can shift later boundaries. A content-defined chunker can retain more shared chunks across insertions without changing the RIBLT layer. The surrounding protocol carries the ordered manifest and requested chunk bodies; RIBLT only discovers which fixed-width identities differ.
+
 ## Measure difference rather than set size
 
 The repository's experiment holds the symmetric difference fixed while increasing each set from 1,000 to 10,000 entries:
@@ -1053,7 +1149,7 @@ The safer default changes that profile. A local microbenchmark of `Uint64Codec` 
 
 ## What the tests establish
 
-`go test ./...` exercises more than the happy path. The suite checks known reconciliation results, equal sets, fixed-length sketch subtraction, deterministic mapping and keyed-hash vectors, reset behavior, duplicate and lifecycle errors, and 100 seeded random set constructions. It also verifies mutable-value ownership, wrong-width rejection, weak-key rejection, collision-correct duplicate detection, incompatible sketch rejection, and decoder limits. Fuzz targets generate additional set constructions and malformed coded byte symbols.
+`go test ./...` exercises more than the happy path. The suite checks known reconciliation results, equal sets, fixed-length sketch subtraction, deterministic mapping and keyed-hash vectors, reset behavior, duplicate and lifecycle errors, and 100 seeded random set constructions. It also verifies mutable-value ownership, wrong-width rejection, weak-key rejection, collision-correct duplicate detection, incompatible sketch rejection, and decoder limits. The examples add tests for the record codec's XOR algebra, changed record and document reconciliation, UTF-8 and bounded document sizes, chunk deduplication, missing chunk discovery, reconstruction, and corrupt chunk rejection. Fuzz targets generate additional set constructions and malformed coded byte symbols.
 
 Together, those tests demonstrate the implementation's behavior for the exercised codecs and inputs. The probabilistic algorithm still depends on good mapping hashes, and checksum collisions remain possible in principle.
 
@@ -1067,7 +1163,7 @@ RIBLT reconciles sets, not arbitrary collections or application state. The imple
 
 The result is a hardened reconciliation primitive with explicit algebra, ownership, compatibility, and resource contracts. Running the walkthrough turns those pieces from a paper description into a sequence I can inspect: combine symbols, subtract local state, validate a singleton, propagate it, and stop when every received cell is resolved. Building a production synchronization system still means supplying the wire and state-transition guarantees around that primitive.
 
-The [go-riblt repository](https://github.com/TheFellow/go-riblt) contains the implementation and every command discussed here. Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. That path follows the same dependency chain as the algorithm itself.
+The [go-riblt repository](https://github.com/TheFellow/go-riblt) contains the implementation and every command discussed here. Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. After the algorithm is familiar, run `cmd/structs`, `cmd/documents`, and `cmd/chunks` to compare how the same generic core fits different application data. That path moves from the reconciliation mechanics to the representation decision a project has to make.
 
 
 ---
