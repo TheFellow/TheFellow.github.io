@@ -55,11 +55,15 @@ Available built-in values are `default`, `air`, `aqua`, `contrast`, `dark`, `dir
 
 ## Previewing locally
 
-Use a current Ruby installation with Bundler:
+The repository pins Ruby and provides setup, build, and serve tasks through
+[mise](https://mise.jdx.dev/):
 
 ```sh
-bundle install
-bundle exec jekyll serve --livereload
+mise install
+mise run setup
+mise run serve
 ```
 
-Then open <http://localhost:4000>. GitHub Pages builds and publishes `main` automatically.
+Then open <http://localhost:4000>. Run `mise run build` for the same rendering
+check used on pull requests. GitHub Pages builds and publishes `main`
+automatically.

@@ -1,0 +1,14 @@
+[tools]
+ruby = "3.3.12"
+
+[tasks.setup]
+description = "Install the pinned Bundler and site dependencies"
+run = "gem install bundler --version 4.0.17 && bundle install"
+
+[tasks.build]
+description = "Render the site with Jekyll"
+run = "bundle exec jekyll build"
+
+[tasks.serve]
+description = "Serve the site with live reload"
+run = "bundle exec jekyll serve --livereload"
