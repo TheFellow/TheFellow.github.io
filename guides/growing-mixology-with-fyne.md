@@ -163,7 +163,9 @@ The foundation added concrete rules for the reusable toolkit, same-domain intern
 
 The final [negative-fixture test](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) creates an isolated temporary module containing every representative forbidden import plus one valid public-domain import, runs arch-lint as a library, and asserts the exact violations. Building that adversarial fixture exposed a deeper problem: the cross-domain GUI rule's capture pattern was inert, so its intended violation never matched. The commit corrected the pattern and proved that toolkit-to-application, same-domain-internal, CLI, TUI, `main`, and cross-domain surface imports all fail while the public module import remains allowed.
 
-A final [bidirectional rule update](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) brought the architecture to fourteen rules. `tui-surfaces-are-bespoke` prevents a terminal adapter from importing CLI or GUI implementations; `cli-surfaces-are-bespoke` prevents a command adapter from importing TUI or GUI implementations. The fixture covers same-domain and cross-domain CLI/TUI imports of the GUI while continuing to allow each adapter to call its public domain module. Presentation isolation is now a property of all three surfaces, not merely a restriction placed on the newest one. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+A final [bidirectional rule update](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) initially brought the architecture to fourteen rules. Separate TUI and CLI rules prevented each adapter from importing the other concrete implementations. The fixture covered same-domain and cross-domain imports while continuing to allow each adapter to call its public domain module. Presentation isolation became a property of all three surfaces, not merely a restriction placed on the newest one.
+
+A later [capture-based consolidation](https://github.com/TheFellow/go-modular-monolith/pull/35) expresses that policy without enumerating surface kinds. One rule captures the imported domain and surface, then exempts only an importer with the same captured pair. Another rule treats access to domain internals as an allowlist: the domain facade, queries, handlers, and internal implementation packages are the only consumers. Surfaces, models, events, authz, arbitrary future layers, and other domains are denied by default. The complete configuration now uses eight rules, and the negative fixture proves both the allowed consumers and representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
 
 ## Build parity in reviewable slices
 
@@ -202,7 +204,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Domain desktop operations use `app.Session` and obtain fresh operation contexts.
 - [x] GUI surfaces use public modules and do not import domain internals or another presentation surface.
 - [x] The initial shared Fyne package contains shell and dispatch mechanics rather than domain policy.
-- [x] Fourteen arch-lint rules enforce bidirectional surface isolation, and isolated negative fixtures prove representative violations are rejected.
+- [x] Eight arch-lint rules enforce captured surface isolation and explicit internal consumers, and isolated negative fixtures prove representative allowed and denied imports.
 
 ### MVVM and desktop behavior
 

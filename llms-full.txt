@@ -248,12 +248,12 @@ A practical testing ladder is therefore:
 
 Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
 
-Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rule Go cannot infer. One specification prevents `pkg/tui/**` from importing `app/**` or `main/**`, preserving the reusable toolkit boundary. Another prevents domain TUI surfaces from importing domain internals, preserving the public application path even where Go visibility would permit the dependency.
+Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rule Go cannot infer. One specification prevents reusable presentation toolkits, including `pkg/tui/**`, from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
 
 The distinction is worth stating plainly:
 
 - Go `internal` enforces visibility for an entire parent directory tree.
-- Arch-lint enforces the intended layers *within* that permitted tree.
+- Arch-lint names the few intended consumers *within* that permitted tree and denies every other layer.
 
 Both rules are tested by introducing a violating import and confirming that lint fails. Architecture becomes part of the feedback loop rather than a comment that can drift away from the imports.
 
@@ -312,7 +312,7 @@ That single operation contains most of the series. The lessons below pull it apa
 
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
 
-Mixology treats the repository's dependency rules as source code. Seven declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, keep one domain out of another domain's internals, and protect events, models, queries, and handlers from dependencies that would compromise their roles. The patterns are broad enough to cover a new domain without adding another matrix of package names.
+Mixology treats the repository's dependency rules as source code. Eight declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule.
 
 The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
 
@@ -651,7 +651,9 @@ The foundation added concrete rules for the reusable toolkit, same-domain intern
 
 The final [negative-fixture test](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) creates an isolated temporary module containing every representative forbidden import plus one valid public-domain import, runs arch-lint as a library, and asserts the exact violations. Building that adversarial fixture exposed a deeper problem: the cross-domain GUI rule's capture pattern was inert, so its intended violation never matched. The commit corrected the pattern and proved that toolkit-to-application, same-domain-internal, CLI, TUI, `main`, and cross-domain surface imports all fail while the public module import remains allowed.
 
-A final [bidirectional rule update](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) brought the architecture to fourteen rules. `tui-surfaces-are-bespoke` prevents a terminal adapter from importing CLI or GUI implementations; `cli-surfaces-are-bespoke` prevents a command adapter from importing TUI or GUI implementations. The fixture covers same-domain and cross-domain CLI/TUI imports of the GUI while continuing to allow each adapter to call its public domain module. Presentation isolation is now a property of all three surfaces, not merely a restriction placed on the newest one. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+A final [bidirectional rule update](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) initially brought the architecture to fourteen rules. Separate TUI and CLI rules prevented each adapter from importing the other concrete implementations. The fixture covered same-domain and cross-domain imports while continuing to allow each adapter to call its public domain module. Presentation isolation became a property of all three surfaces, not merely a restriction placed on the newest one.
+
+A later [capture-based consolidation](https://github.com/TheFellow/go-modular-monolith/pull/35) expresses that policy without enumerating surface kinds. One rule captures the imported domain and surface, then exempts only an importer with the same captured pair. Another rule treats access to domain internals as an allowlist: the domain facade, queries, handlers, and internal implementation packages are the only consumers. Surfaces, models, events, authz, arbitrary future layers, and other domains are denied by default. The complete configuration now uses eight rules, and the negative fixture proves both the allowed consumers and representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
 
 ## Build parity in reviewable slices
 
@@ -690,7 +692,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Domain desktop operations use `app.Session` and obtain fresh operation contexts.
 - [x] GUI surfaces use public modules and do not import domain internals or another presentation surface.
 - [x] The initial shared Fyne package contains shell and dispatch mechanics rather than domain policy.
-- [x] Fourteen arch-lint rules enforce bidirectional surface isolation, and isolated negative fixtures prove representative violations are rejected.
+- [x] Eight arch-lint rules enforce captured surface isolation and explicit internal consumers, and isolated negative fixtures prove representative allowed and denied imports.
 
 ### MVVM and desktop behavior
 
@@ -1586,7 +1588,7 @@ Source: [https://thefellow.github.io/projects/arch-lint/](https://thefellow.gith
 
 Architecture diagrams and conventions are useful, but they drift when nothing checks them. arch-lint makes package-boundary rules executable: a YAML specification selects packages, forbids dependency patterns, and records narrowly scoped exceptions or exemptions.
 
-Glob captures move arch-lint beyond a simple deny list. Rules can express relationships such as “one module must not import another module's internals” without spelling out every module pair. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
+Glob captures move arch-lint beyond a simple deny list. A rule can capture the module owning an imported `internal` package, then exempt only the facade, queries, handlers, and implementation packages belonging to that same module. Another capture can keep every concrete presentation surface private to its domain and surface kind without naming CLI, TUI, or GUI individually. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
 
 ### Why it is worth exploring
 

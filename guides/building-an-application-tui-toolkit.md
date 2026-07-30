@@ -199,12 +199,12 @@ A practical testing ladder is therefore:
 
 Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
 
-Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rule Go cannot infer. One specification prevents `pkg/tui/**` from importing `app/**` or `main/**`, preserving the reusable toolkit boundary. Another prevents domain TUI surfaces from importing domain internals, preserving the public application path even where Go visibility would permit the dependency.
+Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rule Go cannot infer. One specification prevents reusable presentation toolkits, including `pkg/tui/**`, from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
 
 The distinction is worth stating plainly:
 
 - Go `internal` enforces visibility for an entire parent directory tree.
-- Arch-lint enforces the intended layers *within* that permitted tree.
+- Arch-lint names the few intended consumers *within* that permitted tree and denies every other layer.
 
 Both rules are tested by introducing a violating import and confirming that lint fails. Architecture becomes part of the feedback loop rather than a comment that can drift away from the imports.
 

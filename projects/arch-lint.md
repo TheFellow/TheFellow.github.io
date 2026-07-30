@@ -16,7 +16,7 @@ Source: [https://thefellow.github.io/projects/arch-lint/](https://thefellow.gith
 
 Architecture diagrams and conventions are useful, but they drift when nothing checks them. arch-lint makes package-boundary rules executable: a YAML specification selects packages, forbids dependency patterns, and records narrowly scoped exceptions or exemptions.
 
-Glob captures move arch-lint beyond a simple deny list. Rules can express relationships such as “one module must not import another module's internals” without spelling out every module pair. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
+Glob captures move arch-lint beyond a simple deny list. A rule can capture the module owning an imported `internal` package, then exempt only the facade, queries, handlers, and implementation packages belonging to that same module. Another capture can keep every concrete presentation surface private to its domain and surface kind without naming CLI, TUI, or GUI individually. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
 
 ### Why it is worth exploring
 
