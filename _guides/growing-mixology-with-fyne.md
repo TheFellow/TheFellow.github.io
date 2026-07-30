@@ -1,7 +1,7 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-07-30 11:05:17 -0700
+last_modified_at: 2026-07-30 14:00:00 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /guides/growing-mixology-with-fyne/
 order: 30
@@ -168,7 +168,9 @@ A final [bidirectional rule update](https://github.com/TheFellow/go-modular-mono
 
 A later [capture-based consolidation](https://github.com/TheFellow/go-modular-monolith/pull/35) expresses that policy without enumerating surface kinds. One rule captures the imported domain and surface, then exempts only an importer with the same captured pair. Another rule treats access to domain internals as an allowlist: the domain facade, queries, handlers, and internal implementation packages are the only consumers. Surfaces, models, events, authz, arbitrary future layers, and other domains are denied by default.
 
-The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `pkg/toolkits/gui`, and `pkg/toolkits/tui`. The CLI toolkit contains reusable JSON input and output plus table rendering; the GUI toolkit is named for its architectural role while retaining Fyne as its implementation; and the TUI toolkit contains Bubble Tea presentation mechanics. Two captured rules make that structure symmetric. Toolkits cannot import their siblings, and each domain surface can import only the toolkit whose name matches its own surface kind. The complete configuration uses ten rules, and the negative fixture proves allowed consumers plus representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `pkg/toolkits/gui`, and `pkg/toolkits/tui`. The CLI toolkit contains reusable JSON input and output plus table rendering; the GUI toolkit is named for its architectural role while retaining Fyne as its implementation; and the TUI toolkit contains Bubble Tea presentation mechanics. Two captured rules make that structure symmetric. Toolkits cannot import their siblings, and each domain surface can import only the toolkit whose name matches its own surface kind. The negative fixture proves allowed consumers plus representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+
+A later architecture pass makes every `main/**` package a presentation leaf from the perspective of domain surfaces. Mixology-wide TUI contracts, components, styles, and keys moved to `app/surfaces/tui`; `main/tui` now owns only root shell and workspace composition. The same pass keeps cross-domain authorization packages private and prevents command implementations from importing another domain's events, while retaining public models, queries, and events as collaboration contracts. Twelve arch-lint rules enforce the dependency graph, and architecture tests separately validate each domain's recognized package topology and its composition in `app.New`.
 
 ## Build parity in reviewable slices
 
@@ -207,7 +209,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Domain desktop operations use `app.Session` and obtain fresh operation contexts.
 - [x] GUI surfaces use public modules and do not import domain internals or another presentation surface.
 - [x] The initial shared Fyne package contains shell and dispatch mechanics rather than domain policy.
-- [x] Ten arch-lint rules enforce captured surface isolation, matching toolkit access, toolkit independence, and explicit internal consumers; isolated negative fixtures prove representative allowed and denied imports.
+- [x] Twelve arch-lint rules enforce captured surface isolation, leaf-only composition, matching toolkit access, toolkit independence, cross-domain ownership, and explicit internal consumers; isolated negative fixtures prove representative allowed and denied imports.
 
 ### MVVM and desktop behavior
 
