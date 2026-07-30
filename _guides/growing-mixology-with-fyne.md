@@ -1,7 +1,7 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-07-30 10:38:51 -0700
+last_modified_at: 2026-07-30 11:05:17 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /guides/growing-mixology-with-fyne/
 order: 30
@@ -56,7 +56,7 @@ The composition root now constructs an `app.Session`, and the desktop lifecycle 
 
 ## The first foundation
 
-The first implementation slice chose [Fyne 2.8.0](https://github.com/TheFellow/go-modular-monolith/blob/5af00d09571e03a21665774258f8f3d32b111d16/go.mod) and added a dedicated desktop executable. The [application-facing rename](https://github.com/TheFellow/go-modular-monolith/pull/34) now exposes that entry point at `main/gui`, while `pkg/fyne` retains the concrete framework mechanics. Its composition root resolves a per-user data directory, opens the log and embedded database, constructs the application and persistent session, and installs an idempotent close path on the native window. The test uses Fyne's in-memory application and virtual window, navigates the composed shell, closes it twice, and then reopens the same database to prove that ownership was released.
+The first implementation slice chose [Fyne 2.8.0](https://github.com/TheFellow/go-modular-monolith/blob/5af00d09571e03a21665774258f8f3d32b111d16/go.mod) and added a dedicated desktop executable. The [application-facing rename](https://github.com/TheFellow/go-modular-monolith/pull/34) exposed that entry point at `main/gui`, while the reusable framework mechanics initially lived in `pkg/fyne`. The current package is [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/gui): GUI names its architectural purpose, while Fyne remains its implementation technology. Its composition root resolves a per-user data directory, opens the log and embedded database, constructs the application and persistent session, and installs an idempotent close path on the native window. The test uses Fyne's in-memory application and virtual window, navigates the composed shell, closes it twice, and then reopens the same database to prove that ownership was released.
 
 The reusable [`pkg/fyne` foundation](https://github.com/TheFellow/go-modular-monolith/tree/5af00d09571e03a21665774258f8f3d32b111d16/pkg/fyne) contains only desktop mechanics. Its shell validates routes, builds views lazily, preserves them after navigation, and changes the active title and content. A later [presentation-mechanics slice](https://github.com/TheFellow/go-modular-monolith/commit/5af00d09571e03a21665774258f8f3d32b111d16) added latest-request state, submission ownership, validation, semantic controls, test executors, dialog fakes, and a headless widget driver. Review then found that a panic could leave a submission permanently active; [the correction](https://github.com/TheFellow/go-modular-monolith/commit/5af00d09571e03a21665774258f8f3d32b111d16) releases ownership before propagating the panic.
 
@@ -74,7 +74,7 @@ This does not require a universal view-model interface shared with Bubble Tea. S
 
 - Application behavior remains in public domain modules.
 - Transport-neutral models, IDs, filters, tags, and typed errors remain shared.
-- Fyne mechanics proven across several screens may move into a dedicated `pkg/fyne` toolkit.
+- Fyne mechanics proven across several screens live in the dedicated `pkg/toolkits/gui` toolkit.
 - Application-wide Fyne components may live at the desktop composition edge.
 - Domain actions and presentation state remain in each domain's GUI surface.
 
@@ -150,12 +150,12 @@ With those corrections, the audited matrix supports code-level functional parity
 
 ## Enforce the new boundary
 
-Go's `internal` visibility does not prevent a same-domain desktop package from importing its domain's private implementation. Mixology already closes that gap for the TUI with arch-lint. The GUI surface should receive equivalent rules as part of its first architectural slice, before feature pressure creates exceptions.
+Go's `internal` visibility does not prevent a same-domain desktop package from importing its domain's private implementation. Mixology closes that gap for every surface with arch-lint.
 
 The intended constraints include:
 
 - `app/domains/*/surfaces/gui/**` uses public domain APIs and cannot import `app/domains/*/internal/**`.
-- A reusable Fyne toolkit cannot import `app/**` or `main/**`.
+- A reusable presentation toolkit cannot import `app/**` or `main/**`.
 - GUI surfaces cannot import TUI or CLI surface packages.
 - TUI and CLI surfaces cannot import GUI surface packages.
 - The desktop composition root may compose domain GUI surfaces, while domains remain unable to import that root.
@@ -166,7 +166,9 @@ The final [negative-fixture test](https://github.com/TheFellow/go-modular-monoli
 
 A final [bidirectional rule update](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) initially brought the architecture to fourteen rules. Separate TUI and CLI rules prevented each adapter from importing the other concrete implementations. The fixture covered same-domain and cross-domain imports while continuing to allow each adapter to call its public domain module. Presentation isolation became a property of all three surfaces, not merely a restriction placed on the newest one.
 
-A later [capture-based consolidation](https://github.com/TheFellow/go-modular-monolith/pull/35) expresses that policy without enumerating surface kinds. One rule captures the imported domain and surface, then exempts only an importer with the same captured pair. Another rule treats access to domain internals as an allowlist: the domain facade, queries, handlers, and internal implementation packages are the only consumers. Surfaces, models, events, authz, arbitrary future layers, and other domains are denied by default. The complete configuration now uses eight rules, and the negative fixture proves both the allowed consumers and representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+A later [capture-based consolidation](https://github.com/TheFellow/go-modular-monolith/pull/35) expresses that policy without enumerating surface kinds. One rule captures the imported domain and surface, then exempts only an importer with the same captured pair. Another rule treats access to domain internals as an allowlist: the domain facade, queries, handlers, and internal implementation packages are the only consumers. Surfaces, models, events, authz, arbitrary future layers, and other domains are denied by default.
+
+The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `pkg/toolkits/gui`, and `pkg/toolkits/tui`. The CLI toolkit contains reusable JSON input and output plus table rendering; the GUI toolkit is named for its architectural role while retaining Fyne as its implementation; and the TUI toolkit contains Bubble Tea presentation mechanics. Two captured rules make that structure symmetric. Toolkits cannot import their siblings, and each domain surface can import only the toolkit whose name matches its own surface kind. The complete configuration uses ten rules, and the negative fixture proves allowed consumers plus representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
 
 ## Build parity in reviewable slices
 
@@ -205,7 +207,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Domain desktop operations use `app.Session` and obtain fresh operation contexts.
 - [x] GUI surfaces use public modules and do not import domain internals or another presentation surface.
 - [x] The initial shared Fyne package contains shell and dispatch mechanics rather than domain policy.
-- [x] Eight arch-lint rules enforce captured surface isolation and explicit internal consumers, and isolated negative fixtures prove representative allowed and denied imports.
+- [x] Ten arch-lint rules enforce captured surface isolation, matching toolkit access, toolkit independence, and explicit internal consumers; isolated negative fixtures prove representative allowed and denied imports.
 
 ### MVVM and desktop behavior
 
@@ -214,7 +216,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Views own Fyne widget construction and event wiring.
 - [x] Domain async results return through an injected dispatcher, with production using Fyne's UI goroutine.
 - [x] Async loads and submissions have request, target, and form-instance ownership semantics.
-- [x] Repeated desktop mechanics have shared, headless-tested implementations in `pkg/fyne` and `pkg/testutil/fynetest`.
+- [x] Repeated desktop mechanics have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
 
 ### Feature parity
 
