@@ -1,7 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-07-30 11:05:17 -0700
+last_modified_at: 2026-07-30 14:00:00 -0700
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /guides/building-an-application-tui-toolkit/
 order: 20
@@ -52,7 +52,7 @@ The shell also keeps the application session in one place. Domain surfaces recei
 
 ## A small view-model contract
 
-Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/views/view.go):
+Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/app/surfaces/tui/views/view.go):
 
 ```go
 type ViewModel interface {
@@ -135,13 +135,13 @@ The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolit
 
 These packages depend on Bubble Tea, Bubbles, and Lip Gloss, but not on Mixology's application or domains. Styles and key maps arrive as ordinary constructor values or options. That is both theming and dependency injection in a form natural to Go: no global service locator and no runtime resource lookup.
 
-Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they remain in [`main/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`main/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui/presentation), not beside generic layout arithmetic.
+Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they live in [`app/surfaces/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`app/surfaces/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/presentation), not beside generic layout arithmetic.
 
-This distinction is the boundary between a toolkit and an accidental framework. `/pkg` contains mechanics that another Bubble Tea application could sensibly reuse. `main/tui` composes those mechanics into Mixology's design language. Domain surfaces add behavior and vocabulary that only their bounded context understands.
+This distinction separates three kinds of ownership. `pkg/toolkits/tui` contains mechanics that another Bubble Tea application could sensibly reuse. `app/surfaces/tui` contains Mixology-wide presentation contracts, components, styles, and keys that domain surfaces share. `main/tui` is the leaf composition root: it assembles the root shell and workspaces but provides no package that a domain surface may import. Domain surfaces add behavior and vocabulary that only their bounded context understands.
 
 ## The tag editor shows composition at work
 
-The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/components/tag_editor.go) is reusable across Mixology's domains but intentionally remains an application component. It knows the application session, Cedar entity identity, canonical tag syntax, global styles, and the tagging module. Underneath, it composes the generic form toolkit.
+The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/surfaces/tui/components/tag_editor.go) is reusable across Mixology's domains but intentionally remains an application component. It knows the application session, Cedar entity identity, canonical tag syntax, global styles, and the tagging module. Underneath, it composes the generic form toolkit.
 
 The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, calls the public `Tags.Replace` operation, and returns a `TagsSavedMsg`. It does not mutate its parent view model directly. The parent decides how the successful entity update affects its typed list and detail.
 
@@ -199,6 +199,8 @@ A practical testing ladder is therefore:
 Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
 
 Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rules Go cannot infer. One specification prevents reusable presentation toolkits below `pkg/toolkits/*` from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
+
+Every domain surface is also forbidden from importing `main/**`. Shared Mixology presentation contracts therefore live under `app/surfaces/tui`, while `main/tui` remains a leaf that only composes them. Separate ownership rules keep another domain's `authz` package private and allow a command implementation to import only its own domain's events. Public models, queries, and events remain deliberate cross-domain contracts.
 
 The toolkit boundary is symmetric as well. One captured rule prevents a presentation toolkit from importing a sibling toolkit. Another captures the presentation name in `app/domains/*/surfaces/*` and permits that surface to use only the toolkit with the same name. The TUI can import `pkg/toolkits/tui`, but not the CLI or GUI toolkit; the same statement holds for every current and future matching surface and toolkit pair without adding another named rule.
 

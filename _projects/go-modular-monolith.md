@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-30 10:00:00 -0700
+last_modified_at: 2026-07-30 14:00:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -30,6 +30,22 @@ Deleting an ingredient makes those claims concrete. The command can affect inven
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
+
+The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
+
+```text
+app/
+  kernel/                 shared value types and cross-cutting ports
+  domains/<context>/      facade, public contracts, owned policy, internals, and surfaces
+  surfaces/tui/           Mixology-wide TUI contracts and components
+pkg/
+  toolkits/{cli,gui,tui}/ reusable presentation mechanics
+  middleware/             authorization, transactions, events, audit, and metrics
+main/
+  cli/                    CLI executable and composition
+  gui/                    Fyne executable and composition
+  tui/                    Bubble Tea root shell and workspace composition
+```
 
 The [Building High-Quality Software preview](/guides/building-high-quality-software/) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the

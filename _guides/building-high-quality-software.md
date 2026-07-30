@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-30 11:05:17 -0700
+last_modified_at: 2026-07-30 14:00:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10
@@ -29,7 +29,7 @@ That single operation contains most of the series. The lessons below pull it apa
 
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
 
-Mixology treats the repository's dependency rules as source code. Ten declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. A second pair of captured rules makes the CLI, GUI, and TUI toolkits independent, then permits each domain surface to import only the toolkit with the matching presentation name.
+Mixology treats the repository's dependency rules as source code. Twelve declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. Captured rules also make the CLI, GUI, and TUI toolkits independent, permit each domain surface to import only the matching toolkit, and keep every surface independent of `main/**` composition. Cross-domain rules keep authorization contracts private to their owner and allow a command implementation to import only its own domain's events, while public models, queries, and events remain collaboration contracts.
 
 The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
 
@@ -95,15 +95,17 @@ This lesson will trace one policy through command authorization, a single-entity
 
 For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/).
 
-Mixology ships as one binary with two ways to use it. The CLI handles commands and formatted output; `--tui` launches a persistent Bubble Tea application. Both call the same domain modules and enter the same pipeline.
+Mixology exposes three adapters. The CLI handles commands and formatted output, `--tui` launches a persistent Bubble Tea application, and the GUI executable opens a native Fyne desktop client. All three call the same domain modules and enter the same pipeline.
 
-That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. The TUI keeps an explicit application session because login persists between messages. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
+That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. Persistent TUI and GUI processes keep explicit application sessions because login survives between interactions. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
 
 The TUI makes that separation concrete with an MVVM-like design. Domain view models own typed
 selection, workflow state, commands, and domain-specific rendering. The root model owns
 application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
 as searchable list/detail state, loading, and pane sizing live in `pkg/toolkits/tui`; forms and dialogs keep
-their own local input behavior. That three-way split matters: sharing presentation machinery does
+their own local input behavior. Mixology-wide contracts, components, styles, and keys live in
+`app/surfaces/tui`, where domain surfaces can use them without depending on the `main/tui` composition
+root. That ownership split matters: sharing presentation machinery does
 not move domain decisions into a generic base view model, while every domain does not have to
 rediscover the same viewport arithmetic.
 
@@ -146,7 +148,7 @@ type](https://github.com/TheFellow/go-modular-monolith/tree/main/app/kernel/tag)
 labels and key/value tags. The [tagging
 domain](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/tagging) owns their
 polymorphic associations and the uniform add, remove, list, and replace workflows. Each operational
-domain registers a loader, a bulk active-ID query, and its own get, tag, and untag actions. The
+domain depends on the narrow [`tag.Repository`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/kernel/tag/repository.go) port, registers a loader and a bulk active-ID query, and supplies its own get, tag, and untag actions. The
 generic workflow can therefore load complete domain-owned state, authorize mutations, and respect
 each domain's lifecycle without importing private models or persistence.
 

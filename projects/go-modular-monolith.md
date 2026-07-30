@@ -26,6 +26,22 @@ That balance is what makes Mixology useful as a teaching vehicle. It has enough 
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
+The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
+
+```text
+app/
+  kernel/                 shared value types and cross-cutting ports
+  domains/<context>/      facade, public contracts, owned policy, internals, and surfaces
+  surfaces/tui/           Mixology-wide TUI contracts and components
+pkg/
+  toolkits/{cli,gui,tui}/ reusable presentation mechanics
+  middleware/             authorization, transactions, events, audit, and metrics
+main/
+  cli/                    CLI executable and composition
+  gui/                    Fyne executable and composition
+  tui/                    Bubble Tea root shell and workspace composition
+```
+
 The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
 shared operation pipeline, transactional events, focused code generation, error contracts,

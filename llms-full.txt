@@ -102,7 +102,7 @@ The shell also keeps the application session in one place. Domain surfaces recei
 
 ## A small view-model contract
 
-Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/views/view.go):
+Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/app/surfaces/tui/views/view.go):
 
 ```go
 type ViewModel interface {
@@ -185,13 +185,13 @@ The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolit
 
 These packages depend on Bubble Tea, Bubbles, and Lip Gloss, but not on Mixology's application or domains. Styles and key maps arrive as ordinary constructor values or options. That is both theming and dependency injection in a form natural to Go: no global service locator and no runtime resource lookup.
 
-Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they remain in [`main/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`main/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui/presentation), not beside generic layout arithmetic.
+Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they live in [`app/surfaces/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`app/surfaces/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/presentation), not beside generic layout arithmetic.
 
-This distinction is the boundary between a toolkit and an accidental framework. `/pkg` contains mechanics that another Bubble Tea application could sensibly reuse. `main/tui` composes those mechanics into Mixology's design language. Domain surfaces add behavior and vocabulary that only their bounded context understands.
+This distinction separates three kinds of ownership. `pkg/toolkits/tui` contains mechanics that another Bubble Tea application could sensibly reuse. `app/surfaces/tui` contains Mixology-wide presentation contracts, components, styles, and keys that domain surfaces share. `main/tui` is the leaf composition root: it assembles the root shell and workspaces but provides no package that a domain surface may import. Domain surfaces add behavior and vocabulary that only their bounded context understands.
 
 ## The tag editor shows composition at work
 
-The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/components/tag_editor.go) is reusable across Mixology's domains but intentionally remains an application component. It knows the application session, Cedar entity identity, canonical tag syntax, global styles, and the tagging module. Underneath, it composes the generic form toolkit.
+The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/surfaces/tui/components/tag_editor.go) is reusable across Mixology's domains but intentionally remains an application component. It knows the application session, Cedar entity identity, canonical tag syntax, global styles, and the tagging module. Underneath, it composes the generic form toolkit.
 
 The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, calls the public `Tags.Replace` operation, and returns a `TagsSavedMsg`. It does not mutate its parent view model directly. The parent decides how the successful entity update affects its typed list and detail.
 
@@ -249,6 +249,8 @@ A practical testing ladder is therefore:
 Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
 
 Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rules Go cannot infer. One specification prevents reusable presentation toolkits below `pkg/toolkits/*` from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
+
+Every domain surface is also forbidden from importing `main/**`. Shared Mixology presentation contracts therefore live under `app/surfaces/tui`, while `main/tui` remains a leaf that only composes them. Separate ownership rules keep another domain's `authz` package private and allow a command implementation to import only its own domain's events. Public models, queries, and events remain deliberate cross-domain contracts.
 
 The toolkit boundary is symmetric as well. One captured rule prevents a presentation toolkit from importing a sibling toolkit. Another captures the presentation name in `app/domains/*/surfaces/*` and permits that surface to use only the toolkit with the same name. The TUI can import `pkg/toolkits/tui`, but not the CLI or GUI toolkit; the same statement holds for every current and future matching surface and toolkit pair without adding another named rule.
 
@@ -314,7 +316,7 @@ That single operation contains most of the series. The lessons below pull it apa
 
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
 
-Mixology treats the repository's dependency rules as source code. Ten declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. A second pair of captured rules makes the CLI, GUI, and TUI toolkits independent, then permits each domain surface to import only the toolkit with the matching presentation name.
+Mixology treats the repository's dependency rules as source code. Twelve declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. Captured rules also make the CLI, GUI, and TUI toolkits independent, permit each domain surface to import only the matching toolkit, and keep every surface independent of `main/**` composition. Cross-domain rules keep authorization contracts private to their owner and allow a command implementation to import only its own domain's events, while public models, queries, and events remain collaboration contracts.
 
 The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
 
@@ -380,15 +382,17 @@ This lesson will trace one policy through command authorization, a single-entity
 
 For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md).
 
-Mixology ships as one binary with two ways to use it. The CLI handles commands and formatted output; `--tui` launches a persistent Bubble Tea application. Both call the same domain modules and enter the same pipeline.
+Mixology exposes three adapters. The CLI handles commands and formatted output, `--tui` launches a persistent Bubble Tea application, and the GUI executable opens a native Fyne desktop client. All three call the same domain modules and enter the same pipeline.
 
-That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. The TUI keeps an explicit application session because login persists between messages. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
+That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. Persistent TUI and GUI processes keep explicit application sessions because login survives between interactions. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
 
 The TUI makes that separation concrete with an MVVM-like design. Domain view models own typed
 selection, workflow state, commands, and domain-specific rendering. The root model owns
 application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
 as searchable list/detail state, loading, and pane sizing live in `pkg/toolkits/tui`; forms and dialogs keep
-their own local input behavior. That three-way split matters: sharing presentation machinery does
+their own local input behavior. Mixology-wide contracts, components, styles, and keys live in
+`app/surfaces/tui`, where domain surfaces can use them without depending on the `main/tui` composition
+root. That ownership split matters: sharing presentation machinery does
 not move domain decisions into a generic base view model, while every domain does not have to
 rediscover the same viewport arithmetic.
 
@@ -431,7 +435,7 @@ type](https://github.com/TheFellow/go-modular-monolith/tree/main/app/kernel/tag)
 labels and key/value tags. The [tagging
 domain](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/tagging) owns their
 polymorphic associations and the uniform add, remove, list, and replace workflows. Each operational
-domain registers a loader, a bulk active-ID query, and its own get, tag, and untag actions. The
+domain depends on the narrow [`tag.Repository`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/kernel/tag/repository.go) port, registers a loader and a bulk active-ID query, and supplies its own get, tag, and untag actions. The
 generic workflow can therefore load complete domain-owned state, authorize mutations, and respect
 each domain's lifecycle without importing private models or persistence.
 
@@ -657,7 +661,9 @@ A final [bidirectional rule update](https://github.com/TheFellow/go-modular-mono
 
 A later [capture-based consolidation](https://github.com/TheFellow/go-modular-monolith/pull/35) expresses that policy without enumerating surface kinds. One rule captures the imported domain and surface, then exempts only an importer with the same captured pair. Another rule treats access to domain internals as an allowlist: the domain facade, queries, handlers, and internal implementation packages are the only consumers. Surfaces, models, events, authz, arbitrary future layers, and other domains are denied by default.
 
-The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `pkg/toolkits/gui`, and `pkg/toolkits/tui`. The CLI toolkit contains reusable JSON input and output plus table rendering; the GUI toolkit is named for its architectural role while retaining Fyne as its implementation; and the TUI toolkit contains Bubble Tea presentation mechanics. Two captured rules make that structure symmetric. Toolkits cannot import their siblings, and each domain surface can import only the toolkit whose name matches its own surface kind. The complete configuration uses ten rules, and the negative fixture proves allowed consumers plus representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `pkg/toolkits/gui`, and `pkg/toolkits/tui`. The CLI toolkit contains reusable JSON input and output plus table rendering; the GUI toolkit is named for its architectural role while retaining Fyne as its implementation; and the TUI toolkit contains Bubble Tea presentation mechanics. Two captured rules make that structure symmetric. Toolkits cannot import their siblings, and each domain surface can import only the toolkit whose name matches its own surface kind. The negative fixture proves allowed consumers plus representative denied descendants. This is why an architecture rule needs a test that deliberately breaks it; a clean production graph cannot distinguish a working constraint from one that never runs.
+
+A later architecture pass makes every `main/**` package a presentation leaf from the perspective of domain surfaces. Mixology-wide TUI contracts, components, styles, and keys moved to `app/surfaces/tui`; `main/tui` now owns only root shell and workspace composition. The same pass keeps cross-domain authorization packages private and prevents command implementations from importing another domain's events, while retaining public models, queries, and events as collaboration contracts. Twelve arch-lint rules enforce the dependency graph, and architecture tests separately validate each domain's recognized package topology and its composition in `app.New`.
 
 ## Build parity in reviewable slices
 
@@ -696,7 +702,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Domain desktop operations use `app.Session` and obtain fresh operation contexts.
 - [x] GUI surfaces use public modules and do not import domain internals or another presentation surface.
 - [x] The initial shared Fyne package contains shell and dispatch mechanics rather than domain policy.
-- [x] Ten arch-lint rules enforce captured surface isolation, matching toolkit access, toolkit independence, and explicit internal consumers; isolated negative fixtures prove representative allowed and denied imports.
+- [x] Twelve arch-lint rules enforce captured surface isolation, leaf-only composition, matching toolkit access, toolkit independence, cross-domain ownership, and explicit internal consumers; isolated negative fixtures prove representative allowed and denied imports.
 
 ### MVVM and desktop behavior
 
@@ -1592,7 +1598,7 @@ Source: [https://thefellow.github.io/projects/arch-lint/](https://thefellow.gith
 
 Architecture diagrams and conventions are useful, but they drift when nothing checks them. arch-lint makes package-boundary rules executable: a YAML specification selects packages, forbids dependency patterns, and records narrowly scoped exceptions or exemptions.
 
-Glob captures move arch-lint beyond a simple deny list. A rule can capture the module owning an imported `internal` package, then exempt only the facade, queries, handlers, and implementation packages belonging to that same module. Another capture can keep every concrete presentation surface private to its domain and surface kind without naming CLI, TUI, or GUI individually. Mixology also captures presentation names to keep sibling toolkits independent and permit each surface to import only its matching toolkit. Adding a future surface and toolkit pair does not require copying an asymmetric rule. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
+Glob captures move arch-lint beyond a simple deny list. A rule can capture the module owning an imported `internal` package, then exempt only the facade, queries, handlers, and implementation packages belonging to that same module. Another capture can keep every concrete presentation surface private to its domain and surface kind without naming CLI, TUI, or GUI individually. Mixology also captures presentation names to keep sibling toolkits independent and permit each surface to import only its matching toolkit, while a composition rule keeps every surface out of `main/**`. Ownership rules make another domain's authorization package private and restrict command implementations to their own event contracts without closing public models, queries, or events. Adding a future surface and toolkit pair does not require copying an asymmetric rule. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
 
 ### Why it is worth exploring
 
@@ -1756,6 +1762,22 @@ Deleting an ingredient makes those claims concrete. The command can affect inven
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
+
+The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
+
+```text
+app/
+  kernel/                 shared value types and cross-cutting ports
+  domains/<context>/      facade, public contracts, owned policy, internals, and surfaces
+  surfaces/tui/           Mixology-wide TUI contracts and components
+pkg/
+  toolkits/{cli,gui,tui}/ reusable presentation mechanics
+  middleware/             authorization, transactions, events, audit, and metrics
+main/
+  cli/                    CLI executable and composition
+  gui/                    Fyne executable and composition
+  tui/                    Bubble Tea root shell and workspace composition
+```
 
 The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
