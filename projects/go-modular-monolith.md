@@ -14,7 +14,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Preview the tutorial series](/guides/building-high-quality-software.md)
-[Read the Fyne desktop guide](/guides/growing-mixology-with-fyne.md)
+[Read the GUI surface guide](/guides/growing-mixology-with-fyne.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. It deliberately uses one binary and one embedded database, leaving the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -29,6 +29,6 @@ Adding the Fyne client also turned surface parity into an executable application
 The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
 shared operation pipeline, transactional events, focused code generation, error contracts,
-policy-based authorization, interchangeable CLI and bespoke MVVM-style TUI and Fyne surfaces, an owned seam for
+policy-based authorization, interchangeable CLI and bespoke MVVM-style TUI and GUI surfaces, an owned seam for
 cross-domain features such as tags, production-shaped tests, and the discipline to stop before
 simple becomes simplistic.

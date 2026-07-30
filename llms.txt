@@ -26,7 +26,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 
 - [Building an Application TUI Toolkit](https://thefellow.github.io/guides/building-an-application-tui-toolkit.md): How Mixology adapts MVVM and Elm ideas into an application toolkit.
 - [Building High-Quality Software](https://thefellow.github.io/guides/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
-- [Growing Mixology with a Fyne Desktop Surface](https://thefellow.github.io/guides/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
+- [Growing Mixology with a GUI Surface](https://thefellow.github.io/guides/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
 
 ## Notes
 
