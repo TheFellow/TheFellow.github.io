@@ -1,7 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-07-30 10:38:51 -0700
+last_modified_at: 2026-07-30 11:05:17 -0700
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /guides/building-an-application-tui-toolkit/
 order: 20
@@ -80,7 +80,7 @@ This tiny protocol does work that desktop frameworks often hide in focus systems
 
 ## Domain surfaces remain domain-owned
 
-Top-level domain view models live below [`app/domains/*/surfaces/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains). Drinks knows how to create a recipe, Menus knows what publishing means, and Orders knows whether completion or cancellation is available. Those decisions do not belong in `pkg/tui` simply because they happen to be triggered by a key.
+Top-level domain view models live below [`app/domains/*/surfaces/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains). Drinks knows how to create a recipe, Menus knows what publishing means, and Orders knows whether completion or cancellation is available. Those decisions do not belong in `pkg/toolkits/tui` simply because they happen to be triggered by a key.
 
 A typical list view model combines four kinds of state:
 
@@ -99,7 +99,7 @@ The package boundary is equally important. Surfaces call exported domain modules
 
 CODE Framework's standard views are not copied as a catalog of WPF templates. Their underlying lesson is retained: when several business screens share presentation mechanics, give those mechanics one tested implementation and let each domain supply the meaning.
 
-[`pkg/tui.ListDetail`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/tui/list_detail.go) is the clearest example. It owns:
+[`pkg/toolkits/tui.ListDetail`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/list_detail.go) is the clearest example. It owns:
 
 - Bubbles list configuration, filtering, pagination, and selection.
 - Loading and spinner state.
@@ -109,7 +109,7 @@ CODE Framework's standard views are not copied as a catalog of WPF templates. Th
 
 It deliberately does not load drinks, decide whether a menu can be published, format an order, or choose what happens after deletion. Its caller retains the command, typed selection, detail renderer, and workflow state.
 
-[`ListItem[T]`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/tui/item.go) completes the adapter. It keeps the real typed domain value while supplying the title, description, and filter text Bubbles expects. A caller does not surrender type safety merely to enter a general list.
+[`ListItem[T]`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/item.go) completes the adapter. It keeps the real typed domain value while supplying the title, description, and filter text Bubbles expects. A caller does not surrender type safety merely to enter a general list.
 
 That division gives Mixology a standard list/detail language without creating a giant base view model:
 
@@ -126,7 +126,7 @@ The abstraction is intentionally opinionated. `ListDetail` implements Mixology's
 
 ## Small controls, explicit dependencies
 
-The rest of [`pkg/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/tui) forms the lower-level toolkit:
+The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/tui) forms the lower-level toolkit:
 
 - `forms` manages field focus, validation, dirty and submitted state, sizing, and text, number, and select fields.
 - `dialog` implements confirmation and cancellation as messages rather than domain callbacks.
@@ -198,7 +198,9 @@ A practical testing ladder is therefore:
 
 Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
 
-Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rule Go cannot infer. One specification prevents reusable presentation toolkits, including `pkg/tui/**`, from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
+Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rules Go cannot infer. One specification prevents reusable presentation toolkits below `pkg/toolkits/*` from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
+
+The toolkit boundary is symmetric as well. One captured rule prevents a presentation toolkit from importing a sibling toolkit. Another captures the presentation name in `app/domains/*/surfaces/*` and permits that surface to use only the toolkit with the same name. The TUI can import `pkg/toolkits/tui`, but not the CLI or GUI toolkit; the same statement holds for every current and future matching surface and toolkit pair without adding another named rule.
 
 The distinction is worth stating plainly:
 

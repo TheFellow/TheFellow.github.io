@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-30 10:38:51 -0700
+last_modified_at: 2026-07-30 11:05:17 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10
@@ -29,7 +29,7 @@ That single operation contains most of the series. The lessons below pull it apa
 
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
 
-Mixology treats the repository's dependency rules as source code. Eight declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule.
+Mixology treats the repository's dependency rules as source code. Ten declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. A second pair of captured rules makes the CLI, GUI, and TUI toolkits independent, then permits each domain surface to import only the toolkit with the matching presentation name.
 
 The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
 
@@ -102,7 +102,7 @@ That leaves each surface with work that genuinely belongs to it: gathering input
 The TUI makes that separation concrete with an MVVM-like design. Domain view models own typed
 selection, workflow state, commands, and domain-specific rendering. The root model owns
 application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
-as searchable list/detail state, loading, and pane sizing live in `pkg/tui`; forms and dialogs keep
+as searchable list/detail state, loading, and pane sizing live in `pkg/toolkits/tui`; forms and dialogs keep
 their own local input behavior. That three-way split matters: sharing presentation machinery does
 not move domain decisions into a generic base view model, while every domain does not have to
 rediscover the same viewport arithmetic.

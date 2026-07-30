@@ -1,7 +1,7 @@
 ---
 title: "arch-lint"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-30 10:38:51 -0700
+last_modified_at: 2026-07-30 11:05:17 -0700
 excerpt: "A Go analyzer that turns architectural dependency rules into build-time checks."
 language: "Go"
 license: "MIT"
@@ -19,7 +19,7 @@ topics: ["Static analysis", "Architecture"]
 
 Architecture diagrams and conventions are useful, but they drift when nothing checks them. arch-lint makes package-boundary rules executable: a YAML specification selects packages, forbids dependency patterns, and records narrowly scoped exceptions or exemptions.
 
-Glob captures move arch-lint beyond a simple deny list. A rule can capture the module owning an imported `internal` package, then exempt only the facade, queries, handlers, and implementation packages belonging to that same module. Another capture can keep every concrete presentation surface private to its domain and surface kind without naming CLI, TUI, or GUI individually. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
+Glob captures move arch-lint beyond a simple deny list. A rule can capture the module owning an imported `internal` package, then exempt only the facade, queries, handlers, and implementation packages belonging to that same module. Another capture can keep every concrete presentation surface private to its domain and surface kind without naming CLI, TUI, or GUI individually. Mixology also captures presentation names to keep sibling toolkits independent and permit each surface to import only its matching toolkit. Adding a future surface and toolkit pair does not require copying an asymmetric rule. The same analyzer can run as a command, through Go's `analysis` framework, or as a golangci-lint module plugin, so the constraint can live in both local feedback and CI.
 
 ### Why it is worth exploring
 
