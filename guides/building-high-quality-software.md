@@ -20,7 +20,7 @@ Architecture is easy to describe after the fact. Draw a few boxes, give each one
 
 Consider deleting an ingredient. The ingredient may be held in inventory, used by several drinks, and exposed through several menus. One command has to remove or retire all of that dependent state. It must check whether the actor is allowed to do so, leave an audit trail, and roll everything back if any step fails. That is enough behavior to make the architecture real.
 
-In Mixology, the request enters the same application pipeline whether it came from the CLI or TUI. The ingredient module loads the current entity, Cedar authorizes the transition, and the command records an `IngredientDeleted` event. Generated dispatch sends that event to the Drinks, Inventory, and Menus domains. Every handler works through its own persistence boundary, all of them share the original transaction, and none can emit another event. One integration test exercises the whole path.
+In Mixology, the request enters the same application pipeline whether it came from the CLI, TUI, or GUI. The ingredient module loads the current entity, Cedar authorizes the transition, and the command records an `IngredientDeleted` event. Generated dispatch sends that event to the Drinks, Inventory, and Menus domains. Every handler works through its own persistence boundary, all of them share the original transaction, and none can emit another event. One integration test exercises the whole path.
 
 That single operation contains most of the series. The lessons below pull it apart, one decision at a time.
 

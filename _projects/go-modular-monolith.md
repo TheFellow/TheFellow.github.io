@@ -31,6 +31,8 @@ That balance is what makes Mixology useful as a teaching vehicle. It has enough 
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
+The desktop shell reflects authorization before a user enters a workspace. Navigation and dashboard cards include only workspaces with an authorized read path, denied dashboard aggregates are omitted without masking operational failures, and Cedar continues to filter rows within each visible workspace. The native window title keeps the active persona visible throughout the session.
+
 The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
 
 ```text
