@@ -178,12 +178,16 @@ The abstraction is intentionally opinionated. `ListDetail` implements Mixology's
 
 The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/tui) forms the lower-level toolkit:
 
-- `forms` manages field focus, validation, dirty and submitted state, sizing, and text, number, and select fields.
+- `forms` manages field selection, explicit edit mode, validation, dirty and submitted state, sizing, and text, number, and select fields.
 - `dialog` implements confirmation and cancellation as messages rather than domain callbacks.
 - `Spinner` owns loading animation and its label.
 - Layout helpers calculate pane and content widths consistently.
 
 These packages depend on Bubble Tea, Bubbles, and Lip Gloss, but not on Mixology's application or domains. Styles and key maps arrive as ordinary constructor values or options. That is both theming and dependency injection in a form natural to Go: no global service locator and no runtime resource lookup.
+
+Forms use one interaction grammar across the application. Up and Down, with `k` and `j` aliases, move between fields while browsing. `e` or Enter begins editing the selected field. Enter accepts the current value, Escape restores the value from before editing, and Ctrl+S submits the whole form. Select fields use the same boundary, so an arrow key changes the active choice only while that field is being edited. Recipe and order editors apply the same grammar to their repeated ingredient and item sections, including explicit add and remove actions.
+
+This distinction keeps navigation visible in the state machine. A selected field is not implicitly editing merely because it has terminal focus, and Escape can cancel a value before the surrounding workflow interprets it as Back.
 
 Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they live in [`app/surfaces/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`app/surfaces/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/presentation), not beside generic layout arithmetic.
 
@@ -549,7 +553,7 @@ The composition root now constructs an `app.Session`, and the desktop lifecycle 
 
 ## The first foundation
 
-The first implementation slice chose [Fyne 2.8.0](https://github.com/TheFellow/go-modular-monolith/blob/5af00d09571e03a21665774258f8f3d32b111d16/go.mod) and added a dedicated desktop executable. The [application-facing rename](https://github.com/TheFellow/go-modular-monolith/pull/34) exposed that entry point at `main/gui`, while the reusable framework mechanics initially lived in `pkg/fyne`. The current package is [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/gui): GUI names its architectural purpose, while Fyne remains its implementation technology. Its composition root resolves a per-user data directory, opens the log and embedded database, constructs the application and persistent session, and installs an idempotent close path on the native window. The test uses Fyne's in-memory application and virtual window, navigates the composed shell, closes it twice, and then reopens the same database to prove that ownership was released.
+The first implementation slice chose [Fyne 2.8.0](https://github.com/TheFellow/go-modular-monolith/blob/5af00d09571e03a21665774258f8f3d32b111d16/go.mod) and added a dedicated desktop executable. The [application-facing rename](https://github.com/TheFellow/go-modular-monolith/pull/34) exposed that entry point at `main/gui`, while the reusable framework mechanics initially lived in `pkg/fyne`. The current package is [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/gui): GUI names its architectural purpose, while Fyne remains its implementation technology. Its composition root opens the shared `data/mixology.db` database used by the CLI and TUI, places the diagnostic log in the platform's per-user configuration directory, constructs the application and persistent session, and installs an idempotent close path on the native window. The test uses Fyne's in-memory application and virtual window, navigates the composed shell, closes it twice, and then reopens the same database to prove that ownership was released.
 
 The reusable [`pkg/fyne` foundation](https://github.com/TheFellow/go-modular-monolith/tree/5af00d09571e03a21665774258f8f3d32b111d16/pkg/fyne) contains only desktop mechanics. Its shell validates routes, builds views lazily, preserves them after navigation, and changes the active title and content. A later [presentation-mechanics slice](https://github.com/TheFellow/go-modular-monolith/commit/5af00d09571e03a21665774258f8f3d32b111d16) added latest-request state, submission ownership, validation, semantic controls, test executors, dialog fakes, and a headless widget driver. Review then found that a panic could leave a submission permanently active; [the correction](https://github.com/TheFellow/go-modular-monolith/commit/5af00d09571e03a21665774258f8f3d32b111d16) releases ownership before propagating the panic.
 
@@ -571,7 +575,9 @@ This does not require a universal view-model interface shared with Bubble Tea. S
 - Application-wide Fyne components may live at the desktop composition edge.
 - Domain actions and presentation state remain in each domain's GUI surface.
 
-The first implementations should earn those abstractions. A shared list/detail control is justified by repeated working screens, not by the fact that the TUI already has a component with that name.
+The resulting desktop now has one toolkit-owned shell and a small family of standard pages. Its persistent left navigation selects the dashboard or a domain workspace and marks the active route. List workspaces place filters and actions above a primary list and secondary detail pane. Create and edit workflows use a scrolling form with consistent status, Save, and Cancel placement. Domain packages supply the state, content, and commands, while `pkg/toolkits/gui` owns the shell, list/detail proportions, action hierarchy, empty-detail treatment, and form layout.
+
+Those abstractions were earned across all seven domain surfaces. They make CODE Framework's standard-view lesson concrete without turning the toolkit into a domain-aware screen generator.
 
 ## Make testability part of the design
 
@@ -712,7 +718,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Views own Fyne widget construction and event wiring.
 - [x] Domain async results return through an injected dispatcher, with production using Fyne's UI goroutine.
 - [x] Async loads and submissions have request, target, and form-instance ownership semantics.
-- [x] Repeated desktop mechanics have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
+- [x] Repeated desktop mechanics, including the shell, standard list/detail pages, form pages, action hierarchy, and empty-detail treatment, have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
 
 ### Feature parity
 
@@ -735,7 +741,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Race-enabled Fyne tests, native macOS build, and arch-lint pass locally at guide closure.
 - [x] CI defines headless desktop tests on Linux, macOS, and Windows.
 - [x] Target-native CI jobs build and package unsigned macOS, Windows, and Linux artifacts.
-- [x] Packaging and per-user application-data behavior are documented.
+- [x] Packaging, shared database defaults, per-user diagnostic logs, and single-process database ownership are documented.
 - [ ] Manual VoiceOver, Narrator, Orca, high-contrast, and scaling audits are complete.
 - [ ] Production macOS and Windows artifacts are signed and notarized where required.
 
@@ -1765,6 +1771,8 @@ That balance is what makes Mixology useful as a teaching vehicle. It has enough 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
 The desktop shell reflects authorization before a user enters a workspace. Navigation and dashboard cards include only workspaces with an authorized read path, denied dashboard aggregates are omitted without masking operational failures, and Cedar continues to filter rows within each visible workspace. The native window title keeps the active persona visible throughout the session.
+
+The persistent left navigation now opens each authorized workspace through a common list/detail layout, while create and edit operations use a standard scrolling form and action hierarchy. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
 The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
 
