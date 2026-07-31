@@ -1,12 +1,12 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-30 14:00:00 -0700
+last_modified_at: 2026-07-31 10:00:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/go-modular-monolith"
-last_updated: 2026-07-30
+last_updated: 2026-07-31
 guide_url: "/guides/building-high-quality-software/"
 order: 10
 featured: true
@@ -21,7 +21,7 @@ topics: ["Architecture", "Reference app", "Cedar"]
 [Preview the tutorial series](/guides/building-high-quality-software/){: .btn }
 [Read the GUI surface guide](/guides/growing-mixology-with-fyne/){: .btn }
 
-go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. It deliberately uses one binary and one embedded database, leaving the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
+go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
 
@@ -35,21 +35,32 @@ The desktop shell reflects authorization before a user enters a workspace. Navig
 
 The persistent left navigation now opens each authorized workspace through a common list/detail layout, while create and edit operations use a standard scrolling form and action hierarchy. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
-The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
+The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
+
+Code shared by every context has a named home rather than accumulating in a generic utility package. `app/kernel` owns application value types and narrow ports. `pkg` owns transport-independent infrastructure such as authorization, dispatch, filtering, middleware, paging, storage, and telemetry. Presentation mechanics live in three application-independent `pkg/toolkits` packages. Domain surfaces may use only the toolkit for the same presentation mode, toolkits cannot import application code or each other, and no surface may import executable composition from `main`.
+
+The three user-facing programs complete that symmetry. `main/cli`, `main/gui`, and `main/tui` each assemble the application and their domain surfaces, while `main/seed` creates representative data. This keeps framework setup, process lifetime, navigation, and cross-domain workspace composition at the edge. The application root separately proves that every declared domain is exposed and initialized, so adding a directory is not enough to add a module.
 
 ```text
 app/
-  kernel/                 shared value types and cross-cutting ports
-  domains/<context>/      facade, public contracts, owned policy, internals, and surfaces
-  surfaces/tui/           Mixology-wide TUI contracts and components
+  kernel/                         shared value types and narrow ports
+  domains/<context>/
+    module.go                     public facade
+    {models,queries,events}/      collaboration contracts
+    authz/                        domain-owned Cedar policy
+    internal/{commands,dao}/      write logic and persistence
+    surfaces/{cli,gui,tui}/       bespoke presentation adapters
+  surfaces/tui/                   Mixology-wide TUI contracts and components
 pkg/
-  toolkits/{cli,gui,tui}/ reusable presentation mechanics
-  middleware/             authorization, transactions, events, audit, and metrics
+  toolkits/{cli,gui,tui}/         reusable presentation mechanics
+  middleware/                     authorization, transactions, events, audit, and metrics
+  {authn,authz,dispatcher,filter,store}/
 main/
-  cli/                    CLI executable and composition
-  gui/                    Fyne executable and composition
-  tui/                    Bubble Tea root shell and workspace composition
+  {cli,gui,tui}/                  executable composition roots
+  seed/                           sample-data executable
 ```
+
+The boundaries are checked from several directions. Captured `arch-lint` rules apply the same restrictions to present and future domains and surfaces. Topology tests reject unrecognized peer layers, and composition tests compare the domain directories with the modules exposed by the application. Application fixtures then exercise the real embedded store, middleware, authorization, dispatch, audit, and domain handlers. Cross-surface tests mutate through one adapter and observe through another, checking shared behavior without requiring the adapters to share their implementation.
 
 The [Building High-Quality Software preview](/guides/building-high-quality-software/) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
