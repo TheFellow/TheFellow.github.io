@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-30 14:00:00 -0700
+last_modified_at: 2026-07-31 10:00:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10
@@ -30,6 +30,8 @@ That single operation contains most of the series. The lessons below pull it apa
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
 
 Mixology treats the repository's dependency rules as source code. Twelve declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. Captured rules also make the CLI, GUI, and TUI toolkits independent, permit each domain surface to import only the matching toolkit, and keep every surface independent of `main/**` composition. Cross-domain rules keep authorization contracts private to their owner and allow a command implementation to import only its own domain's events, while public models, queries, and events remain collaboration contracts.
+
+Import rules cover dependency direction, but they do not catch every architectural omission. Mixology also treats the domain directories as the source of truth for two repository tests. The [topology test](https://github.com/TheFellow/go-modular-monolith/blob/main/architecture/domain_topology_test.go) rejects unrecognized peer layers such as an improvised `services` or `utils` package, while allowing explicit profiles for operational, audit, and tagging domains. The [composition test](https://github.com/TheFellow/go-modular-monolith/blob/main/architecture/domain_registration_test.go) compares those directories with `app.App` and `app.New`, so a new domain cannot exist in the tree without being exposed and initialized. Neither test introduces a second registration manifest. Together with import linting, they check dependency edges, the permitted architectural vocabulary, and whether every declared module actually joins the application.
 
 The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
 
@@ -95,7 +97,7 @@ This lesson will trace one policy through command authorization, a single-entity
 
 For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/).
 
-Mixology exposes three adapters. The CLI handles commands and formatted output, `--tui` launches a persistent Bubble Tea application, and the GUI executable opens a native Fyne desktop client. All three call the same domain modules and enter the same pipeline.
+Mixology exposes three adapters through three executables. `main/cli` handles commands and formatted output, `main/tui` launches the persistent Bubble Tea application, and `main/gui` opens the native Fyne desktop client. Each composition root owns its framework setup, flags, process lifetime, and application bootstrap. All three call the same domain modules and enter the same pipeline.
 
 That leaves each surface with work that genuinely belongs to it: gathering input, managing interaction state, and presenting results. Persistent TUI and GUI processes keep explicit application sessions because login survives between interactions. A CLI invocation builds its context from the current request. Neither distinction changes how a drink is created or how a menu is authorized.
 
