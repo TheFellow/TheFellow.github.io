@@ -129,12 +129,16 @@ The abstraction is intentionally opinionated. `ListDetail` implements Mixology's
 
 The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/tui) forms the lower-level toolkit:
 
-- `forms` manages field focus, validation, dirty and submitted state, sizing, and text, number, and select fields.
+- `forms` manages field selection, explicit edit mode, validation, dirty and submitted state, sizing, and text, number, and select fields.
 - `dialog` implements confirmation and cancellation as messages rather than domain callbacks.
 - `Spinner` owns loading animation and its label.
 - Layout helpers calculate pane and content widths consistently.
 
 These packages depend on Bubble Tea, Bubbles, and Lip Gloss, but not on Mixology's application or domains. Styles and key maps arrive as ordinary constructor values or options. That is both theming and dependency injection in a form natural to Go: no global service locator and no runtime resource lookup.
+
+Forms use one interaction grammar across the application. Up and Down, with `k` and `j` aliases, move between fields while browsing. `e` or Enter begins editing the selected field. Enter accepts the current value, Escape restores the value from before editing, and Ctrl+S submits the whole form. Select fields use the same boundary, so an arrow key changes the active choice only while that field is being edited. Recipe and order editors apply the same grammar to their repeated ingredient and item sections, including explicit add and remove actions.
+
+This distinction keeps navigation visible in the state machine. A selected field is not implicitly editing merely because it has terminal focus, and Escape can cancel a value before the surrounding workflow interprets it as Back.
 
 Not every repeated-looking value belongs there. `Publish`, `Draft`, `Complete`, and `CancelOrder` are application actions, so they live in [`app/surfaces/tui/keys`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/keys). The wording for an absent tag is application presentation policy, so it lives in [`app/surfaces/tui/presentation`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/surfaces/tui/presentation), not beside generic layout arithmetic.
 

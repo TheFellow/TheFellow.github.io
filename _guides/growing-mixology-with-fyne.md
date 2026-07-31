@@ -56,7 +56,7 @@ The composition root now constructs an `app.Session`, and the desktop lifecycle 
 
 ## The first foundation
 
-The first implementation slice chose [Fyne 2.8.0](https://github.com/TheFellow/go-modular-monolith/blob/5af00d09571e03a21665774258f8f3d32b111d16/go.mod) and added a dedicated desktop executable. The [application-facing rename](https://github.com/TheFellow/go-modular-monolith/pull/34) exposed that entry point at `main/gui`, while the reusable framework mechanics initially lived in `pkg/fyne`. The current package is [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/gui): GUI names its architectural purpose, while Fyne remains its implementation technology. Its composition root resolves a per-user data directory, opens the log and embedded database, constructs the application and persistent session, and installs an idempotent close path on the native window. The test uses Fyne's in-memory application and virtual window, navigates the composed shell, closes it twice, and then reopens the same database to prove that ownership was released.
+The first implementation slice chose [Fyne 2.8.0](https://github.com/TheFellow/go-modular-monolith/blob/5af00d09571e03a21665774258f8f3d32b111d16/go.mod) and added a dedicated desktop executable. The [application-facing rename](https://github.com/TheFellow/go-modular-monolith/pull/34) exposed that entry point at `main/gui`, while the reusable framework mechanics initially lived in `pkg/fyne`. The current package is [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/gui): GUI names its architectural purpose, while Fyne remains its implementation technology. Its composition root opens the shared `data/mixology.db` database used by the CLI and TUI, places the diagnostic log in the platform's per-user configuration directory, constructs the application and persistent session, and installs an idempotent close path on the native window. The test uses Fyne's in-memory application and virtual window, navigates the composed shell, closes it twice, and then reopens the same database to prove that ownership was released.
 
 The reusable [`pkg/fyne` foundation](https://github.com/TheFellow/go-modular-monolith/tree/5af00d09571e03a21665774258f8f3d32b111d16/pkg/fyne) contains only desktop mechanics. Its shell validates routes, builds views lazily, preserves them after navigation, and changes the active title and content. A later [presentation-mechanics slice](https://github.com/TheFellow/go-modular-monolith/commit/5af00d09571e03a21665774258f8f3d32b111d16) added latest-request state, submission ownership, validation, semantic controls, test executors, dialog fakes, and a headless widget driver. Review then found that a panic could leave a submission permanently active; [the correction](https://github.com/TheFellow/go-modular-monolith/commit/5af00d09571e03a21665774258f8f3d32b111d16) releases ownership before propagating the panic.
 
@@ -78,7 +78,9 @@ This does not require a universal view-model interface shared with Bubble Tea. S
 - Application-wide Fyne components may live at the desktop composition edge.
 - Domain actions and presentation state remain in each domain's GUI surface.
 
-The first implementations should earn those abstractions. A shared list/detail control is justified by repeated working screens, not by the fact that the TUI already has a component with that name.
+The resulting desktop now has one toolkit-owned shell and a small family of standard pages. Its persistent left navigation selects the dashboard or a domain workspace and marks the active route. List workspaces place filters and actions above a primary list and secondary detail pane. Create and edit workflows use a scrolling form with consistent status, Save, and Cancel placement. Domain packages supply the state, content, and commands, while `pkg/toolkits/gui` owns the shell, list/detail proportions, action hierarchy, empty-detail treatment, and form layout.
+
+Those abstractions were earned across all seven domain surfaces. They make CODE Framework's standard-view lesson concrete without turning the toolkit into a domain-aware screen generator.
 
 ## Make testability part of the design
 
@@ -219,7 +221,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Views own Fyne widget construction and event wiring.
 - [x] Domain async results return through an injected dispatcher, with production using Fyne's UI goroutine.
 - [x] Async loads and submissions have request, target, and form-instance ownership semantics.
-- [x] Repeated desktop mechanics have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
+- [x] Repeated desktop mechanics, including the shell, standard list/detail pages, form pages, action hierarchy, and empty-detail treatment, have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
 
 ### Feature parity
 
@@ -242,7 +244,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Race-enabled Fyne tests, native macOS build, and arch-lint pass locally at guide closure.
 - [x] CI defines headless desktop tests on Linux, macOS, and Windows.
 - [x] Target-native CI jobs build and package unsigned macOS, Windows, and Linux artifacts.
-- [x] Packaging and per-user application-data behavior are documented.
+- [x] Packaging, shared database defaults, per-user diagnostic logs, and single-process database ownership are documented.
 - [ ] Manual VoiceOver, Narrator, Orca, high-contrast, and scaling audits are complete.
 - [ ] Production macOS and Windows artifacts are signed and notarized where required.
 

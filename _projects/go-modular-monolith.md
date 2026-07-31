@@ -33,6 +33,8 @@ Adding the Fyne client also turned surface parity into an executable application
 
 The desktop shell reflects authorization before a user enters a workspace. Navigation and dashboard cards include only workspaces with an authorized read path, denied dashboard aggregates are omitted without masking operational failures, and Cedar continues to filter rows within each visible workspace. The native window title keeps the active persona visible throughout the session.
 
+The persistent left navigation now opens each authorized workspace through a common list/detail layout, while create and edit operations use a standard scrolling form and action hierarchy. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
+
 The package layout makes those ownership choices explicit. Domain surfaces may share application presentation contracts from `app/surfaces`, and reusable framework mechanics from the matching `pkg/toolkits` package, but they cannot import executable composition under `main`. Public models, queries, and events form the cross-domain vocabulary; authorization packages and command event publication stay within the owning domain. Architecture tests also reject novel domain package layers and catch a domain that was added without being exposed and initialized by the application root.
 
 ```text
