@@ -1,7 +1,7 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-07-30 14:00:00 -0700
+last_modified_at: 2026-07-31 14:00:00 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /guides/growing-mixology-with-fyne/
 order: 30
@@ -78,9 +78,21 @@ This does not require a universal view-model interface shared with Bubble Tea. S
 - Application-wide Fyne components may live at the desktop composition edge.
 - Domain actions and presentation state remain in each domain's GUI surface.
 
-The resulting desktop now has one toolkit-owned shell and a small family of standard pages. Its persistent left navigation selects the dashboard or a domain workspace and marks the active route. List workspaces place filters and actions above a primary list and secondary detail pane. Create and edit workflows use a scrolling form with consistent status, Save, and Cancel placement. Domain packages supply the state, content, and commands, while `pkg/toolkits/gui` owns the shell, list/detail proportions, action hierarchy, empty-detail treatment, and form layout.
+The resulting desktop now has one toolkit-owned shell and a small family of standard pages. Its persistent left navigation keeps the active actor and role visible, selects the dashboard or an authorized domain workspace, and marks the active route. List workspaces place filters and primary actions above a table and contextual detail pane. Create and edit workflows use a scrolling form with consistent status, Save, and Cancel placement. Domain packages supply the state, content, and commands, while `pkg/toolkits/gui` owns the shell, list/detail proportions, action hierarchy, empty states, and form layout.
 
 Those abstractions were earned across all seven domain surfaces. They make CODE Framework's standard-view lesson concrete without turning the toolkit into a domain-aware screen generator.
+
+## A second pass made the desktop legible
+
+Functional parity established that every workflow existed, but it did not make every workspace equally easy to scan. The next GUI pass reshaped the seven domain surfaces around one visual language while preserving their domain-specific actions. Drinks, Ingredients, Inventory, Menus, Orders, and Audit now use aligned table rows with native headers. Headers resize columns and, where the domain supports ordering, sort the current result. Tag columns render compact pills, horizontal scrolling preserves values when their natural width exceeds the viewport, and the list and detail remain independently scrollable within the split workspace.
+
+Selection opens a read-oriented detail rather than an editing form. Authorized row actions offer the operations available for that entity, while the detail action bar keeps lifecycle transitions near the state they affect. Drinks expose recipe editing, Ingredients expose dependency-aware deletion, Inventory separates receive, consume, adjust, set, and tag operations, Menus keep drink curation and publish or draft transitions with the menu, and Orders place completion, cancellation, and tagging beside the order detail. Audit remains read-only. The Tags workspace uses a catalog and usage summary before entering entity inspection or complete-set editing.
+
+Forms also moved away from transport-shaped input. Tag fields are token editors: Enter validates and inserts a `key` or `key=value` token, an existing key is replaced, and individual pills can be removed. Drink recipe rows use named ingredient selectors, substitute pills, and compact add or remove actions instead of exposing identifiers or dense nested forms. Field labels sit above full-width controls, wheel events continue scrolling the containing detail page even over text fields, and explicit empty-collection views distinguish a successful query with no rows from a loading or error state.
+
+The shared toolkit now carries the mechanics behind that consistency: semantic buttons and entries, guarded action selectors, reusable table cells, icons, sortable native headers, row action menus, full-width detail fields, empty states, and token layouts. Domain presenters still decide which actions are authorized and meaningful. Headless tests recycle table cells across text, tags, and actions, exercise sorting and resizing, reject recursive or stale action callbacks, preserve form scrolling, and drive the token editor through canonical tag normalization.
+
+The pass also tightened Fyne's concurrency contract. Production publication and startup work enter the UI through `fyne.Do` or `fyne.DoAndWait`, while tests retain deterministic dispatch. Visual acceptance cases use fixed window sizes and Fyne's in-memory driver to cover the dashboard, tables, detail states, forms, menus, tags, audit, and empty collections. This makes layout and thread ownership tested presentation behavior rather than assumptions left to a manual launch.
 
 ## Make testability part of the design
 
@@ -138,7 +150,7 @@ That service is protected at two levels. Behavioral tests force tag replacement 
 
 The next audit pass tightened fidelity that broad workflow tests had not yet made visible:
 
-- [Desktop actor selection](https://github.com/TheFellow/go-modular-monolith/commit/da9b52db6197917088088856384dfa1c6b356026) now accepts the same owner, manager, sommelier, bartender, and anonymous personas as the CLI and TUI through `-actor` and `-as`. Startup parsing rejects unknown actors before opening the application, and the active persona remains visible in the native window title.
+- [Desktop actor selection](https://github.com/TheFellow/go-modular-monolith/commit/da9b52db6197917088088856384dfa1c6b356026) now accepts the same owner, manager, sommelier, bartender, and anonymous personas as the CLI and TUI through `-actor` and `-as`. Startup parsing rejects unknown actors before opening the application, and the shell keeps the active actor and role visible across routes.
 - Desktop composition probes each workspace's authorized read path and omits denied routes from navigation and dashboard cards. This hides Audit and Tags from a sommelier, for example, while Cedar still filters individual rows inside readable workspaces such as Drinks. Non-permission failures leave the route visible so the workspace can report the actual problem.
 - The GUI originally hid paging inside full-catalog loads or defaults. [Drinks](https://github.com/TheFellow/go-modular-monolith/commit/6d9ec7830b600019e8c2d878d6d04ef304e34c58), [Ingredients](https://github.com/TheFellow/go-modular-monolith/commit/2499ea57230d15d5905ea0696911b56acd269232), and [Menus](https://github.com/TheFellow/go-modular-monolith/commit/78b3dda9bedb6fbbe463c43355af1cb0e5d5e484) now expose explicit page size, Next, and Previous controls backed by domain cursors, history, server filters, and invalid-limit feedback. Tests create more than one hundred records so the controls cannot pass while still showing only the first page.
 - [Order item notes](https://github.com/TheFellow/go-modular-monolith/commit/81efd61daf01d84f4891e8a9417935e5e1480b37) are now multiline in the GUI placement form, preserving commas and newlines through persistence. This complements the earlier CLI and TUI note corrections and treats free-form item instructions as data rather than a single-line widget convenience.
@@ -221,7 +233,7 @@ I will use the following checklist while following the implementation. Completed
 - [x] Views own Fyne widget construction and event wiring.
 - [x] Domain async results return through an injected dispatcher, with production using Fyne's UI goroutine.
 - [x] Async loads and submissions have request, target, and form-instance ownership semantics.
-- [x] Repeated desktop mechanics, including the shell, standard list/detail pages, form pages, action hierarchy, and empty-detail treatment, have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
+- [x] Repeated desktop mechanics, including the shell, list/detail pages, sortable and resizable tables, form pages, action hierarchy, token editors, and explicit empty states, have shared, headless-tested implementations in `pkg/toolkits/gui` and `pkg/testutil/fynetest`.
 
 ### Feature parity
 
