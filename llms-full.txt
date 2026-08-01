@@ -43,6 +43,289 @@ Long-form tutorials connect design principles to running code. Each series is st
 - [Building High-Quality Software](/guides/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 - [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
 - [Growing Mixology with a GUI Surface](/guides/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
+- [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
+- [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
+- [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test.md): What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
+- [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/authorization-is-part-of-navigation/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Authorization Is Part of Navigation
+
+Source: [https://thefellow.github.io/guides/authorization-is-part-of-navigation/](https://thefellow.github.io/guides/authorization-is-part-of-navigation/)
+
+## Pyramid summary
+
+- **~2 words:** Authorized navigation
+- **~8 words:** How Cedar shapes routes, aggregates, rows, and available actions.
+- **Expanded:** How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
+
+## Full content
+
+Authorization becomes visible long before someone presses Save. It determines which workspaces exist in navigation, which summary cards appear on a dashboard, which rows enter a list, and which actions make sense for the selected entity. Treating only the final command as protected leaves the application technically resistant to mutation while its interface still discloses names, counts, relationships, and capabilities.
+
+The Fyne surface added to [Mixology](https://github.com/TheFellow/go-modular-monolith) forced this issue into the open. A persistent desktop shell advertises the shape of the application continuously. Its dashboard summarizes several domains at once. Its tables expose row actions. The GUI could not rely on a permission error at the end of a workflow and still present a coherent experience.
+
+The resulting rule is simple: policy remains in Cedar and the application boundary, while each presentation surface composes only the experience the active principal is allowed to use.
+
+## One decision appears at several scales
+
+A useful way to reason about authorization in an application surface is to follow it from the outside inward:
+
+```mermaid
+flowchart TD
+    P[Authenticated principal] --> W[Workspace visibility]
+    W --> D[Dashboard cards and aggregates]
+    W --> L[Authorized list query]
+    L --> R[Visible rows]
+    R --> A[Actions for selected resource]
+    A --> M[Authorized application mutation]
+    M --> T[Transaction, audit, and events]
+```
+
+Each layer answers a different question.
+
+- Workspace visibility asks whether the principal has a meaningful read path into a domain.
+- Dashboard composition asks whether even the existence or count of that domain may be disclosed.
+- A list query decides which resources the principal can observe.
+- Action availability evaluates a concrete resource, including its attributes and relationships.
+- The operation authorizes again inside the application pipeline before changing state.
+
+These are not duplicate implementations of policy. They are multiple consumers of the same policy at points where the interface needs to make a decision. The final operation remains authoritative because interface state can be stale, bypassed, or raced.
+
+## Build navigation from authorized read paths
+
+Mixology's desktop composition begins with all known workspaces, then establishes visibility for the active session. Drinks, Ingredients, Inventory, Menus, and Orders probe the public `Count` query using an empty list request. Those calls pass through the same authorized query path used by the workspace itself. Audit and Tags do not have an equivalent count operation, so the composition root asks Cedar about representative workspace resources using their public list or summary actions.
+
+The distinction between denial and failure matters. A Cedar permission error removes the workspace. A database or operational error leaves it visible so that the surface can present the real problem. Hiding every failed probe would misreport an outage as a policy decision and make a broken domain silently disappear.
+
+After the probes, the shell is constructed from the filtered route collection. A restricted route is therefore absent from the navigation rail, application menu, keyboard shortcut registration, route lookup, and lazy view construction. It is not merely a hidden button pointing at an otherwise reachable screen.
+
+```go
+if err := check.read(); err == nil || !apperrors.IsPermission(err) {
+    visible[check.id] = true
+}
+```
+
+This is composition, not enforcement. The public query still authorizes its work, and an attempted mutation still authorizes at the application boundary. Composition makes the shell truthful about the capabilities it can offer.
+
+## Aggregates can leak what rows conceal
+
+A dashboard count is data. If a sommelier is allowed to see only wine drinks and drinks tagged for that audience, an unfiltered total still reveals that other drinks exist. Low-stock totals, pending-order counts, recent audit activity, and published-menu counts can reveal business state even when no row is named.
+
+Mixology handles this at two levels. First, the desktop dashboard receives the same workspace visibility map as the shell and omits cards for unauthorized workspaces. A principal who cannot read Audit or summarize Tags does not receive a teaser card for either feature. Second, dashboard values are loaded through the application session rather than by reading DAOs from the GUI. The application owns how counts and recent activity are derived, so the presentation cannot accidentally bypass row policy for convenience.
+
+Unknown data also deserves an explicit representation. A failed or partial dashboard load should not substitute zero, because zero is a factual claim. Mixology uses unknown dashboard values and presents the error beside any data that could be loaded. That separates three states which have different security and operational meaning: authorized and empty, unauthorized and omitted, or unavailable and unknown.
+
+When adding an aggregate, I now ask the same questions I ask for a list:
+
+1. Which principal and action authorize this observation?
+2. Does the aggregate include only resources that principal may observe?
+3. Can the label, zero state, or error reveal a restricted domain?
+4. Does a partial failure remain distinguishable from a legitimate count?
+
+## Let authorized queries filter rows
+
+Route access does not imply access to every entity in a workspace. The sommelier example makes that concrete: the Drinks workspace remains useful, but Cedar filters its result to wines and explicitly tagged drinks. The surface calls the public list operation and renders the returned page. It does not fetch every row and reproduce Cedar conditions in GUI code.
+
+Filtering below the surface has several benefits. Pagination counts the records the caller can actually traverse. Selectors used by recipes, menus, and order placement do not fill with inaccessible entities. CLI, TUI, and GUI observe the same resource boundary. Policy changes remain policy changes instead of requiring coordinated edits to three presentations.
+
+This also prevents a common side channel. Client-side filtering may hide row text after IDs, totals, page counts, or loading behavior have already disclosed the hidden records. Returning an authorized result set from the application boundary gives the surface less sensitive material to mishandle.
+
+## Availability belongs to the selected resource
+
+Mutation permissions are often more specific than roles. A pending order can be completed while a completed order cannot. A draft menu can accept drinks and be published, while a published menu can be returned to draft. Cedar can also consider tags and resource relationships. The interface therefore needs action availability for the actual selected row, not a single `isManager` flag computed at login.
+
+Mixology presenters expose capability state such as `CanCreate`, `CanUpdate`, `CanDelete`, `CanTag`, `CanPublish`, `CanDraft`, `CanComplete`, and `CanCancel`. They derive those values by authorizing the appropriate Cedar action against the selected resource's entity. Views translate the result into native presentation behavior: create controls disappear when creation is unavailable, row menus contain only relevant actions, and detail action bars change with selection and lifecycle state.
+
+Inventory demonstrates why row-level capability data is useful. Each row carries whether Adjust, Set, and Tag are authorized for that resource. Orders similarly derives Complete, Cancel, and Tag availability per item. The table can present an honest action menu without waiting for a denied click, but the presenter still refuses to start a workflow when its capability is false.
+
+Capability state has a lifetime. Selection changes clear the previous permissions. Refreshing a row recomputes them. Starting asynchronous work captures the target so a later selection cannot inherit the result. A stale `CanDelete` from the previous drink is both a usability bug and a dangerous statement about authority.
+
+## Denial is still an ordinary application result
+
+Preflight authorization improves composition, but it never replaces authorization at execution. State may change after a button appears. Another operation may change a resource attribute used by Cedar. A caller may invoke the public module without any interface at all.
+
+Every mutation therefore enters the normal application pipeline and can return a typed permission error. GUI presenters treat that error as recoverable presentation state. They retain correctable input, leave persisted state unchanged, and show the denial consistently with other typed application errors. Tests exercise this path even for controls that should normally be unavailable, proving that the boundary holds when presentation assumptions are bypassed.
+
+```mermaid
+sequenceDiagram
+    participant V as View
+    participant P as Presenter
+    participant C as Cedar-backed operation
+    V->>P: invoke visible action
+    P->>C: fresh session context + captured resource
+    C-->>P: success or typed permission error
+    P-->>V: publish current state, retain input on denial
+```
+
+This is the useful separation of responsibilities. Cedar decides. The application enforces and returns typed results. The presenter asks enough questions to compose a truthful interaction. The view renders that interaction using its runtime's native controls.
+
+## Test the absence as well as the success
+
+Authorization tests should observe the complete presentation boundary. Mixology's composed desktop tests start sessions for restricted personas and assert the route IDs offered by the real shell. They verify that hidden routes cannot be navigated to, that dashboard cards follow the same visibility set, and that visible workspaces still expose only authorized rows and actions. Presenter tests compare an owner with a read-only actor and inspect capability state for concrete resources. Mutation tests force permission failures and prove that no state changed.
+
+The useful assertions include negative space:
+
+- The route, menu item, shortcut, and dashboard card are all absent.
+- Restricted rows do not affect visible totals or selectors.
+- Row and detail actions disappear when their Cedar action is denied.
+- Changing selection cannot retain an earlier resource's capabilities.
+- A direct or stale invocation is denied by the application operation.
+- The denial does not discard form input or partially mutate persisted state.
+
+This ladder catches different failures. A policy unit test can prove a Cedar rule, but not that a dashboard leaks a count. A view test can prove a button is hidden, but not that the operation rejects a bypass. Both are required because authorization shapes both information and behavior.
+
+## Authorization is a composition input
+
+The desktop work changed how I describe authorization in a modular application. It is not only middleware around commands, and it is not a collection of role checks scattered through widgets. It is an input to application composition.
+
+Routes come from authorized read paths. Dashboard summaries follow the same information boundary as their workspaces. Lists return only observable resources. Presenters derive actions from Cedar-backed decisions about concrete entities. Operations authorize again when work executes. Keeping those layers aligned gives each surface an interface that is useful, truthful, and resistant to bypass without asking the interface to become the policy engine.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/bespoke-views-over-a-shared-application-boundary/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Bespoke Views over a Shared Application Boundary
+
+Source: [https://thefellow.github.io/guides/bespoke-views-over-a-shared-application-boundary/](https://thefellow.github.io/guides/bespoke-views-over-a-shared-application-boundary/)
+
+## Pyramid summary
+
+- **~2 words:** Bespoke surfaces
+- **~8 words:** Why native views share application behavior, not universal view models.
+- **Expanded:** What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
+
+## Full content
+
+[Mixology](https://github.com/TheFellow/go-modular-monolith) now presents the same modular application through a command-line interface, a persistent Bubble Tea terminal interface, and a retained-mode Fyne desktop interface. Adding the third surface made one boundary especially clear: the durable reuse is the application behavior behind the views, not a view model stretched across every presentation technology.
+
+All three surfaces can place an order, publish a menu, edit a recipe, adjust inventory, attach tags, and observe audit history. They do not need to represent those workflows with the same state machine. A CLI command parses one invocation and exits. A Bubble Tea model consumes messages and renders text frames. A Fyne presenter coordinates callbacks, retained widgets, dialogs, and publication onto a UI thread. Making those runtimes share a universal view model would preserve identical method names by discarding the concepts that make each one understandable.
+
+Mixology instead shares an application boundary and gives each adapter permission to be itself.
+
+## Share the behavior that must remain equal
+
+Every Mixology operation enters an exported domain module through an application session. That path owns authorization, transaction scope, audit recording, and event publication. Public models, identifiers, filters, tags, requests, results, and typed errors cross the boundary. A fresh operation context prevents middleware state from leaking between interactions while the persistent TUI and GUI sessions retain the authenticated principal.
+
+```mermaid
+flowchart LR
+    CLI[CLI command<br/>parse, print, exit] --> API[Public domain modules]
+    TUI[Bubble Tea model<br/>messages, commands, frames] --> API
+    GUI[Fyne presenter<br/>callbacks, widgets, UI thread] --> API
+    API --> AZ[Authorization]
+    AZ --> TX[Transaction]
+    TX --> AU[Audit and events]
+    TX --> DB[(Shared persistence)]
+```
+
+That center is the contract worth defending. When one surface creates a drink and another reads it, they agree because both used the same application operation and persisted model. They do not agree because their text fields inherited from the same base class.
+
+This distinction also gives cross-surface tests a precise purpose. Mixology builds the real CLI, runs it against a temporary database, opens a GUI or TUI session on the same data, and observes the result through that surface. The reverse path writes through a persistent interface and reads through a fresh CLI process. The evidence is shared application behavior, including parsing, composition, authorization, commit, and process lifecycle.
+
+## Each runtime has a different unit of interaction
+
+The CLI's natural unit is an invocation. Flags and positional arguments become a typed request, the command calls a public module, output is written, and the process exits. There is no durable selection, focus owner, dirty form, late publication, or back stack to model.
+
+Bubble Tea's natural unit is a message. A domain view model implements `Init`, `Update`, and `View`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
+
+Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A presenter publishes snapshots that a view translates onto the UI thread. Dialog completion arrives through callbacks. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
+
+These are not cosmetic variations over one protocol. They are correctness mechanisms imposed by each runtime.
+
+| Concern | CLI | Bubble Tea TUI | Fyne GUI |
+| --- | --- | --- | --- |
+| Lifetime | One command | Persistent model | Retained widget tree |
+| Input | Parsed arguments | Typed messages and keys | Callbacks, focus, bindings |
+| Async result | Command completion | `tea.Msg` | Executor plus UI dispatcher |
+| Navigation | Command hierarchy | Route and back stack | Shell routes, menus, shortcuts |
+| Local editing | Request construction | Explicit workflow modes | Live widgets plus presenter forms |
+| Output | Text or structured stream | Rendered terminal frame | Native controls and dialogs |
+
+A universal model must either expose all of these concepts to every adapter or reduce them to a least-common-denominator protocol. The first choice couples each surface to irrelevant runtime concerns. The second hides important ownership behind generic callbacks and maps.
+
+## The least common denominator is not neutral
+
+It is tempting to define a framework-independent interface such as `Load`, `Select`, `Submit`, and `State`, then adapt each presentation to it. The names look portable, but their semantics are not.
+
+What does `Select` mean for a CLI command that receives an ID once? Does `State` include a Bubble Tea spinner command, Fyne dialog ownership, terminal help bindings, native focus, or a stream of publications? Is cancellation a process signal, Escape in a nested form, closing a dialog, invalidating a load generation, or waiting for accepted desktop work during shutdown?
+
+Removing those details from the interface does not remove them from the software. It pushes them into adapters that now coordinate a generic model and their runtime through parallel state. The adapter becomes the real view model, while the shared object adds another protocol to synchronize.
+
+The opposite approach, putting every concern into the common model, produces framework-shaped conditionals. A model starts carrying terminal widths, widget visibility, CLI formatting, dispatcher hooks, and callbacks that only one consumer understands. Sharing becomes a dependency from every surface to the union of all surfaces.
+
+Mixology avoids both outcomes. Its TUI view models live below each domain's `surfaces/tui` package and use the Bubble Tea toolkit. GUI presenters live below `surfaces/gui` and use the GUI toolkit. CLI adapters own parsing and output. Architecture rules prevent one presentation surface from importing another or reaching into a domain's private DAO and command implementations.
+
+## Reuse mechanics within a surface
+
+Rejecting a universal view model does not mean duplicating every screen. Mixology has two narrower kinds of presentation reuse.
+
+The first is runtime-specific mechanics. `pkg/toolkits/tui` owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. `pkg/toolkits/gui` owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. These packages know their presentation technology but not Drinks, Menus, or Orders.
+
+The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
+
+Domain surfaces supply the remaining meaning. Drinks owns recipe rows and substitute selection. Menus owns drink curation, publication, and cost analysis. Orders owns placement, completion, and cancellation. Audit remains read-only. A standard list/detail layout can arrange these workflows without claiming they are one generic CRUD screen.
+
+```mermaid
+flowchart TD
+    B[Shared application boundary] --> DT[Domain TUI view model]
+    B --> DG[Domain GUI presenter]
+    B --> DC[Domain CLI adapter]
+    DT --> TT[TUI toolkit mechanics]
+    DG --> GT[GUI toolkit mechanics]
+    DC --> CT[CLI parsing and output]
+```
+
+Abstractions are earned horizontally within a runtime, after several domains demonstrate the same mechanic. Behavior is shared vertically through the public domain module. This keeps reuse aligned with the reason the code is actually alike.
+
+## Bespoke state makes ownership visible
+
+The GUI work exposed several cases where runtime-specific state was necessary for correctness.
+
+A retained widget may contain text entered after the presenter's last snapshot. Republishing an unrelated catalog must not overwrite that live edit. The GUI view therefore tracks the form state it last rendered and updates controls only when the presenter has changed that form.
+
+Opening Create twice with the same initial values still creates two interactions. A form-instance generation tells the view to clear dirty selectors on the second opening. A value comparison alone cannot express that identity.
+
+Async list loads capture request generations so an older result cannot replace a later filter. Mutations capture their target so changing selection while work runs cannot redirect a delete or tag operation. Shutdown closes publication and drains accepted work before the database closes.
+
+Bubble Tea reaches similar outcomes through different vocabulary. Typed result messages carry target and request identity. Workflow modes declare who owns input. Commands return into the serialized update loop. The TUI does not need a GUI dispatcher or retained-widget reconciliation to express those guarantees.
+
+Forcing both implementations through one state object would obscure the proof. Bespoke models let tests name the actual hazard: an out-of-order GUI publication, a TUI message delivered after navigation, a dirty retained entry, or a command result owned by an earlier target.
+
+## Consistency comes from contracts, not identical internals
+
+The three surfaces should still feel like views of one product. Mixology gets that consistency from several deliberate contracts:
+
+- Public domain operations define available behavior and typed outcomes.
+- Cedar policy defines which resources and actions a principal may use.
+- Shared models and request types preserve domain vocabulary.
+- Each surface presents loading, empty, validation, permission, and failure states in its native form.
+- Feature parity is measured against workflows, not matching classes or screen layouts.
+- Cross-surface tests observe persisted effects through another real adapter.
+
+Parity is the union of useful application behavior, not a demand for identical interaction. Order placement can be one CLI invocation, a terminal workflow with explicit modes, and a desktop form with constrained selectors. The three are equivalent when they validate and authorize the same request, produce the same domain effect, and report the same typed failure meaning.
+
+This also allows a surface to use its strengths. The CLI composes in scripts. The TUI exposes contextual keys and persistent navigation without leaving a terminal. The GUI uses native tables, menus, dialogs, focus, and accessibility semantics. Flattening those strengths would make consistency easier to describe and the product worse to use.
+
+## Let a new surface audit the boundary
+
+A new adapter is an architectural test. If it must import a DAO, call a private command, or parse another surface's rendered output, the application boundary is incomplete. If an operation returns transport-shaped data that only one client can use, its public contract may need revision. If shared behavior exists only inside a TUI view model, it probably belongs behind the domain facade.
+
+The GUI found exactly these seams. Complete selectors required correct pagination rather than first-page assumptions. CLI-only menu and order workflows expanded the parity target beyond the existing TUI screens. Cross-surface testing distinguished a direct public-module test from proof that an actual executable parses, commits, and exits. The solution was to strengthen public operations and tests, not to import the established presentation into the new one.
+
+That is the practical value of bespoke views. They apply pressure at the right boundary. A third client that can remain native to its runtime while using only public application behavior demonstrates more modularity than three adapters sharing one presentation abstraction.
+
+## Share meaning, specialize interaction
+
+Mixology's CLI, TUI, and GUI contain some deliberate repetition. Each translates user intent into a typed application request. Each presents errors and decides how its runtime navigates a workflow. That translation is the adapter's job, and sharing it mechanically would couple unlike interaction models.
+
+The center remains shared: domain vocabulary, application operations, authorization, transactions, audit, events, and persistence. Around it, each surface owns the state needed to make its runtime correct and legible. Runtime toolkits reuse mechanics that have actually repeated. Domain presentation stays with the domain.
+
+The result is not three implementations of the business rules. It is three bespoke conversations with one application.
 
 
 ---
@@ -424,10 +707,12 @@ constraint.
 
 Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into bstore while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
 
-The lesson will implement the same operation from both existing surfaces, exercise the TUI through
-its real Bubble Tea program, and render after every message and generated command before sketching
-a third surface. If that third surface requires new business logic—or a TUI interaction can only be
-tested by bypassing its message loop—the exercise has found a leak.
+The implementation now exercises the same operations through three surfaces, drives the TUI through
+its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
+composed desktop lifecycle. The [third-surface audit](/guides/using-a-third-surface-as-an-architecture-test.md)
+found application leaks precisely where the CLI and TUI had shared an assumption, while the
+[bespoke-view boundary](/guides/bespoke-views-over-a-shared-application-boundary.md) kept each runtime's
+interaction model native.
 
 ## 9. Give cross-cutting features an owned seam
 
@@ -514,11 +799,11 @@ Source: [https://thefellow.github.io/guides/growing-mixology-with-fyne/](https:/
 
 Mixology presents one application through a command-line interface, a persistent Bubble Tea terminal interface, and a native [Fyne](https://fyne.io/) desktop interface written in Go. The desktop experiment pursued the union of existing application behavior on macOS, Windows, and Linux. The more useful result is what happened to the architecture when a third, substantially different presentation model had to use it.
 
-This guide is a development journal. It began before the desktop code existed, so its evidence ledger separates observed results from questions and acceptance criteria. I will continue updating it from reviewed commits, tests, and running behavior as the implementation develops.
+This guide is a development journal. It began before the desktop code existed, so the early sections preserve the questions and acceptance criteria that guided the work. Later sections record the reviewed commits, tests, running behavior, and closure audit that resolved them.
 
 **Experiment status:** the closure audit now supports code-level functional parity across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 
-The experiment builds directly on [Mixology's existing TUI architecture](/guides/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gives those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. If the application boundary is real, the desktop surface should be able to adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise.
+The experiment builds directly on [Mixology's existing TUI architecture](/guides/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 
 ## The starting seam
 
@@ -539,9 +824,9 @@ app/domains/drinks/surfaces/
     gui/
 ```
 
-That third directory is not expected to reuse Bubble Tea view models. The current TUI models correctly own terminal widgets, typed messages, keyboard behavior, text rendering, and terminal sizing. A GUI surface should be equally specific to its runtime. It can own widgets, callbacks, observable presentation state, selection, validation, dialog lifecycle, and UI-thread coordination.
+The initial design did not expect that third directory to reuse Bubble Tea view models. The TUI models correctly owned terminal widgets, typed messages, keyboard behavior, text rendering, and terminal sizing. The working criterion was that a GUI surface should be equally specific to its runtime, owning widgets, callbacks, observable presentation state, selection, validation, dialog lifecycle, and UI-thread coordination. The resulting GUI surfaces follow that division.
 
-The shared seam sits behind all three adapters. Each operation enters an exported domain module through an application session and therefore follows the same transaction, authorization, audit, and event pipeline. The desktop client should preserve the persistent-session model already used by the TUI, including a fresh middleware context for every operation.
+The shared seam sits behind all three adapters. Each operation enters an exported domain module through an application session and therefore follows the same transaction, authorization, audit, and event pipeline. The desktop client preserves the persistent-session model already used by the TUI, including a fresh middleware context for every operation.
 
 ```mermaid
 flowchart LR
@@ -551,7 +836,7 @@ flowchart LR
     API --> Pipeline[Authorization + transaction + audit + events]
 ```
 
-The composition root now constructs an `app.Session`, and the desktop lifecycle test observes the database being created and released cleanly. The rest of the diagram remains a hypothesis until domain workflows and cross-surface tests demonstrate it. Any need for a GUI surface to import a DAO, a private command, or another presentation surface is evidence that the boundary needs attention.
+At this first checkpoint, the composition root constructed an `app.Session`, and the desktop lifecycle test observed the database being created and released cleanly. The rest of the diagram remained a hypothesis pending domain workflows and cross-surface tests. The completed slices, architecture rules, and cross-surface tests described below supplied that evidence without requiring a GUI surface to import a DAO, a private command, or another presentation surface.
 
 ## The first foundation
 
@@ -595,18 +880,18 @@ The pass also tightened Fyne's concurrency contract. Production publication and 
 
 ## Make testability part of the design
 
-The existing TUI can be driven below a real Bubble Tea program, and its domain view models can be exercised with production application fixtures. The desktop surface needs an equivalent testing ladder before feature work can accumulate around untestable callbacks.
+The existing TUI could be driven below a real Bubble Tea program, and its domain view models could be exercised with production application fixtures. Before feature work began, the desktop plan required an equivalent testing ladder so callbacks would remain testable.
 
-The implementation will establish four layers of evidence:
+That plan established four layers of evidence:
 
 1. Presentation-model tests exercise state transitions, validation, action availability, stale-result handling, and typed errors without requiring a visible desktop.
 2. Reusable Fyne component tests construct widgets through Fyne's test facilities and drive taps, text entry, selection, dialogs, and binding changes.
 3. Shell tests cover navigation, view lifetime, refresh policy, window-level actions, and lifecycle behavior through the composed desktop application.
 4. Cross-surface tests mutate persisted state through one adapter and observe it through another, proving that CLI, TUI, and GUI are paths into the same application rather than parallel implementations.
 
-The test harness itself is an early deliverable. It must support deterministic execution without a display server, expose useful helpers without hiding Fyne behavior, and make UI-thread boundaries explicit. Race tests matter because desktop callbacks and background application work introduce concurrency that a synchronous component test can otherwise miss.
+The test harness was an early deliverable. It supports deterministic execution without a display server, exposes useful helpers without hiding Fyne behavior, and makes UI-thread boundaries explicit. Race tests matter because desktop callbacks and background application work introduce concurrency that a synchronous component test can otherwise miss.
 
-Feature parity also needs a written matrix. Its source is the union of existing CLI and TUI behavior, not only the set of current TUI screens. A screen is not complete when its happy path is visible. Its evidence should cover loading, empty state, filtering, selection, validation, create and edit flows, destructive confirmation, domain-specific actions, tags, authorization failures, other typed errors, refresh after mutation, and keyboard behavior where the desktop exposes it. In particular, parity includes menu drink curation and order placement even if those operations are distributed differently between the two existing adapters.
+Feature parity also required a written matrix. Its source was the union of existing CLI and TUI behavior, not only the set of TUI screens at the time. The matrix treated a screen as complete only when its evidence covered loading, empty state, filtering, selection, validation, create and edit flows, destructive confirmation, domain-specific actions, tags, authorization failures, other typed errors, refresh after mutation, and keyboard behavior where the desktop exposed it. In particular, parity included menu drink curation and order placement even though those operations were distributed differently between the two existing adapters.
 
 ## Seven slices, one retained-mode lesson
 
@@ -686,9 +971,9 @@ The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `p
 
 A later architecture pass makes every `main/**` package a presentation leaf from the perspective of domain surfaces. Mixology-wide TUI contracts, components, styles, and keys moved to `app/surfaces/tui`; `main/tui` now owns only root shell and workspace composition. The same pass keeps cross-domain authorization packages private and prevents command implementations from importing another domain's events, while retaining public models, queries, and events as collaboration contracts. Twelve arch-lint rules enforce the dependency graph, and architecture tests separately validate each domain's recognized package topology and its composition in `app.New`.
 
-## Build parity in reviewable slices
+## Building parity in reviewable slices
 
-The work should progress as a sequence of complete, commit-sized arguments:
+The implementation progressed as a sequence of complete, commit-sized arguments:
 
 1. Add Fyne, the desktop composition root, deterministic test harness, and executable architecture rules.
 2. Establish the shell, application session, navigation, lifecycle, theme, loading, and error conventions.
@@ -697,7 +982,7 @@ The work should progress as a sequence of complete, commit-sized arguments:
 5. Move the remaining domain workspaces across one at a time, preserving each domain's distinct workflows.
 6. Complete parity checks, race tests, architecture lint, packaging, and operating-system build verification.
 
-Each slice should be reviewed both as working software and as a teaching example. The commit history needs to show where a reusable convention came from, why a boundary rule exists, and which test would fail if the design regressed.
+Each slice was reviewed both as working software and as a teaching example. The commit history records where a reusable convention came from, why a boundary rule exists, and which test would fail if the design regressed.
 
 ## Closing the integration gap
 
@@ -714,7 +999,7 @@ Delivery has a similar honest boundary. CI artifacts are deliberately unsigned. 
 
 ## Evidence ledger
 
-I will use the following checklist while following the implementation. Completed claims in the final guide will link to the commit, code, or test that supports them.
+The following checklist served as the evidence ledger during implementation. Completed claims link to the commit, code, or test that supports them, while unchecked items preserve the release work that remains outside the experiment's code-level closure.
 
 ### Architecture
 
@@ -759,13 +1044,482 @@ I will use the following checklist while following the implementation. Completed
 - [ ] Manual VoiceOver, Narrator, Orca, high-contrast, and scaling audits are complete.
 - [ ] Production macOS and Windows artifacts are signed and notarized where required.
 
-## What the third surface should teach
+## What the third surface taught
 
 Two surfaces can share an accidental assumption. A third tends to expose it. Persistent clients may reveal that a request context was retained too long. Desktop callbacks may reveal that an operation API assumes synchronous presentation. A richer navigation model may reveal refresh and view-lifetime policies that the CLI never needed and the TUI encoded locally. Fyne's widgets may show which “shared” view-model state was actually terminal rendering state.
 
 Those findings are the point of the exercise. Success is not measured by making Fyne resemble Bubble Tea. It is measured by whether three idiomatic adapters can remain recognizably part of one application, enter one behavioral pipeline, and prove their equivalence without weakening what makes each interface native to its medium.
 
 The third surface confirmed that the reusable asset was the application boundary, not a universal view model. GUI presenters and Fyne views remain bespoke, yet they share domain behavior, error contracts, authorization, transactions, audit, and persistence with the CLI and TUI. The additional work appeared where a native persistent client should force it to appear: retained-control ownership, async lifetime, application composition, keyboard commands, accessibility limits, and target-native delivery.
+
+The completed experiment also produced four focused guides:
+
+- [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test.md) extracts the parity audit into a repeatable architecture technique.
+- [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary.md) explains why the shared asset is application behavior rather than a universal view model.
+- [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly.md) turns the testing ladder into a practical desktop strategy.
+- [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation.md) follows Cedar decisions through routes, aggregates, rows, and actions.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Testing Native Go Desktop Applications Headlessly
+
+Source: [https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly/](https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly/)
+
+## Pyramid summary
+
+- **~2 words:** Headless desktop
+- **~8 words:** Layered evidence for native GUI behavior without opening windows.
+- **Expanded:** A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
+
+## Full content
+
+Native desktop behavior does not begin at the pixels. It begins with state ownership, callbacks, asynchronous work, framework controls, composition, and lifecycle. Most of that behavior can be tested without a display server if the application exposes the right seams.
+
+Mixology's Fyne client runs headlessly in ordinary Go tests. Its tests construct presentation models with deterministic executors, create real Fyne widgets through the framework's in-memory application, drive semantic controls, navigate the composed shell, open a real temporary database, invoke the CLI as a subprocess, and run the same packages under Go's race detector.
+
+The useful result is not one large simulated UI test. It is a ladder of evidence in which each layer owns a different failure mode.
+
+## The evidence ladder
+
+```mermaid
+flowchart BT
+    MODEL[Presentation-model tests<br/>state, ownership, typed errors]
+    WIDGET[Widget and view tests<br/>callbacks, controls, layout semantics]
+    SHELL[Composed shell tests<br/>navigation, session, lifecycle]
+    PROCESS[Fresh-process tests<br/>real executables and persistence]
+    RACE[Race and platform CI<br/>concurrency and native compilation]
+    VISUAL[Visual and manual audits<br/>rendering and assistive technology]
+    MODEL --> WIDGET --> SHELL --> PROCESS --> RACE --> VISUAL
+```
+
+The lower layers are fast and precise. The upper layers cover more integration but provide less local failure information. A desktop feature is well supported when its important behavior appears at the lowest layer that can observe it, with a smaller number of composed tests proving that the layers are wired together.
+
+This avoids two common traps. Widget-only tests make asynchronous policy difficult to control. End-to-end-only tests turn every failure into a search across the whole application.
+
+## Keep presentation state independent of the window
+
+Each Mixology domain GUI owns a presenter with typed state. It knows whether a load is active, which entity is selected, which form instance is open, which action is available, and which typed error should be shown. The Fyne view subscribes to snapshots and translates them into controls.
+
+That division lets a test exercise the hard interaction rules without creating a native window:
+
+```go
+executor := &fynetest.ManualExecutor{}
+dispatcher := &fynetest.ManualDispatcher{}
+presenter := NewPresenter(session, Dependencies{
+    Executor:   executor,
+    Dispatcher: dispatcher,
+    Dialogs:    &fynetest.Dialogs{},
+})
+
+presenter.Refresh()
+presenter.SetFilter("first")
+presenter.Refresh()
+
+executor.Run(1) // Newer work completes first.
+dispatcher.RunNext()
+executor.Run(0) // Older work completes later.
+dispatcher.RunNext()
+
+snapshot := presenter.Snapshot()
+// Assert that the older result did not replace the current state.
+```
+
+The exact helper names vary by package, but the seam is stable: production chooses asynchronous execution and UI-thread dispatch, while tests choose when work runs and when publication occurs.
+
+This distinction matters because completion order and publication order are separate. Work A can finish before work B, yet A's queued UI callback can run after B's. Mixology's latest-request helper checks its generation when publication executes, not only when background work completes. Tests control both queues so that stale-result behavior is demonstrated rather than inferred.
+
+Presentation-model tests cover:
+
+- loading, success, empty, and typed failure states;
+- filter and selection transitions;
+- validation and correctable form state;
+- request-generation invalidation;
+- duplicate-submission guards;
+- captured mutation targets;
+- form-instance identity;
+- authorization failures and action availability.
+
+These tests are ordinary Go tests. They are quick enough to enumerate state transitions and deliberate timing permutations that would be awkward to reproduce by clicking a window.
+
+## Inject execution and publication separately
+
+Desktop work has two directions. Application operations leave the UI goroutine, then their results return to it.
+
+```mermaid
+sequenceDiagram
+    participant V as View callback
+    participant E as Executor
+    participant A as Application
+    participant D as UI dispatcher
+    participant P as Presenter/View
+    V->>E: submit work
+    E->>A: run operation off UI thread
+    A-->>E: typed result
+    E->>D: queue publication
+    D->>P: publish on UI thread
+```
+
+Mixology models those directions as small interfaces. An executor starts background application work. A dispatcher publishes changes through Fyne's UI goroutine. Production uses a managed executor and a Fyne dispatcher. Tests use inline or manually controlled implementations.
+
+Keeping the seams separate provides several test modes:
+
+- Inline execution plus inline dispatch gives a concise synchronous feature test.
+- Manual execution plus inline dispatch controls completion order.
+- Manual execution plus manual dispatch controls completion and UI publication independently.
+- Asynchronous execution plus the production dispatcher supports composed concurrency tests.
+
+The managed production executor also owns shutdown. Closing it rejects new work and waits for accepted operations to finish. A gated dispatcher prevents queued publications from entering a closing UI. Tests hold work in flight, close the desktop, release the work, and assert that shutdown completes without publishing into a dead window.
+
+## Construct real Fyne controls without a display
+
+Fyne's [`test`](https://pkg.go.dev/fyne.io/fyne/v2/test) package supplies an in-memory application, windows, canvases, input helpers, and rendering support. A typical view test has three parts:
+
+```go
+app := test.NewApp()
+defer app.Quit()
+
+view := NewView(presenter)
+driver := fynetest.NewDriver(t, view.Content())
+
+driver.Tap("create-drink")
+driver.Type("drink-name", "Boulevardier")
+driver.Tap("save-drink")
+```
+
+`pkg/testutil/fynetest` is Mixology's application-level driver. It finds controls by semantic identifiers and performs actions through their real callbacks. The identifiers describe intent, such as `save-drink`, rather than a position in a container tree.
+
+That level verifies behavior a presenter cannot see by itself:
+
+- a button invokes the intended command;
+- an entry sends edits to the correct form instance;
+- a selector carries a typed identity while displaying a name;
+- disabling an action prevents its callback;
+- table-cell recycling replaces old text, tags, and action handlers;
+- scrolling over a field continues to move the containing form;
+- dialog confirmation preserves the target captured when it opened;
+- token editors normalize, replace, and remove canonical tags.
+
+Real controls are worth using here. A fake button can prove that a callback function exists, but it cannot expose a stale callback left on a recycled Fyne table cell or a widget disabled visually but still wired incorrectly.
+
+## Make controls semantic
+
+Container position is a brittle test API. Adding a label can turn `children[2]` from Save into Cancel without changing the product's behavior. Text is also an incomplete identifier because labels can repeat, change with state, or be localized.
+
+Mixology's shared GUI toolkit provides semantic buttons, entries, selectors, and guarded commands. The headless driver searches for those semantics in the real widget tree. Tests say what the person is doing rather than how the current layout happens to be nested.
+
+There is a design benefit beyond testing. Semantic controls create one place to enforce enabled behavior, keyboard commands, icons, and action identifiers. A button and a menu shortcut can invoke the same guarded command, so tests verify the command once and the framework wiring at the view boundary.
+
+The test helper should remain thin. It may locate a semantic control and invoke Fyne's normal test action, but it should not duplicate the presenter's validation or mutate application state directly. Otherwise a passing test can describe the helper rather than the application.
+
+## Replace native dialogs at the boundary
+
+Confirmation and error dialogs involve platform windows and human decisions. Presentation tests need their outcomes, not an operating-system dialog loop.
+
+Mixology injects a small dialog boundary. The production implementation presents Fyne dialogs. The test implementation records requests and lets the test confirm, cancel, or inspect the error deliberately.
+
+```go
+dialogs := &fynetest.Dialogs{}
+presenter := NewPresenter(session, Dependencies{Dialogs: dialogs})
+
+presenter.DeleteSelected()
+dialogs.Confirmations()[0].Respond(true)
+
+// Assert the public delete operation and resulting presentation state.
+```
+
+The boundary should preserve meaningful data: title, message, target identity, confirmation callback, and error. A single `AlwaysConfirm` boolean is convenient but cannot test cancellation, multiple pending dialogs, or target capture when selection changes before confirmation.
+
+## Test the composed shell
+
+Domain view tests establish individual workflows. Shell tests establish that the desktop application actually composes them.
+
+Mixology opens Fyne's in-memory application with a real application session and temporary bstore database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
+
+- every readable workspace is mounted;
+- denied routes and dashboard cards are absent;
+- navigation preserves or refreshes view state according to shell policy;
+- all domain presenters share the intended application session;
+- close is idempotent;
+- persistence ownership is released after the window closes;
+- background work is drained before application resources are closed.
+
+These are not exhaustive domain tests. A shell test should not repeat every validation case already covered by a presenter. It proves construction and lifecycle, where wiring failures live.
+
+Use a temporary path for every database-backed test and close every application explicitly. Desktop tests are long-lived by nature, so leaked stores, applications, or goroutines can make later tests fail in ways that hide the original owner.
+
+## Cross a real process for cross-surface claims
+
+An in-process fixture can prove that the GUI calls a public module. It cannot prove that another executable uses the same flags, database path, composition root, and commit lifecycle.
+
+Mixology's cross-surface tests build the actual CLI binary, execute it against a temporary database, then start a fresh GUI lifecycle on that database. They also mutate through concrete GUI controls, close the GUI, and inspect the persisted state through a fresh CLI process.
+
+This layer catches:
+
+- a command wired to the wrong database path;
+- argument parsing that never reaches the intended operation;
+- commits deferred until a lifecycle that the process does not run;
+- a surface using private or alternative persistence behavior;
+- a desktop close path that retains the database lock;
+- discrepancies between the documented parity matrix and composed clients.
+
+Keep these tests fewer and broader than presenter tests. Process startup and binary builds cost more, and a failure spans more components. Their purpose is boundary evidence, not combinatorial coverage.
+
+## Deliberately test adversarial time
+
+Retained-mode applications fail in sequences that synchronous happy paths suppress. Useful headless tests choose hostile orderings:
+
+1. Start two loads, complete the second, then complete the first.
+2. Complete background work in order, but publish its UI callbacks in reverse order.
+3. Open a form, type into a live widget, then publish an unrelated refresh.
+4. Cancel a form and reopen an equal-valued form with a new instance identity.
+5. Open a confirmation, change selection, then confirm the original action.
+6. Begin shutdown while accepted work is blocked, then release it.
+7. Attempt a second mutation while the first submission owns the workflow.
+
+Manual executors and dispatchers make these sequences deterministic. Channels and gates are useful for the composed shutdown cases where real goroutines are part of the contract. Fixed sleeps are not synchronization; they make timing failures intermittent and slower.
+
+## Run the race detector and compile on every target
+
+Deterministic tests demonstrate the ownership protocol, but they do not enumerate every goroutine interleaving. Mixology also runs the Fyne packages with Go's race detector. The two techniques complement each other: controlled queues state which completion should win, while the race detector finds unsynchronized memory access.
+
+Native desktop code also has a compilation boundary. Linux CI needs the development libraries Fyne uses for OpenGL, Wayland, keyboard, and X11 integration. macOS, Windows, and Linux jobs compile and package their target-native applications. Headless widget tests can pass while a platform build fails, so both belong in the verification matrix.
+
+A practical CI sequence is:
+
+```text
+unit and presenter tests
+    -> headless widget and shell tests
+    -> race-enabled GUI tests
+    -> target-native build and packaging
+```
+
+Run inexpensive tests first for useful feedback, but keep platform compilation as required evidence for a native client.
+
+## Pixels and assistive technology remain distinct evidence
+
+Headless tests can render fixed-size canvases and compare or inspect visual states. Mixology uses stable window sizes and the in-memory driver to cover dashboards, tables, details, forms, menus, tags, audit, and empty collections. This catches clipping, missing content, and unintended layout changes that semantic interaction tests may not notice.
+
+Pixel evidence has limits. Font rasterization, theme changes, graphics drivers, and platform widgets can make exact screenshots noisy. Prefer a small set of purposeful visual states. Keep behavioral assertions in semantic tests, where a color or antialiasing change cannot hide the real contract.
+
+Assistive technology requires another boundary. Automated tests can prove that keyboard commands are guarded, focusable controls exist, and semantic labels are present. They do not establish the experience in VoiceOver, Narrator, Orca, high contrast, or scaled displays. Record those as manual platform audits with repeatable steps and results.
+
+Headless does not mean complete. It means that most application behavior no longer depends on a person watching a window.
+
+## A feature-level checklist
+
+For a new desktop workflow, I look for evidence in this order:
+
+- The presenter covers loading, empty, success, validation, typed errors, authorization, and timing ownership.
+- The view test drives real controls through semantic identifiers.
+- Dialog outcomes are controlled without bypassing the presenter.
+- The composed shell can navigate to the workflow for an authorized persona and omits it when unreadable.
+- At least one persisted path crosses a fresh lifecycle, and important cross-surface claims cross a real process.
+- Concurrency-sensitive packages pass under `go test -race`.
+- Target-native CI compiles the application.
+- Selected visual states and manual accessibility protocols cover what semantic tests cannot observe.
+
+This checklist is intentionally layered. A denied Save belongs in a presenter test. A missing Save button belongs in a view test. A missing workspace belongs in a shell test. A wrong database path belongs in a process test. A platform linker failure belongs in target-native CI.
+
+## The result
+
+Mixology's desktop tests are effective because the application was shaped to expose ownership. Presentation models can run without windows. Execution and UI publication can be controlled independently. Real Fyne widgets can be constructed in memory. Dialogs, shell lifecycle, persistence, subprocesses, and concurrency each have a deliberate test boundary.
+
+The result is a native GUI whose important behavior can be reproduced by `go test`: stale work loses deterministically, live input survives unrelated publication, restricted actions stay unavailable, callbacks target the intended entity, shutdown drains accepted work, and independently composed clients observe the same persisted application state.
+
+The remaining visual and assistive-technology checks are clearer because the behavioral work is already covered. A manual audit can concentrate on what only a platform and a person can observe.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/guides/using-a-third-surface-as-an-architecture-test/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Using a Third Surface as an Architecture Test
+
+Source: [https://thefellow.github.io/guides/using-a-third-surface-as-an-architecture-test/](https://thefellow.github.io/guides/using-a-third-surface-as-an-architecture-test/)
+
+## Pyramid summary
+
+- **~2 words:** Architecture audit
+- **~8 words:** A third presentation runtime tests whether application boundaries are real.
+- **Expanded:** What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
+
+## Full content
+
+An architecture diagram can show three adapters pointing at one application boundary. A third adapter makes that claim executable.
+
+Mixology began with a command-line interface and a persistent Bubble Tea terminal interface. Adding a native [Fyne](https://fyne.io/) desktop client introduced a presentation runtime with different pressures: retained widgets instead of rendered text, callbacks instead of typed messages, a UI goroutine, dialogs, focus, background work, and long-lived forms. The new client could not succeed by imitating either existing surface. It had to express the same application behavior in its own native vocabulary.
+
+That made the third surface an architecture test. It found shared behavior that was genuinely reusable, assumptions that belonged to one runtime, operations that were missing from another adapter, and application contracts that looked sufficient until a new interaction model exercised them.
+
+This is a stronger test than adding another screen to an existing client. A second screen usually follows the first screen's conventions. A substantially different surface challenges where those conventions live.
+
+## What the test is actually testing
+
+The useful invariant is not that every surface has the same classes, view models, or navigation. It is that every operation crosses the same public application boundary and receives the same domain behavior.
+
+```mermaid
+flowchart LR
+    CLI[CLI<br/>parse, run, exit] --> API[Public domain modules]
+    TUI[Bubble Tea TUI<br/>messages, commands, text] --> API
+    GUI[Fyne GUI<br/>widgets, callbacks, UI thread] --> API
+    API --> PIPE[Authorization + transactions<br/>audit + events]
+    PIPE --> STORE[(Shared persistence)]
+```
+
+In Mixology, each adapter enters exported domain modules through an application session. The pipeline owns authorization, transaction boundaries, auditing, and event publication. A surface owns presentation state and translates user intent into those public operations. It does not import a DAO, call a private command, or use another surface as a library.
+
+This gives the architecture test four concrete questions:
+
+1. Can the new runtime implement its natural interaction model using only public application capabilities?
+2. Does the same operation retain its authorization, transaction, audit, and event behavior through every adapter?
+3. Can each surface remain specific to its runtime without moving presentation mechanics into the domain?
+4. Can a write through one real adapter be observed through another after a fresh application lifecycle?
+
+An import graph answers part of the first three questions. Cross-surface tests answer the fourth.
+
+## Difference creates the pressure
+
+The CLI is short-lived. It parses arguments, performs an operation, renders a result, and exits. The TUI is a persistent message loop. It owns a current route, cached view models, keyboard input, commands, and text rendering. The GUI is also persistent, but its widgets retain state independently of the presentation snapshot and its background results must return through the UI goroutine.
+
+Those differences are valuable. If the desktop client had merely wrapped the CLI, it would have tested argument reuse rather than the application boundary. If it had reused Bubble Tea view models, it would have pulled terminal messages, key bindings, and rendering policy into a runtime that has native controls and callbacks.
+
+Mixology instead added a sibling adapter below each domain:
+
+```text
+app/domains/drinks/surfaces/
+    cli/
+    gui/
+    tui/
+```
+
+The three directories share public domain models and operations, not presentation implementations. Drinks can expose recipes in each runtime's vocabulary. The CLI accepts structured arguments, the TUI coordinates a message-driven editor, and the GUI presents named selectors and retained form controls. The application operation beneath them remains the same.
+
+This is the first architectural result: reuse belongs at the narrowest stable boundary. Transport-neutral identifiers, filters, models, typed errors, and application operations remain shared. Widget trees, terminal models, argument parsing, focus, selection, and navigation remain surface-owned.
+
+## Parity is a union, not a porting checklist
+
+The first desktop parity matrix treated the CLI and TUI as a reference set. Detailed comparison showed that the reference set had drifted. Some workflows existed only in the CLI. Some persistent interactions were richer in the TUI. Some application operations had no complete presentation anywhere.
+
+The correct parity target was therefore the union of observable behavior across the existing adapters:
+
+$$
+P_{target} = P_{CLI} \cup P_{TUI}
+$$
+
+The GUI then had to account for each capability, but it did not have to reproduce the same sequence of gestures. Menu drink curation could be arguments in one surface, a mode in another, and a detail action in the third. Parity concerned the application outcome and its policy, not identical interaction choreography.
+
+This comparison found concrete gaps:
+
+- Selectors that need a complete catalog exposed first-page-only queries.
+- Ingredient deletion required dependency checks across every page, not only visible rows.
+- Menu curation and order placement existed outside the initial TUI workspace inventory.
+- Audit queries had defaults whose semantics could be accidentally changed by a desktop convenience layer.
+- Authorization had to shape navigation, dashboards, actions, and error handling, not only reject a final write.
+
+None of these findings required a universal presentation abstraction. They required precise public operations and a complete behavioral inventory.
+
+## The new runtime exposes hidden ownership
+
+A retained desktop form made state ownership especially visible. The person can type into a widget after the presenter published its last snapshot. A catalog refresh may complete while that edit is in progress. Repainting the widget from the older snapshot would erase newer input.
+
+That creates three distinct kinds of state:
+
+```mermaid
+flowchart TD
+    APP[Application state<br/>entities and policy] --> PRES[Presentation state<br/>selection, loading, errors]
+    PRES --> VIEW[Live view state<br/>focus and uncommitted input]
+    VIEW -->|intent| PRES
+    PRES -->|public operation| APP
+```
+
+The application owns persisted truth and policy. The presenter owns durable interaction meaning, including selection, workflow mode, validation, request generations, and mutation ownership. The live view owns framework controls, focus, and input newer than the last snapshot.
+
+The third surface forced Mixology to state that model explicitly. It also exposed several timing rules:
+
+- A late load result may publish only if it still owns the latest request generation.
+- Reopening a form creates a new form instance even when its initial values equal the previous instance.
+- A confirmation captures its mutation target before asynchronous dependency checks begin.
+- A denied mutation retains correctable form input while presenting the typed authorization error.
+- Shutdown stops accepting work and drains operations already accepted by the desktop lifecycle.
+
+These rules are specific responses to retained-mode and asynchronous interaction, but the underlying ownership questions apply to every persistent client. The GUI made them harder to ignore.
+
+## Cross-surface evidence must cross boundaries
+
+A test that calls a public module and then reads the result through a presenter proves that both use the application contract. It does not prove that a real CLI parses its command, opens the intended database, commits, and exits successfully.
+
+Mixology's stronger tests build the CLI executable, invoke it as a subprocess against a temporary database, then open a fresh desktop lifecycle over that database and drive concrete GUI views. The reverse direction writes through the GUI, closes the desktop, and inspects the result through a fresh CLI invocation.
+
+```mermaid
+sequenceDiagram
+    participant Test
+    participant CLI as CLI process
+    participant DB as Temporary database
+    participant GUI as Fresh GUI lifecycle
+    Test->>CLI: run real command
+    CLI->>DB: commit through application pipeline
+    CLI-->>Test: exit status and output
+    Test->>GUI: open application on same database
+    GUI->>DB: read through public module
+    GUI-->>Test: rendered state
+    Test->>GUI: perform mutation
+    GUI->>DB: commit through application pipeline
+    Test->>GUI: close
+    Test->>CLI: inspect in a fresh process
+```
+
+That sequence tests composition roots, configuration, persistence ownership, adapter translation, and lifecycle behavior together. It also avoids a misleading shortcut: one presentation package never imports another. The test coordinates independent clients from outside both of them.
+
+The evidence can be arranged as a ladder:
+
+- Package rules prove which dependencies are allowed to compile.
+- Surface tests prove that each adapter translates intent and results correctly.
+- Application tests prove policy, transactions, audit, and events.
+- Cross-surface process tests prove that independently composed clients share the same durable contract.
+
+No one rung replaces the others.
+
+## Architectural findings should change the first two surfaces
+
+A third surface is not an audit if every discrepancy is worked around locally. Findings should flow back to their owner.
+
+When complete selectors required traversal, the fix belonged in the GUI presenter if the public API was intentionally paged. When the TUI lacked an existing public workflow, the correction belonged in the TUI. When multiple adapters needed a clearer operation or typed result, the application boundary was the place to improve. When retained widgets needed generation tracking, that remained GUI presentation mechanics.
+
+I use a simple placement test:
+
+| Finding | Owner |
+| --- | --- |
+| Domain invariant or transaction semantics | Application/domain module |
+| Missing public capability | Public application boundary |
+| Argument parsing or process output | CLI surface |
+| Message, key, or terminal layout behavior | TUI surface/toolkit |
+| Widget, focus, dispatch, or retained-state behavior | GUI surface/toolkit |
+| Repeated product-wide presentation policy | Application presentation layer |
+
+The table keeps a parity project from becoming an excuse to centralize everything. A behavior can be important in all clients while still requiring three implementations.
+
+## A repeatable third-surface audit
+
+The approach is useful before, during, and after implementation.
+
+Start by inventorying observable workflows from every existing adapter. Include loading, empty and error states, filters, selection, validation, create and edit flows, destructive confirmation, domain-specific actions, authorization, refresh behavior, and lifecycle. Treat the inventory as a union rather than declaring one existing client canonical.
+
+Next, write the dependency rule: the new surface may call public modules and use shared transport-neutral types, but it may not import domain internals or another surface. Add package-level architecture checks before convenience pressures accumulate.
+
+Then implement complete vertical slices. A slice should include the application call, presentation state, native view, error behavior, authorization behavior, and tests. A screenshot of a list is not evidence for create, edit, paging, stale results, or denied actions.
+
+Finally, cross the process and lifecycle boundary. Write through one executable, close it, and observe through another freshly composed client. Repeat in the reverse direction for at least one mutation. This is where configuration drift, persistence assumptions, and adapter-only shortcuts become observable.
+
+## The result
+
+Mixology's third surface did more than add a desktop window. It tested whether the modular monolith had one application with three adapters or three applications sharing a database.
+
+The strongest evidence came from difference. Fyne's retained widgets and UI-thread contract forced explicit asynchronous ownership. The parity union exposed missing and partial workflows. Fresh-process tests exercised the real composition roots. Package rules preserved sibling adapters instead of allowing one presentation technology to become the accidental core.
+
+A third surface is therefore most useful when it remains genuinely third: native to its runtime, restricted to the public application boundary, and verified against the other clients through observable behavior. Under those conditions, presentation work becomes an executable architecture review.
 
 
 ---

@@ -14,11 +14,11 @@ Source: [https://thefellow.github.io/guides/growing-mixology-with-fyne/](https:/
 
 Mixology presents one application through a command-line interface, a persistent Bubble Tea terminal interface, and a native [Fyne](https://fyne.io/) desktop interface written in Go. The desktop experiment pursued the union of existing application behavior on macOS, Windows, and Linux. The more useful result is what happened to the architecture when a third, substantially different presentation model had to use it.
 
-This guide is a development journal. It began before the desktop code existed, so its evidence ledger separates observed results from questions and acceptance criteria. I will continue updating it from reviewed commits, tests, and running behavior as the implementation develops.
+This guide is a development journal. It began before the desktop code existed, so the early sections preserve the questions and acceptance criteria that guided the work. Later sections record the reviewed commits, tests, running behavior, and closure audit that resolved them.
 
 **Experiment status:** the closure audit now supports code-level functional parity across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 
-The experiment builds directly on [Mixology's existing TUI architecture](/guides/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gives those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. If the application boundary is real, the desktop surface should be able to adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise.
+The experiment builds directly on [Mixology's existing TUI architecture](/guides/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 
 ## The starting seam
 
@@ -39,9 +39,9 @@ app/domains/drinks/surfaces/
     gui/
 ```
 
-That third directory is not expected to reuse Bubble Tea view models. The current TUI models correctly own terminal widgets, typed messages, keyboard behavior, text rendering, and terminal sizing. A GUI surface should be equally specific to its runtime. It can own widgets, callbacks, observable presentation state, selection, validation, dialog lifecycle, and UI-thread coordination.
+The initial design did not expect that third directory to reuse Bubble Tea view models. The TUI models correctly owned terminal widgets, typed messages, keyboard behavior, text rendering, and terminal sizing. The working criterion was that a GUI surface should be equally specific to its runtime, owning widgets, callbacks, observable presentation state, selection, validation, dialog lifecycle, and UI-thread coordination. The resulting GUI surfaces follow that division.
 
-The shared seam sits behind all three adapters. Each operation enters an exported domain module through an application session and therefore follows the same transaction, authorization, audit, and event pipeline. The desktop client should preserve the persistent-session model already used by the TUI, including a fresh middleware context for every operation.
+The shared seam sits behind all three adapters. Each operation enters an exported domain module through an application session and therefore follows the same transaction, authorization, audit, and event pipeline. The desktop client preserves the persistent-session model already used by the TUI, including a fresh middleware context for every operation.
 
 ```mermaid
 flowchart LR
@@ -51,7 +51,7 @@ flowchart LR
     API --> Pipeline[Authorization + transaction + audit + events]
 ```
 
-The composition root now constructs an `app.Session`, and the desktop lifecycle test observes the database being created and released cleanly. The rest of the diagram remains a hypothesis until domain workflows and cross-surface tests demonstrate it. Any need for a GUI surface to import a DAO, a private command, or another presentation surface is evidence that the boundary needs attention.
+At this first checkpoint, the composition root constructed an `app.Session`, and the desktop lifecycle test observed the database being created and released cleanly. The rest of the diagram remained a hypothesis pending domain workflows and cross-surface tests. The completed slices, architecture rules, and cross-surface tests described below supplied that evidence without requiring a GUI surface to import a DAO, a private command, or another presentation surface.
 
 ## The first foundation
 
@@ -95,18 +95,18 @@ The pass also tightened Fyne's concurrency contract. Production publication and 
 
 ## Make testability part of the design
 
-The existing TUI can be driven below a real Bubble Tea program, and its domain view models can be exercised with production application fixtures. The desktop surface needs an equivalent testing ladder before feature work can accumulate around untestable callbacks.
+The existing TUI could be driven below a real Bubble Tea program, and its domain view models could be exercised with production application fixtures. Before feature work began, the desktop plan required an equivalent testing ladder so callbacks would remain testable.
 
-The implementation will establish four layers of evidence:
+That plan established four layers of evidence:
 
 1. Presentation-model tests exercise state transitions, validation, action availability, stale-result handling, and typed errors without requiring a visible desktop.
 2. Reusable Fyne component tests construct widgets through Fyne's test facilities and drive taps, text entry, selection, dialogs, and binding changes.
 3. Shell tests cover navigation, view lifetime, refresh policy, window-level actions, and lifecycle behavior through the composed desktop application.
 4. Cross-surface tests mutate persisted state through one adapter and observe it through another, proving that CLI, TUI, and GUI are paths into the same application rather than parallel implementations.
 
-The test harness itself is an early deliverable. It must support deterministic execution without a display server, expose useful helpers without hiding Fyne behavior, and make UI-thread boundaries explicit. Race tests matter because desktop callbacks and background application work introduce concurrency that a synchronous component test can otherwise miss.
+The test harness was an early deliverable. It supports deterministic execution without a display server, exposes useful helpers without hiding Fyne behavior, and makes UI-thread boundaries explicit. Race tests matter because desktop callbacks and background application work introduce concurrency that a synchronous component test can otherwise miss.
 
-Feature parity also needs a written matrix. Its source is the union of existing CLI and TUI behavior, not only the set of current TUI screens. A screen is not complete when its happy path is visible. Its evidence should cover loading, empty state, filtering, selection, validation, create and edit flows, destructive confirmation, domain-specific actions, tags, authorization failures, other typed errors, refresh after mutation, and keyboard behavior where the desktop exposes it. In particular, parity includes menu drink curation and order placement even if those operations are distributed differently between the two existing adapters.
+Feature parity also required a written matrix. Its source was the union of existing CLI and TUI behavior, not only the set of TUI screens at the time. The matrix treated a screen as complete only when its evidence covered loading, empty state, filtering, selection, validation, create and edit flows, destructive confirmation, domain-specific actions, tags, authorization failures, other typed errors, refresh after mutation, and keyboard behavior where the desktop exposed it. In particular, parity included menu drink curation and order placement even though those operations were distributed differently between the two existing adapters.
 
 ## Seven slices, one retained-mode lesson
 
@@ -186,9 +186,9 @@ The same pull request now groups reusable mechanics below `pkg/toolkits/cli`, `p
 
 A later architecture pass makes every `main/**` package a presentation leaf from the perspective of domain surfaces. Mixology-wide TUI contracts, components, styles, and keys moved to `app/surfaces/tui`; `main/tui` now owns only root shell and workspace composition. The same pass keeps cross-domain authorization packages private and prevents command implementations from importing another domain's events, while retaining public models, queries, and events as collaboration contracts. Twelve arch-lint rules enforce the dependency graph, and architecture tests separately validate each domain's recognized package topology and its composition in `app.New`.
 
-## Build parity in reviewable slices
+## Building parity in reviewable slices
 
-The work should progress as a sequence of complete, commit-sized arguments:
+The implementation progressed as a sequence of complete, commit-sized arguments:
 
 1. Add Fyne, the desktop composition root, deterministic test harness, and executable architecture rules.
 2. Establish the shell, application session, navigation, lifecycle, theme, loading, and error conventions.
@@ -197,7 +197,7 @@ The work should progress as a sequence of complete, commit-sized arguments:
 5. Move the remaining domain workspaces across one at a time, preserving each domain's distinct workflows.
 6. Complete parity checks, race tests, architecture lint, packaging, and operating-system build verification.
 
-Each slice should be reviewed both as working software and as a teaching example. The commit history needs to show where a reusable convention came from, why a boundary rule exists, and which test would fail if the design regressed.
+Each slice was reviewed both as working software and as a teaching example. The commit history records where a reusable convention came from, why a boundary rule exists, and which test would fail if the design regressed.
 
 ## Closing the integration gap
 
@@ -214,7 +214,7 @@ Delivery has a similar honest boundary. CI artifacts are deliberately unsigned. 
 
 ## Evidence ledger
 
-I will use the following checklist while following the implementation. Completed claims in the final guide will link to the commit, code, or test that supports them.
+The following checklist served as the evidence ledger during implementation. Completed claims link to the commit, code, or test that supports them, while unchecked items preserve the release work that remains outside the experiment's code-level closure.
 
 ### Architecture
 
@@ -259,10 +259,17 @@ I will use the following checklist while following the implementation. Completed
 - [ ] Manual VoiceOver, Narrator, Orca, high-contrast, and scaling audits are complete.
 - [ ] Production macOS and Windows artifacts are signed and notarized where required.
 
-## What the third surface should teach
+## What the third surface taught
 
 Two surfaces can share an accidental assumption. A third tends to expose it. Persistent clients may reveal that a request context was retained too long. Desktop callbacks may reveal that an operation API assumes synchronous presentation. A richer navigation model may reveal refresh and view-lifetime policies that the CLI never needed and the TUI encoded locally. Fyne's widgets may show which “shared” view-model state was actually terminal rendering state.
 
 Those findings are the point of the exercise. Success is not measured by making Fyne resemble Bubble Tea. It is measured by whether three idiomatic adapters can remain recognizably part of one application, enter one behavioral pipeline, and prove their equivalence without weakening what makes each interface native to its medium.
 
 The third surface confirmed that the reusable asset was the application boundary, not a universal view model. GUI presenters and Fyne views remain bespoke, yet they share domain behavior, error contracts, authorization, transactions, audit, and persistence with the CLI and TUI. The additional work appeared where a native persistent client should force it to appear: retained-control ownership, async lifetime, application composition, keyboard commands, accessibility limits, and target-native delivery.
+
+The completed experiment also produced four focused guides:
+
+- [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test.md) extracts the parity audit into a repeatable architecture technique.
+- [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary.md) explains why the shared asset is application behavior rather than a universal view model.
+- [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly.md) turns the testing ladder into a practical desktop strategy.
+- [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation.md) follows Cedar decisions through routes, aggregates, rows, and actions.
