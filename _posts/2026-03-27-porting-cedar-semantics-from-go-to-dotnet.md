@@ -1,9 +1,10 @@
 ---
 title: "Porting Cedar from Go to .NET: Semantics Before Syntax"
 date: 2026-03-27 12:00:00 -0700
-last_modified_at: 2026-07-28 15:11:58 -0700
+last_modified_at: 2026-08-01 12:00:00 -0700
 permalink: /notes/porting-cedar-semantics-from-go-to-dotnet/
 excerpt: "How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast."
+icon: "shield"
 tags: ["Cedar", "Authorization", "Go", ".NET"]
 ---
 

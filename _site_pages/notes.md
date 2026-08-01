@@ -1,7 +1,7 @@
 ---
 title: "Notes"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-28 15:11:58 -0700
+last_modified_at: 2026-08-01 12:00:00 -0700
 permalink: /notes/
 layout: single
 author_profile: true
@@ -15,7 +15,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
   {% for post in site.posts %}
     <a class="feature-tile{% if forloop.first %} feature-tile--featured{% endif %}" href="{{ post.url | relative_url }}" style="--feature-accent: #f783ac;">
       <header class="feature-tile__header">
-        <span class="feature-tile__icon">{% include feature-icon.html name="note" %}</span>
+        <span class="feature-tile__icon">{% include feature-icon.html name=post.icon %}</span>
         <span>
           <span class="feature-tile__eyebrow">{{ post.date | date: "%B %-d, %Y" }}</span>
           <span class="feature-tile__title">{{ post.title }}</span>
