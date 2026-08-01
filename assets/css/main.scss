@@ -21,6 +21,13 @@
   padding-block: 5rem;
 }
 
+/* Keep the author profile's Follow control behind the expanded mobile menu. */
+@media (max-width: 63.9375em) {
+  .author__urls-wrapper {
+    z-index: 10;
+  }
+}
+
 .project-meta {
   display: flex;
   flex-wrap: wrap;
