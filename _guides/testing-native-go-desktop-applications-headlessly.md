@@ -1,10 +1,11 @@
 ---
 title: "Testing Native Go Desktop Applications Headlessly"
 date: 2026-08-01 11:00:00 -0700
-last_modified_at: 2026-08-01 11:00:00 -0700
+last_modified_at: 2026-08-01 12:30:00 -0700
 excerpt: "A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence."
 permalink: /guides/testing-native-go-desktop-applications-headlessly/
 order: 50
+featured: true
 status: "Testing guide"
 icon: "vial"
 accent: "#4dabf7"
