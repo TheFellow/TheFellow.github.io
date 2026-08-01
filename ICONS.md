@@ -17,6 +17,12 @@ The local semantic names map to Lucide icons as follows:
 | `book` | `book-open` |
 | `terminal` | `terminal` |
 | `desktop` | `monitor` |
+| `lock` | `lock-keyhole` |
+| `sitemap` | `network` |
+| `vial` | `vial` |
+| `key` | `key-round` |
+| `asterisk` | `asterisk` |
+| `matrix` | `grid-3x3` |
 | `note` | `notebook-text` |
 | `resume` | `file-user` |
 | `exhaustive` | `grid-2x2-check` |
