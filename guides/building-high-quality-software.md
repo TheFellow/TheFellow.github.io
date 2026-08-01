@@ -132,10 +132,12 @@ constraint.
 
 Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into bstore while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
 
-The lesson will implement the same operation from both existing surfaces, exercise the TUI through
-its real Bubble Tea program, and render after every message and generated command before sketching
-a third surface. If that third surface requires new business logic—or a TUI interaction can only be
-tested by bypassing its message loop—the exercise has found a leak.
+The implementation now exercises the same operations through three surfaces, drives the TUI through
+its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
+composed desktop lifecycle. The [third-surface audit](/guides/using-a-third-surface-as-an-architecture-test.md)
+found application leaks precisely where the CLI and TUI had shared an assumption, while the
+[bespoke-view boundary](/guides/bespoke-views-over-a-shared-application-boundary.md) kept each runtime's
+interaction model native.
 
 ## 9. Give cross-cutting features an owned seam
 
