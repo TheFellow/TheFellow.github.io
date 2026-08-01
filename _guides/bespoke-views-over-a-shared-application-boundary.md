@@ -1,7 +1,7 @@
 ---
 title: "Bespoke Views over a Shared Application Boundary"
-date: 2026-08-01 11:00:00 -0700
-last_modified_at: 2026-08-01 11:00:00 -0700
+date: 2026-08-01
+last_modified_at: 2026-08-01
 excerpt: "What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model."
 permalink: /guides/bespoke-views-over-a-shared-application-boundary/
 order: 36

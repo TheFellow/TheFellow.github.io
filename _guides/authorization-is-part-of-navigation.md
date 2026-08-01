@@ -1,7 +1,7 @@
 ---
 title: "Authorization Is Part of Navigation"
-date: 2026-08-01 10:00:00 -0700
-last_modified_at: 2026-08-01 12:30:00 -0700
+date: 2026-08-01
+last_modified_at: 2026-08-01
 excerpt: "How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine."
 permalink: /guides/authorization-is-part-of-navigation/
 order: 35
