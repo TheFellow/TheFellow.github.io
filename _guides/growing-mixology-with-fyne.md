@@ -1,10 +1,11 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-08-01 12:00:00 -0700
+last_modified_at: 2026-08-01 12:30:00 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /guides/growing-mixology-with-fyne/
 order: 30
+featured: true
 status: "Completed experiment"
 icon: "desktop"
 accent: "#74c0fc"
