@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-02 12:00:00 -0700
+last_modified_at: 2026-08-02 15:00:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -53,7 +53,6 @@ app/
     authz/                        domain-owned Cedar policy
     internal/{commands,dao}/      write logic and persistence
     surfaces/{cli,gui,tui}/       bespoke presentation adapters
-  surfaces/tui/                   Mixology-wide TUI contracts and components
 pkg/
   toolkits/{cli,gui,tui}/         reusable presentation mechanics
   middleware/                     authorization, transactions, events, audit, and metrics

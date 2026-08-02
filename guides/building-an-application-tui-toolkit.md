@@ -220,7 +220,7 @@ Both rules are tested by introducing a violating import and confirming that lint
 
 Start with the domain behavior, not a generic abstraction. Add a view model below the domain's `surfaces/tui` package and have it call the public module with a fresh context. Implement the small shell contract, declare interaction ownership for each mode, and return typed messages from commands.
 
-Reuse `ListDetail`, a form, or a dialog when the mechanics fit. Supply the application styles and keys from the composition edge. Keep the selected value typed, and keep domain-specific actions and detail rendering in the domain surface. Register the view explicitly in the shell so navigation and construction remain searchable.
+Reuse `ListDetail`, a form, or a dialog when the mechanics fit. Start with the toolkit's styles and keys, extending bindings inside the domain adapter when its workflow requires them. Keep the selected value typed, and keep domain-specific actions and detail rendering in the domain surface. Register the view explicitly in the shell so navigation and construction remain searchable.
 
 When new repetition appears, ask three questions before moving it into `/pkg`:
 
