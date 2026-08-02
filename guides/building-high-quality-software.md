@@ -105,7 +105,7 @@ selection, workflow state, commands, and domain-specific rendering. The root mod
 application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
 as searchable list/detail state, loading, and pane sizing live in `pkg/toolkits/tui`; forms and dialogs keep
 their own local input behavior. Mixology-wide contracts, components, styles, and keys live in
-`app/presentation/tui`, where domain surfaces can use them without depending on the `main/tui` composition
+`pkg/toolkits/tui`, where domain surfaces can use them without depending on the `main/tui` composition
 root. That ownership split matters: sharing presentation machinery does
 not move domain decisions into a generic base view model, while every domain does not have to
 rediscover the same viewport arithmetic.
