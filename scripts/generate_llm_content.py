@@ -43,6 +43,7 @@ SUMMARIES = {
     "/guides/growing-mixology-with-fyne/": ("GUI expansion", "Tracking Mixology's testable growth from two surfaces to three."),
     "/guides/authorization-is-part-of-navigation/": ("Authorized navigation", "How Cedar shapes routes, aggregates, rows, and available actions."),
     "/guides/bespoke-views-over-a-shared-application-boundary/": ("Bespoke surfaces", "Why native views share application behavior, not universal view models."),
+    "/guides/typed-filtering-over-bstore/": ("Typed filters", "How typed expressions become safe, exact bstore query plans."),
     "/guides/using-a-third-surface-as-an-architecture-test/": ("Architecture audit", "A third presentation runtime tests whether application boundaries are real."),
     "/guides/testing-native-go-desktop-applications-headlessly/": ("Headless desktop", "Layered evidence for native GUI behavior without opening windows."),
     "/guides/making-illegal-states-unrepresentable-in-go/": ("Modeled states", "F# techniques make Go domain constraints explicit and enforceable."),
