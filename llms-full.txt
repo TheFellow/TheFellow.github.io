@@ -2417,11 +2417,17 @@ Most applications do not need to write that contract themselves. The package inc
 
 ```go
 key := []byte("0123456789abcdef0123456789abcdef")
-uints, _ := riblt.NewUint64Codec(key)
-ids, _ := riblt.NewBytesCodec(32, key)
+uints, err := riblt.NewUint64Codec(key)
+if err != nil {
+    log.Fatal(err)
+}
+ids, err := riblt.NewBytesCodec(32, key)
+if err != nil {
+    log.Fatal(err)
+}
 ```
 
-The example key is deliberately visible, so it is only suitable for a walkthrough. A real deployment provisions at least 16 bytes of secret key material through its authenticated surrounding protocol. `BytesCodec` requires one width because zero-padding variable-length values would make XOR ambiguous.
+The example key is deliberately visible, so it is only suitable for a walkthrough. A real deployment provisions at least 16 bytes of secret key material through its authenticated surrounding protocol. `BytesCodec` requires one width because zero-padding variable-length values would make XOR ambiguous. Constructor errors must be checked. A failed construction returns an unusable zero codec, and `NewEncoder`, `NewDecoder`, `NewSketch`, and `Hash` reject failed or otherwise uninitialized built-in codecs.
 
 ## Give the two hashes different responsibilities
 
@@ -2447,15 +2453,23 @@ type CodedSymbol[T any] struct {
 }
 ```
 
-The symbol and checksum fields are accumulated with XOR. The signed count is accumulated with addition. A count of `+1` or `-1` only suggests that the XOR field contains one remaining symbol. The decoder accepts it as a singleton only when `Checksum(cell.Symbol)` equals the accumulated checksum. Domain separation between placement and validation matters because these are independent decisions. A 64-bit checksum collision remains possible, but a secret keyed checksum prevents an untrusted sender from cheaply choosing collisions in advance.
+The symbol and checksum fields are accumulated with XOR. The signed count is accumulated with addition. A count of `+1` or `-1` only suggests that the XOR field contains one remaining symbol. The decoder accepts it as a singleton only when `Checksum(cell.Symbol)` equals the accumulated checksum. Domain separation between placement and validation matters because these are independent decisions.
+
+Keying prevents a party that does not know the key from cheaply choosing collisions. It does not make a synchronization peer that shares the key non-adversarial, so the surrounding protocol still has to authenticate peers and bound their work. The two hashes also fail differently. A checksum collision can admit a false singleton, while a mapping-hash collision gives distinct symbols the same placement sequence and can prevent reconciliation from converging. An independent checksum cannot repair that identical placement. Both 64-bit collision cases are unlikely, not impossible.
 
 ## Stream cells without guessing a table size
 
 The upstream registers its complete set, then starts the stream:
 
 ```go
-codec, _ := riblt.NewUint64Codec(key)
-encoder, _ := riblt.NewEncoder[uint64](codec)
+codec, err := riblt.NewUint64Codec(key)
+if err != nil {
+    log.Fatal(err)
+}
+encoder, err := riblt.NewEncoder[uint64](codec)
+if err != nil {
+    log.Fatal(err)
+}
 for _, value := range upstream {
     _ = encoder.Add(value)
 }
@@ -2479,11 +2493,14 @@ The caller must invoke `stop` when it finishes early. Starting iteration also se
 The downstream similarly registers its local set before the first coded cell:
 
 ```go
-decoder, _ := riblt.NewDecoderWithLimits[uint64](codec, riblt.DecoderLimits{
+decoder, err := riblt.NewDecoderWithLimits[uint64](codec, riblt.DecoderLimits{
     MaxCells:          10_000,
     MaxLocalSymbols:   1_000_000,
     MaxDecodedSymbols: 10_000,
 })
+if err != nil {
+    log.Fatal(err)
+}
 for _, value := range downstream {
     _ = decoder.AddLocal(value)
 }
@@ -2543,7 +2560,7 @@ The early `break` is the downstream's completion signal inside this in-process e
 
 `Remote` is what exists only at the upstream, and `Local` is what exists only at the downstream. Those names describe the decoder's perspective, which is worth keeping explicit when the result becomes an application update. The library clones mutable symbols on ingestion, storage, coded-cell output, and decoded-result output. Mutating a caller-owned byte slice after `Add`, or mutating a returned result, does not change internal state.
 
-The package also includes `Sketch[T]` for a fixed-length prefix. Two sketches of the same length and `CompatibilityID` can be built independently, subtracted cell by cell, and decoded. A mismatch in codec semantics, key, byte width, or protocol version is rejected instead of producing meaningless cells. That is useful when a prefix length is already part of the surrounding protocol. The streaming encoder and decoder preserve the rateless advantage: no table length has to be chosen before seeing whether peeling succeeds.
+The package also includes `Sketch[T]` for a fixed-length prefix. Two sketches of the same length and `CompatibilityID` can be built independently, subtracted cell by cell, and decoded. A mismatch in codec semantics, key, byte width, or protocol version is rejected instead of producing meaningless cells. Successful subtraction seals its receiver as a signed difference. `Cells` and `Decode` remain available, but the sealed sketch cannot be mutated or used as either operand of another subtraction. This makes the membership lifecycle explicit instead of letting later `Add` or `Remove` calls consult the original left-hand set. That is useful when a prefix length is already part of the surrounding protocol. The streaming encoder and decoder preserve the rateless advantage: no table length has to be chosen before seeing whether peeling succeeds.
 
 ## Choose a symbol representation for the project
 
@@ -2663,7 +2680,16 @@ The safer default changes that profile. A local microbenchmark of `Uint64Codec` 
 
 ## What the tests establish
 
-`go test ./...` exercises more than the happy path. The suite checks known reconciliation results, equal sets, fixed-length sketch subtraction, deterministic mapping and keyed-hash vectors, reset behavior, duplicate and lifecycle errors, and 100 seeded random set constructions. It also verifies mutable-value ownership, wrong-width rejection, weak-key rejection, collision-correct duplicate detection, incompatible sketch rejection, and decoder limits. The examples add tests for the record codec's XOR algebra, changed record and document reconciliation, UTF-8 and bounded document sizes, chunk deduplication, missing chunk discovery, reconstruction, and corrupt chunk rejection. Fuzz targets generate additional set constructions and malformed coded byte symbols.
+`go test ./...` exercises more than the happy path. The suite checks known reconciliation results, equal sets, fixed-length sketch subtraction, deterministic mapping and keyed-hash vectors, reset behavior, duplicate and lifecycle errors, and 100 seeded random set constructions. It also verifies mutable-value ownership, wrong-width rejection, failed and zero-value codec rejection at every public boundary, collision-correct duplicate detection, mapping-collision non-convergence, incompatible and sealed sketch rejection, side-effect-free decoder admission failures, and decoder limits. The examples add tests for the record codec's XOR algebra, changed record and document reconciliation, UTF-8 and bounded document sizes, chunk deduplication, missing chunk discovery, reconstruction, and corrupt chunk rejection.
+
+Ordinary `go test ./...` runs the fuzz seed corpus, not sustained fuzzing. The two fuzz targets need separate invocations because Go runs one target at a time:
+
+```sh
+go test -fuzz=FuzzReconcile -fuzztime=30s
+go test -fuzz=FuzzMalformedCodedBytes -fuzztime=30s
+```
+
+They generate additional set constructions and malformed coded byte symbols.
 
 Together, those tests demonstrate the implementation's behavior for the exercised codecs and inputs. The probabilistic algorithm still depends on good mapping hashes, and checksum collisions remain possible in principle.
 
