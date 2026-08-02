@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-02 15:00:00 -0700
+last_modified_at: 2026-08-02 16:30:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10
@@ -63,6 +63,8 @@ Events are often introduced with a broker, eventual consistency, retries, and a 
 All of that work remains inside the transaction opened for the original delete. If removing an affected menu item fails, the ingredient, inventory, drinks, menus, and audit record return to their previous state together. The event separates knowledge between domains without giving up immediate consistency.
 
 This is a deliberately constrained event model. Handlers are leaf nodes, event payloads carry useful state, and delivery is in-process. The lesson will explore what those constraints buy, where fat events become uncomfortable, and which pressures would justify crossing the boundary into asynchronous messaging.
+
+The focused guide [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries/) follows this deletion from the tempting direct-call implementation through owned reactions, transactional dispatch, package rules, and integration evidence.
 
 ## 5. Generate repetition, preserve decisions
 
