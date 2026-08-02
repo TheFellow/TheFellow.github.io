@@ -20,6 +20,7 @@ The local semantic names map to Lucide icons as follows:
 | `storage` | `hard-drive` |
 | `desktop` | `monitor` |
 | `lock` | `lock-keyhole` |
+| `filter` | `filter` |
 | `sitemap` | `network` |
 | `vial` | `vial` |
 | `key` | `key-round` |
