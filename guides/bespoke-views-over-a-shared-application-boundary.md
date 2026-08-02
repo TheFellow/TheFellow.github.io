@@ -20,7 +20,7 @@ Mixology instead shares an application boundary and gives each adapter permissio
 
 ## Share the behavior that must remain equal
 
-Every Mixology operation enters an exported domain module through an application session. That path owns authorization, transaction scope, audit recording, and event publication. Public models, identifiers, filters, tags, requests, results, and typed errors cross the boundary. A fresh operation context prevents middleware state from leaking between interactions while the persistent TUI and GUI sessions retain the authenticated principal.
+Every Mixology operation enters an exported domain module through a fresh middleware context. The persistent TUI and GUI bind the authenticated principal in an application session, while the CLI creates its context for one invocation. That path owns authorization, transaction scope, audit recording, and event publication. Public models, identifiers, filters, tags, requests, results, and typed errors cross the boundary, and fresh operation state prevents middleware attributes from leaking between interactions.
 
 ```mermaid
 flowchart LR
@@ -74,7 +74,7 @@ Mixology avoids both outcomes. Its TUI view models live below each domain's `sur
 
 Rejecting a universal view model does not mean duplicating every screen. Mixology has two narrower kinds of presentation reuse.
 
-The first is runtime-specific mechanics. `pkg/toolkits/tui` owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. `pkg/toolkits/gui` owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. These packages know their presentation technology but not Drinks, Menus, or Orders.
+The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/readme.md) owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/gui/readme.md) owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. The smaller [`pkg/toolkits/cli`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/cli/readme.md) standardizes JSON input and output plus human-readable rendering. These packages know their presentation technology but not Drinks, Menus, or Orders.
 
 The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
 
@@ -91,6 +91,8 @@ flowchart TD
 ```
 
 Abstractions are earned horizontally within a runtime, after several domains demonstrate the same mechanic. Behavior is shared vertically through the public domain module. This keeps reuse aligned with the reason the code is actually alike.
+
+The repository's [domain-surface guide](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/readme.md#presentation-surfaces) names the ownership boundary, and each executable now keeps its composition and onboarding notes beside the entrypoint. Those short paths turn the architectural claim into a trace a new contributor can follow directly through the packages.
 
 ## Bespoke state makes ownership visible
 

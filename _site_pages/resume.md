@@ -149,7 +149,7 @@ author_profile: false
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/go-modular-monolith">go-modular-monolith</a></h3>
-      <p>A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and <a href="https://github.com/TheFellow/go-modular-monolith#authorization">rich, expressive, and precise authorization</a>.</p>
+      <p>A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and <a href="https://github.com/TheFellow/go-modular-monolith/blob/main/docs/architecture.md#authorization">rich, expressive, and precise authorization</a>.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>

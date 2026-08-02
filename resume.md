@@ -100,7 +100,7 @@ A semantic port of the Cedar policy language, maintained against its upstream im
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
 
 ### [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith)
-A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and [rich, expressive, and precise authorization](https://github.com/TheFellow/go-modular-monolith#authorization).
+A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and [rich, expressive, and precise authorization](https://github.com/TheFellow/go-modular-monolith/blob/main/docs/architecture.md#authorization).
 
 ### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
 Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.
