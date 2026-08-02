@@ -48,7 +48,6 @@ app/
     authz/                        domain-owned Cedar policy
     internal/{commands,dao}/      write logic and persistence
     surfaces/{cli,gui,tui}/       bespoke presentation adapters
-  surfaces/tui/                   Mixology-wide TUI contracts and components
 pkg/
   toolkits/{cli,gui,tui}/         reusable presentation mechanics
   middleware/                     authorization, transactions, events, audit, and metrics

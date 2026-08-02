@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-02 12:30:00 -0700
+last_modified_at: 2026-08-02 15:00:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /guides/building-high-quality-software/
 order: 10
@@ -106,7 +106,7 @@ The TUI makes that separation concrete with an MVVM-like design. Domain view mod
 selection, workflow state, commands, and domain-specific rendering. The root model owns
 application-wide navigation, help, status, and the outer frame. Repeated terminal mechanics such
 as searchable list/detail state, loading, and pane sizing live in `pkg/toolkits/tui`; forms and dialogs keep
-their own local input behavior. Mixology-wide contracts, components, styles, and keys live in
+their own local input behavior. Reusable contracts, components, styles, and keys live in
 `pkg/toolkits/tui`, where domain surfaces can use them without depending on the `main/tui` composition
 root. That ownership split matters: sharing presentation machinery does
 not move domain decisions into a generic base view model, while every domain does not have to
