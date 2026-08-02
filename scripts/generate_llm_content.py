@@ -38,6 +38,7 @@ SUMMARIES = {
     "/projects/fluid/": ("Fluid simulation", "An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics."),
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
     "/guides/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
+    "/guides/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/guides/building-an-application-tui-toolkit/": ("Testable TUI", "How Mixology adapts MVVM and Elm ideas into an application toolkit."),
     "/guides/growing-mixology-with-fyne/": ("GUI expansion", "Tracking Mixology's testable growth from two surfaces to three."),
     "/guides/authorization-is-part-of-navigation/": ("Authorized navigation", "How Cedar shapes routes, aggregates, rows, and available actions."),
@@ -50,6 +51,7 @@ SUMMARIES = {
     "/notes/type-safe-linear-algebra-in-fsharp/": ("Typed dimensions", "Phantom dimensions make invalid matrix arithmetic fail at compile time."),
     "/notes/octonions-and-the-standard-model-in-fsharp/": ("Executable octonions", "Non-associative multiplication produces a Furey-inspired eight-state particle pattern."),
     "/notes/riblt-in-go/": ("Rateless reconciliation", "A generic Go RIBLT reveals streaming set reconciliation step by step."),
+    "/notes/linux-for-windows-brains/": ("Linux models", "Translate Windows concepts into practical Linux mental models."),
 }
 
 Document = dict[str, Any]

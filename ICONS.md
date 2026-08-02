@@ -11,11 +11,13 @@ The local semantic names map to Lucide icons as follows:
 | `modules` | `boxes` |
 | `shield` | `shield-check` |
 | `boundaries` | `network` |
+| `branch` | `git-branch` |
 | `route` | `route` |
 | `fluid` | `waves-horizontal` |
 | `values` | `shapes` |
 | `book` | `book-open` |
 | `terminal` | `terminal` |
+| `storage` | `hard-drive` |
 | `desktop` | `monitor` |
 | `lock` | `lock-keyhole` |
 | `sitemap` | `network` |

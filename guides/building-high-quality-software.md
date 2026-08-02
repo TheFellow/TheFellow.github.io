@@ -62,6 +62,8 @@ All of that work remains inside the transaction opened for the original delete. 
 
 This is a deliberately constrained event model. Handlers are leaf nodes, event payloads carry useful state, and delivery is in-process. The lesson will explore what those constraints buy, where fat events become uncomfortable, and which pressures would justify crossing the boundary into asynchronous messaging.
 
+The focused guide [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries.md) follows this deletion from the tempting direct-call implementation through owned reactions, transactional dispatch, package rules, and integration evidence.
+
 ## 5. Generate repetition, preserve decisions
 
 Code generation can remove work, or it can conceal a framework no one wants to debug. The useful dividing line is whether the generated code contains decisions.
