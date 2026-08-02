@@ -210,7 +210,7 @@ Mixology instead shares an application boundary and gives each adapter permissio
 
 ## Share the behavior that must remain equal
 
-Every Mixology operation enters an exported domain module through an application session. That path owns authorization, transaction scope, audit recording, and event publication. Public models, identifiers, filters, tags, requests, results, and typed errors cross the boundary. A fresh operation context prevents middleware state from leaking between interactions while the persistent TUI and GUI sessions retain the authenticated principal.
+Every Mixology operation enters an exported domain module through a fresh middleware context. The persistent TUI and GUI bind the authenticated principal in an application session, while the CLI creates its context for one invocation. That path owns authorization, transaction scope, audit recording, and event publication. Public models, identifiers, filters, tags, requests, results, and typed errors cross the boundary, and fresh operation state prevents middleware attributes from leaking between interactions.
 
 ```mermaid
 flowchart LR
@@ -264,7 +264,7 @@ Mixology avoids both outcomes. Its TUI view models live below each domain's `sur
 
 Rejecting a universal view model does not mean duplicating every screen. Mixology has two narrower kinds of presentation reuse.
 
-The first is runtime-specific mechanics. `pkg/toolkits/tui` owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. `pkg/toolkits/gui` owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. These packages know their presentation technology but not Drinks, Menus, or Orders.
+The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/readme.md) owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/gui/readme.md) owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. The smaller [`pkg/toolkits/cli`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/cli/readme.md) standardizes JSON input and output plus human-readable rendering. These packages know their presentation technology but not Drinks, Menus, or Orders.
 
 The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
 
@@ -281,6 +281,8 @@ flowchart TD
 ```
 
 Abstractions are earned horizontally within a runtime, after several domains demonstrate the same mechanic. Behavior is shared vertically through the public domain module. This keeps reuse aligned with the reason the code is actually alike.
+
+The repository's [domain-surface guide](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/readme.md#presentation-surfaces) names the ownership boundary, and each executable now keeps its composition and onboarding notes beside the entrypoint. Those short paths turn the architectural claim into a trace a new contributor can follow directly through the packages.
 
 ## Bespoke state makes ownership visible
 
@@ -2525,6 +2527,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 ## Full content
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
+[Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
 [Preview the tutorial series](/guides/building-high-quality-software.md)
 [Read the GUI surface guide](/guides/growing-mixology-with-fyne.md)
 
@@ -2543,6 +2546,8 @@ The desktop shell reflects authorization before a user enters a workspace. Navig
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
 The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
+
+The repository now keeps that first code trace explicit. Its compact root guide leads from an executable through one domain surface and into the public module, then links to focused architecture, feature, entrypoint, domain-surface, and presentation-toolkit guides beside the code they describe.
 
 Code shared by every context has a named home rather than accumulating in a generic utility package. `app/kernel` owns application value types and narrow ports. `pkg` owns transport-independent infrastructure such as authorization, dispatch, filtering, middleware, paging, storage, and telemetry. Presentation mechanics live in three application-independent `pkg/toolkits` packages. Domain surfaces may use only the toolkit for the same presentation mode, toolkits cannot import application code or each other, and no surface may import executable composition from `main`.
 
@@ -2712,7 +2717,7 @@ A semantic port of the Cedar policy language, maintained against its upstream im
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
 
 ### [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith)
-A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and [rich, expressive, and precise authorization](https://github.com/TheFellow/go-modular-monolith#authorization).
+A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and [rich, expressive, and precise authorization](https://github.com/TheFellow/go-modular-monolith/blob/main/docs/architecture.md#authorization).
 
 ### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
 Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.

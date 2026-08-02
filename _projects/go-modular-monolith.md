@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-31 10:00:00 -0700
+last_modified_at: 2026-08-02 12:00:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -18,6 +18,7 @@ topics: ["Architecture", "Reference app", "Cedar"]
 <div class="project-meta"><span>Go</span><span>Software architecture</span><span>Cedar</span><span>MIT</span><span>Updated {{ page.last_updated | date: "%B %-d, %Y" }}</span></div>
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn .btn--primary }
+[Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start){: .btn }
 [Preview the tutorial series](/guides/building-high-quality-software/){: .btn }
 [Read the GUI surface guide](/guides/growing-mixology-with-fyne/){: .btn }
 
@@ -36,6 +37,8 @@ The desktop shell reflects authorization before a user enters a workspace. Navig
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
 The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
+
+The repository now keeps that first code trace explicit. Its compact root guide leads from an executable through one domain surface and into the public module, then links to focused architecture, feature, entrypoint, domain-surface, and presentation-toolkit guides beside the code they describe.
 
 Code shared by every context has a named home rather than accumulating in a generic utility package. `app/kernel` owns application value types and narrow ports. `pkg` owns transport-independent infrastructure such as authorization, dispatch, filtering, middleware, paging, storage, and telemetry. Presentation mechanics live in three application-independent `pkg/toolkits` packages. Domain surfaces may use only the toolkit for the same presentation mode, toolkits cannot import application code or each other, and no surface may import executable composition from `main`.
 
