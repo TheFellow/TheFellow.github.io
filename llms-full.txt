@@ -1477,16 +1477,16 @@ The valuable part of the functional model is not the operator. It is the sequenc
 
 F# and Go can express many of the same domain decisions, but they enforce them at different layers.
 
-| Concern | F# | Go |
-| --- | --- | --- |
-| Immutable values | Language default | API design and convention |
-| Hidden construction | Private union case | Package and unexported fields |
-| Closed variants | Discriminated union | Sealed interface pattern |
-| Exhaustive handling | Compiler warning, optionally an error | Static analyzer in required checks |
-| Distinct primitives | Single-case union | Defined type |
-| Fallible construction | `Result` | `(T, error)` |
-| Missing values | `option` | Pointers, `nil`, or an explicit optional type |
-| Zero-value validity | Constructed union cases | Must be designed or checked explicitly |
+| Concern               | F#                                    | Go                                            |
+| --------------------- | ------------------------------------- | --------------------------------------------- |
+| Immutable values      | Language default                      | API design and convention                     |
+| Hidden construction   | Private union case                    | Package and unexported fields                 |
+| Closed variants       | Discriminated union                   | Sealed interface pattern                      |
+| Exhaustive handling   | Compiler warning, optionally an error | Static analyzer in required checks            |
+| Distinct primitives   | Single-case union                     | Defined type                                  |
+| Fallible construction | `Result`                              | `(T, error)`                                  |
+| Missing values        | `option`                              | Pointers, `nil`, or an explicit optional type |
+| Zero-value validity   | Constructed union cases               | Must be designed or checked explicitly        |
 
 This difference affects how strongly a model can support its claims. In F#, a private union case plus immutable data can make construction through the smart constructor the only path. In Go, package-local code and zero values remain part of the design. Constructors, unexported representation, validation at serialization boundaries, and required analyzers narrow those gaps without pretending they disappeared.
 
