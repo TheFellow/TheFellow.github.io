@@ -3583,7 +3583,7 @@ RIBLT reconciles sets, not arbitrary collections or application state. The imple
 
 The result is a hardened reconciliation primitive with explicit algebra, ownership, compatibility, and resource contracts. Running the walkthrough turns those pieces from a paper description into a sequence I can inspect: combine symbols, subtract local state, validate a singleton, propagate it, and stop when every received cell is resolved. Building a production synchronization system still means supplying the wire and state-transition guarantees around that primitive.
 
-The [go-riblt repository](https://github.com/TheFellow/go-riblt) contains the implementation and every command discussed here. Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. After the algorithm is familiar, run `cmd/structs`, `cmd/documents`, and `cmd/chunks` to compare how the same generic core fits different application data. That path moves from the reconciliation mechanics to the representation decision a project has to make.
+The [go-riblt repository](https://github.com/TheFellow/go-riblt) contains the implementation and every command discussed here, and its [project page](/projects/go-riblt.md) places the library beside my other repositories. Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. After the algorithm is familiar, run `cmd/structs`, `cmd/documents`, and `cmd/chunks` to compare how the same generic core fits different application data. That path moves from the reconciliation mechanics to the representation decision a project has to make.
 
 
 ---
@@ -3705,6 +3705,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 
 - [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [cedar-dotnet](/projects/cedar-dotnet.md): A C# implementation of the Cedar policy language and authorization model.
+- [go-riblt](/projects/go-riblt.md): A generic Go implementation of rateless set reconciliation with keyed codecs, streaming cells, and explicit resource limits.
 - [arch-lint](/projects/arch-lint.md): A Go analyzer that turns architectural dependency rules into build-time checks.
 - [F#kYeah](/projects/fkyeah.md): An F# pipeline engine for multi-stage AI workflows described as executable graphs.
 - [enumstruct](/projects/enumstruct.md): A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.
@@ -3936,6 +3937,40 @@ shared operation pipeline, transactional events, focused code generation, error 
 policy-based authorization, interchangeable CLI and bespoke MVVM-style TUI and GUI surfaces, an owned seam for
 cross-domain features such as tags, production-shaped tests, and the discipline to stop before
 simple becomes simplistic.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/go-riblt/ by scripts/generate_llm_content.py; do not edit. -->
+
+# go-riblt
+
+Source: [https://thefellow.github.io/projects/go-riblt/](https://thefellow.github.io/projects/go-riblt/)
+
+## Pyramid summary
+
+- **~2 words:** Set reconciliation
+- **~8 words:** A generic Go RIBLT library reconciling sets with difference-sized communication.
+- **Expanded:** A generic Go implementation of rateless set reconciliation with keyed codecs, streaming cells, and explicit resource limits.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/go-riblt)
+[Read the walkthrough note](/notes/riblt-in-go.md)
+
+go-riblt is a generic Go implementation of a Rateless Invertible Bloom Lookup Table. When two peers hold large sets that mostly agree, it discovers the few entries that differ with communication proportional to the size of the disagreement, not the size of the data. The upstream streams coded cells until the downstream has peeled both sides of the symmetric difference; neither side estimates the difference before transmission begins.
+
+The generic design is the interesting part. The algorithm never learns what a symbol means; a `Codec[T]` supplies the exact algebra it needs: a reversible XOR, an identity, ownership rules for mutable values, and two keyed hashes with separate jobs for placement and singleton validation. Keyed codecs for `uint64` and fixed-width byte strings come built in, and the repository's examples show the same core reconciling numeric IDs, complete fixed-layout records, bounded documents, and content-addressed chunks.
+
+The library also treats its trust boundaries as contracts rather than conventions. Every public insertion point validates, clones, and hashes values itself, decoder limits bound cells, local symbols, and peeled results, and a `CompatibilityID` plus protocol version reject mismatched codec configurations instead of producing meaningless cells. Property tests, fuzz targets, and benchmarks exercise those contracts alongside the happy path.
+
+### Why it is worth exploring
+
+- It shows how Go generics can separate a probabilistic algorithm from the representation decision each application has to make.
+- The runnable walkthrough prints every transmitted cell and each peeling step, turning a paper description into a sequence you can inspect.
+- The scaling experiment makes the central claim observable: a tenfold increase in set size leaves the number of transmitted cells nearly unchanged.
+
+Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. The [companion note](/notes/riblt-in-go.md) follows that same path through the concrete example sets, and `cmd/structs`, `cmd/documents`, and `cmd/chunks` compare how the generic core fits different application data.
 
 
 ---
