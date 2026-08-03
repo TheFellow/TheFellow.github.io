@@ -1,7 +1,7 @@
 ---
 title: "Guides"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-01 12:30:00 -0700
+last_modified_at: 2026-08-02 17:07:35 -0700
 permalink: /guides/
 layout: single
 author_profile: true
@@ -13,7 +13,8 @@ Long-form tutorials connect design principles to running code. Each series is st
 <div class="feature-tiles">
   {% assign sorted_guides = site.guides | sort: "order" %}
   {% for guide in sorted_guides %}
-    <a class="feature-tile{% if guide.featured %} feature-tile--featured{% endif %}" href="{{ guide.url | relative_url }}" style="--feature-accent: {{ guide.accent }};">
+    {% assign tile_position = forloop.index0 | modulo: 5 %}
+    <a class="feature-tile{% if tile_position == 0 %} feature-tile--featured{% endif %}" href="{{ guide.url | relative_url }}" style="--feature-accent: {{ guide.accent }};">
       <header class="feature-tile__header">
         <span class="feature-tile__icon">{% include feature-icon.html name=guide.icon %}</span>
         <span>
