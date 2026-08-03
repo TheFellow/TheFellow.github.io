@@ -1,7 +1,7 @@
 ---
 title: "Projects"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-28 15:11:58 -0700
+last_modified_at: 2026-08-02 17:07:35 -0700
 permalink: /projects/
 layout: single
 author_profile: true
@@ -13,7 +13,8 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 <div class="feature-tiles">
   {% assign sorted_projects = site.projects | sort: "order" %}
   {% for project in sorted_projects %}
-    <a class="feature-tile{% if project.featured %} feature-tile--featured{% endif %}" href="{{ project.url | relative_url }}" style="--feature-accent: {{ project.accent }};">
+    {% assign tile_position = forloop.index0 | modulo: 5 %}
+    <a class="feature-tile{% if tile_position == 0 %} feature-tile--featured{% endif %}" href="{{ project.url | relative_url }}" style="--feature-accent: {{ project.accent }};">
       <header class="feature-tile__header">
         <span class="feature-tile__icon">{% include feature-icon.html name=project.icon %}</span>
         <span>
