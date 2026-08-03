@@ -1,7 +1,7 @@
 ---
 title: "Resume"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-07-28 15:11:58 -0700
+last_modified_at: 2026-08-02 17:43:09 -0700
 permalink: /resume/
 excerpt: "Staff software engineer specializing in authorization, platform architecture, API evolution, and durable systems."
 layout: single
@@ -141,7 +141,7 @@ author_profile: false
   <div class="resume-work-grid">
     <article>
       <h3><a href="https://github.com/TheFellow/cedar-dotnet">cedar-dotnet</a></h3>
-      <p>A semantic port of the Cedar policy language, maintained against its upstream implementation and validated with the official conformance corpus.</p>
+      <p>An idiomatic C# implementation of Cedar validated by 124,000 official conformance cases and 2,462 project tests. Benchmark-driven evaluator work made authorization up to 12 times faster and reduced allocations by as much as 98 percent.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/fkyeah">F#kYeah</a></h3>
@@ -149,11 +149,15 @@ author_profile: false
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/go-modular-monolith">go-modular-monolith</a></h3>
-      <p>A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and <a href="https://github.com/TheFellow/go-modular-monolith/blob/main/docs/architecture.md#authorization">rich, expressive, and precise authorization</a>.</p>
+      <p>A Go reference application with seven bounded contexts and independent CLI, TUI, and desktop clients over one Cedar-authorized transaction, event, and audit pipeline. Static analysis enforces module boundaries, while fresh-process and race tests verify behavior across surfaces.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>
       <p>Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.</p>
+    </article>
+    <article>
+      <h3><a href="https://github.com/TheFellow/go-riblt">go-riblt</a></h3>
+      <p>A generic Go library for rateless set reconciliation, with explicit compatibility, ownership, and resource contracts. Property tests, fuzzing, and benchmarks exercise codecs and adversarial inputs while communication follows the size of the difference rather than the complete datasets.</p>
     </article>
   </div>
 </section>
@@ -167,8 +171,8 @@ author_profile: false
         <p>Facilitator for internal AI engineering bootcamps focused on specification-driven development and durable agent workflows.</p>
       </article>
       <article>
-        <h4>Technical presentations</h4>
-        <p>Make difficult material approachable, including a ground-up tour of elliptic-curve cryptography from groups and finite fields through ECDSA.</p>
+        <h4>Technical writing and presentations</h4>
+        <p>Write and present implementation-backed explanations of authorization, application architecture, testing, distributed algorithms, and mathematical software, ranging from cross-surface application design and RIBLT set reconciliation to a ground-up tour of ECDSA.</p>
       </article>
       <article>
         <h4>Programming education</h4>

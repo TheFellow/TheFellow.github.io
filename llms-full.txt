@@ -4067,24 +4067,27 @@ Designed relational schemas and queries, administered production SQL systems, co
 ## Selected engineering work
 
 ### [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet)
-A semantic port of the Cedar policy language, maintained against its upstream implementation and validated with the official conformance corpus.
+An idiomatic C# implementation of Cedar validated by 124,000 official conformance cases and 2,462 project tests. Benchmark-driven evaluator work made authorization up to 12 times faster and reduced allocations by as much as 98 percent.
 
 ### [F#kYeah](https://github.com/TheFellow/fkyeah)
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
 
 ### [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith)
-A reference application that makes modular boundaries and cross-cutting concerns executable. Shared pipelines coordinate transactions, events, audit, and [rich, expressive, and precise authorization](https://github.com/TheFellow/go-modular-monolith/blob/main/docs/architecture.md#authorization).
+A Go reference application with seven bounded contexts and independent CLI, TUI, and desktop clients over one Cedar-authorized transaction, event, and audit pipeline. Static analysis enforces module boundaries, while fresh-process and race tests verify behavior across surfaces.
 
 ### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
 Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.
+
+### [go-riblt](https://github.com/TheFellow/go-riblt)
+A generic Go library for rateless set reconciliation, with explicit compatibility, ownership, and resource contracts. Property tests, fuzzing, and benchmarks exercise codecs and adversarial inputs while communication follows the size of the difference rather than the complete datasets.
 
 ## Teaching and communication
 
 #### AI engineering enablement
 Facilitator for internal AI engineering bootcamps focused on specification-driven development and durable agent workflows.
 
-#### Technical presentations
-Make difficult material approachable, including a ground-up tour of elliptic-curve cryptography from groups and finite fields through ECDSA.
+#### Technical writing and presentations
+Write and present implementation-backed explanations of authorization, application architecture, testing, distributed algorithms, and mathematical software, ranging from cross-surface application design and RIBLT set reconciliation to a ground-up tour of ECDSA.
 
 #### Programming education
 Created more than 60 tutorials on neural networks, machine learning, and regular expressions, reaching more than 830,000 views and 5,000 subscribers.
