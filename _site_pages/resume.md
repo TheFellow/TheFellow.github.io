@@ -1,7 +1,7 @@
 ---
 title: "Resume"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-02 17:43:09 -0700
+last_modified_at: 2026-08-03 08:14:50 -0700
 permalink: /resume/
 excerpt: "Staff software engineer specializing in authorization, platform architecture, API evolution, and durable systems."
 layout: single
@@ -149,15 +149,11 @@ author_profile: false
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/go-modular-monolith">go-modular-monolith</a></h3>
-      <p>A Go reference application with seven bounded contexts and independent CLI, TUI, and desktop clients over one Cedar-authorized transaction, event, and audit pipeline. Static analysis enforces module boundaries, while fresh-process and race tests verify behavior across surfaces.</p>
+      <p>A Go reference application that makes modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. A shared pipeline coordinates transactions, events, audit, and Cedar authorization; static analysis and cross-surface tests keep those contracts intact.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>
       <p>Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.</p>
-    </article>
-    <article>
-      <h3><a href="https://github.com/TheFellow/go-riblt">go-riblt</a></h3>
-      <p>A generic Go library for rateless set reconciliation, with explicit compatibility, ownership, and resource contracts. Property tests, fuzzing, and benchmarks exercise codecs and adversarial inputs while communication follows the size of the difference rather than the complete datasets.</p>
     </article>
   </div>
 </section>
