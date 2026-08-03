@@ -1,6 +1,6 @@
 ---
 title: "Linux for Windows Brains"
-date: 2026-08-02 12:00:00 -0700
+date: 2026-04-23 11:57:11 -0700
 last_modified_at: 2026-08-02 17:05:14 -0700
 permalink: /notes/linux-for-windows-brains/
 excerpt: "A practical translation from familiar Windows concepts to Linux filesystems, permissions, shells, services, SSH, and containers."
