@@ -20,6 +20,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [F#kYeah](https://thefellow.github.io/projects/fkyeah.md): An F# engine executing inspectable, resumable AI workflows from DOT graphs.
 - [fluid](https://thefellow.github.io/projects/fluid.md): An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics.
 - [go-modular-monolith](https://thefellow.github.io/projects/go-modular-monolith.md): A Go reference app enforcing modular boundaries and cross-cutting concerns.
+- [go-riblt](https://thefellow.github.io/projects/go-riblt.md): A generic Go RIBLT library reconciling sets with difference-sized communication.
 - [ValueTypes](https://thefellow.github.io/projects/value-types.md): A compact C# library for modeling value-object equality and composition.
 
 ## Guides

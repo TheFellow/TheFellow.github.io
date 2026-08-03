@@ -32,6 +32,7 @@ SUMMARIES = {
     "/404.html": ("Missing page", "Navigation help when a requested page cannot be found."),
     "/projects/go-modular-monolith/": ("Executable architecture", "A Go reference app enforcing modular boundaries and cross-cutting concerns."),
     "/projects/cedar-dotnet/": ("Cedar for .NET", "A semantic Cedar implementation with idiomatic C# APIs and conformance tests."),
+    "/projects/go-riblt/": ("Set reconciliation", "A generic Go RIBLT library reconciling sets with difference-sized communication."),
     "/projects/arch-lint/": ("Enforced boundaries", "A Go analyzer that makes architectural dependency rules build-time checks."),
     "/projects/fkyeah/": ("Agent pipelines", "An F# engine executing inspectable, resumable AI workflows from DOT graphs."),
     "/projects/enumstruct/": ("Exhaustive unions", "A Go analyzer that detects missing pointer-union cases as models evolve."),
