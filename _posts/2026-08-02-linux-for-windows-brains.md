@@ -1,11 +1,13 @@
 ---
 title: "Linux for Windows Brains"
 date: 2026-08-02 12:00:00 -0700
-last_modified_at: 2026-08-02 13:00:00 -0700
+last_modified_at: 2026-08-02 17:05:14 -0700
 permalink: /notes/linux-for-windows-brains/
 excerpt: "A practical translation from familiar Windows concepts to Linux filesystems, permissions, shells, services, SSH, and containers."
 icon: "storage"
 tags: ["Linux", "Windows", "Shell", "SSH", "Containers"]
+toc: true
+toc_sticky: true
 ---
 
 I learned computers through Windows. Drive letters, executable extensions, Task Manager, Windows Services, installers, and the registry formed my first model of an operating system. Linux has equivalents for most of those ideas, but matching them one for one creates confusion. The useful shift is to understand where the models differ.
