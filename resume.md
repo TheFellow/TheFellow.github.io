@@ -94,7 +94,7 @@ Designed relational schemas and queries, administered production SQL systems, co
 ## Selected engineering work
 
 ### [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet)
-An idiomatic C# implementation of Cedar validated by 124,000 official conformance cases and 2,462 project tests. Benchmark-driven evaluator work made authorization up to 12 times faster and reduced allocations by as much as 98 percent.
+An idiomatic C# implementation of the Cedar policy language and authorization engine, maintained against the upstream implementation and validated with its 124,000-case official conformance corpus. Benchmark-driven evaluator work made authorization up to 12 times faster while preserving that behavioral contract.
 
 ### [F#kYeah](https://github.com/TheFellow/fkyeah)
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.

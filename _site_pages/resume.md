@@ -1,7 +1,7 @@
 ---
 title: "Resume"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-03 08:14:50 -0700
+last_modified_at: 2026-08-03 08:23:08 -0700
 permalink: /resume/
 excerpt: "Staff software engineer specializing in authorization, platform architecture, API evolution, and durable systems."
 layout: single
@@ -141,7 +141,7 @@ author_profile: false
   <div class="resume-work-grid">
     <article>
       <h3><a href="https://github.com/TheFellow/cedar-dotnet">cedar-dotnet</a></h3>
-      <p>An idiomatic C# implementation of Cedar validated by 124,000 official conformance cases and 2,462 project tests. Benchmark-driven evaluator work made authorization up to 12 times faster and reduced allocations by as much as 98 percent.</p>
+      <p>An idiomatic C# implementation of the Cedar policy language and authorization engine, maintained against the upstream implementation and validated with its 124,000-case official conformance corpus. Benchmark-driven evaluator work made authorization up to 12 times faster while preserving that behavioral contract.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/fkyeah">F#kYeah</a></h3>
