@@ -100,13 +100,10 @@ An idiomatic C# implementation of Cedar validated by 124,000 official conformanc
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
 
 ### [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith)
-A Go reference application with seven bounded contexts and independent CLI, TUI, and desktop clients over one Cedar-authorized transaction, event, and audit pipeline. Static analysis enforces module boundaries, while fresh-process and race tests verify behavior across surfaces.
+A Go reference application that makes modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. A shared pipeline coordinates transactions, events, audit, and Cedar authorization; static analysis and cross-surface tests keep those contracts intact.
 
 ### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
 Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.
-
-### [go-riblt](https://github.com/TheFellow/go-riblt)
-A generic Go library for rateless set reconciliation, with explicit compatibility, ownership, and resource contracts. Property tests, fuzzing, and benchmarks exercise codecs and adversarial inputs while communication follows the size of the difference rather than the complete datasets.
 
 ## Teaching and communication
 
