@@ -1,7 +1,7 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-08-02 12:00:00 -0700
+last_modified_at: 2026-08-05 00:00:00 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /guides/growing-mixology-with-fyne/
 order: 30
@@ -91,6 +91,12 @@ Selection opens a read-oriented detail rather than an editing form. Authorized r
 Forms also moved away from transport-shaped input. Tag fields are token editors: Enter validates and inserts a `key` or `key=value` token, an existing key is replaced, and individual pills can be removed. Drink recipe rows use named ingredient selectors, substitute pills, and compact add or remove actions instead of exposing identifiers or dense nested forms. Field labels sit above full-width controls, wheel events continue scrolling the containing detail page even over text fields, and explicit empty-collection views distinguish a successful query with no rows from a loading or error state.
 
 The shared toolkit now carries the mechanics behind that consistency: semantic buttons and entries, guarded action selectors, reusable table cells, icons, sortable native headers, row action menus, full-width detail fields, empty states, and token layouts. Domain presenters still decide which actions are authorized and meaningful. Headless tests recycle table cells across text, tags, and actions, exercise sorting and resizing, reject recursive or stale action callbacks, preserve form scrolling, and drive the token editor through canonical tag normalization.
+
+Menu action state now makes that last boundary more precise. A domain-owned projector supplies stable action IDs and framework-neutral visibility and availability derived from Cedar plus menu lifecycle. The GUI presenter stores that projection in its snapshot, and the Fyne view maps it into row menus and retained detail controls. This is the same durable action meaning consumed by the TUI, not a shared GUI/TUI view model.
+
+Fyne-specific constraints remain local. Dirty form state, an open confirmation, and active submission ownership compose with the projection before a widget is enabled. Refreshing or changing selection recomputes the domain state, while the presenter captures mutation targets so a retained callback cannot apply a newer selection to older work. Headless tests cover independent Publish permission, visible but disabled lifecycle actions, evaluator failures, and stale optimistic projection. The application command still repeats authorization and invariants when the callback runs.
+
+[Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces/) describes the shared projection contract. The [TUI toolkit guide](/guides/building-an-application-tui-toolkit/) and this journal cover only how each runtime consumes it.
 
 The pass also tightened Fyne's concurrency contract. Production publication and startup work enter the UI through `fyne.Do` or `fyne.DoAndWait`, while tests retain deterministic dispatch. Visual acceptance cases use fixed window sizes and Fyne's in-memory driver to cover the dashboard, tables, detail states, forms, menus, tags, audit, and empty collections. This makes layout and thread ownership tested presentation behavior rather than assumptions left to a manual launch.
 
@@ -268,9 +274,10 @@ Those findings are the point of the exercise. Success is not measured by making 
 
 The third surface confirmed that the reusable asset was the application boundary, not a universal view model. GUI presenters and Fyne views remain bespoke, yet they share domain behavior, error contracts, authorization, transactions, audit, and persistence with the CLI and TUI. The additional work appeared where a native persistent client should force it to appear: retained-control ownership, async lifetime, application composition, keyboard commands, accessibility limits, and target-native delivery.
 
-The completed experiment also produced four focused guides:
+The completed experiment also produced focused follow-ups:
 
 - [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test/) extracts the parity audit into a repeatable architecture technique.
 - [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary/) explains why the shared asset is application behavior rather than a universal view model.
 - [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly/) turns the testing ladder into a practical desktop strategy.
 - [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation/) follows Cedar decisions through routes, aggregates, rows, and actions.
+- [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces/) separates shared action meaning from GUI and TUI interaction state.
