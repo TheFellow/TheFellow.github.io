@@ -29,6 +29,8 @@ Adding the Fyne client also turned surface parity into an executable application
 
 The desktop shell reflects authorization before a user enters a workspace. Navigation and dashboard cards include only workspaces with an authorized read path, denied dashboard aggregates are omitted without masking operational failures, and Cedar continues to filter rows within each visible workspace. The persistent navigation keeps the active actor and role visible throughout the session.
 
+Action availability now follows the same cross-surface discipline. A domain-owned projector combines Cedar decisions with durable lifecycle prerequisites and returns framework-neutral visible, enabled, and disabled-reason state. Permission denial hides an action; an unmet business condition leaves an authorized action visible but explains why it cannot run. GUI and TUI map that projection into native controls and key help, then add only transient constraints such as dirty forms or requests in flight. Commands still repeat authorization and invariants when they execute, so presentation state improves guidance without becoming the security boundary.
+
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
 The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
@@ -49,6 +51,7 @@ app/
     internal/{commands,dao}/      write logic and persistence
     surfaces/{cli,gui,tui}/       bespoke presentation adapters
 pkg/
+  presentation/actions/           framework-neutral action state
   toolkits/{cli,gui,tui}/         reusable presentation mechanics
   middleware/                     authorization, transactions, events, audit, and metrics
   {authn,authz,dispatcher,filter,store}/

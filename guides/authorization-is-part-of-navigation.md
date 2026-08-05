@@ -86,11 +86,13 @@ This also prevents a common side channel. Client-side filtering may hide row tex
 
 Mutation permissions are often more specific than roles. A pending order can be completed while a completed order cannot. A draft menu can accept drinks and be published, while a published menu can be returned to draft. Cedar can also consider tags and resource relationships. The interface therefore needs action availability for the actual selected row, not a single `isManager` flag computed at login.
 
-Mixology presenters expose capability state such as `CanCreate`, `CanUpdate`, `CanDelete`, `CanTag`, `CanPublish`, `CanDraft`, `CanComplete`, and `CanCancel`. They derive those values by authorizing the appropriate Cedar action against the selected resource's entity. Views translate the result into native presentation behavior: create controls disappear when creation is unavailable, row menus contain only relevant actions, and detail action bars change with selection and lifecycle state.
+Mixology's domain-owned action projectors declare stable control IDs, permission inheritance or overrides, and durable business conditions. A framework-neutral evaluator turns those declarations into `Visible`, `Enabled`, and `DisabledReason` state. Views translate the result into native presentation behavior: denied controls disappear, authorized controls with unmet prerequisites remain visible but disabled, and detail action bars change with selection and lifecycle state.
 
-Inventory demonstrates why row-level capability data is useful. Each row carries whether Adjust, Set, and Tag are authorized for that resource. Orders similarly derives Complete, Cancel, and Tag availability per item. The table can present an honest action menu without waiting for a denied click, but the presenter still refuses to start a workflow when its capability is false.
+Menus demonstrates why separating permission from availability matters. Edit supplies the broad permission default, while Publish uses its own Cedar action instead of accidentally inheriting Edit. A draft that is authorized for publication but not yet publishable keeps Publish visible and records the missing prerequisite. The GUI maps that state into visible and enabled controls; the TUI maps it into key availability, help, and explanatory detail text. Both consume the same domain projection without sharing widget code.
 
-Capability state has a lifetime. Selection changes clear the previous permissions. Refreshing a row recomputes them. Starting asynchronous work captures the target so a later selection cannot inherit the result. A stale `CanDelete` from the previous drink is both a usability bug and a dangerous statement about authority.
+The declaration contains only durable facts that should agree across surfaces. Dirty input, a confirmation dialog, focus, and an in-flight request remain in the concrete adapter. This keeps the common model small: domains own the meaning of an action, the evaluator owns permission and condition semantics, and each runtime owns its interaction state.
+
+Projected state has a lifetime. Selection changes clear the previous result. Refreshing a row recomputes it. Starting asynchronous work captures the target so a later selection cannot inherit the result. A stale Delete state from the previous drink is both a usability bug and a dangerous statement about authority.
 
 ## Denial is still an ordinary application result
 
@@ -109,7 +111,7 @@ sequenceDiagram
     P-->>V: publish current state, retain input on denial
 ```
 
-This is the useful separation of responsibilities. Cedar decides. The application enforces and returns typed results. The presenter asks enough questions to compose a truthful interaction. The view renders that interaction using its runtime's native controls.
+This is the useful separation of responsibilities. Cedar decides permission. Domain state supplies durable prerequisites. The shared evaluator gives every surface the same interpretation. The application command enforces both again and returns typed results. The view renders the projection using its runtime's native controls.
 
 ## Test the absence as well as the success
 
