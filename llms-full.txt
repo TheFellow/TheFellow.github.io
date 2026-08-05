@@ -102,11 +102,13 @@ These are not duplicate implementations of policy. They are multiple consumers o
 
 ## Build navigation from authorized read paths
 
-Mixology's desktop composition begins with all known workspaces, then establishes visibility for the active session. Drinks, Ingredients, Inventory, Menus, and Orders probe the public `Count` query using an empty list request. Those calls pass through the same authorized query path used by the workspace itself. Audit and Tags do not have an equivalent count operation, so the composition root asks Cedar about representative workspace resources using their public list or summary actions.
+Mixology's desktop composition begins with all known workspaces, then asks each domain's action projector for its collection capability. The shell reads the same stable control IDs that the GUI and TUI adapters consume, such as `drinks.list`, `audit.list`, and `tagging.summary`. It no longer infers navigation from count queries or performs its own direct Cedar calls.
 
-The distinction between denial and failure matters. A Cedar permission error removes the workspace. A database or operational error leaves it visible so that the surface can present the real problem. Hiding every failed probe would misreport an outage as a policy decision and make a broken domain silently disappear.
+That distinction matters for entity-filtered catalogs. Drinks, Ingredients, Inventory, Menus, and Orders do not have a real collection entity in the policy model. Their list controls are public presentation capabilities because Cedar authorizes and elides each returned row inside the query pipeline. Projecting a synthetic collection resource would invent policy meaning that the application does not have. Audit list and Tag summary do have explicit authorization resources, so their projectors evaluate those genuine capabilities.
 
-After the probes, the shell is constructed from the filtered route collection. A restricted route is therefore absent from the navigation rail, application menu, keyboard shortcut registration, route lookup, and lazy view construction. It is not merely a hidden button pointing at an otherwise reachable screen.
+The distinction between denial and failure matters. A Cedar permission error removes the workspace. An operational projection error leaves it visible so that the surface can present the real problem. Hiding every failed projection would misreport an outage as a policy decision and make a broken domain silently disappear.
+
+After projection, the shell is constructed from the filtered route collection. A restricted route is therefore absent from the navigation rail, application menu, keyboard shortcut registration, route lookup, and lazy view construction. It is not merely a hidden button pointing at an otherwise reachable screen.
 
 ```go
 if err := check.read(); err == nil || !apperrors.IsPermission(err) {
@@ -114,7 +116,7 @@ if err := check.read(); err == nil || !apperrors.IsPermission(err) {
 }
 ```
 
-This is composition, not enforcement. The public query still authorizes its work, and an attempted mutation still authorizes at the application boundary. Composition makes the shell truthful about the capabilities it can offer.
+This is composition, not enforcement. A public collection capability still returns only rows authorized by the query pipeline, and an attempted mutation still authorizes at the application boundary. Composition makes the shell truthful without converting navigation into a second policy model.
 
 ## Aggregates can leak what rows conceal
 
@@ -143,13 +145,15 @@ This also prevents a common side channel. Client-side filtering may hide row tex
 
 Mutation permissions are often more specific than roles. A pending order can be completed while a completed order cannot. A draft menu can accept drinks and be published, while a published menu can be returned to draft. Cedar can also consider tags and resource relationships. The interface therefore needs action availability for the actual selected row, not a single `isManager` flag computed at login.
 
-Mixology's domain-owned action projectors declare stable control IDs, permission inheritance or overrides, and durable business conditions. A framework-neutral evaluator turns those declarations into `Visible`, `Enabled`, and `DisabledReason` state. Views translate the result into native presentation behavior: denied controls disappear, authorized controls with unmet prerequisites remain visible but disabled, and detail action bars change with selection and lifecycle state.
+Each Mixology domain exposes an `ActionProjector` beside its public module and stable, namespaced control IDs. Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tagging define the complete capability vocabulary their surfaces consume. The projectors accept a shared `authz.EntityAuthorizer` function boundary, which keeps them usable with the in-process Cedar policy set while leaving room for an adapted remote policy service. A framework-neutral evaluator turns their declarations into `Visible`, `Enabled`, and `DisabledReason` state. Views translate the result into native presentation behavior: denied controls disappear, authorized controls with unmet prerequisites remain visible but disabled, and detail action bars change with selection and lifecycle state.
 
 Menus demonstrates why separating permission from availability matters. Edit supplies the broad permission default, while Publish uses its own Cedar action instead of accidentally inheriting Edit. A draft that is authorized for publication but not yet publishable keeps Publish visible and records the missing prerequisite. The GUI maps that state into visible and enabled controls; the TUI maps it into key availability, help, and explanatory detail text. Both consume the same domain projection without sharing widget code.
 
-The declaration contains only durable facts that should agree across surfaces. Dirty input, a confirmation dialog, focus, and an in-flight request remain in the concrete adapter. This keeps the common model small: domains own the meaning of an action, the evaluator owns permission and condition semantics, and each runtime owns its interaction state.
+Tagging makes domain ownership especially important. It can inspect or mutate targets owned by several other domains, but it does not guess their Cedar action names. Its projector resolves the target type through Tagging's registry and uses the owning domain's registered Get, Tag, and Untag actions against the complete target entity.
 
-Projected state has a lifetime. Selection changes clear the previous result. Refreshing a row recomputes it. Starting asynchronous work captures the target so a later selection cannot inherit the result. A stale Delete state from the previous drink is both a usability bug and a dangerous statement about authority.
+The declaration contains only durable facts that should agree across surfaces. Dirty input, a confirmation dialog, focus, paging, filtering, and an in-flight request remain in the concrete adapter. This keeps the common model small: domains own the meaning of an action, the evaluator owns permission and condition semantics, and each runtime owns its interaction state.
+
+Projected state has a lifetime. Selection changes clear the previous result. Refreshing a row recomputes it. Starting asynchronous work captures the target so a later selection cannot inherit the result. If projection fails, the presenter clears capability state without erasing an unrelated load error, then recovers on a later successful refresh. A stale Delete state from the previous drink is both a usability bug and a dangerous statement about authority.
 
 ## Denial is still an ordinary application result
 
@@ -768,7 +772,7 @@ This distinction separates three kinds of ownership. `pkg/toolkits/tui` contains
 
 Menu actions add another layer to that ownership model. Whether Publish exists for the current actor and whether the selected menu is ready to publish are domain questions, but whether `p` appears in terminal help and how an unavailable reason is rendered are TUI questions.
 
-Mixology keeps those responsibilities separate with a domain-owned action projector. It combines Cedar authorization with durable menu lifecycle conditions and returns framework-neutral state keyed by stable control IDs:
+Mixology keeps those responsibilities separate with domain-owned action projectors for every bounded context. They combine Cedar authorization with durable lifecycle conditions and return framework-neutral state keyed by stable, namespaced control IDs:
 
 ```go
 type State struct {
@@ -779,7 +783,7 @@ type State struct {
 }
 ```
 
-The menu view model recomputes that projection when selection or persisted state changes. Its help methods include only bindings whose projected actions are visible and enabled, and `Update` checks the same state before starting a workflow. The detail pane still lists an authorized but disabled action with its reason, such as asking for at least one drink before publication. A denied action contributes neither a key binding nor explanatory detail because the actor does not have that capability.
+The menu view model recomputes that projection when selection or persisted state changes. Its help methods include only bindings whose projected actions are visible and enabled, and `Update` checks the same state before starting a workflow. The detail pane still lists an authorized but disabled action with its reason, such as asking for at least one drink before publication. A denied action contributes neither a key binding nor explanatory detail because the actor does not have that capability. Drinks, Ingredients, Inventory, Orders, and Audit apply the same mapping to their own keys, while Tagging resolves target capabilities through its domain registry.
 
 Transient terminal state is composed afterward. A confirmation mode, an active form, or a command in flight can suppress a key even when the domain projection enables it. Those constraints remain in the Bubble Tea view model because they describe ownership of the next message, not menu lifecycle or Cedar policy.
 
@@ -794,7 +798,7 @@ flowchart LR
     VM --> Detail[Disabled reasons]
 ```
 
-The command remains authoritative. Projection can become stale between rendering and a key press, so publishing repeats authorization and lifecycle validation inside the application operation. The projection makes terminal behavior truthful; it does not replace enforcement.
+The command remains authoritative. Projection can become stale between rendering and a key press, so publishing repeats authorization and lifecycle validation inside the application operation. A projection error clears the affected key capabilities and can recover on the next load without replacing an unrelated load error. The projection makes terminal behavior truthful; it does not replace enforcement.
 
 This narrow shared state does not turn the GUI and TUI into one presentation model. They share the durable meaning of a menu action, while the TUI retains Bubble Tea messages, modes, key maps, help, and text rendering. The companion note, [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md), follows the complete cross-surface pattern.
 
@@ -1265,7 +1269,7 @@ That service is protected at two levels. Behavioral tests force tag replacement 
 The next audit pass tightened fidelity that broad workflow tests had not yet made visible:
 
 - [Desktop actor selection](https://github.com/TheFellow/go-modular-monolith/commit/da9b52db6197917088088856384dfa1c6b356026) now accepts the same owner, manager, sommelier, bartender, and anonymous personas as the CLI and TUI through `-actor` and `-as`. Startup parsing rejects unknown actors before opening the application, and the shell keeps the active actor and role visible across routes.
-- Desktop composition probes each workspace's authorized read path and omits denied routes from navigation and dashboard cards. This hides Audit and Tags from a sommelier, for example, while Cedar still filters individual rows inside readable workspaces such as Drinks. Non-permission failures leave the route visible so the workspace can report the actual problem.
+- Desktop composition consumes each domain's projected collection capability and omits denied routes from navigation and dashboard cards. Entity-filtered catalogs expose public collection entry because Cedar authorizes and elides every returned row; Audit list and Tag summary project their genuine authorization resources. This hides Audit and Tags from a sommelier, for example, without inventing synthetic entities or bypassing row policy. Non-permission failures leave the route visible so the workspace can report the actual problem.
 - The GUI originally hid paging inside full-catalog loads or defaults. [Drinks](https://github.com/TheFellow/go-modular-monolith/commit/6d9ec7830b600019e8c2d878d6d04ef304e34c58), [Ingredients](https://github.com/TheFellow/go-modular-monolith/commit/2499ea57230d15d5905ea0696911b56acd269232), and [Menus](https://github.com/TheFellow/go-modular-monolith/commit/78b3dda9bedb6fbbe463c43355af1cb0e5d5e484) now expose explicit page size, Next, and Previous controls backed by domain cursors, history, server filters, and invalid-limit feedback. Tests create more than one hundred records so the controls cannot pass while still showing only the first page.
 - [Order item notes](https://github.com/TheFellow/go-modular-monolith/commit/81efd61daf01d84f4891e8a9417935e5e1480b37) are now multiline in the GUI placement form, preserving commas and newlines through persistence. This complements the earlier CLI and TUI note corrections and treats free-form item instructions as data rather than a single-line widget convenience.
 - [Inventory detail and Set semantics](https://github.com/TheFellow/go-modular-monolith/commit/678fc63a7fb49c3fba0b1a1ef6c3c5b9b843d43f) now agree across CLI, TUI, and GUI. Detail views expose the exact RFC 3339 `LastUpdated` value. A blank Set cost preserves an existing price, defaults a new item to USD zero, and accepts an explicit currency change such as EUR through the shared price parser.
@@ -3298,7 +3302,7 @@ An action can be unavailable for two very different reasons. The current actor m
 
 Menus in [Mixology](https://github.com/TheFellow/go-modular-monolith) made that distinction concrete. Publishing has its own Cedar permission, but it also requires a draft menu with publishable contents. Denial should remove Publish from the interface. An authorized draft that still needs work should keep Publish visible, disable it, and explain what must change.
 
-Mixology now projects that meaning once for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes.
+Mixology now projects that meaning once for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes. Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tagging each own a complete projector rather than leaving individual presenters to assemble capability checks.
 
 ## Give each state one meaning
 
@@ -3345,6 +3349,27 @@ declaration := actions.Group{
 
 The override matters. Treating group permission as an unconditional gate would make Publish inherit Edit even though Cedar models them as different operations. The declaration instead follows the actual capability boundary. Stable IDs also keep mapping independent of labels, translations, and control order.
 
+The IDs are namespaced by their owning domain, such as `drinks.create`, `menus.publish`, and `orders.complete`. A projector returns collection controls when no entity is selected, then adds row and detail controls for the concrete selected model. This gives shells and surfaces one capability vocabulary without making a presenter import another presenter's state.
+
+## Authorize real resources
+
+The projectors accept one shared function type:
+
+```go
+type EntityAuthorizer func(
+    context.Context,
+    cedar.EntityUID,
+    cedar.EntityUID,
+    cedar.Entity,
+) error
+```
+
+The default implementation calls Mixology's in-process Cedar policy set. Keeping the boundary as a function makes the projector easy to test and permits an application to adapt a remote policy evaluator without changing the action model.
+
+Every check uses a real entity from the policy model. Create and placement actions use the domain's defined prospective resource. Selected actions use the complete Cedar entity for that Drink, Menu, Order, or other model. Collection entry is different: when a list query authorizes and elides individual results, the list control is public because there is no collection entity to authorize. This does not make the rows public. It states that entering the catalog is allowed while the query pipeline remains responsible for which entities appear.
+
+Audit and Tag discovery have genuine authorization resources and project them accordingly. Tagging's target actions cross ownership boundaries, so its projector resolves the target's registered Get, Tag, and Untag actions instead of guessing another domain's Cedar vocabulary.
+
 ## Share durable meaning, not runtime state
 
 The projector belongs to the domain because action names and lifecycle prerequisites belong there. Its result is framework-neutral because neither Cedar nor menu lifecycle knows about Fyne widgets or Bubble Tea key bindings.
@@ -3353,7 +3378,9 @@ The GUI maps projected state into visible and enabled controls. The TUI maps the
 
 Transient constraints stay on each side of that boundary. A dirty GUI form, an open confirmation dialog, TUI focus, and a request already in flight can temporarily suppress an action. Those facts describe the current interaction, not the domain capability, so folding them into the shared projector would couple otherwise independent runtimes.
 
-This split also clarifies testing. Projector tests cover permission inheritance, overrides, lifecycle conditions, disabled reasons, invalid declarations, and authorization failures. GUI and TUI tests cover their native mappings and transient constraints. Lifecycle tests exercise the command itself.
+This split also clarifies testing. Projector tests cover permission inheritance, overrides, lifecycle conditions, disabled reasons, public collection entry, real entity authorization, invalid declarations, and evaluation failures. GUI and TUI tests cover their native mappings and transient constraints. Lifecycle tests exercise the command itself.
+
+Projection failure also has defined recovery behavior. A presenter clears the affected capability state so an earlier enabled action cannot survive an evaluator error, reports the projection error without overwriting an unrelated load error, and recomputes on the next refresh or selection. This makes failure distinct from denial and prevents stale authority from leaking across targets.
 
 ## Projection guides, commands enforce
 
@@ -4029,9 +4056,9 @@ That balance is what makes Mixology useful as a teaching vehicle. It has enough 
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
-The desktop shell reflects authorization before a user enters a workspace. Navigation and dashboard cards include only workspaces with an authorized read path, denied dashboard aggregates are omitted without masking operational failures, and Cedar continues to filter rows within each visible workspace. The persistent navigation keeps the active actor and role visible throughout the session.
+The desktop shell reflects projected capabilities before a user enters a workspace. Navigation and dashboard cards consume domain-owned collection controls, denied dashboard aggregates are omitted without masking operational failures, and Cedar continues to filter rows within each visible workspace. The persistent navigation keeps the active actor and role visible throughout the session.
 
-Action availability now follows the same cross-surface discipline. A domain-owned projector combines Cedar decisions with durable lifecycle prerequisites and returns framework-neutral visible, enabled, and disabled-reason state. Permission denial hides an action; an unmet business condition leaves an authorized action visible but explains why it cannot run. GUI and TUI map that projection into native controls and key help, then add only transient constraints such as dirty forms or requests in flight. Commands still repeat authorization and invariants when they execute, so presentation state improves guidance without becoming the security boundary.
+Action availability now follows the same cross-surface discipline. Every domain owns stable control IDs and a projector that combines Cedar decisions on real entities with durable lifecycle prerequisites. Entity-filtered catalogs expose public collection entry while their query pipelines continue to authorize and elide individual rows; Tagging resolves target actions from the owning domain's registry. Permission denial hides an action, while an unmet business condition leaves an authorized action visible and explains why it cannot run. GUI, TUI, and desktop composition consume the same framework-neutral state, then add only transient constraints such as dirty forms or requests in flight. Commands still repeat authorization and invariants when they execute, so presentation state improves guidance without becoming the security boundary.
 
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
