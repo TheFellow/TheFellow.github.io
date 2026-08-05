@@ -55,6 +55,7 @@ SUMMARIES = {
     "/notes/octonions-and-the-standard-model-in-fsharp/": ("Executable octonions", "Non-associative multiplication produces a Furey-inspired eight-state particle pattern."),
     "/notes/riblt-in-go/": ("Rateless reconciliation", "A generic Go RIBLT reveals streaming set reconciliation step by step."),
     "/notes/linux-for-windows-brains/": ("Linux models", "Translate Windows concepts into practical Linux mental models."),
+    "/notes/projecting-actions-across-user-interfaces/": ("Action projection", "Share action meaning across native interfaces without sharing views."),
 }
 
 Document = dict[str, Any]
