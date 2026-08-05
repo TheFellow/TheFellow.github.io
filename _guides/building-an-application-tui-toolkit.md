@@ -1,7 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-08-02 15:00:00 -0700
+last_modified_at: 2026-08-05 00:00:00 -0700
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /guides/building-an-application-tui-toolkit/
 order: 20
@@ -142,6 +142,40 @@ This distinction keeps navigation visible in the state machine. A selected field
 The toolkit supplies only generic shell, list, form, and dialog bindings. Each domain adapter owns bindings for its own workflows, such as publishing a menu, adjusting inventory, completing an order, or managing tags. Dashboard destinations and navigation messages similarly live under [`main/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui), because another application cannot reuse them.
 
 This distinction separates three kinds of ownership. `pkg/toolkits/tui` contains contracts and mechanics that another Bubble Tea application could sensibly reuse. `main/tui` owns Mixology routes and is the leaf composition root. Domain surfaces add behavior, labels, and vocabulary that only their bounded context understands. There is no shared TUI package under `app`, so CLI, TUI, and GUI retain the same domain-adapter architecture.
+
+## Project domain actions into terminal behavior
+
+Menu actions add another layer to that ownership model. Whether Publish exists for the current actor and whether the selected menu is ready to publish are domain questions, but whether `p` appears in terminal help and how an unavailable reason is rendered are TUI questions.
+
+Mixology keeps those responsibilities separate with a domain-owned action projector. It combines Cedar authorization with durable menu lifecycle conditions and returns framework-neutral state keyed by stable control IDs:
+
+```go
+type State struct {
+    ID             ID
+    Visible        bool
+    Enabled        bool
+    DisabledReason string
+}
+```
+
+The menu view model recomputes that projection when selection or persisted state changes. Its help methods include only bindings whose projected actions are visible and enabled, and `Update` checks the same state before starting a workflow. The detail pane still lists an authorized but disabled action with its reason, such as asking for at least one drink before publication. A denied action contributes neither a key binding nor explanatory detail because the actor does not have that capability.
+
+Transient terminal state is composed afterward. A confirmation mode, an active form, or a command in flight can suppress a key even when the domain projection enables it. Those constraints remain in the Bubble Tea view model because they describe ownership of the next message, not menu lifecycle or Cedar policy.
+
+```mermaid
+flowchart LR
+    Cedar[Cedar permission] --> Projector[Menu action projector]
+    Menu[Menu lifecycle] --> Projector
+    Projector --> VM[TUI view model]
+    Mode[Current TUI mode] --> VM
+    VM --> Keys[Accepted keys]
+    VM --> Help[Contextual help]
+    VM --> Detail[Disabled reasons]
+```
+
+The command remains authoritative. Projection can become stale between rendering and a key press, so publishing repeats authorization and lifecycle validation inside the application operation. The projection makes terminal behavior truthful; it does not replace enforcement.
+
+This narrow shared state does not turn the GUI and TUI into one presentation model. They share the durable meaning of a menu action, while the TUI retains Bubble Tea messages, modes, key maps, help, and text rendering. The companion note, [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces/), follows the complete cross-surface pattern.
 
 ## The tag editor shows composition at work
 
