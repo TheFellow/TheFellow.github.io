@@ -111,7 +111,7 @@ The distinction between denial and failure matters. A Cedar permission error rem
 After projection, the shell is constructed from the filtered route collection. A restricted route is therefore absent from the navigation rail, application menu, keyboard shortcut registration, route lookup, and lazy view construction. It is not merely a hidden button pointing at an otherwise reachable screen.
 
 ```go
-if err := check.read(); err == nil || !apperrors.IsPermission(err) {
+if err := check.read(); err == nil || !errors.IsPermission(err) {
     visible[check.id] = true
 }
 ```
