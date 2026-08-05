@@ -148,7 +148,7 @@ This distinction separates three kinds of ownership. `pkg/toolkits/tui` contains
 
 Menu actions add another layer to that ownership model. Whether Publish exists for the current actor and whether the selected menu is ready to publish are domain questions, but whether `p` appears in terminal help and how an unavailable reason is rendered are TUI questions.
 
-Mixology keeps those responsibilities separate with a domain-owned action projector. It combines Cedar authorization with durable menu lifecycle conditions and returns framework-neutral state keyed by stable control IDs:
+Mixology keeps those responsibilities separate with domain-owned action projectors for every bounded context. They combine Cedar authorization with durable lifecycle conditions and return framework-neutral state keyed by stable, namespaced control IDs:
 
 ```go
 type State struct {
@@ -159,7 +159,7 @@ type State struct {
 }
 ```
 
-The menu view model recomputes that projection when selection or persisted state changes. Its help methods include only bindings whose projected actions are visible and enabled, and `Update` checks the same state before starting a workflow. The detail pane still lists an authorized but disabled action with its reason, such as asking for at least one drink before publication. A denied action contributes neither a key binding nor explanatory detail because the actor does not have that capability.
+The menu view model recomputes that projection when selection or persisted state changes. Its help methods include only bindings whose projected actions are visible and enabled, and `Update` checks the same state before starting a workflow. The detail pane still lists an authorized but disabled action with its reason, such as asking for at least one drink before publication. A denied action contributes neither a key binding nor explanatory detail because the actor does not have that capability. Drinks, Ingredients, Inventory, Orders, and Audit apply the same mapping to their own keys, while Tagging resolves target capabilities through its domain registry.
 
 Transient terminal state is composed afterward. A confirmation mode, an active form, or a command in flight can suppress a key even when the domain projection enables it. Those constraints remain in the Bubble Tea view model because they describe ownership of the next message, not menu lifecycle or Cedar policy.
 
@@ -174,7 +174,7 @@ flowchart LR
     VM --> Detail[Disabled reasons]
 ```
 
-The command remains authoritative. Projection can become stale between rendering and a key press, so publishing repeats authorization and lifecycle validation inside the application operation. The projection makes terminal behavior truthful; it does not replace enforcement.
+The command remains authoritative. Projection can become stale between rendering and a key press, so publishing repeats authorization and lifecycle validation inside the application operation. A projection error clears the affected key capabilities and can recover on the next load without replacing an unrelated load error. The projection makes terminal behavior truthful; it does not replace enforcement.
 
 This narrow shared state does not turn the GUI and TUI into one presentation model. They share the durable meaning of a menu action, while the TUI retains Bubble Tea messages, modes, key maps, help, and text rendering. The companion note, [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md), follows the complete cross-surface pattern.
 

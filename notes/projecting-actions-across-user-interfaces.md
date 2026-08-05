@@ -16,7 +16,7 @@ An action can be unavailable for two very different reasons. The current actor m
 
 Menus in [Mixology](https://github.com/TheFellow/go-modular-monolith) made that distinction concrete. Publishing has its own Cedar permission, but it also requires a draft menu with publishable contents. Denial should remove Publish from the interface. An authorized draft that still needs work should keep Publish visible, disable it, and explain what must change.
 
-Mixology now projects that meaning once for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes.
+Mixology now projects that meaning once for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes. Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tagging each own a complete projector rather than leaving individual presenters to assemble capability checks.
 
 ## Give each state one meaning
 
@@ -63,6 +63,27 @@ declaration := actions.Group{
 
 The override matters. Treating group permission as an unconditional gate would make Publish inherit Edit even though Cedar models them as different operations. The declaration instead follows the actual capability boundary. Stable IDs also keep mapping independent of labels, translations, and control order.
 
+The IDs are namespaced by their owning domain, such as `drinks.create`, `menus.publish`, and `orders.complete`. A projector returns collection controls when no entity is selected, then adds row and detail controls for the concrete selected model. This gives shells and surfaces one capability vocabulary without making a presenter import another presenter's state.
+
+## Authorize real resources
+
+The projectors accept one shared function type:
+
+```go
+type EntityAuthorizer func(
+    context.Context,
+    cedar.EntityUID,
+    cedar.EntityUID,
+    cedar.Entity,
+) error
+```
+
+The default implementation calls Mixology's in-process Cedar policy set. Keeping the boundary as a function makes the projector easy to test and permits an application to adapt a remote policy evaluator without changing the action model.
+
+Every check uses a real entity from the policy model. Create and placement actions use the domain's defined prospective resource. Selected actions use the complete Cedar entity for that Drink, Menu, Order, or other model. Collection entry is different: when a list query authorizes and elides individual results, the list control is public because there is no collection entity to authorize. This does not make the rows public. It states that entering the catalog is allowed while the query pipeline remains responsible for which entities appear.
+
+Audit and Tag discovery have genuine authorization resources and project them accordingly. Tagging's target actions cross ownership boundaries, so its projector resolves the target's registered Get, Tag, and Untag actions instead of guessing another domain's Cedar vocabulary.
+
 ## Share durable meaning, not runtime state
 
 The projector belongs to the domain because action names and lifecycle prerequisites belong there. Its result is framework-neutral because neither Cedar nor menu lifecycle knows about Fyne widgets or Bubble Tea key bindings.
@@ -71,7 +92,9 @@ The GUI maps projected state into visible and enabled controls. The TUI maps the
 
 Transient constraints stay on each side of that boundary. A dirty GUI form, an open confirmation dialog, TUI focus, and a request already in flight can temporarily suppress an action. Those facts describe the current interaction, not the domain capability, so folding them into the shared projector would couple otherwise independent runtimes.
 
-This split also clarifies testing. Projector tests cover permission inheritance, overrides, lifecycle conditions, disabled reasons, invalid declarations, and authorization failures. GUI and TUI tests cover their native mappings and transient constraints. Lifecycle tests exercise the command itself.
+This split also clarifies testing. Projector tests cover permission inheritance, overrides, lifecycle conditions, disabled reasons, public collection entry, real entity authorization, invalid declarations, and evaluation failures. GUI and TUI tests cover their native mappings and transient constraints. Lifecycle tests exercise the command itself.
+
+Projection failure also has defined recovery behavior. A presenter clears the affected capability state so an earlier enabled action cannot survive an evaluator error, reports the projection error without overwriting an unrelated load error, and recomputes on the next refresh or selection. This makes failure distinct from denial and prevents stale authority from leaking across targets.
 
 ## Projection guides, commands enforce
 
