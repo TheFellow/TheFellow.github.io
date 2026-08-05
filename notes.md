@@ -20,3 +20,4 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Porting Cedar from Go to .NET: Semantics Before Syntax](/notes/porting-cedar-semantics-from-go-to-dotnet.md): How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast.
 - [Linux for Windows Brains](/notes/linux-for-windows-brains.md): A practical translation from familiar Windows concepts to Linux filesystems, permissions, shells, services, SSH, and containers.
 - [Building a Generic RIBLT in Go](/notes/riblt-in-go.md): A step-by-step implementation of generic, rateless set reconciliation in Go, from XOR-coded cells through peeling and measured communication.
+- [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
