@@ -117,6 +117,24 @@
   text-align: center;
 }
 
+.article-figure {
+  margin: 2rem 0;
+}
+
+.article-figure img {
+  background: #fff;
+  border-radius: 0.75rem;
+  display: block;
+  width: 100%;
+}
+
+.article-figure figcaption {
+  color: mix($text-color, $background-color, 72%);
+  font-size: 0.75rem;
+  margin-top: 0.65rem;
+  text-align: center;
+}
+
 .feature-tiles {
   display: grid;
   gap: 1.25rem;

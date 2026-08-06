@@ -4004,6 +4004,11 @@ Cells are positional and must arrive in order. An actual protocol therefore need
 
 ## Peel one discovery into the rest of the sketch
 
+<figure class="article-figure">
+  <img src="/assets/images/notes/riblt/peeling.png" alt="A two-stage RIBLT peeling diagram. A pure cell reveals symbol 101, which is removed from neighboring cells and exposes symbols 103 and 104 for continued peeling.">
+  <figcaption>A pure cell starts a cascade: solve one symbol, remove it from its neighbors, and enqueue every cell that becomes pure.</figcaption>
+</figure>
+
 After adding a cell, `TryDecode` processes every cell currently known to be a validated singleton or a resolved zero. A zero is resolved only when its count and accumulated checksum are both zero and `IsZero` confirms that its XOR symbol is the identity. A `+1` singleton is recorded as remote, meaning upstream-only. A `-1` singleton is recorded as local, meaning downstream-only.
 
 The important step is propagation. Once the decoder learns a symbol, its mapping hash reconstructs every cell in the received prefix that contains that symbol. The decoder removes it from those cells. That can expose another singleton, which enters the ready queue and repeats the process. Peeling is therefore not a collection of isolated cell decisions. Each discovery simplifies the remaining system.
