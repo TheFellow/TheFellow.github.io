@@ -15,6 +15,7 @@ The local semantic names map to Lucide icons as follows:
 | `route` | `route` |
 | `fluid` | `waves-horizontal` |
 | `values` | `shapes` |
+| `layers` | `layers` |
 | `book` | `book-open` |
 | `terminal` | `terminal` |
 | `storage` | `hard-drive` |
