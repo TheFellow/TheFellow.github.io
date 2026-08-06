@@ -1733,6 +1733,11 @@ The compiler infers the intermediate types. If one function produces a value the
 
 ## Product types and sum types
 
+<figure class="article-figure">
+  <img src="/assets/images/articles/illegal-states/state-space.png" alt="Four combinations created by independent lifecycle options include two invalid states. Replacing them with Draft and Published cases leaves only meaningful states and attaches publication time to Published.">
+  <figcaption>Independent options multiply combinations. Named cases reduce the model to states the domain actually permits.</figcaption>
+</figure>
+
 A record is a product type. A value contains one value for every field:
 
 ```fsharp

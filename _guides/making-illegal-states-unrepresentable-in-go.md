@@ -1,7 +1,7 @@
 ---
 title: "Making Illegal States Unrepresentable in Go"
 date: 2026-03-06
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-06 16:30:00 -0700
 excerpt: "What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee."
 permalink: /articles/making-illegal-states-unrepresentable-in-go/
 redirect_from: /guides/making-illegal-states-unrepresentable-in-go/
@@ -49,6 +49,11 @@ let normalize = String.trim >> String.toLower
 The compiler infers the intermediate types. If one function produces a value the next function cannot accept, the code does not compile. These signatures become especially useful when the types describe domain stages instead of primitives.
 
 ## Product types and sum types
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/articles/illegal-states/state-space.png' | relative_url }}" alt="Four combinations created by independent lifecycle options include two invalid states. Replacing them with Draft and Published cases leaves only meaningful states and attaches publication time to Published.">
+  <figcaption>Independent options multiply combinations. Named cases reduce the model to states the domain actually permits.</figcaption>
+</figure>
 
 A record is a product type. A value contains one value for every field:
 
