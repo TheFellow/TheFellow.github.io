@@ -1,7 +1,7 @@
 ---
 title: "Octonions and the Standard Model in F#"
 date: 2026-03-06 18:10:26 -0800
-last_modified_at: 2026-08-01 12:00:00 -0700
+last_modified_at: 2026-08-06 16:10:00 -0700
 permalink: /notes/octonions-and-the-standard-model-in-fsharp/
 excerpt: "An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern."
 icon: "asterisk"
@@ -20,6 +20,11 @@ Each step doubles the dimension and gives up a familiar law. The complex numbers
 The [complete F# gist](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc070da71633) turns that last loss into something executable. It starts with the octonion multiplication table, then follows a small part of Cohl Furey's algebraic approach toward the $1+3+3+1$ pattern of one Standard Model generation.
 
 ## Build the multiplication table
+
+<figure class="article-figure article-figure--compact">
+  <img src="{{ '/assets/images/notes/octonions/fano-plane.png' | relative_url }}" alt="A Fano plane labeled e1 through e7 beside the seven oriented triples used to define octonion multiplication.">
+  <figcaption>The Fano plane compresses the multiplication table into seven lines. Follow an oriented triple for a positive product; reverse it to change the sign.</figcaption>
+</figure>
 
 An octonion has one real component and seven imaginary components. The gist stores those eight coefficients in an array and derives multiplication from seven oriented triples in the Fano plane:
 
