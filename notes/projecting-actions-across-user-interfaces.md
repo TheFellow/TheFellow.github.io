@@ -16,7 +16,7 @@ An action can be unavailable for two very different reasons. The current actor m
 
 Menus in [Mixology](https://github.com/TheFellow/go-modular-monolith) made that distinction concrete. Publishing has its own Cedar permission, but it also requires a draft menu with publishable contents. Denial should remove Publish from the interface. An authorized draft that still needs work should keep Publish visible, disable it, and explain what must change.
 
-Mixology now projects that meaning once for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes. Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tagging each own a complete projector rather than leaving individual presenters to assemble capability checks.
+Mixology now projects that meaning for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes. Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tagging each own their action declarations rather than leaving individual presenters to assemble capability checks. Menus then composes its cross-domain readiness report into the authorized Publish state.
 
 ## Give each state one meaning
 
@@ -89,6 +89,10 @@ Audit and Tag discovery have genuine authorization resources and project them ac
 The projector belongs to the domain because action names and lifecycle prerequisites belong there. Its result is framework-neutral because neither Cedar nor menu lifecycle knows about Fyne widgets or Bubble Tea key bindings.
 
 The GUI maps projected state into visible and enabled controls. The TUI maps the same state into accepted keys, contextual help, and explanatory detail text. They agree about what Publish means without sharing a universal view model.
+
+Some durable conditions require more than the selected entity. Menu readiness reads Drinks, Ingredients, and Inventory and returns coded blockers and warnings. GUI and TUI request that report asynchronously, reject results for a stale selection, then call the same `ApplyReadiness` function to disable an authorized Publish action when blockers exist. Permission remains the first stage, so a denied actor never receives a visible control merely because readiness was calculated.
+
+This two-stage composition avoids moving cross-domain reads into a synchronous projector or into Bubble Tea's `View`. The domain still owns the final action meaning, while each runtime owns request scheduling and stale-result protection.
 
 Transient constraints stay on each side of that boundary. A dirty GUI form, an open confirmation dialog, TUI focus, and a request already in flight can temporarily suppress an action. Those facts describe the current interaction, not the domain capability, so folding them into the shared projector would couple otherwise independent runtimes.
 
