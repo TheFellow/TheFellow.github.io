@@ -1,9 +1,9 @@
 \documentclass[tikz,border=12pt]{standalone}
 \usetikzlibrary{arrows.meta,positioning}
-\definecolor{pink}{HTML}{F72585}\definecolor{blue}{HTML}{228BE6}\definecolor{green}{HTML}{2F9E44}\definecolor{ink}{HTML}{343A40}\definecolor{soft}{HTML}{F1F3F5}
+\definecolor{pink}{HTML}{F72585}\definecolor{blue}{HTML}{4DABF7}\definecolor{green}{HTML}{51CF66}\definecolor{ink}{HTML}{E9ECEF}\definecolor{panel}{HTML}{211C1D}
 \begin{document}
-\begin{tikzpicture}[pressure/.style={circle,fill=pink,text=white,minimum size=7mm,font=\bfseries},velocity/.style={-{Latex[length=2.5mm]},very thick,blue},grid/.style={ink!35,line width=.8pt}]
- \fill[soft] (-.2,-.2) rectangle (6.2,4.2);
+\begin{tikzpicture}[text=ink,pressure/.style={circle,fill=pink,text=white,minimum size=7mm,font=\bfseries},velocity/.style={-{Latex[length=2.5mm]},very thick,blue},grid/.style={ink!35,line width=.8pt}]
+ \fill[panel] (-.2,-.2) rectangle (6.2,4.2);
  \foreach \x in {0,...,6}{\draw[grid] (\x,0)--(\x,4);}
  \foreach \y in {0,...,4}{\draw[grid] (0,\y)--(6,\y);}
  \foreach \x in {.5,1.5,...,5.5}{\foreach \y in {.5,1.5,...,3.5}{\node[pressure] at (\x,\y) {$p$};}}
