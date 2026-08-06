@@ -32,6 +32,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building High-Quality Software](https://thefellow.github.io/guides/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/guides/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
 - [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/guides/making-illegal-states-unrepresentable-in-go.md): F# techniques make Go domain constraints explicit and enforceable.
+- [Preserving Truth Through Operational Degradation](https://thefellow.github.io/guides/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.
 - [Testing Native Go Desktop Applications Headlessly](https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly.md): Layered evidence for native GUI behavior without opening windows.
 - [Turning Cross-Domain Calls into Enforced Boundaries](https://thefellow.github.io/guides/turning-cross-domain-calls-into-enforced-boundaries.md): Transactional events replace cross-domain calls with enforced ownership.
 - [Typed Filtering over bstore](https://thefellow.github.io/guides/typed-filtering-over-bstore.md): How typed expressions become safe, exact bstore query plans.
