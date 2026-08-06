@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-06 17:30:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /articles/building-high-quality-software/
 redirect_from: /guides/building-high-quality-software/
@@ -30,6 +30,11 @@ Consider deleting an ingredient. The ingredient may be held in inventory, used b
 In Mixology, the request enters the same application pipeline whether it came from the CLI, TUI, or GUI. The ingredient module loads the current entity, Cedar authorizes the transition, and the command records an `IngredientDeleted` event. Generated dispatch sends that event to the Drinks, Inventory, and Menus domains. Every handler works through its own persistence boundary, all of them share the original transaction, and none can emit another event. One integration test exercises the whole path.
 
 That single operation contains most of the series. The lessons below pull it apart, one decision at a time.
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/articles/mixology/lesson-map.png' | relative_url }}" alt="An ordered map of eleven Mixology lessons, moving from boundaries and types through the application pipeline, events, generation, errors, authorization, surfaces, owned seams, system tests, and deliberate limits on complexity.">
+  <figcaption>The series moves from constraints the repository can enforce, through shared application behavior, to evidence that the complete system preserves those decisions.</figcaption>
+</figure>
 
 ## 1. A boundary should resist the shortest path
 
