@@ -8,8 +8,19 @@ fi
 
 input=$1
 output=$2
+repo_root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+
+if [[ $input != /* ]]; then
+  input="$PWD/$input"
+fi
+
+if [[ $output != /* ]]; then
+  output="$PWD/$output"
+fi
+
 build_dir=$(mktemp -d)
 trap 'rm -rf "$build_dir"' EXIT
+cd "$repo_root"
 tectonic --outdir "$build_dir" "$input"
 pdf="$build_dir/$(basename "${input%.tex}").pdf"
 mkdir -p "$(dirname "$output")"
