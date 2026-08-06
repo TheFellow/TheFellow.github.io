@@ -1,0 +1,18 @@
+\documentclass[tikz,border=12pt]{standalone}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{pink}{HTML}{F72585}\definecolor{green}{HTML}{2F9E44}\definecolor{amber}{HTML}{F08C00}
+\definecolor{red}{HTML}{E03131}\definecolor{blue}{HTML}{228BE6}\definecolor{ink}{HTML}{343A40}
+\begin{document}
+\begin{tikzpicture}[state/.style={rounded corners=4pt,draw=blue,fill=blue!7,very thick,minimum width=3.25cm,minimum height=1.1cm,align=center},arrow/.style={-{Latex[length=3mm]},very thick},note/.style={font=\small,align=center,text=ink}]
+ \node[state,draw=green,fill=green!8] (published) {Published\\serviceable};
+ \node[state,draw=amber,fill=amber!9,right=2.4cm of published] (degraded) {Published\\degraded};
+ \draw[arrow,amber] (published)--node[above,note]{ingredient retired\\without replacement}(degraded);
+ \node[note,right=.45cm of degraded] {membership and history\\remain visible};
+ \node[state,below=2.25cm of published] (draft) {Draft\\serviceable};
+ \node[state,draw=red,fill=red!7,right=2.4cm of draft] (blocked) {Draft\\known blocker};
+ \draw[arrow,red] (draft)--node[above,note]{same loss}(blocked);
+ \draw[arrow,green] (draft.west)++(-.2,0)--++(-1.3,0)--++(0,3.35)--node[left,note]{publish when\\ready}(published.west);
+ \draw[arrow,red,dashed] (blocked)--node[left,note]{promotion\\rejected}(degraded);
+ \node[font=\bfseries\large,text=ink] at (2.8,1.55) {Degradation preserves truth; promotion requires readiness};
+\end{tikzpicture}
+\end{document}

@@ -70,6 +70,11 @@ Audit follows the same rule. The retirement entry touches the retired ingredient
 
 ## Distinguish degradation from promotion
 
+<figure class="article-figure article-figure--compact">
+  <img src="/assets/images/articles/degradation/degradation-vs-promotion.png" alt="A published serviceable menu may become published but degraded while retaining history. A draft with the same blocker cannot be promoted until readiness is restored.">
+  <figcaption>An existing published state may degrade honestly. A draft with a known blocker cannot use that tolerance as permission to become published.</figcaption>
+</figure>
+
 An already-published menu can become degraded after an ingredient retires or inventory changes. Automatically unpublishing it would hide what operators and customers were already relying on. Automatically deleting its drinks would destroy the context needed to repair it.
 
 Mixology therefore allows degradation in place. The Menu retains its publication status and membership, while its readiness report explains current problems. The application applies a stricter rule to promotion: a draft menu cannot be published while the system knows it has a blocker.
