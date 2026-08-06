@@ -24,6 +24,11 @@ The [complete F# gist](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054
 
 ## Dimensions that occupy no space
 
+<figure class="article-figure">
+  <img src="/assets/images/notes/linear-algebra/dimensions.png" alt="Valid matrix multiplication shares an inner dimension n and produces an m by q matrix, while a mismatch between n and p is rejected by the compiler.">
+  <figcaption>The repeated phantom type is a compile-time proof that the inner dimensions agree; it adds no data to the runtime matrix.</figcaption>
+</figure>
+
 The example begins with four marker types, `D1` through `D4`, and a matrix whose row and column dimensions are type parameters:
 
 ```fsharp
