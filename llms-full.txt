@@ -941,6 +941,11 @@ In Mixology, the request enters the same application pipeline whether it came fr
 
 That single operation contains most of the series. The lessons below pull it apart, one decision at a time.
 
+<figure class="article-figure">
+  <img src="/assets/images/articles/mixology/lesson-map.png" alt="An ordered map of eleven Mixology lessons, moving from boundaries and types through the application pipeline, events, generation, errors, authorization, surfaces, owned seams, system tests, and deliberate limits on complexity.">
+  <figcaption>The series moves from constraints the repository can enforce, through shared application behavior, to evidence that the complete system preserves those decisions.</figcaption>
+</figure>
+
 ## 1. A boundary should resist the shortest path
 
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
