@@ -1,0 +1,23 @@
+\documentclass[tikz,border=12pt]{standalone}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{pink}{HTML}{F72585}\definecolor{blue}{HTML}{228BE6}\definecolor{green}{HTML}{2F9E44}
+\definecolor{red}{HTML}{E03131}\definecolor{ink}{HTML}{343A40}\definecolor{soft}{HTML}{F1F3F5}
+\begin{document}
+\begin{tikzpicture}[matrix/.style={draw=blue,fill=blue!8,very thick,minimum width=2.3cm,minimum height=1.55cm,align=center,font=\Large},arrow/.style={-{Latex[length=3mm]},very thick}]
+ \node[font=\bfseries\large,text=ink] at (2.9,2.15) {The shared inner dimension is the proof};
+ \node[matrix] (a) at (0,0) {$A$\\$m\times\color{pink}{n}$};
+ \node[font=\Huge] at (1.55,0) {$\cdot$};
+ \node[matrix] (b) at (3.1,0) {$B$\\$\color{pink}{n}\times q$};
+ \draw[arrow,green] (4.55,0)--(5.65,0);
+ \node[matrix,draw=green,fill=green!8] at (7.1,0) {$AB$\\$m\times q$};
+ \node[font=\small,text=green!60!black] at (2.9,-1.25) {the compiler unifies the two occurrences of $n$};
+ \begin{scope}[xshift=9.7cm]
+  \node[font=\bfseries\large,text=ink] at (2.2,2.15) {A mismatch has no valid function call};
+  \node[matrix] at (0,0) {$A$\\$m\times\color{pink}{n}$};
+  \node[font=\Huge] at (1.55,0) {$\cdot$};
+  \node[matrix,draw=red,fill=red!7] at (3.1,0) {$B$\\$\color{red}{p}\times q$};
+  \node[font=\Huge,text=red] at (5.15,0) {$\times$};
+  \node[font=\small,text=red] at (2.2,-1.25) {$n\neq p$: the program fails to compile};
+ \end{scope}
+\end{tikzpicture}
+\end{document}

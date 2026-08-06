@@ -1,7 +1,7 @@
 ---
 title: "Type-Safe Linear Algebra in F#"
 date: 2026-03-06 18:10:08 -0800
-last_modified_at: 2026-08-01 12:00:00 -0700
+last_modified_at: 2026-08-06 16:20:00 -0700
 permalink: /notes/type-safe-linear-algebra-in-fsharp/
 excerpt: "Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time."
 icon: "matrix"
@@ -20,6 +20,11 @@ Most compact matrix types store those dimensions only in their data, so an inval
 The [complete F# gist](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) is an experiment in moving that check into the type system. Its compact set of matrix operations shows where types can carry the proof.
 
 ## Dimensions that occupy no space
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/notes/linear-algebra/dimensions.png' | relative_url }}" alt="Valid matrix multiplication shares an inner dimension n and produces an m by q matrix, while a mismatch between n and p is rejected by the compiler.">
+  <figcaption>The repeated phantom type is a compile-time proof that the inner dimensions agree; it adds no data to the runtime matrix.</figcaption>
+</figure>
 
 The example begins with four marker types, `D1` through `D4`, and a matrix whose row and column dimensions are type parameters:
 
