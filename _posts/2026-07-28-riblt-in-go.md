@@ -1,7 +1,7 @@
 ---
 title: "Building a Generic RIBLT in Go"
 date: 2026-07-28 12:00:00 -0700
-last_modified_at: 2026-08-02 12:00:00 -0700
+last_modified_at: 2026-08-06 16:00:00 -0700
 permalink: /notes/riblt-in-go/
 excerpt: "A step-by-step implementation of generic, rateless set reconciliation in Go, from XOR-coded cells through peeling and measured communication."
 icon: "sitemap"
@@ -149,6 +149,11 @@ For each incoming cell, `AddCoded` subtracts the initial downstream symbols sche
 Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgement so the upstream knows when to stop. The decoder limits bound cells admitted, local symbols registered, and symbols peeled. The transport must separately bound bytes and time.
 
 ## Peel one discovery into the rest of the sketch
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/notes/riblt/peeling.png' | relative_url }}" alt="A two-stage RIBLT peeling diagram. A pure cell reveals symbol 101, which is removed from neighboring cells and exposes symbols 103 and 104 for continued peeling.">
+  <figcaption>A pure cell starts a cascade: solve one symbol, remove it from its neighbors, and enqueue every cell that becomes pure.</figcaption>
+</figure>
 
 After adding a cell, `TryDecode` processes every cell currently known to be a validated singleton or a resolved zero. A zero is resolved only when its count and accumulated checksum are both zero and `IsZero` confirms that its XOR symbol is the identity. A `+1` singleton is recorded as remote, meaning upstream-only. A `-1` singleton is recorded as local, meaning downstream-only.
 
