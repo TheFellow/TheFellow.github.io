@@ -140,6 +140,28 @@
   text-align: center;
 }
 
+.fluid-gallery {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 2rem 0;
+}
+
+.fluid-gallery .article-figure {
+  margin: 0;
+}
+
+.fluid-gallery img {
+  aspect-ratio: 20 / 9;
+  object-fit: cover;
+}
+
+@media (max-width: 48em) {
+  .fluid-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
 .feature-tiles {
   display: grid;
   gap: 1.25rem;
