@@ -40,6 +40,7 @@ SUMMARIES = {
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
     "/guides/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/guides/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
+    "/guides/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
     "/guides/building-an-application-tui-toolkit/": ("Testable TUI", "How Mixology adapts MVVM and Elm ideas into an application toolkit."),
     "/guides/growing-mixology-with-fyne/": ("GUI expansion", "Tracking Mixology's testable growth from two surfaces to three."),
     "/guides/authorization-is-part-of-navigation/": ("Authorized navigation", "How Cedar shapes routes, aggregates, rows, and available actions."),
