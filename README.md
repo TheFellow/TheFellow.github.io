@@ -1,6 +1,7 @@
 # TheFellow.github.io
 
-Source for Ryan Harris's project notes, tutorials, and resume site at <https://thefellow.github.io>.
+Source for Ryan Harris's projects, articles, notes, and resume site at
+<https://thefellow.github.io>.
 
 Repository-wide content, routing, and validation rules for automated contributors
 are codified in [`AGENTS.md`](AGENTS.md).
@@ -8,7 +9,8 @@ are codified in [`AGENTS.md`](AGENTS.md).
 ## Editing content
 
 - Project commentary is in `_projects/`.
-- Long-form articles are in `_guides/`; the directory name is retained for Jekyll collection compatibility.
+- Long-form articles are authored in `_guides/` and published under `/articles/`;
+  the source directory retains its name for Jekyll collection compatibility.
 - Ordered reading paths are in `_reading_series/`.
 - Dated notes go in `_posts/` using `YYYY-MM-DD-title.md` filenames.
 - Top navigation is in `_data/navigation.yml`.
