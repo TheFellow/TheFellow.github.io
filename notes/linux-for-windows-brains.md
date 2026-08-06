@@ -18,6 +18,11 @@ This is the translation I wanted when I started spending more time in Linux term
 
 ## One filesystem tree, with other filesystems attached
 
+<figure class="article-figure">
+  <img src="/assets/images/notes/linux/filesystem-tree.png" alt="A Linux filesystem tree rooted at slash, with system directories, a home directory, a removable filesystem mounted below media, and the Windows C drive mounted below mnt in WSL.">
+  <figcaption>Linux presents one path namespace. Other filesystems become reachable by attaching their roots at directories within that tree.</figcaption>
+</figure>
+
 Windows presents storage as several roots such as `C:\` and `D:\`. Linux presents one tree rooted at `/`. A disk, USB device, or network share becomes accessible when a filesystem is mounted at some directory in that tree.
 
 If a USB filesystem is mounted at `/media/ryan/WORK`, then writing `/media/ryan/WORK/report.txt` writes to that device. The mount point is an ordinary directory, but while the filesystem is mounted, its root covers whatever the directory previously contained. Unmounting it reveals the original directory again.
