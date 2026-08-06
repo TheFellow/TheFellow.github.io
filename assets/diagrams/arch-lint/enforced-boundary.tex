@@ -1,0 +1,14 @@
+\documentclass[tikz,border=12pt]{standalone}
+\usetikzlibrary{arrows.meta,positioning}
+\definecolor{green}{HTML}{2F9E44}\definecolor{red}{HTML}{E03131}\definecolor{blue}{HTML}{228BE6}\definecolor{ink}{HTML}{343A40}
+\begin{document}
+\begin{tikzpicture}[pkg/.style={rounded corners=3pt,draw=blue,fill=blue!7,very thick,minimum width=2.4cm,minimum height=.85cm,align=center},ok/.style={-{Latex[length=2.8mm]},very thick,green},bad/.style={-{Latex[length=2.8mm]},very thick,red,dashed}]
+ \node[pkg] (as) {orders\\surface/tui}; \node[pkg,right=2.1cm of as] (am) {orders\\models}; \node[pkg,right=2.1cm of am] (ai) {orders\\internal/dao};
+ \node[pkg,below=1.65cm of as] (bs) {menus\\surface/gui}; \node[pkg,right=2.1cm of bs] (bm) {menus\\queries}; \node[pkg,right=2.1cm of bm] (bi) {menus\\internal/commands};
+ \draw[ok] (as)--node[above,font=\small]{public contract}(am); \draw[ok] (bs)--node[above,font=\small]{public contract}(bm);
+ \draw[bad] (as) to[bend left=34] node[above,sloped,font=\small,text=red]{cross-domain private import} (bi);
+ \draw[bad] (bs) to[bend right=34] node[below,sloped,font=\small,text=red]{wrong surface + private import} (ai);
+ \node[draw=red,very thick,rounded corners=3pt,fill=red!8,below=1.1cm of bm,minimum width=5.1cm,minimum height=.8cm,align=center,font=\bfseries] {go tool arch-lint: build fails};
+ \node[font=\bfseries\large,text=ink] at (5.1,1.45) {The repository turns boundary arrows into executable rules};
+\end{tikzpicture}
+\end{document}
