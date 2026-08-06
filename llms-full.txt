@@ -3792,6 +3792,11 @@ Mixology now projects that meaning for its Fyne GUI and Bubble Tea TUI while all
 
 ## Give each state one meaning
 
+<figure class="article-figure">
+  <img src="/assets/images/notes/actions/action-states.png" alt="Three action presentations: permission denial omits the control, authorization with an unmet prerequisite shows a disabled Publish button and reason, and a ready action shows an enabled Publish button.">
+  <figcaption>Visibility communicates permission; enabled state communicates readiness. Execution still repeats authorization and domain invariants.</figcaption>
+</figure>
+
 The shared presentation result is deliberately small:
 
 ```go

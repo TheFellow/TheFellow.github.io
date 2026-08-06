@@ -1,7 +1,7 @@
 ---
 title: "Projecting Actions Across User Interfaces"
 date: 2026-08-05 00:00:00 -0700
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-06 17:40:00 -0700
 permalink: /notes/projecting-actions-across-user-interfaces/
 series: mixology
 series_order: 12
@@ -19,6 +19,11 @@ Menus in [Mixology](https://github.com/TheFellow/go-modular-monolith) made that 
 Mixology now projects that meaning for its Fyne GUI and Bubble Tea TUI while allowing both interfaces to remain native to their runtimes. Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tagging each own their action declarations rather than leaving individual presenters to assemble capability checks. Menus then composes its cross-domain readiness report into the authorized Publish state.
 
 ## Give each state one meaning
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/notes/actions/action-states.png' | relative_url }}" alt="Three action presentations: permission denial omits the control, authorization with an unmet prerequisite shows a disabled Publish button and reason, and a ready action shows an enabled Publish button.">
+  <figcaption>Visibility communicates permission; enabled state communicates readiness. Execution still repeats authorization and domain invariants.</figcaption>
+</figure>
 
 The shared presentation result is deliberately small:
 
