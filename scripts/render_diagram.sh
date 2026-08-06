@@ -13,4 +13,4 @@ trap 'rm -rf "$build_dir"' EXIT
 tectonic --outdir "$build_dir" "$input"
 pdf="$build_dir/$(basename "${input%.tex}").pdf"
 mkdir -p "$(dirname "$output")"
-pdftocairo -png -r 240 -singlefile "$pdf" "${output%.png}"
+pdftocairo -png -r 240 -singlefile -transp "$pdf" "${output%.png}"
