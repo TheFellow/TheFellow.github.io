@@ -1,9 +1,12 @@
 ---
 title: "Preserving Truth Through Operational Degradation"
 date: 2026-08-05
-last_modified_at: 2026-08-05
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context."
-permalink: /guides/preserving-truth-through-operational-degradation/
+permalink: /articles/preserving-truth-through-operational-degradation/
+redirect_from: /guides/preserving-truth-through-operational-degradation/
+series: mixology
+series_order: 3
 order: 16
 status: "Domain modeling guide"
 icon: "layers"
@@ -11,11 +14,13 @@ accent: "#ffa94d"
 topics: ["Domain modeling", "Lifecycle state", "Cross-domain consistency"]
 ---
 
+{% include series-notice.html %}
+
 Operational software rarely gets to choose between completely healthy data and deletion. Products are discontinued, stock disappears, substitutions become temporary, and decisions already in flight still need to explain what happened.
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) uses ingredient retirement to explore that middle. An ingredient can be retired with a permanent replacement, or it can be retired without one. The difference changes future recipes, pending orders, menu publication, availability, audit records, and what each actor may inspect. The application preserves those distinctions instead of reducing them to a cascade delete.
 
-This guide follows the modeling decisions. [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries/) explains how the transactional dispatcher keeps their implementation modular.
+This guide follows the modeling decisions. [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries/) explains how the transactional dispatcher keeps their implementation modular.
 
 ## Name the business decision
 

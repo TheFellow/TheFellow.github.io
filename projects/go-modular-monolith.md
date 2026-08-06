@@ -14,8 +14,8 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
-[Preview the tutorial series](/guides/building-high-quality-software.md)
-[Read the GUI surface guide](/guides/growing-mixology-with-fyne.md)
+[Read the Mixology series](/series/mixology.md)
+[Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -64,7 +64,7 @@ main/
 
 The boundaries are checked from several directions. Captured `arch-lint` rules apply the same restrictions to present and future domains and surfaces. Topology tests reject unrecognized peer layers, and composition tests compare the domain directories with the modules exposed by the application. Application fixtures then exercise the real embedded store, middleware, authorization, dispatch, audit, and domain handlers. Cross-surface tests mutate through one adapter and observe through another, checking shared behavior without requiring the adapters to share their implementation.
 
-The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
+The [Building High-Quality Software preview](/articles/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
 shared operation pipeline, transactional events, focused code generation, error contracts,
 policy-based authorization, interchangeable CLI and bespoke MVVM-style TUI and GUI surfaces, an owned seam for

@@ -17,51 +17,52 @@ Source: [https://thefellow.github.io/](https://thefellow.github.io/)
 ## Full content
 
 - [Projects](/projects.md): Open-source projects with design context beyond their repository READMEs.
-- [Guides](/guides.md): Long-form guides turning architecture principles into testable working designs.
+- [Articles](/articles.md): Long-form articles turning architecture principles into testable working designs.
 - [Notes](/notes.md): Focused observations drawn from active projects, experiments, and research.
+- [Series](/series.md): Ordered paths through related articles, notes, and projects.
 - [Resume](/resume.md): Staff-level experience in authorization, architecture, delivery, and technical leadership.
 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Guides
+# Articles
 
-Source: [https://thefellow.github.io/guides/](https://thefellow.github.io/guides/)
+Source: [https://thefellow.github.io/articles/](https://thefellow.github.io/articles/)
 
 ## Pyramid summary
 
-- **~2 words:** Practical guides
-- **~8 words:** Long-form guides turning architecture principles into testable working designs.
-- **Expanded:** Long-form guides turning architecture principles into testable working designs.
+- **~2 words:** Practical articles
+- **~8 words:** Long-form articles turning architecture principles into testable working designs.
+- **Expanded:** Long-form articles turning architecture principles into testable working designs.
 
 ## Full content
 
-Long-form tutorials connect design principles to running code. Each series is structured so written chapters can stand on their own and later pair with video walkthroughs.
+Long-form tutorials, essays, case studies, and development journals connect design principles to running code. Related articles are collected into [ordered series](/series.md) without requiring each article to use the same format.
 
-- [Building High-Quality Software](/guides/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
-- [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
-- [Growing a Reciprocal Domain Workflow](/guides/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
-- [Preserving Truth Through Operational Degradation](/guides/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
-- [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
-- [Growing Mixology with a GUI Surface](/guides/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
-- [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
-- [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
-- [Typed Filtering over bstore](/guides/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
-- [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test.md): What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
-- [Making Illegal States Unrepresentable in Go](/guides/making-illegal-states-unrepresentable-in-go.md): What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee.
-- [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
-- [Building a File-Backed Columnar Event Pipeline](/guides/building-a-file-backed-columnar-event-pipeline.md): How immutable Parquet batches, snapshot metadata, DuckDB, Arrow, and Protobuf form a columnar event path from storage to results.
+- [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
+- [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
+- [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
+- [Preserving Truth Through Operational Degradation](/articles/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
+- [Building an Application TUI Toolkit](/articles/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
+- [Growing Mixology with a GUI Surface](/articles/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
+- [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
+- [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
+- [Typed Filtering over bstore](/articles/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
+- [Using a Third Surface as an Architecture Test](/articles/using-a-third-surface-as-an-architecture-test.md): What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
+- [Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md): What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee.
+- [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
+- [Building a File-Backed Columnar Event Pipeline](/articles/building-a-file-backed-columnar-event-pipeline.md): How immutable Parquet batches, snapshot metadata, DuckDB, Arrow, and Protobuf form a columnar event path from storage to results.
 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/authorization-is-part-of-navigation/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/authorization-is-part-of-navigation/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Authorization Is Part of Navigation
 
-Source: [https://thefellow.github.io/guides/authorization-is-part-of-navigation/](https://thefellow.github.io/guides/authorization-is-part-of-navigation/)
+Source: [https://thefellow.github.io/articles/authorization-is-part-of-navigation/](https://thefellow.github.io/articles/authorization-is-part-of-navigation/)
 
 ## Pyramid summary
 
@@ -70,6 +71,8 @@ Source: [https://thefellow.github.io/guides/authorization-is-part-of-navigation/
 - **Expanded:** How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
 
 ## Full content
+
+**Part 10 of [Building Mixology](/series/mixology.md).**
 
 Authorization becomes visible long before someone presses Save. It determines which workspaces exist in navigation, which summary cards appear on a dashboard, which rows enter a list, and which actions make sense for the selected entity. Treating only the final command as protected leaves the application technically resistant to mutation while its interface still discloses names, counts, relationships, and capabilities.
 
@@ -200,11 +203,11 @@ Routes come from authorized read paths. Dashboard summaries follow the same info
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/bespoke-views-over-a-shared-application-boundary/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/bespoke-views-over-a-shared-application-boundary/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Bespoke Views over a Shared Application Boundary
 
-Source: [https://thefellow.github.io/guides/bespoke-views-over-a-shared-application-boundary/](https://thefellow.github.io/guides/bespoke-views-over-a-shared-application-boundary/)
+Source: [https://thefellow.github.io/articles/bespoke-views-over-a-shared-application-boundary/](https://thefellow.github.io/articles/bespoke-views-over-a-shared-application-boundary/)
 
 ## Pyramid summary
 
@@ -213,6 +216,8 @@ Source: [https://thefellow.github.io/guides/bespoke-views-over-a-shared-applicat
 - **Expanded:** What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
 
 ## Full content
+
+**Part 8 of [Building Mixology](/series/mixology.md).**
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) now presents the same modular application through a command-line interface, a persistent Bubble Tea terminal interface, and a retained-mode Fyne desktop interface. Adding the third surface made one boundary especially clear: the durable reuse is the application behavior behind the views, not a view model stretched across every presentation technology.
 
@@ -344,11 +349,11 @@ The result is not three implementations of the business rules. It is three bespo
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/building-a-file-backed-columnar-event-pipeline/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/building-a-file-backed-columnar-event-pipeline/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building a File-Backed Columnar Event Pipeline
 
-Source: [https://thefellow.github.io/guides/building-a-file-backed-columnar-event-pipeline/](https://thefellow.github.io/guides/building-a-file-backed-columnar-event-pipeline/)
+Source: [https://thefellow.github.io/articles/building-a-file-backed-columnar-event-pipeline/](https://thefellow.github.io/articles/building-a-file-backed-columnar-event-pipeline/)
 
 ## Pyramid summary
 
@@ -624,11 +629,11 @@ A directory of Parquet files becomes a dependable dataset when its publication a
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/building-an-application-tui-toolkit/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/building-an-application-tui-toolkit/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building an Application TUI Toolkit
 
-Source: [https://thefellow.github.io/guides/building-an-application-tui-toolkit/](https://thefellow.github.io/guides/building-an-application-tui-toolkit/)
+Source: [https://thefellow.github.io/articles/building-an-application-tui-toolkit/](https://thefellow.github.io/articles/building-an-application-tui-toolkit/)
 
 ## Pyramid summary
 
@@ -637,6 +642,8 @@ Source: [https://thefellow.github.io/guides/building-an-application-tui-toolkit/
 - **Expanded:** How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
 
 ## Full content
+
+**Part 5 of [Building Mixology](/series/mixology.md).**
 
 A terminal application can become a pile of `switch` statements surprisingly quickly. The first screen owns a list and a few keys. The second needs a form. Then Escape means “go back” in one place, “close the dialog” in another, and a literal character in a filter. Loading completes after the user has left a screen. Every feature still works, but no one can say with confidence who owns the next message.
 
@@ -901,11 +908,11 @@ The result is richer than “some Bubble Tea screens” and smaller than an MVVM
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/building-high-quality-software/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/building-high-quality-software/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building High-Quality Software
 
-Source: [https://thefellow.github.io/guides/building-high-quality-software/](https://thefellow.github.io/guides/building-high-quality-software/)
+Source: [https://thefellow.github.io/articles/building-high-quality-software/](https://thefellow.github.io/articles/building-high-quality-software/)
 
 ## Pyramid summary
 
@@ -914,6 +921,8 @@ Source: [https://thefellow.github.io/guides/building-high-quality-software/](htt
 - **Expanded:** A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 
 ## Full content
+
+**Part 1 of [Building Mixology](/series/mixology.md).**
 
 **Series status:** this is a preview of a planned written and video series. Follow its development in [GitHub issue #23](https://github.com/TheFellow/go-modular-monolith/issues/23), or [explore the application](https://github.com/TheFellow/go-modular-monolith) now.
 
@@ -965,7 +974,7 @@ All of that work remains inside the transaction opened for the original delete. 
 
 This is a deliberately constrained event model. Handlers are leaf nodes, event payloads carry useful state, and delivery is in-process. The lesson will explore what those constraints buy, where fat events become uncomfortable, and which pressures would justify crossing the boundary into asynchronous messaging.
 
-The focused guide [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries.md) follows this deletion from the tempting direct-call implementation through owned reactions, transactional dispatch, package rules, and integration evidence.
+The focused guide [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md) follows this deletion from the tempting direct-call implementation through owned reactions, transactional dispatch, package rules, and integration evidence.
 
 ## 5. Generate repetition, preserve decisions
 
@@ -999,7 +1008,7 @@ This lesson will trace one policy through command authorization, a single-entity
 
 ## 8. Keep surfaces at the edge
 
-For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit.md).
+For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/articles/building-an-application-tui-toolkit.md).
 
 Mixology exposes three adapters through three executables. `main/cli` handles commands and formatted output, `main/tui` launches the persistent Bubble Tea application, and `main/gui` opens the native Fyne desktop client. Each composition root owns its framework setup, flags, process lifetime, and application bootstrap. All three call the same domain modules and enter the same pipeline.
 
@@ -1039,9 +1048,9 @@ Filtering provides a useful test of the boundary. A human-readable expression be
 
 The implementation now exercises the same operations through three surfaces, drives the TUI through
 its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
-composed desktop lifecycle. The [third-surface audit](/guides/using-a-third-surface-as-an-architecture-test.md)
+composed desktop lifecycle. The [third-surface audit](/articles/using-a-third-surface-as-an-architecture-test.md)
 found application leaks precisely where the CLI and TUI had shared an assumption, while the
-[bespoke-view boundary](/guides/bespoke-views-over-a-shared-application-boundary.md) kept each runtime's
+[bespoke-view boundary](/articles/bespoke-views-over-a-shared-application-boundary.md) kept each runtime's
 interaction model native.
 
 ## 9. Give cross-cutting features an owned seam
@@ -1113,11 +1122,11 @@ For now, the repository is the complete worked example. Start with the [ingredie
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/growing-a-reciprocal-domain-workflow/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Growing a Reciprocal Domain Workflow
 
-Source: [https://thefellow.github.io/guides/growing-a-reciprocal-domain-workflow/](https://thefellow.github.io/guides/growing-a-reciprocal-domain-workflow/)
+Source: [https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow/](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow/)
 
 ## Pyramid summary
 
@@ -1127,13 +1136,15 @@ Source: [https://thefellow.github.io/guides/growing-a-reciprocal-domain-workflow
 
 ## Full content
 
+**Part 4 of [Building Mixology](/series/mixology.md).**
+
 The next Mixology workshop will add Procurement as a complete vertical slice. It starts with suppliers and the ingredients they offer, grows into purchase orders and receipts, then connects Procurement to Inventory in both directions.
 
 That reciprocal relationship is the important part. Low stock in Inventory can create purchasing work, while receiving a purchase order in Procurement can replenish Inventory. Neither domain is simply upstream of the other. Their relationship forms a cycle in the business graph even though the package dependency graph must remain controlled.
 
 This guide records the intended workshop before the feature is implemented. It gives the future implementation a sequence, a set of ownership decisions, and concrete checkpoints. It also leaves room for the code to teach us where Mixology's current transactional dispatcher is sufficient and where a longer-running workflow deserves a different abstraction.
 
-The workshop builds on [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries.md). That guide derives one-way reactions from an ingredient deletion. This one asks what changes when two stateful domains continually affect one another.
+The workshop builds on [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md). That guide derives one-way reactions from an ingredient deletion. This one asks what changes when two stateful domains continually affect one another.
 
 ## Begin with a business loop
 
@@ -1383,11 +1394,11 @@ Procurement is useful because it begins as a familiar vertical slice and ends by
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/growing-mixology-with-fyne/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/growing-mixology-with-fyne/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Growing Mixology with a GUI Surface
 
-Source: [https://thefellow.github.io/guides/growing-mixology-with-fyne/](https://thefellow.github.io/guides/growing-mixology-with-fyne/)
+Source: [https://thefellow.github.io/articles/growing-mixology-with-fyne/](https://thefellow.github.io/articles/growing-mixology-with-fyne/)
 
 ## Pyramid summary
 
@@ -1397,13 +1408,15 @@ Source: [https://thefellow.github.io/guides/growing-mixology-with-fyne/](https:/
 
 ## Full content
 
+**Part 6 of [Building Mixology](/series/mixology.md).**
+
 Mixology presents one application through a command-line interface, a persistent Bubble Tea terminal interface, and a native [Fyne](https://fyne.io/) desktop interface written in Go. The desktop experiment pursued the union of existing application behavior on macOS, Windows, and Linux. The more useful result is what happened to the architecture when a third, substantially different presentation model had to use it.
 
 This guide is a development journal. It began before the desktop code existed, so the early sections preserve the questions and acceptance criteria that guided the work. Later sections record the reviewed commits, tests, running behavior, and closure audit that resolved them.
 
 **Experiment status:** the closure audit now supports code-level functional parity across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 
-The experiment builds directly on [Mixology's existing TUI architecture](/guides/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
+The experiment builds directly on [Mixology's existing TUI architecture](/articles/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 
 ## The starting seam
 
@@ -1480,7 +1493,7 @@ Menu action state now makes that last boundary more precise. A domain-owned proj
 
 Fyne-specific constraints remain local. Dirty form state, an open confirmation, and active submission ownership compose with the projection before a widget is enabled. Refreshing or changing selection recomputes the domain state, while the presenter captures mutation targets so a retained callback cannot apply a newer selection to older work. Headless tests cover independent Publish permission, visible but disabled lifecycle actions, evaluator failures, and stale optimistic projection. The application command still repeats authorization and invariants when the callback runs.
 
-[Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md) describes the shared projection contract. The [TUI toolkit guide](/guides/building-an-application-tui-toolkit.md) and this journal cover only how each runtime consumes it.
+[Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md) describes the shared projection contract. The [TUI toolkit guide](/articles/building-an-application-tui-toolkit.md) and this journal cover only how each runtime consumes it.
 
 The pass also tightened Fyne's concurrency contract. Production publication and startup work enter the UI through `fyne.Do` or `fyne.DoAndWait`, while tests retain deterministic dispatch. Visual acceptance cases use fixed window sizes and Fyne's in-memory driver to cover the dashboard, tables, detail states, forms, menus, tags, audit, and empty collections. This makes layout and thread ownership tested presentation behavior rather than assumptions left to a manual launch.
 
@@ -1660,20 +1673,20 @@ The third surface confirmed that the reusable asset was the application boundary
 
 The completed experiment also produced focused follow-ups:
 
-- [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test.md) extracts the parity audit into a repeatable architecture technique.
-- [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary.md) explains why the shared asset is application behavior rather than a universal view model.
-- [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly.md) turns the testing ladder into a practical desktop strategy.
-- [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation.md) follows Cedar decisions through routes, aggregates, rows, and actions.
+- [Using a Third Surface as an Architecture Test](/articles/using-a-third-surface-as-an-architecture-test.md) extracts the parity audit into a repeatable architecture technique.
+- [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary.md) explains why the shared asset is application behavior rather than a universal view model.
+- [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md) turns the testing ladder into a practical desktop strategy.
+- [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md) follows Cedar decisions through routes, aggregates, rows, and actions.
 - [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md) separates shared action meaning from GUI and TUI interaction state.
 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/making-illegal-states-unrepresentable-in-go/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Making Illegal States Unrepresentable in Go
 
-Source: [https://thefellow.github.io/guides/making-illegal-states-unrepresentable-in-go/](https://thefellow.github.io/guides/making-illegal-states-unrepresentable-in-go/)
+Source: [https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go/](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go/)
 
 ## Pyramid summary
 
@@ -2119,11 +2132,11 @@ The goal is not to reproduce F# syntax in Go. It is to make domain decisions vis
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/preserving-truth-through-operational-degradation/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/preserving-truth-through-operational-degradation/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Preserving Truth Through Operational Degradation
 
-Source: [https://thefellow.github.io/guides/preserving-truth-through-operational-degradation/](https://thefellow.github.io/guides/preserving-truth-through-operational-degradation/)
+Source: [https://thefellow.github.io/articles/preserving-truth-through-operational-degradation/](https://thefellow.github.io/articles/preserving-truth-through-operational-degradation/)
 
 ## Pyramid summary
 
@@ -2133,11 +2146,13 @@ Source: [https://thefellow.github.io/guides/preserving-truth-through-operational
 
 ## Full content
 
+**Part 3 of [Building Mixology](/series/mixology.md).**
+
 Operational software rarely gets to choose between completely healthy data and deletion. Products are discontinued, stock disappears, substitutions become temporary, and decisions already in flight still need to explain what happened.
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) uses ingredient retirement to explore that middle. An ingredient can be retired with a permanent replacement, or it can be retired without one. The difference changes future recipes, pending orders, menu publication, availability, audit records, and what each actor may inspect. The application preserves those distinctions instead of reducing them to a cascade delete.
 
-This guide follows the modeling decisions. [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries.md) explains how the transactional dispatcher keeps their implementation modular.
+This guide follows the modeling decisions. [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md) explains how the transactional dispatcher keeps their implementation modular.
 
 ## Name the business decision
 
@@ -2269,11 +2284,11 @@ That collection of small, explicit states creates a more realistic application. 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Testing Native Go Desktop Applications Headlessly
 
-Source: [https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly/](https://thefellow.github.io/guides/testing-native-go-desktop-applications-headlessly/)
+Source: [https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly/](https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly/)
 
 ## Pyramid summary
 
@@ -2282,6 +2297,8 @@ Source: [https://thefellow.github.io/guides/testing-native-go-desktop-applicatio
 - **Expanded:** A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
 
 ## Full content
+
+**Part 9 of [Building Mixology](/series/mixology.md).**
 
 Native desktop behavior does not begin at the pixels. It begins with state ownership, callbacks, asynchronous work, framework controls, composition, and lifecycle. Most of that behavior can be tested without a display server if the application exposes the right seams.
 
@@ -2541,11 +2558,11 @@ The remaining visual and assistive-technology checks are clearer because the beh
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/turning-cross-domain-calls-into-enforced-boundaries/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Turning Cross-Domain Calls into Enforced Boundaries
 
-Source: [https://thefellow.github.io/guides/turning-cross-domain-calls-into-enforced-boundaries/](https://thefellow.github.io/guides/turning-cross-domain-calls-into-enforced-boundaries/)
+Source: [https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries/](https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries/)
 
 ## Pyramid summary
 
@@ -2554,6 +2571,8 @@ Source: [https://thefellow.github.io/guides/turning-cross-domain-calls-into-enfo
 - **Expanded:** A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
 
 ## Full content
+
+**Part 2 of [Building Mixology](/series/mixology.md).**
 
 A boundary becomes interesting when a change on one side has consequences on the other.
 
@@ -2579,7 +2598,7 @@ The code is easy to follow locally, but its ownership points in the wrong direct
 
 I use this dependency pressure to derive the boundary. The result is not events for their own sake. It is an arrangement where each domain owns its reaction, the original operation remains atomic, and the repository rejects shortcuts back to the coupled design.
 
-This is the worked follow-up to the event-coordination lesson in [Building High-Quality Software](/guides/building-high-quality-software.md). That guide places transactional events inside Mixology's wider architecture; this one stays with the boundary and follows the dependency change through code, repository rules, and tests.
+This is the worked follow-up to the event-coordination lesson in [Building High-Quality Software](/articles/building-high-quality-software.md). That guide places transactional events inside Mixology's wider architecture; this one stays with the boundary and follows the dependency change through code, repository rules, and tests.
 
 ## Separate questions from decisions
 
@@ -2726,11 +2745,11 @@ That is how a modular monolith stays modular under ordinary feature work. The ev
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/typed-filtering-over-bstore/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/typed-filtering-over-bstore/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Typed Filtering over bstore
 
-Source: [https://thefellow.github.io/guides/typed-filtering-over-bstore/](https://thefellow.github.io/guides/typed-filtering-over-bstore/)
+Source: [https://thefellow.github.io/articles/typed-filtering-over-bstore/](https://thefellow.github.io/articles/typed-filtering-over-bstore/)
 
 ## Pyramid summary
 
@@ -2739,6 +2758,8 @@ Source: [https://thefellow.github.io/guides/typed-filtering-over-bstore/](https:
 - **Expanded:** How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
 
 ## Full content
+
+**Part 11 of [Building Mixology](/series/mixology.md).**
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) originally had the usual collection of list parameters: exact name, category, status, time bounds, and a few domain-specific switches. Those parameters remain useful for common workflows, but they do not compose into questions such as:
 
@@ -2878,11 +2899,11 @@ This division avoids two weak compromises. Users do not have to speak in bstore 
 
 ---
 
-<!-- Generated from https://thefellow.github.io/guides/using-a-third-surface-as-an-architecture-test/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/using-a-third-surface-as-an-architecture-test/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Using a Third Surface as an Architecture Test
 
-Source: [https://thefellow.github.io/guides/using-a-third-surface-as-an-architecture-test/](https://thefellow.github.io/guides/using-a-third-surface-as-an-architecture-test/)
+Source: [https://thefellow.github.io/articles/using-a-third-surface-as-an-architecture-test/](https://thefellow.github.io/articles/using-a-third-surface-as-an-architecture-test/)
 
 ## Pyramid summary
 
@@ -2891,6 +2912,8 @@ Source: [https://thefellow.github.io/guides/using-a-third-surface-as-an-architec
 - **Expanded:** What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
 
 ## Full content
+
+**Part 7 of [Building Mixology](/series/mixology.md).**
 
 An architecture diagram can show three adapters pointing at one application boundary. A third adapter makes that claim executable.
 
@@ -3724,6 +3747,8 @@ Source: [https://thefellow.github.io/notes/projecting-actions-across-user-interf
 
 ## Full content
 
+**Part 12 of [Building Mixology](/series/mixology.md).**
+
 An action can be unavailable for two very different reasons. The current actor may not have permission to perform it, or the domain may not be in a state where the action makes sense. Collapsing both cases into one boolean loses information that a useful interface needs.
 
 Menus in [Mixology](https://github.com/TheFellow/go-modular-monolith) made that distinction concrete. Publishing has its own Cedar permission, but it also requires a draft menu with publishable contents. Denial should remove Publish from the interface. An authorized draft that still needs work should keep Publish visible, disable it, and explain what must change.
@@ -4473,8 +4498,8 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
-[Preview the tutorial series](/guides/building-high-quality-software.md)
-[Read the GUI surface guide](/guides/growing-mixology-with-fyne.md)
+[Read the Mixology series](/series/mixology.md)
+[Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -4523,7 +4548,7 @@ main/
 
 The boundaries are checked from several directions. Captured `arch-lint` rules apply the same restrictions to present and future domains and surfaces. Topology tests reject unrecognized peer layers, and composition tests compare the domain directories with the modules exposed by the application. Application fixtures then exercise the real embedded store, middleware, authorization, dispatch, audit, and domain handlers. Cross-surface tests mutate through one adapter and observe through another, checking shared behavior without requiring the adapters to share their implementation.
 
-The [Building High-Quality Software preview](/guides/building-high-quality-software.md) follows that
+The [Building High-Quality Software preview](/articles/building-high-quality-software.md) follows that
 thread through eleven planned lessons: enforced boundaries, constraints encoded in types, the
 shared operation pipeline, transactional events, focused code generation, error contracts,
 policy-based authorization, interchangeable CLI and bespoke MVVM-style TUI and GUI surfaces, an owned seam for
@@ -4731,6 +4756,62 @@ Meritorious designation in the Mathematical Contest in Modeling while representi
 
 ## Technology
 Go · C# · F# · PSQL · MSSQL · Cedar · GraphQL · gRPC and Protocol Buffers · Terraform · Kubernetes · domain-driven design · static analysis · API and SDK design · CI/CD · production operations
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/series/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Series
+
+Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series/)
+
+## Pyramid summary
+
+- **~2 words:** Reading series
+- **~8 words:** Ordered paths through related articles, notes, and projects.
+- **Expanded:** Ordered reading paths that connect related articles and notes.
+
+## Full content
+
+Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
+
+- [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/series/mixology/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Building Mixology
+
+Source: [https://thefellow.github.io/series/mixology/](https://thefellow.github.io/series/mixology/)
+
+## Pyramid summary
+
+- **~2 words:** Mixology series
+- **~8 words:** An ordered path through Mixology's executable application architecture.
+- **Expanded:** An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
+
+## Full content
+
+Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, and shared action meaning.
+
+[Explore the project](/projects/go-modular-monolith.md)
+[View the repository](https://github.com/TheFellow/go-modular-monolith)
+
+1. **Article:** [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
+2. **Article:** [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
+3. **Article:** [Preserving Truth Through Operational Degradation](/articles/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
+4. **Article:** [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
+5. **Article:** [Building an Application TUI Toolkit](/articles/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
+6. **Article:** [Growing Mixology with a GUI Surface](/articles/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
+7. **Article:** [Using a Third Surface as an Architecture Test](/articles/using-a-third-surface-as-an-architecture-test.md): What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
+8. **Article:** [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
+9. **Article:** [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
+10. **Article:** [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
+11. **Article:** [Typed Filtering over bstore](/articles/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
+12. **Note:** [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
 
 
 ---

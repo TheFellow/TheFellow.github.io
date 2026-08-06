@@ -1,12 +1,16 @@
 ---
 title: "Projecting Actions Across User Interfaces"
 date: 2026-08-05 00:00:00 -0700
-last_modified_at: 2026-08-05 18:00:00 -0700
+last_modified_at: 2026-08-06 12:00:00 -0700
 permalink: /notes/projecting-actions-across-user-interfaces/
+series: mixology
+series_order: 12
 excerpt: "How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views."
 icon: "modules"
 tags: ["Go", "Cedar", "Authorization", "GUI", "TUI", "Architecture"]
 ---
+
+{% include series-notice.html %}
 
 An action can be unavailable for two very different reasons. The current actor may not have permission to perform it, or the domain may not be in a state where the action makes sense. Collapsing both cases into one boolean loses information that a useful interface needs.
 

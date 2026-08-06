@@ -1,9 +1,12 @@
 ---
 title: "Authorization Is Part of Navigation"
 date: 2026-08-01
-last_modified_at: 2026-08-05
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine."
-permalink: /guides/authorization-is-part-of-navigation/
+permalink: /articles/authorization-is-part-of-navigation/
+redirect_from: /guides/authorization-is-part-of-navigation/
+series: mixology
+series_order: 10
 order: 35
 featured: true
 status: "Implemented pattern"
@@ -11,6 +14,8 @@ icon: "lock"
 accent: "#845ef7"
 topics: ["Cedar authorization", "Navigation", "Information boundaries"]
 ---
+
+{% include series-notice.html %}
 
 Authorization becomes visible long before someone presses Save. It determines which workspaces exist in navigation, which summary cards appear on a dashboard, which rows enter a list, and which actions make sense for the selected entity. Treating only the final command as protected leaves the application technically resistant to mutation while its interface still discloses names, counts, relationships, and capabilities.
 

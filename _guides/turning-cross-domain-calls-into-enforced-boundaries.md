@@ -1,15 +1,20 @@
 ---
 title: "Turning Cross-Domain Calls into Enforced Boundaries"
 date: 2026-08-02
-last_modified_at: 2026-08-05
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history."
-permalink: /guides/turning-cross-domain-calls-into-enforced-boundaries/
+permalink: /articles/turning-cross-domain-calls-into-enforced-boundaries/
+redirect_from: /guides/turning-cross-domain-calls-into-enforced-boundaries/
+series: mixology
+series_order: 2
 order: 15
 status: "Architecture guide"
 icon: "branch"
 accent: "#66d9e8"
 topics: ["Bounded contexts", "Transactional events", "Executable architecture"]
 ---
+
+{% include series-notice.html %}
 
 A boundary becomes interesting when a change on one side has consequences on the other.
 
@@ -35,7 +40,7 @@ The code is easy to follow locally, but its ownership points in the wrong direct
 
 I use this dependency pressure to derive the boundary. The result is not events for their own sake. It is an arrangement where each domain owns its reaction, the original operation remains atomic, and the repository rejects shortcuts back to the coupled design.
 
-This is the worked follow-up to the event-coordination lesson in [Building High-Quality Software](/guides/building-high-quality-software/). That guide places transactional events inside Mixology's wider architecture; this one stays with the boundary and follows the dependency change through code, repository rules, and tests.
+This is the worked follow-up to the event-coordination lesson in [Building High-Quality Software](/articles/building-high-quality-software/). That guide places transactional events inside Mixology's wider architecture; this one stays with the boundary and follows the dependency change through code, repository rules, and tests.
 
 ## Separate questions from decisions
 

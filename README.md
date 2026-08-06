@@ -8,7 +8,8 @@ are codified in [`AGENTS.md`](AGENTS.md).
 ## Editing content
 
 - Project commentary is in `_projects/`.
-- Long-form series are in `_guides/`.
+- Long-form articles are in `_guides/`; the directory name is retained for Jekyll collection compatibility.
+- Ordered reading paths are in `_reading_series/`.
 - Dated notes go in `_posts/` using `YYYY-MM-DD-title.md` filenames.
 - Top navigation is in `_data/navigation.yml`.
 - Standalone pages live in `_site_pages/`.
@@ -33,7 +34,7 @@ without requiring a project-wide Python environment.
 The generator fails if a public source page lacks a pyramid summary, so the
 compact index, page-level context, and full text remain synchronized.
 
-Every content file begins with YAML front matter. Copy a nearby file when adding a project, guide, or note so the theme applies the right layout automatically.
+Every content file begins with YAML front matter. Copy a nearby file when adding a project, article, or note so the theme applies the right layout automatically.
 
 ## Writing style
 

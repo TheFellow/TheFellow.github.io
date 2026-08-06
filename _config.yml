@@ -2,7 +2,7 @@
 locale: "en-US"
 title: "Ryan Harris"
 title_separator: "·"
-subtitle: "Software notes and project guides"
+subtitle: "Software notes and long-form articles"
 description: >-
   Notes, tutorials, and project commentary from software engineer Ryan Harris.
 url: "https://thefellow.github.io"
@@ -45,7 +45,10 @@ collections:
     permalink: /projects/:path/
   guides:
     output: true
-    permalink: /guides/:path/
+    permalink: /articles/:path/
+  reading_series:
+    output: true
+    permalink: /series/:path/
 
 defaults:
   - scope:
@@ -74,6 +77,13 @@ defaults:
       toc_sticky: true
   - scope:
       path: ""
+      type: reading_series
+    values:
+      layout: single
+      author_profile: true
+      classes: wide
+  - scope:
+      path: ""
       type: site_pages
     values:
       layout: single
@@ -83,6 +93,7 @@ plugins:
   - jekyll-feed
   - jekyll-include-cache
   - jekyll-remote-theme
+  - jekyll-redirect-from
   - jekyll-seo-tag
   - jekyll-sitemap
 
