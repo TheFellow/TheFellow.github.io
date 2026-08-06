@@ -1,9 +1,10 @@
 ---
 title: "Building a File-Backed Columnar Event Pipeline"
 date: 2026-02-07
-last_modified_at: 2026-08-02
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "How immutable Parquet batches, snapshot metadata, DuckDB, Arrow, and Protobuf form a columnar event path from storage to results."
-permalink: /guides/building-a-file-backed-columnar-event-pipeline/
+permalink: /articles/building-a-file-backed-columnar-event-pipeline/
+redirect_from: /guides/building-a-file-backed-columnar-event-pipeline/
 order: 55
 status: "Architecture guide"
 icon: "bird"

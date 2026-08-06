@@ -1,0 +1,7 @@
+{% assign current_series = site.reading_series | where: "slug", page.series | first %}
+{% if current_series %}
+  {% assign series_entries = site.guides | concat: site.posts | where: "series", page.series %}
+  <div class="notice--series" markdown="1">
+  **Part {{ page.series_order }} of {{ series_entries.size }}:** [{{ current_series.title }}]({{ current_series.url | relative_url }}) collects the related articles and notes in reading order.
+  </div>
+{% endif %}

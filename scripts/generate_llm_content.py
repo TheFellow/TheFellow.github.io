@@ -26,8 +26,9 @@ GENERATOR_NAME = "scripts/generate_llm_content.py"
 SUMMARIES = {
     "/": ("Engineering notes", "Public notes connecting software architecture to working projects."),
     "/projects/": ("Project catalog", "Open-source projects with design context beyond their repository READMEs."),
-    "/guides/": ("Practical guides", "Long-form guides turning architecture principles into testable working designs."),
+    "/articles/": ("Practical articles", "Long-form articles turning architecture principles into testable working designs."),
     "/notes/": ("Technical notes", "Focused observations drawn from active projects, experiments, and research."),
+    "/series/": ("Reading series", "Ordered paths through related articles, notes, and projects."),
     "/resume/": ("Engineering experience", "Staff-level experience in authorization, architecture, delivery, and technical leadership."),
     "/404.html": ("Missing page", "Navigation help when a requested page cannot be found."),
     "/projects/go-modular-monolith/": ("Executable architecture", "A Go reference app enforcing modular boundaries and cross-cutting concerns."),
@@ -38,19 +39,20 @@ SUMMARIES = {
     "/projects/enumstruct/": ("Exhaustive unions", "A Go analyzer that detects missing pointer-union cases as models evolve."),
     "/projects/fluid/": ("Fluid simulation", "An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics."),
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
-    "/guides/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
-    "/guides/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
-    "/guides/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
-    "/guides/growing-a-reciprocal-domain-workflow/": ("Reciprocal workflow", "Procurement and Inventory expose the boundary between reactions and workflows."),
-    "/guides/building-an-application-tui-toolkit/": ("Testable TUI", "How Mixology adapts MVVM and Elm ideas into an application toolkit."),
-    "/guides/growing-mixology-with-fyne/": ("GUI expansion", "Tracking Mixology's testable growth from two surfaces to three."),
-    "/guides/authorization-is-part-of-navigation/": ("Authorized navigation", "How Cedar shapes routes, aggregates, rows, and available actions."),
-    "/guides/bespoke-views-over-a-shared-application-boundary/": ("Bespoke surfaces", "Why native views share application behavior, not universal view models."),
-    "/guides/typed-filtering-over-bstore/": ("Typed filters", "How typed expressions become safe, exact bstore query plans."),
-    "/guides/using-a-third-surface-as-an-architecture-test/": ("Architecture audit", "A third presentation runtime tests whether application boundaries are real."),
-    "/guides/testing-native-go-desktop-applications-headlessly/": ("Headless desktop", "Layered evidence for native GUI behavior without opening windows."),
-    "/guides/making-illegal-states-unrepresentable-in-go/": ("Modeled states", "F# techniques make Go domain constraints explicit and enforceable."),
-    "/guides/building-a-file-backed-columnar-event-pipeline/": ("Columnar events", "Immutable Parquet snapshots support direct analytical queries and typed results."),
+    "/series/mixology/": ("Mixology series", "An ordered path through Mixology's executable application architecture."),
+    "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
+    "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
+    "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
+    "/articles/growing-a-reciprocal-domain-workflow/": ("Reciprocal workflow", "Procurement and Inventory expose the boundary between reactions and workflows."),
+    "/articles/building-an-application-tui-toolkit/": ("Testable TUI", "How Mixology adapts MVVM and Elm ideas into an application toolkit."),
+    "/articles/growing-mixology-with-fyne/": ("GUI expansion", "Tracking Mixology's testable growth from two surfaces to three."),
+    "/articles/authorization-is-part-of-navigation/": ("Authorized navigation", "How Cedar shapes routes, aggregates, rows, and available actions."),
+    "/articles/bespoke-views-over-a-shared-application-boundary/": ("Bespoke surfaces", "Why native views share application behavior, not universal view models."),
+    "/articles/typed-filtering-over-bstore/": ("Typed filters", "How typed expressions become safe, exact bstore query plans."),
+    "/articles/using-a-third-surface-as-an-architecture-test/": ("Architecture audit", "A third presentation runtime tests whether application boundaries are real."),
+    "/articles/testing-native-go-desktop-applications-headlessly/": ("Headless desktop", "Layered evidence for native GUI behavior without opening windows."),
+    "/articles/making-illegal-states-unrepresentable-in-go/": ("Modeled states", "F# techniques make Go domain constraints explicit and enforceable."),
+    "/articles/building-a-file-backed-columnar-event-pipeline/": ("Columnar events", "Immutable Parquet snapshots support direct analytical queries and typed results."),
     "/notes/elliptic-curve-cryptography-from-first-principles/": ("ECDSA foundations", "A ground-up route through groups, finite fields, curves, and signatures."),
     "/notes/porting-cedar-semantics-from-go-to-dotnet/": ("Semantic porting", "How conformance tests preserve Cedar behavior while C# APIs remain idiomatic."),
     "/notes/type-safe-linear-algebra-in-fsharp/": ("Typed dimensions", "Phantom dimensions make invalid matrix arithmetic fail at compile time."),
@@ -76,7 +78,7 @@ def parse_document(path: Path) -> Document:
 
 
 def documents() -> list[Document]:
-    patterns = ("_site_pages/*.md", "_projects/*.md", "_guides/*.md", "_posts/*.md")
+    patterns = ("_site_pages/*.md", "_projects/*.md", "_guides/*.md", "_posts/*.md", "_reading_series/*.md")
     paths = sorted(path for pattern in patterns for path in ROOT.glob(pattern))
     return [parse_document(path) for path in paths]
 
@@ -116,7 +118,9 @@ def route_for(doc: Document) -> str:
     if source.startswith("_projects/"):
         return f"/projects/{stem}/"
     if source.startswith("_guides/"):
-        return f"/guides/{stem}/"
+        return f"/articles/{stem}/"
+    if source.startswith("_reading_series/"):
+        return f"/series/{stem}/"
     raise ValueError(f"No public route for {source}")
 
 
@@ -203,7 +207,12 @@ def sort_value(doc: Document) -> tuple[int, float | int]:
 
 def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
     route = route_for(doc)
-    prefixes = {"/projects/": "_projects/", "/guides/": "_guides/", "/notes/": "_posts/"}
+    prefixes = {
+        "/projects/": "_projects/",
+        "/articles/": "_guides/",
+        "/notes/": "_posts/",
+        "/series/": "_reading_series/",
+    }
     prefix = prefixes.get(route)
     if prefix is None:
         return None
@@ -222,9 +231,30 @@ def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
     return f"{intro}\n\n{'\n'.join(links)}"
 
 
+def series_body(doc: Document, all_docs: list[Document]) -> str | None:
+    source = str(doc["source"])
+    if not source.startswith("_reading_series/"):
+        return None
+
+    slug = Path(source).stem
+    intro = clean_body(doc["body"].split("{% assign series_entries", 1)[0])
+    entries = sorted(
+        (item for item in all_docs if item.get("series") == slug),
+        key=lambda item: int(item["series_order"]),
+    )
+    links = []
+    for item in entries:
+        kind = "Note" if str(item["source"]).startswith("_posts/") else "Article"
+        links.append(
+            f"{item['series_order']}. **{kind}:** "
+            f"[{item['title']}]({markdown_url(route_for(item))}): {item['excerpt']}"
+        )
+    return f"{intro}\n\n{'\n'.join(links)}"
+
+
 def home_body(all_docs: list[Document]) -> str:
     lines = []
-    for route in ("/projects/", "/guides/", "/notes/", "/resume/"):
+    for route in ("/projects/", "/articles/", "/notes/", "/series/", "/resume/"):
         doc = next(item for item in all_docs if route_for(item) == route)
         lines.append(
             f"- [{doc['title']}]({markdown_url(route)}): "
@@ -240,7 +270,23 @@ def render_page(doc: Document, all_docs: list[Document]) -> str:
     except KeyError as error:
         raise ValueError(f"Missing pyramid summary for {route}") from error
 
-    body = home_body(all_docs) if route == "/" else collection_index(doc, all_docs) or clean_body(doc["body"])
+    body = (
+        home_body(all_docs)
+        if route == "/"
+        else collection_index(doc, all_docs)
+        or series_body(doc, all_docs)
+        or clean_body(doc["body"])
+    )
+    if series_slug := doc.get("series"):
+        series_doc = next(
+            item
+            for item in all_docs
+            if str(item["source"]) == f"_reading_series/{series_slug}.md"
+        )
+        body = (
+            f"**Part {doc['series_order']} of [{series_doc['title']}]"
+            f"({markdown_url(route_for(series_doc))}).**\n\n{body}"
+        )
     body = link_markdown_alternates(body, all_docs)
     excerpt = doc.get("excerpt", medium)
     return f"""<!-- Generated from {SITE_URL}{route} by {GENERATOR_NAME}; do not edit. -->
@@ -269,6 +315,25 @@ def write_if_changed(relative_path: str | Path, content: str) -> None:
     path.write_text(content)
 
 
+def write_legacy_article_alternates(routes: dict[str, Document]) -> None:
+    aliases = {"/guides/": "/articles/"}
+    aliases.update(
+        {
+            route.replace("/articles/", "/guides/", 1): route
+            for route in routes
+            if re.fullmatch(r"/articles/.+/$", route)
+        }
+    )
+    for legacy_route, article_route in aliases.items():
+        title = routes[article_route]["title"]
+        write_if_changed(
+            markdown_path(legacy_route),
+            f"<!-- Generated from {SITE_URL}{article_route} by {GENERATOR_NAME}; do not edit. -->\n\n"
+            f"# {title}\n\nThis content moved to "
+            f"[{markdown_url(article_route)}]({markdown_url(article_route)}).\n",
+        )
+
+
 def remove_obsolete_alternates() -> None:
     for path in ROOT.glob("**/*.md"):
         try:
@@ -295,13 +360,15 @@ def main() -> None:
     validate_markdown_navigation(rendered, routes)
     for route, content in rendered.items():
         write_if_changed(markdown_path(route), content)
+    write_legacy_article_alternates(routes)
 
-    core_routes = ("/", "/projects/", "/guides/", "/notes/", "/resume/")
+    core_routes = ("/", "/projects/", "/articles/", "/notes/", "/series/", "/resume/")
     sections = {
         "Start Here": core_routes,
         "Projects": [route for route in routes if re.fullmatch(r"/projects/.+/$", route)],
-        "Guides": [route for route in routes if re.fullmatch(r"/guides/.+/$", route)],
+        "Articles": [route for route in routes if re.fullmatch(r"/articles/.+/$", route)],
         "Notes": [route for route in routes if re.fullmatch(r"/notes/.+/$", route)],
+        "Series": [route for route in routes if re.fullmatch(r"/series/.+/$", route)],
     }
     llms = [
         "# Ryan Harris — Engineering in Public",

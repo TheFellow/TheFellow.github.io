@@ -12,6 +12,8 @@ Source: [https://thefellow.github.io/notes/projecting-actions-across-user-interf
 
 ## Full content
 
+**Part 12 of [Building Mixology](/series/mixology.md).**
+
 An action can be unavailable for two very different reasons. The current actor may not have permission to perform it, or the domain may not be in a state where the action makes sense. Collapsing both cases into one boolean loses information that a useful interface needs.
 
 Menus in [Mixology](https://github.com/TheFellow/go-modular-monolith) made that distinction concrete. Publishing has its own Cedar permission, but it also requires a draft menu with publishable contents. Denial should remove Publish from the interface. An authorized draft that still needs work should keep Publish visible, disable it, and explain what must change.

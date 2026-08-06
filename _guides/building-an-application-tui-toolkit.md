@@ -1,15 +1,20 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-08-05 00:00:00 -0700
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
-permalink: /guides/building-an-application-tui-toolkit/
+permalink: /articles/building-an-application-tui-toolkit/
+redirect_from: /guides/building-an-application-tui-toolkit/
+series: mixology
+series_order: 5
 order: 20
 status: "Architecture guide"
 icon: "terminal"
 accent: "#63e6be"
 topics: ["Bubble Tea", "MVVM patterns", "Testable TUI"]
 ---
+
+{% include series-notice.html %}
 
 A terminal application can become a pile of `switch` statements surprisingly quickly. The first screen owns a list and a few keys. The second needs a form. Then Escape means “go back” in one place, “close the dialog” in another, and a literal character in a filter. Loading completes after the user has left a screen. Every feature still works, but no one can say with confidence who owns the next message.
 

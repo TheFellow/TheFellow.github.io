@@ -1,15 +1,20 @@
 ---
 title: "Typed Filtering over bstore"
 date: 2026-08-02
-last_modified_at: 2026-08-02
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable."
-permalink: /guides/typed-filtering-over-bstore/
+permalink: /articles/typed-filtering-over-bstore/
+redirect_from: /guides/typed-filtering-over-bstore/
+series: mixology
+series_order: 11
 order: 37
 status: "Implemented pattern"
 icon: "filter"
 accent: "#f59f00"
 topics: ["Typed filters", "Expr", "bstore"]
 ---
+
+{% include series-notice.html %}
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) originally had the usual collection of list parameters: exact name, category, status, time bounds, and a few domain-specific switches. Those parameters remain useful for common workflows, but they do not compose into questions such as:
 

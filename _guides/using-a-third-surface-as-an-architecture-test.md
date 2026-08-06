@@ -1,15 +1,20 @@
 ---
 title: "Using a Third Surface as an Architecture Test"
 date: 2026-08-01
-last_modified_at: 2026-08-01
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI."
-permalink: /guides/using-a-third-surface-as-an-architecture-test/
+permalink: /articles/using-a-third-surface-as-an-architecture-test/
+redirect_from: /guides/using-a-third-surface-as-an-architecture-test/
+series: mixology
+series_order: 7
 order: 40
 status: "Architecture guide"
 icon: "sitemap"
 accent: "#9775fa"
 topics: ["Three surfaces", "Architecture testing", "Application boundaries"]
 ---
+
+{% include series-notice.html %}
 
 An architecture diagram can show three adapters pointing at one application boundary. A third adapter makes that claim executable.
 

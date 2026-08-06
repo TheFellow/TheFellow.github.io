@@ -1,9 +1,12 @@
 ---
 title: "Testing Native Go Desktop Applications Headlessly"
 date: 2026-08-01
-last_modified_at: 2026-08-01
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence."
-permalink: /guides/testing-native-go-desktop-applications-headlessly/
+permalink: /articles/testing-native-go-desktop-applications-headlessly/
+redirect_from: /guides/testing-native-go-desktop-applications-headlessly/
+series: mixology
+series_order: 9
 order: 50
 featured: true
 status: "Testing guide"
@@ -11,6 +14,8 @@ icon: "vial"
 accent: "#4dabf7"
 topics: ["Fyne desktop", "Headless testing", "Go testing"]
 ---
+
+{% include series-notice.html %}
 
 Native desktop behavior does not begin at the pixels. It begins with state ownership, callbacks, asynchronous work, framework controls, composition, and lifecycle. Most of that behavior can be tested without a display server if the application exposes the right seams.
 

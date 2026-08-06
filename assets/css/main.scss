@@ -48,6 +48,51 @@
   border-left: 0.25rem solid $link-color;
 }
 
+.series-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.series-entry {
+  align-items: start;
+  border-top: 1px solid mix($text-color, $background-color, 22%);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  padding-top: 1.25rem;
+}
+
+.series-entry__number {
+  align-items: center;
+  background: mix($link-color, $background-color, 18%);
+  border: 1px solid $link-color;
+  border-radius: 50%;
+  color: $link-color;
+  display: inline-flex;
+  font-weight: 700;
+  height: 2.25rem;
+  justify-content: center;
+  width: 2.25rem;
+}
+
+.series-entry h2 {
+  font-size: 1.25rem;
+  margin: 0.15rem 0 0.45rem;
+}
+
+.series-entry p {
+  margin: 0;
+}
+
+.series-entry__kind {
+  color: mix($text-color, $background-color, 62%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .ecc-figure {
   margin: 2rem 0;
 }

@@ -1,9 +1,12 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-02 16:30:00 -0700
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
-permalink: /guides/building-high-quality-software/
+permalink: /articles/building-high-quality-software/
+redirect_from: /guides/building-high-quality-software/
+series: mixology
+series_order: 1
 order: 10
 featured: true
 status: "Series preview"
@@ -11,6 +14,8 @@ icon: "book"
 accent: "#ffa94d"
 topics: ["11 lessons", "Written + video", "Go architecture"]
 ---
+
+{% include series-notice.html %}
 
 <div class="notice--series" markdown="1">
 **Series status:** this is a preview of a planned written and video series. Follow its development in [GitHub issue #23](https://github.com/TheFellow/go-modular-monolith/issues/23), or [explore the application](https://github.com/TheFellow/go-modular-monolith) now.
@@ -64,7 +69,7 @@ All of that work remains inside the transaction opened for the original delete. 
 
 This is a deliberately constrained event model. Handlers are leaf nodes, event payloads carry useful state, and delivery is in-process. The lesson will explore what those constraints buy, where fat events become uncomfortable, and which pressures would justify crossing the boundary into asynchronous messaging.
 
-The focused guide [Turning Cross-Domain Calls into Enforced Boundaries](/guides/turning-cross-domain-calls-into-enforced-boundaries/) follows this deletion from the tempting direct-call implementation through owned reactions, transactional dispatch, package rules, and integration evidence.
+The focused guide [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries/) follows this deletion from the tempting direct-call implementation through owned reactions, transactional dispatch, package rules, and integration evidence.
 
 ## 5. Generate repetition, preserve decisions
 
@@ -98,7 +103,7 @@ This lesson will trace one policy through command authorization, a single-entity
 
 ## 8. Keep surfaces at the edge
 
-For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/guides/building-an-application-tui-toolkit/).
+For a detailed treatment of the TUI architecture introduced in this section, continue with [Building an Application TUI Toolkit](/articles/building-an-application-tui-toolkit/).
 
 Mixology exposes three adapters through three executables. `main/cli` handles commands and formatted output, `main/tui` launches the persistent Bubble Tea application, and `main/gui` opens the native Fyne desktop client. Each composition root owns its framework setup, flags, process lifetime, and application bootstrap. All three call the same domain modules and enter the same pipeline.
 
@@ -138,9 +143,9 @@ Filtering provides a useful test of the boundary. A human-readable expression be
 
 The implementation now exercises the same operations through three surfaces, drives the TUI through
 its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
-composed desktop lifecycle. The [third-surface audit](/guides/using-a-third-surface-as-an-architecture-test/)
+composed desktop lifecycle. The [third-surface audit](/articles/using-a-third-surface-as-an-architecture-test/)
 found application leaks precisely where the CLI and TUI had shared an assumption, while the
-[bespoke-view boundary](/guides/bespoke-views-over-a-shared-application-boundary/) kept each runtime's
+[bespoke-view boundary](/articles/bespoke-views-over-a-shared-application-boundary/) kept each runtime's
 interaction model native.
 
 ## 9. Give cross-cutting features an owned seam

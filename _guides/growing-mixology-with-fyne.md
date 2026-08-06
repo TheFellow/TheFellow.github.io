@@ -1,15 +1,20 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-08-05 00:00:00 -0700
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
-permalink: /guides/growing-mixology-with-fyne/
+permalink: /articles/growing-mixology-with-fyne/
+redirect_from: /guides/growing-mixology-with-fyne/
+series: mixology
+series_order: 6
 order: 30
 status: "Completed experiment"
 icon: "desktop"
 accent: "#74c0fc"
 topics: ["Fyne desktop", "Three surfaces", "Testable MVVM"]
 ---
+
+{% include series-notice.html %}
 
 Mixology presents one application through a command-line interface, a persistent Bubble Tea terminal interface, and a native [Fyne](https://fyne.io/) desktop interface written in Go. The desktop experiment pursued the union of existing application behavior on macOS, Windows, and Linux. The more useful result is what happened to the architecture when a third, substantially different presentation model had to use it.
 
@@ -19,7 +24,7 @@ This guide is a development journal. It began before the desktop code existed, s
 **Experiment status:** the closure audit now supports code-level functional parity across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 </div>
 
-The experiment builds directly on [Mixology's existing TUI architecture](/guides/building-an-application-tui-toolkit/). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
+The experiment builds directly on [Mixology's existing TUI architecture](/articles/building-an-application-tui-toolkit/). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 
 ## The starting seam
 
@@ -96,7 +101,7 @@ Menu action state now makes that last boundary more precise. A domain-owned proj
 
 Fyne-specific constraints remain local. Dirty form state, an open confirmation, and active submission ownership compose with the projection before a widget is enabled. Refreshing or changing selection recomputes the domain state, while the presenter captures mutation targets so a retained callback cannot apply a newer selection to older work. Headless tests cover independent Publish permission, visible but disabled lifecycle actions, evaluator failures, and stale optimistic projection. The application command still repeats authorization and invariants when the callback runs.
 
-[Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces/) describes the shared projection contract. The [TUI toolkit guide](/guides/building-an-application-tui-toolkit/) and this journal cover only how each runtime consumes it.
+[Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces/) describes the shared projection contract. The [TUI toolkit guide](/articles/building-an-application-tui-toolkit/) and this journal cover only how each runtime consumes it.
 
 The pass also tightened Fyne's concurrency contract. Production publication and startup work enter the UI through `fyne.Do` or `fyne.DoAndWait`, while tests retain deterministic dispatch. Visual acceptance cases use fixed window sizes and Fyne's in-memory driver to cover the dashboard, tables, detail states, forms, menus, tags, audit, and empty collections. This makes layout and thread ownership tested presentation behavior rather than assumptions left to a manual launch.
 
@@ -276,8 +281,8 @@ The third surface confirmed that the reusable asset was the application boundary
 
 The completed experiment also produced focused follow-ups:
 
-- [Using a Third Surface as an Architecture Test](/guides/using-a-third-surface-as-an-architecture-test/) extracts the parity audit into a repeatable architecture technique.
-- [Bespoke Views over a Shared Application Boundary](/guides/bespoke-views-over-a-shared-application-boundary/) explains why the shared asset is application behavior rather than a universal view model.
-- [Testing Native Go Desktop Applications Headlessly](/guides/testing-native-go-desktop-applications-headlessly/) turns the testing ladder into a practical desktop strategy.
-- [Authorization Is Part of Navigation](/guides/authorization-is-part-of-navigation/) follows Cedar decisions through routes, aggregates, rows, and actions.
+- [Using a Third Surface as an Architecture Test](/articles/using-a-third-surface-as-an-architecture-test/) extracts the parity audit into a repeatable architecture technique.
+- [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary/) explains why the shared asset is application behavior rather than a universal view model.
+- [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly/) turns the testing ladder into a practical desktop strategy.
+- [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation/) follows Cedar decisions through routes, aggregates, rows, and actions.
 - [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces/) separates shared action meaning from GUI and TUI interaction state.

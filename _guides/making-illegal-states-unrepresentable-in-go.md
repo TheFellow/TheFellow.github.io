@@ -1,9 +1,10 @@
 ---
 title: "Making Illegal States Unrepresentable in Go"
 date: 2026-03-06
-last_modified_at: 2026-08-02
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee."
-permalink: /guides/making-illegal-states-unrepresentable-in-go/
+permalink: /articles/making-illegal-states-unrepresentable-in-go/
+redirect_from: /guides/making-illegal-states-unrepresentable-in-go/
 order: 45
 featured: true
 status: "Domain modeling guide"

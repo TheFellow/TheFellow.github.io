@@ -6,11 +6,12 @@ human-facing Jekyll site and the generated Markdown site for LLM consumption.
 
 ## Sources and generated files
 
-- Edit project commentary in `_projects/`, long-form guides in `_guides/`,
-  dated notes in `_posts/`, and standalone pages in `_site_pages/`.
+- Edit project commentary in `_projects/`, long-form articles in `_guides/`,
+  ordered reading paths in `_reading_series/`, dated notes in `_posts/`, and standalone
+  pages in `_site_pages/`.
 - Edit top-level human navigation in `_data/navigation.yml`.
-- Treat `index.md`, `projects.md`, `guides.md`, `notes.md`, `resume.md`,
-  `404.html.md`, the `projects/`, `guides/`, and `notes/` Markdown trees,
+- Treat `index.md`, `projects.md`, `articles.md`, `notes.md`, `resume.md`,
+  `404.html.md`, the `projects/`, `articles/`, and `notes/` Markdown trees,
   `llms.txt`, and `llms-full.txt` as generated output. Do not edit them by hand.
 - After changing authored content or the generator, run
   `uv run scripts/generate_llm_content.py` and commit every resulting change.

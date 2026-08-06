@@ -1,15 +1,20 @@
 ---
 title: "Bespoke Views over a Shared Application Boundary"
 date: 2026-08-01
-last_modified_at: 2026-08-02
+last_modified_at: 2026-08-06 12:00:00 -0700
 excerpt: "What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model."
-permalink: /guides/bespoke-views-over-a-shared-application-boundary/
+permalink: /articles/bespoke-views-over-a-shared-application-boundary/
+redirect_from: /guides/bespoke-views-over-a-shared-application-boundary/
+series: mixology
+series_order: 8
 order: 36
 status: "Implemented pattern"
 icon: "sitemap"
 accent: "#20c997"
 topics: ["Application boundary", "Three surfaces", "Presentation architecture"]
 ---
+
+{% include series-notice.html %}
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) now presents the same modular application through a command-line interface, a persistent Bubble Tea terminal interface, and a retained-mode Fyne desktop interface. Adding the third surface made one boundary especially clear: the durable reuse is the application behavior behind the views, not a view model stretched across every presentation technology.
 
