@@ -1,9 +1,9 @@
 \documentclass[tikz,border=12pt]{standalone}
 \usetikzlibrary{arrows.meta,positioning}
-\definecolor{pink}{HTML}{F72585}\definecolor{blue}{HTML}{228BE6}\definecolor{green}{HTML}{2F9E44}\definecolor{ink}{HTML}{343A40}
+\definecolor{pink}{HTML}{F72585}\definecolor{blue}{HTML}{4DABF7}\definecolor{green}{HTML}{51CF66}\definecolor{ink}{HTML}{E9ECEF}\definecolor{panel}{HTML}{211C1D}
 \begin{document}
-\begin{tikzpicture}[dir/.style={rounded corners=3pt,draw=blue,fill=blue!7,very thick,minimum width=1.8cm,minimum height=.75cm,font=\ttfamily},mount/.style={dir,draw=green,fill=green!8},edge/.style={-{Latex[length=2mm]},ink!55,thick}]
- \node[dir,draw=pink,fill=pink!7] (root) {/};
+\begin{tikzpicture}[text=ink,dir/.style={rounded corners=3pt,draw=blue,fill=panel,very thick,minimum width=1.8cm,minimum height=.75cm,font=\ttfamily},mount/.style={dir,draw=green},edge/.style={-{Latex[length=2mm]},ink!55,thick}]
+ \node[dir,draw=pink] (root) {/};
  \node[dir,below left=1.2cm and 4.4cm of root] (etc) {/etc};
  \node[dir,right=1cm of etc] (home) {/home};
  \node[dir,right=1cm of home] (var) {/var};
@@ -13,8 +13,8 @@
  \node[dir,below=.95cm of home] (ryan) {/home/ryan}; \draw[edge] (home)--(ryan);
  \node[mount,below=.95cm of media] (usb) {/media/ryan/WORK}; \draw[edge,green] (media)--(usb);
  \node[mount,below=.95cm of mnt] (c) {/mnt/c}; \draw[edge,green] (mnt)--(c);
- \node[align=center,font=\scriptsize,text=green!60!black,below=.35cm of usb] {a removable filesystem\\attached inside the same tree};
- \node[align=center,font=\scriptsize,text=green!60!black,below=.35cm of c] {the Windows C: drive\\as seen from WSL};
+ \node[align=center,font=\scriptsize,text=green,below=.35cm of usb] {a removable filesystem\\attached inside the same tree};
+ \node[align=center,font=\scriptsize,text=green,below=.35cm of c] {the Windows C: drive\\as seen from WSL};
  \node[font=\bfseries\large,text=ink,above=.55cm of root] {One namespace; filesystems attach at mount points};
 \end{tikzpicture}
 \end{document}

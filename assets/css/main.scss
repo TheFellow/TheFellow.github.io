@@ -125,7 +125,6 @@
   background: transparent;
   border-radius: 0.75rem;
   display: block;
-  filter: invert(1) hue-rotate(180deg);
   width: 100%;
 }
 
@@ -154,7 +153,6 @@
 
 .fluid-gallery img {
   aspect-ratio: 20 / 9;
-  filter: none;
   object-fit: cover;
 }
 
