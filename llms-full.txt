@@ -3735,6 +3735,11 @@ That ordering matters: tests establish what the implementation must do, and benc
 
 ## Conformance is the shared language
 
+<figure class="article-figure article-figure--compact">
+  <img src="/assets/images/notes/cedar/conformance.png" alt="The Cedar conformance corpus feeds the Rust reference implementation, cedar-go, and cedar-dotnet. Their language APIs differ while authorization semantics must agree.">
+  <figcaption>The shared corpus defines portable behavior without requiring the Rust, Go, and .NET implementations to share an API shape.</figcaption>
+</figure>
+
 Source code is a useful reference, but tests are a better agreement. At the time of writing, cedar-dotnet runs 124,000 cases from the official Cedar conformance corpus alongside 2,462 project tests: 126,462 tests in total. The corpus is also exercised by cedar-go and the Rust reference implementation.
 
 This gives the port an external definition of success. Parser choices, AST shapes, and public APIs can remain idiomatic to C#, while authorization and validation behavior are checked against the same scenarios as the other implementations.

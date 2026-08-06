@@ -1,7 +1,7 @@
 ---
 title: "Porting Cedar from Go to .NET: Semantics Before Syntax"
 date: 2026-03-27 12:00:00 -0700
-last_modified_at: 2026-08-01 12:00:00 -0700
+last_modified_at: 2026-08-06 17:20:00 -0700
 permalink: /notes/porting-cedar-semantics-from-go-to-dotnet/
 excerpt: "How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast."
 icon: "shield"
@@ -27,6 +27,11 @@ Only after that behavior is pinned down by tests does optimization make sense. B
 That ordering matters: tests establish what the implementation must do, and benchmarks show where it can do the same work more efficiently. Performance work is valuable only while the behavioral contract remains intact.
 
 ## Conformance is the shared language
+
+<figure class="article-figure article-figure--compact">
+  <img src="{{ '/assets/images/notes/cedar/conformance.png' | relative_url }}" alt="The Cedar conformance corpus feeds the Rust reference implementation, cedar-go, and cedar-dotnet. Their language APIs differ while authorization semantics must agree.">
+  <figcaption>The shared corpus defines portable behavior without requiring the Rust, Go, and .NET implementations to share an API shape.</figcaption>
+</figure>
 
 Source code is a useful reference, but tests are a better agreement. At the time of writing, cedar-dotnet runs 124,000 cases from the official Cedar conformance corpus alongside 2,462 project tests: 126,462 tests in total. The corpus is also exercised by cedar-go and the Rust reference implementation.
 
