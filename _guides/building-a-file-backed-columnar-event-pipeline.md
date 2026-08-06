@@ -1,7 +1,7 @@
 ---
 title: "Building a File-Backed Columnar Event Pipeline"
 date: 2026-02-07
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-06 16:40:00 -0700
 excerpt: "How immutable Parquet batches, snapshot metadata, DuckDB, Arrow, and Protobuf form a columnar event path from storage to results."
 permalink: /articles/building-a-file-backed-columnar-event-pipeline/
 redirect_from: /guides/building-a-file-backed-columnar-event-pipeline/
@@ -45,6 +45,11 @@ This is a starting shape rather than a fixed schema. Fields used frequently for 
 A stable `event_id`, or another source-defined identity, gives retries something concrete to preserve. It does not require every query to deduplicate records, but it makes duplicate detection and repair possible when the delivery contract permits replay.
 
 ## Treat the visible dataset as a snapshot
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/articles/columnar-pipeline/snapshot-flow.png' | relative_url }}" alt="Events are written into immutable Parquet batches, selected by a snapshot manifest, queried by DuckDB, and returned as Arrow columns. Compaction creates a replacement file before atomically changing the manifest.">
+  <figcaption>The manifest is the visibility boundary. Writers and compactors finish files first, then publish one atomic change to the set DuckDB may query.</figcaption>
+</figure>
 
 The logical data flow has two related paths: data files carry records, while metadata decides which data files readers may see.
 

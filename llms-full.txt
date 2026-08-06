@@ -397,6 +397,11 @@ A stable `event_id`, or another source-defined identity, gives retries something
 
 ## Treat the visible dataset as a snapshot
 
+<figure class="article-figure">
+  <img src="/assets/images/articles/columnar-pipeline/snapshot-flow.png" alt="Events are written into immutable Parquet batches, selected by a snapshot manifest, queried by DuckDB, and returned as Arrow columns. Compaction creates a replacement file before atomically changing the manifest.">
+  <figcaption>The manifest is the visibility boundary. Writers and compactors finish files first, then publish one atomic change to the set DuckDB may query.</figcaption>
+</figure>
+
 The logical data flow has two related paths: data files carry records, while metadata decides which data files readers may see.
 
 ```text
