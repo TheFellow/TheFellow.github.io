@@ -30,6 +30,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building a File-Backed Columnar Event Pipeline](https://thefellow.github.io/guides/building-a-file-backed-columnar-event-pipeline.md): Immutable Parquet snapshots support direct analytical queries and typed results.
 - [Building an Application TUI Toolkit](https://thefellow.github.io/guides/building-an-application-tui-toolkit.md): How Mixology adapts MVVM and Elm ideas into an application toolkit.
 - [Building High-Quality Software](https://thefellow.github.io/guides/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
+- [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/guides/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/guides/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
 - [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/guides/making-illegal-states-unrepresentable-in-go.md): F# techniques make Go domain constraints explicit and enforceable.
 - [Preserving Truth Through Operational Degradation](https://thefellow.github.io/guides/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.
