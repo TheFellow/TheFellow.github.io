@@ -1,7 +1,7 @@
 ---
 title: "Preserving Truth Through Operational Degradation"
 date: 2026-08-05
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-06 16:50:00 -0700
 excerpt: "How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context."
 permalink: /articles/preserving-truth-through-operational-degradation/
 redirect_from: /guides/preserving-truth-through-operational-degradation/
@@ -71,6 +71,11 @@ That asymmetry is important. If the application silently changed an existing ord
 Audit follows the same rule. The retirement entry touches the retired ingredient, the selected replacement, and every recipe or order changed by handlers. A reviewer can connect one authorized decision with its complete transactional blast radius without pretending that the event erased earlier facts.
 
 ## Distinguish degradation from promotion
+
+<figure class="article-figure article-figure--compact">
+  <img src="{{ '/assets/images/articles/degradation/degradation-vs-promotion.png' | relative_url }}" alt="A published serviceable menu may become published but degraded while retaining history. A draft with the same blocker cannot be promoted until readiness is restored.">
+  <figcaption>An existing published state may degrade honestly. A draft with a known blocker cannot use that tolerance as permission to become published.</figcaption>
+</figure>
 
 An already-published menu can become degraded after an ingredient retires or inventory changes. Automatically unpublishing it would hide what operators and customers were already relying on. Automatically deleting its drinks would destroy the context needed to repair it.
 
