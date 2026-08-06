@@ -128,6 +128,11 @@
   width: 100%;
 }
 
+.article-figure--compact img {
+  margin-inline: auto;
+  max-width: 54rem;
+}
+
 .article-figure figcaption {
   color: mix($text-color, $background-color, 72%);
   font-size: 0.75rem;

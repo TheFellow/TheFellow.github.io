@@ -3580,6 +3580,11 @@ The [complete F# gist](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc0
 
 ## Build the multiplication table
 
+<figure class="article-figure article-figure--compact">
+  <img src="/assets/images/notes/octonions/fano-plane.png" alt="A Fano plane labeled e1 through e7 beside the seven oriented triples used to define octonion multiplication.">
+  <figcaption>The Fano plane compresses the multiplication table into seven lines. Follow an oriented triple for a positive product; reverse it to change the sign.</figcaption>
+</figure>
+
 An octonion has one real component and seven imaginary components. The gist stores those eight coefficients in an array and derives multiplication from seven oriented triples in the Fano plane:
 
 ```fsharp
