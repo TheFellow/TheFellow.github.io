@@ -2,8 +2,9 @@ name: LLM content
 
 on:
   pull_request:
-  push:
-    branches: [main]
+
+permissions:
+  contents: read
 
 jobs:
   verify:
