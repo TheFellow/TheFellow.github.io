@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-05 12:00:00 -0700
+last_modified_at: 2026-08-05 18:00:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -26,7 +26,9 @@ go-modular-monolith, also called Mixology, is an opinionated reference applicati
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
 
-Deleting an ingredient makes those claims concrete. The command can affect inventory, every drink that uses the ingredient, and every menu carrying those drinks. Independent event handlers prepare their work before any of them mutate state, then apply the complete change inside the originating transaction. If one handler fails, the ingredient and all of its dependent state remain untouched. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
+Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or it may admit that no replacement is known. Independent event handlers prepare their work before any of them mutate state, then update inventory, recipes, and historical orders inside the originating transaction. Menu readiness reflects the resulting state without destructively changing menu membership. A replacement rewrites future recipes. An unresolved required ingredient moves its drinks to `review_required`, blocks affected orders, and leaves published menus visible in a degraded state. If one handler fails, the complete operation rolls back. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
+
+That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI all expose the same retirement choices and readiness decision, while their interaction and asynchronous loading remain native to each surface.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
