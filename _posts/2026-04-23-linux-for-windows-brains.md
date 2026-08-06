@@ -1,7 +1,7 @@
 ---
 title: "Linux for Windows Brains"
 date: 2026-04-23 11:57:11 -0700
-last_modified_at: 2026-08-02 17:05:14 -0700
+last_modified_at: 2026-08-06 17:10:00 -0700
 permalink: /notes/linux-for-windows-brains/
 excerpt: "A practical translation from familiar Windows concepts to Linux filesystems, permissions, shells, services, SSH, and containers."
 icon: "storage"
@@ -15,6 +15,11 @@ I learned computers through Windows. Drive letters, executable extensions, Task 
 This is the translation I wanted when I started spending more time in Linux terminals. It is not a command catalog. It follows a file from disk, through permissions and a shell, into a running process, then applies the same model to remote machines and containers.
 
 ## One filesystem tree, with other filesystems attached
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/notes/linux/filesystem-tree.png' | relative_url }}" alt="A Linux filesystem tree rooted at slash, with system directories, a home directory, a removable filesystem mounted below media, and the Windows C drive mounted below mnt in WSL.">
+  <figcaption>Linux presents one path namespace. Other filesystems become reachable by attaching their roots at directories within that tree.</figcaption>
+</figure>
 
 Windows presents storage as several roots such as `C:\` and `D:\`. Linux presents one tree rooted at `/`. A disk, USB device, or network share becomes accessible when a filesystem is mounted at some directory in that tree.
 
