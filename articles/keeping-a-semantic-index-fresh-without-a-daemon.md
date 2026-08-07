@@ -100,6 +100,23 @@ validate complete result
 
 Publishing the manifest first would invert that guarantee. A crash could leave a current-looking manifest beside an incomplete graph, which is exactly the silent stale-answer state the lifecycle is designed to prevent.
 
+## Measure the complete path
+
+The bounded publication path came from a real failure, not an estimated future scale. Weave's first [repository-scale baseline](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-06-repositories.md) indexed Mixology, arch-lint, cedar-dotnet, and FKYeah in isolated local clones. The original Mixology cold index exceeded the harness's 300-second bound. Its Go graph contained 165 compilation units and 433,523 document, symbol, occurrence, and edge facts, enough for a single storage transaction to consume multiple gigabytes of memory and miss the same bound.
+
+Three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs.
+
+The adjacent measured run made the result concrete:
+
+| Repository | Cold index | Current empty lookup | Graph database |
+| --- | ---: | ---: | ---: |
+| go-modular-monolith | 37.785 s | 0.536–0.610 s | 1.11 GB |
+| arch-lint | 2.610 s | 0.531–0.549 s | 16.8 MB |
+
+The current lookup includes Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. The remaining size is still large enough to guide the next storage work rather than being presented as finished.
+
+The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the current .NET 9 adapter host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
+
 ## Derived state follows the worktree
 
 The detailed graph and manifest live at the location returned by `git rev-parse --git-path weave`, normally `.git/weave`. Git resolves a distinct path for each linked worktree, so a dirty overlay in one checkout does not claim freshness for another. The cross-repository catalog lives in the platform user data directory because it describes explicitly registered local worktrees rather than one repository snapshot.
