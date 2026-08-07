@@ -1,7 +1,7 @@
 ---
 title: "Notes"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-02 17:07:35 -0700
+last_modified_at: 2026-08-06 18:00:00 -0700
 permalink: /notes/
 layout: single
 author_profile: true
@@ -14,7 +14,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 <div class="feature-tiles">
   {% for post in site.posts %}
     {% assign tile_position = forloop.index0 | modulo: 5 %}
-    <a class="feature-tile{% if tile_position == 0 %} feature-tile--featured{% endif %}" href="{{ post.url | relative_url }}" style="--feature-accent: #f783ac;">
+    <a class="feature-tile{% if tile_position == 0 %} feature-tile--featured{% endif %}" href="{{ post.url | relative_url }}" style="--feature-accent: {{ post.accent | default: '#f783ac' }};">
       <header class="feature-tile__header">
         <span class="feature-tile__icon">{% include feature-icon.html name=post.icon %}</span>
         <span>

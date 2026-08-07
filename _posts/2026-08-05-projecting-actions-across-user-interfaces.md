@@ -7,6 +7,7 @@ series: mixology
 series_order: 12
 excerpt: "How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views."
 icon: "modules"
+accent: "#74c0fc"
 tags: ["Go", "Cedar", "Authorization", "GUI", "TUI", "Architecture"]
 ---
 

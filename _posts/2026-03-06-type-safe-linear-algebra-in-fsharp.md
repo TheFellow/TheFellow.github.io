@@ -5,6 +5,7 @@ last_modified_at: 2026-08-06 16:20:00 -0700
 permalink: /notes/type-safe-linear-algebra-in-fsharp/
 excerpt: "Using phantom dimensions and F# operators to make invalid matrix arithmetic fail at compile time."
 icon: "matrix"
+accent: "#22b8cf"
 tags: ["F#", "Linear Algebra", "Type Systems"]
 math: true
 ---
