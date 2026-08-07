@@ -1,7 +1,7 @@
 ---
 title: "Making Language Support a Process Contract"
 date: 2026-08-07 01:02:00 -0700
-last_modified_at: 2026-08-07 01:02:00 -0700
+last_modified_at: 2026-08-07 01:15:00 -0700
 excerpt: "How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication."
 permalink: /articles/making-language-support-a-process-contract/
 series: weave
@@ -163,6 +163,8 @@ A shared wire shape does not make every language equally static. It gives each a
 
 The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, and calls, plus compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# definitions and references, while F# call edges remain absent until the compiler-backed implementation can support them. Omitting an edge is more accurate than filling the shape with a guess.
 
+Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
+
 Python makes the distinction sharper. CPython's `symtable` can establish that a name is a local, global, free, or nonlocal lexical binding slot. It cannot establish which object that slot will hold when a call executes. The adapter therefore emits:
 
 | Python fact | Evidence |
@@ -182,13 +184,17 @@ Weave now treats `Symbol.Definition` as the canonical display anchor and retains
 
 That is the architectural test an external adapter should create. It may extend the fact vocabulary or reveal a missing invariant, but the resulting semantics belong in the shared graph and protocol. Presentation code should not inspect `provider == "weave-python"` to decide what a definition means.
 
-## Distinguish automatic providers from explicit imports
+## Make automatic authority an explicit choice
 
-The current core automatically trusts only built-in providers and known adapter profiles: `weave-dotnet`, `weave-python`, or explicit environment paths for those names. Their input profiles, permissions, version probes, and freshness behavior are part of the application composition.
+The core includes conservative automatic profiles for its known adapters. A third-party language can join the same freshness path without adding its executable name or file extensions to Go. The user selects a strict [`weave.adapters/v1` registry](https://github.com/TheFellow/weave/blob/main/internal/adapter/registry.go) with `WEAVE_ADAPTER_CONFIG`; each registration declares a provider name, a literal argv array, Git-visible input extensions and filenames, explicit permissions, and an optional timeout.
+
+The registry is never discovered inside the repository or inferred by scanning `PATH` for a naming convention. Weave resolves the selected file to an absolute path; selecting it is the trust decision. Bare command names receive normal platform executable lookup only after that decision, arguments never pass through a shell, and permissions remain denied unless the registration grants them. The normalized registration and registry path participate in provider identity, so changing execution policy invalidates the appropriate inventory.
+
+That configuration also fails closed. Unknown fields, duplicate or reserved provider names, unsafe inputs, an unavailable command, a capability-name mismatch, or an invalid selected file prevent automatic freshness from claiming a current graph. `weave adapters doctor` makes the same configuration and protocol checks visible before a query needs them.
 
 An arbitrary executable can already be run with `weave index --adapter PATH`. That explicit command validates and atomically publishes its inventory, but it does not yet teach future queries how to rediscover and rerun the executable. Its facts are an imported snapshot until the user runs it again. Automatic discovery of arbitrary PATH entries would need an installation registry and trust policy, not a broader filename convention.
 
-This distinction keeps the extension point open without silently executing a newly installed program inside every repository. The protocol is public; automatic authority remains explicit.
+This distinction keeps the extension point open without silently executing a newly installed program inside every repository. The protocol is public; automatic authority remains a user-controlled policy.
 
 ## Build against the bytes
 
