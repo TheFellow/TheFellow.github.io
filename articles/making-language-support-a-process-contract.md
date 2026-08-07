@@ -69,11 +69,18 @@ It writes one strict JSON document and exits. The document names supported proto
   "requires": {
     "executables": ["python>=3.9", "git"],
     "may_run_build_tool": false
+  },
+  "claims": {
+    "inputs": {
+      "extensions": [".py", ".pyi"],
+      "filenames": ["pyproject.toml"]
+    },
+    "evidence": ["declared", "exact", "syntactic"]
   }
 }
 ```
 
-Provider identity establishes provenance and inventory ownership; it does not select special behavior in the parser. The core checks capabilities instead. The current `full` refresh mode promises a complete provider-owned inventory on every run. A future `changed-units` mode will need a stronger incremental contract rather than being inferred from a provider name.
+Provider identity establishes provenance and inventory ownership; it does not select special behavior in the parser. The core checks capabilities instead. Input and evidence claims make applicability routable before execution rather than hiding extension policy behind an executable name. The current `full` refresh mode promises a complete provider-owned inventory on every run. A future `changed-units` mode will need a stronger incremental contract rather than being inferred from a provider name.
 
 Capability discovery also participates in freshness for runtime-backed automatic adapters. `weave-python` includes its implementation, interpreter version, and code digest in the reported provider version. Installing a different Python patch release therefore invalidates the cached inventory even when the repository has not changed.
 
@@ -198,15 +205,15 @@ Owning an edge does not imply owning either endpoint. A precise compiler relatio
 
 ## Make automatic authority an explicit choice
 
-The core includes conservative automatic profiles for known adapters whose query-time permissions are bounded. TypeScript activates only for a root `tsconfig.json` or `jsconfig.json` and fingerprints every Git-visible input rather than guessing through a monorepo. A third-party language or a more powerful JVM build can join the same freshness path without adding its executable name or file extensions to Go. The user selects a strict [`weave.adapters/v1` registry](https://github.com/TheFellow/weave/blob/main/internal/adapter/registry.go) with `WEAVE_ADAPTER_CONFIG`; each registration declares a provider name, a literal argv array, Git-visible input extensions and filenames, explicit permissions, and an optional timeout.
+The core includes conservative automatic profiles for known adapters whose query-time permissions are bounded. TypeScript activates only for a root `tsconfig.json` or `jsconfig.json` and fingerprints every Git-visible input rather than guessing through a monorepo. A third-party language or a more powerful JVM build can join the same freshness path without adding its executable name or file extensions to Go.
 
-The registry is never discovered inside the repository or inferred by scanning `PATH` for a naming convention. Weave resolves the selected file to an absolute path; selecting it is the trust decision. Bare command names receive normal platform executable lookup only after that decision, arguments never pass through a shell, and permissions remain denied unless the registration grants them. The normalized registration and registry path participate in provider identity, so changing execution policy invalidates the appropriate inventory.
+There are three explicit routes. `weave adapters install` copies a user-selected local executable into private platform state and pins both its artifact bytes and normalized capability document. Known companion environment variables preserve deliberate executable overrides with fixed compatibility claims. `WEAVE_ADAPTER_CONFIG` selects a strict [`weave.adapters/v1` registry](https://github.com/TheFellow/weave/blob/main/internal/adapter/registry.go) whose entries declare a literal argv array, capability digest, input and evidence claims, permissions, and timeout. Same-name precedence is registry, environment, then managed state; overlapping claims across different providers fail instead of becoming an ordering rule.
 
-That configuration also fails closed. Unknown fields, duplicate or reserved provider names, unsafe inputs, an unavailable command, a capability-name mismatch, or an invalid selected file prevent automatic freshness from claiming a current graph. `weave adapters doctor` makes the same configuration and protocol checks visible before a query needs them.
+None of these routes is discovered inside the repository or inferred by scanning `PATH`. Arguments never pass through a shell, and permissions remain denied unless the installation or registration grants them. Concrete Git-visible paths expose precise ownership conflicts before execution. A broad syntactic fallback receives an exact `input_paths` allowlist containing only paths not claimed by the built-in Go provider or a precise external adapter; the host rejects fallback documents outside it. The artifact and capability pins participate in freshness, so changing executable bytes, provider identity, public claims, or execution policy prevents the previous inventory from being called current.
 
-An arbitrary executable can already be run with `weave index --adapter PATH`. That explicit command validates and atomically publishes its inventory, but it does not yet teach future queries how to rediscover and rerun the executable. Its facts are an imported snapshot until the user runs it again. Automatic discovery of arbitrary PATH entries would need an installation registry and trust policy, not a broader filename convention.
+That policy also stays inspectable. `weave adapters list` reads metadata without executing adapters. `weave adapters doctor` verifies integrity and performs bounded capability negotiation without indexing. An arbitrary `weave index --adapter PATH` remains a deliberate snapshot import, while `weave adapters install PATH` is the separate action that grants reproducible automatic authority.
 
-This distinction keeps the extension point open without silently executing a newly installed program inside every repository. The protocol is public; automatic authority remains a user-controlled policy.
+[The managed lifecycle](/articles/managing-compiler-adapters-without-inventing-a-package-registry.md) keeps the extension point open without silently executing a newly available program in every repository. The protocol is public; automatic authority remains a user-controlled policy.
 
 ## Package the bridge without hiding the runtime
 
@@ -220,7 +227,7 @@ A tag starts with a private draft release. The workflow validates the exact loca
 
 ## Build against the bytes
 
-The checked-in [`protocol/adapter/v0`](https://github.com/TheFellow/weave/tree/main/protocol/adapter/v0) directory contains a capability document, index request, valid response stream, and deliberately truncated stream. Go contract tests decode those files through the same strict implementation used for real adapters.
+The checked-in [`protocol/adapter/v0`](https://github.com/TheFellow/weave/tree/main/protocol/adapter/v0) directory contains a capability document, index request, valid response stream, deliberately truncated stream, and a language-neutral conformance corpus. Go contract tests decode the base files through the same strict implementation used for real adapters, while `weave adapters conformance` exercises an opaque executable against a genuine caller-supplied fixture.
 
 An adapter author can work from that small surface:
 
@@ -228,16 +235,17 @@ An adapter author can work from that small surface:
 2. Implement `index --protocol weave.adapter/v0`, reading one request through EOF.
 3. Emit ordered unit frames and an exact terminal inventory on stdout.
 4. Send bounded operator context to stderr.
-5. Run the executable explicitly and inspect the normalized result.
+5. Run the executable explicitly, then run the black-box conformance suite.
 
 ```sh
 weave index --adapter ./my-adapter --json
+weave adapters conformance ./my-adapter --fixture ./my-fixture --json
 weave verify --json
 weave export --json
 ```
 
-No Go helper library is required for conformance. A generated binding or ecosystem SDK may reduce boilerplate later, but the bytes and behavior remain authoritative.
+The conformance runner checks describe negotiation, malformed and wrong-protocol rejection, a real fixture index, deterministic replay, host bounds, and process failure behavior. No Go helper library is required. A generated binding or ecosystem SDK may reduce boilerplate later, but the bytes and behavior remain authoritative.
 
-Version zero is intentionally experimental. Its newline JSON framing lets the fact model and failure contract evolve before compatibility is promised. A stable version one will require a checked-in language-neutral wire specification, compatibility rules, fixtures, and a reusable executable conformance suite, but it is not required to use protobuf merely because the process model resembles `protoc`. A persistent worker mode may eventually reduce compiler startup time, but one-shot execution remains the compatibility floor and correctness cannot depend on a resident process.
+Version zero is intentionally experimental. Its newline JSON framing lets the fact model and failure contract evolve before compatibility is promised. A stable version one will still require explicit compatibility rules and a durable wire specification, but it already has language-neutral fixtures and a reusable executable conformance suite. It is not required to use protobuf merely because the process model resembles `protoc`. A persistent worker mode may eventually reduce compiler startup time, but one-shot execution remains the compatibility floor and correctness cannot depend on a resident process.
 
 That leaves Weave with a narrow center. The core knows how to supervise evidence, validate it, keep it fresh, and query it. Each adapter knows how its language establishes that evidence. Adding a compiler no longer requires pretending every runtime belongs inside one program.
