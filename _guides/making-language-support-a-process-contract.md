@@ -1,7 +1,7 @@
 ---
 title: "Making Language Support a Process Contract"
 date: 2026-08-07 01:02:00 -0700
-last_modified_at: 2026-08-07 16:26:02 -0700
+last_modified_at: 2026-08-07 16:31:22 -0700
 excerpt: "How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication."
 permalink: /articles/making-language-support-a-process-contract/
 series: weave
@@ -235,7 +235,7 @@ The caches follow the same ownership rule as the graph. Go modules, Python packa
 
 The larger SCIP producers get a narrower cache. `scip-clang` and `scip-java` are already selected by checksum-pinned installer scripts, so their cache keys include the runner operating system, architecture, and installer-script digest. A hit avoids another download; a changed pin selects different bytes. Rust pins its cache action and lets pull requests restore while only `main` saves. `cargo package` writes into a runner-temporary target directory so its packaging output cannot enter the shared workspace cache. Gradle uses its open-source basic cache provider with the same write boundary. Neither path caches failed work or treats Weave's own workspace output as a reusable authority.
 
-The core semantic workflow may restore `.git/weave` by a content-derived key, but that index remains disposable. `weave ci index` still brings it current and `weave ci check` still verifies the graph and architecture policy. Credentials, mutable managed-adapter state, and checked-in declarations stay outside these caches. Runner conservation changes validation latency, not the evidence being validated.
+The core semantic workflow may restore `.git/weave` by a content-derived key, but that index remains disposable. `weave ci index` still brings it current and `weave ci check` still verifies the graph and architecture policy. SARIF and the deterministic JSON export are written under the runner's temporary directory and uploaded from there, so validation outputs cannot become new worktree inputs or perturb a later Git observation. Credentials, mutable managed-adapter state, and checked-in declarations stay outside these caches. Runner conservation changes validation latency, not the evidence being validated.
 
 ## Build against the bytes
 
