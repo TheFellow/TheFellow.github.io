@@ -1,7 +1,7 @@
 ---
 title: "Keeping a Semantic Index Fresh Without a Daemon"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-06 23:14:00 -0700
+last_modified_at: 2026-08-06 23:45:00 -0700
 excerpt: "How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence."
 permalink: /articles/keeping-a-semantic-index-fresh-without-a-daemon/
 series: weave
@@ -117,7 +117,9 @@ The adjacent measured run made the result concrete:
 
 The current lookup includes Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. The remaining size is still large enough to guide the next storage work rather than being presented as finished.
 
-The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the current .NET 9 adapter host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
+The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
+
+The FKYeah result also gave the next change a precise target. The adapter now runs on .NET 10, keeps the prebuilt reference outputs FSharp.Compiler.Service requires, and indexes dependents before referenced F# projects so design-time cleanup cannot remove a dependency output before its consumers have used it. A genuine FKYeah graph now completes. The Cedar timeout remains an honest limit of the current full-refresh adapter rather than being hidden behind partial facts.
 
 ## Derived state follows the worktree
 
