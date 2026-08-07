@@ -52,8 +52,8 @@
   <rect x="128" y="360" width="322" height="166" class="box" stroke="#f06595"/>
   <text x="289" y="405" text-anchor="middle" class="label">Refresh providers</text>
   <text x="289" y="440" text-anchor="middle" class="small">Workspace · Go · .NET · Python</text>
-  <text x="289" y="469" text-anchor="middle" class="small">Rust · C++ · declared bridges</text>
-  <text x="289" y="498" text-anchor="middle" class="tiny">registered providers own disjoint inventories</text>
+  <text x="289" y="469" text-anchor="middle" class="small">Rust · C++ · TypeScript · bridges</text>
+  <text x="289" y="498" text-anchor="middle" class="tiny">disjoint provider-owned inventories</text>
 
   <rect x="559" y="360" width="322" height="166" class="box" stroke="#f06595"/>
   <text x="720" y="405" text-anchor="middle" class="label">Validate and replace</text>
