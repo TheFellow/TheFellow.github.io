@@ -1,7 +1,7 @@
 ---
 title: "Composing Source-Rich Context Without a Second Index"
 date: 2026-08-07 11:25:00 -0700
-last_modified_at: 2026-08-07 11:25:00 -0700
+last_modified_at: 2026-08-07 11:28:00 -0700
 excerpt: "How Weave composes exact graph facts, current source excerpts, direct relationships, and repository provenance into one bounded dossier without adding embeddings or another store."
 permalink: /articles/composing-source-rich-context-without-a-second-index/
 series: weave

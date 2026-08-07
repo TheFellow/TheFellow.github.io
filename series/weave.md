@@ -8,11 +8,11 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 - **~2 words:** Weave series
 - **~8 words:** An ordered path through Weave's fresh compiler-backed semantic graph.
-- **Expanded:** An ordered path through Weave's Git-aware freshness, compiler-backed facts, inspectable graph, current source context, and architecture policy.
+- **Expanded:** An ordered path through Weave's Git-aware freshness, compiler-backed facts, inspectable graph, current source context, and exact federated caching.
 
 ## Full content
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through normalized evidence, cross-language bridges, graph inspection, current source context, repository federation, and architecture rules.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through normalized evidence, cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, and architecture rules.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
@@ -21,3 +21,4 @@ Weave turns language-native compiler facts and live Git state into a local seman
 2. **Article:** [Making Language Support a Process Contract](/articles/making-language-support-a-process-contract.md): How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication.
 3. **Article:** [Making a Semantic Graph Inspectable](/articles/making-a-semantic-graph-inspectable.md): How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model.
 4. **Article:** [Composing Source-Rich Context Without a Second Index](/articles/composing-source-rich-context-without-a-second-index.md): How Weave composes exact graph facts, current source excerpts, direct relationships, and repository provenance into one bounded dossier without adding embeddings or another store.
+5. **Article:** [Caching a Federated Graph Without Weakening Freshness](/articles/caching-a-federated-graph-without-weakening-freshness.md): How Weave accelerates machine-wide symbol and graph queries with an immutable hot projection keyed by exact worktree generations while keeping every repository authoritative.

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">Authoritative worktree generations select one immutable machine aggregate</title>
+  <desc id="desc">Selected worktrees refresh through their authoritative local indexes and emit deterministic generations. The complete sorted source set selects an immutable aggregate containing symbols, edges, tokens, and provenance. Exact hits serve hot queries; misses rebuild from authoritative databases; failures fall back to federation.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-pink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#f06595"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 24px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.pink{stroke:#f06595;stroke-width:5;fill:none;marker-end:url(#arrow-pink)}
+    </style>
+  </defs>
+  <rect width="1440" height="810" class="bg"/>
+  <text x="720" y="74" text-anchor="middle" class="title">A cache selected by authoritative generations</text>
+
+  <text x="52" y="146" class="lane">WORKTREE AUTHORITIES</text>
+  <rect x="52" y="174" width="318" height="118" class="box" stroke="#4dabf7"/>
+  <text x="211" y="216" text-anchor="middle" class="label">Repository A</text>
+  <text x="211" y="252" text-anchor="middle" class="small">refresh → generation A</text>
+  <rect x="52" y="326" width="318" height="118" class="box" stroke="#4dabf7"/>
+  <text x="211" y="368" text-anchor="middle" class="label">Repository B</text>
+  <text x="211" y="404" text-anchor="middle" class="small">refresh → generation B</text>
+  <rect x="52" y="478" width="318" height="118" class="box" stroke="#4dabf7"/>
+  <text x="211" y="520" text-anchor="middle" class="label">Repository C</text>
+  <text x="211" y="556" text-anchor="middle" class="small">refresh → generation C</text>
+
+  <path d="M370 233 H486" class="blue"/>
+  <path d="M370 385 H486" class="blue"/>
+  <path d="M370 537 H432 Q462 537 462 500 V423 Q462 393 492 393" class="blue"/>
+
+  <text x="486" y="146" class="lane">EXACT SOURCE SET</text>
+  <rect x="486" y="174" width="408" height="422" class="box" stroke="#51cf66"/>
+  <text x="690" y="222" text-anchor="middle" class="label">Canonical generation</text>
+  <text x="690" y="270" text-anchor="middle" class="small">catalog keys · repo identities</text>
+  <text x="690" y="310" text-anchor="middle" class="small">worktrees · database paths</text>
+  <text x="690" y="350" text-anchor="middle" class="small">manifest generations · schema</text>
+  <text x="690" y="402" text-anchor="middle" class="tiny">sort complete selected set</text>
+  <text x="690" y="434" text-anchor="middle" class="tiny">hash canonical projection</text>
+  <text x="690" y="486" text-anchor="middle" class="small">graph-&lt;digest&gt;.db</text>
+  <text x="690" y="530" text-anchor="middle" class="tiny">different source state</text>
+  <text x="690" y="560" text-anchor="middle" class="tiny">means a different filename</text>
+
+  <path d="M894 286 H1018" class="pink"/>
+  <path d="M894 486 H962 Q990 486 990 526 H1018" class="pink"/>
+
+  <text x="1018" y="146" class="lane">DISPOSABLE PROJECTION</text>
+  <rect x="1018" y="174" width="370" height="228" class="box" stroke="#f06595"/>
+  <text x="1203" y="220" text-anchor="middle" class="label">Immutable hot graph</text>
+  <text x="1203" y="264" text-anchor="middle" class="small">symbols · tokens · edges</text>
+  <text x="1203" y="302" text-anchor="middle" class="small">fact provenance</text>
+  <text x="1203" y="346" text-anchor="middle" class="tiny">exact hit or complete rebuild</text>
+  <text x="1203" y="374" text-anchor="middle" class="tiny">temporary file + build lock</text>
+
+  <rect x="1018" y="452" width="370" height="144" class="box" stroke="#b197fc"/>
+  <text x="1203" y="498" text-anchor="middle" class="label">Hot catalog queries</text>
+  <text x="1203" y="536" text-anchor="middle" class="small">search · graph · path · impact</text>
+  <text x="1203" y="566" text-anchor="middle" class="tiny">source-rich reads stay local</text>
+
+  <rect x="222" y="706" width="996" height="56" fill="#242021" stroke="#ff922b" stroke-width="3" rx="16"/>
+  <text x="720" y="741" text-anchor="middle" class="small">Miss or failure → authoritative federation, never an older generation</text>
+</svg>
