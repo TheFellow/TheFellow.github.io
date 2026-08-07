@@ -1,7 +1,7 @@
 ---
 title: "Making Language Support a Process Contract"
 date: 2026-08-07 01:02:00 -0700
-last_modified_at: 2026-08-07 15:35:33 -0700
+last_modified_at: 2026-08-07 15:53:48 -0700
 excerpt: "How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication."
 permalink: /articles/making-language-support-a-process-contract/
 series: weave
@@ -226,6 +226,16 @@ The other runtimes keep their native delivery shapes. .NET uses self-contained c
 Release construction is another validated boundary. GoReleaser derives binary and archive timestamps from the commit, emits an SPDX JSON SBOM beside every core and bridge archive, and hashes the archives, SBOMs, .NET companions, and Python wheel into one SHA-256 inventory. A repository-owned verifier reads GoReleaser's artifact manifest, inspects archives without extracting them, rejects unsafe or unexpected paths and modes, checks the complete six-platform matrix and SPDX document shape, and recomputes every listed digest.
 
 A tag starts with a private draft release. The workflow validates the exact local artifacts, uses GitHub's keyless provenance to attest every checksum-listed subject, and only then makes the draft public. These early binaries remain explicitly unsigned at the operating-system layer. Provenance does not substitute for Apple notarization or Windows code signing, and package-manager distribution can wait until those platform commitments are deliberate.
+
+## Cache dependencies without caching authority
+
+An open process boundary creates a wide validation matrix. Every bridge has its own runtime, producer, operating-system coverage, and real indexing smoke test. Weave keeps path filters around those workflows so an unrelated change does not start them, then gives each workflow and pull request or ref its own concurrency group. A newer commit cancels only the obsolete run for that boundary. Another pull request remains independent.
+
+The caches follow the same ownership rule as the graph. Go modules, Python packages, npm packages, NuGet packages, Gradle dependencies, and Cargo dependencies are replaceable inputs. They can be restored from ecosystem-aware caches without becoming declarations about what Weave supports. The .NET workflows commit `packages*.lock.json`, place NuGet packages inside the workspace, restore the solution, fixtures, package build, and release build in locked mode, then build without restoring again. A test module initializer registers MSBuild before FSharp.Compiler.Service or compiler test code can be loaded by the JIT, keeping that cached restore compatible with deterministic compiler startup.
+
+The larger SCIP producers get a narrower cache. `scip-clang` and `scip-java` are already selected by checksum-pinned installer scripts, so their cache keys include the runner operating system, architecture, and installer-script digest. A hit avoids another download; a changed pin selects different bytes. Rust pins its cache action and lets pull requests restore while only `main` saves. Gradle uses its open-source basic cache provider with the same write boundary. Neither path caches failed work or treats Weave's own workspace output as a reusable authority.
+
+The core semantic workflow may restore `.git/weave` by a content-derived key, but that index remains disposable. `weave ci index` still brings it current and `weave ci check` still verifies the graph and architecture policy. Credentials, mutable managed-adapter state, and checked-in declarations stay outside these caches. Runner conservation changes validation latency, not the evidence being validated.
 
 ## Build against the bytes
 

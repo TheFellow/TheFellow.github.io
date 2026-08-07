@@ -61,6 +61,8 @@ The same measurement kept the .NET boundary honest. A large Cedar solution excee
 
 The first tagged release is still ahead; its workflow is already shaped around checksummed core archives, a portable bundle for the pure-Go C++, TypeScript, JVM, and Universal Ctags bridges, same-version .NET adapter artifacts, and an independently installable Python wheel. Commit-derived timestamps, per-archive SPDX SBOMs, an archive allowlist validator, and one SHA-256 inventory make the candidate reproducible and inspectable before publication. A tag first creates a private draft, then publishes it only after the exact artifacts pass validation and receive GitHub build provenance. The bridge bundle does not hide its external compiler or runtime requirements, Rust remains separate until its native target matrix is reproducible, and the prerelease executables remain explicitly unsigned by Apple or Windows.
 
+That validation matrix now conserves runners without relaxing its boundaries. Path filters avoid unrelated adapter jobs, and workflow-plus-PR-or-ref concurrency cancels superseded runs without coupling independent changes. Ecosystem caches follow lockfiles and checksum-pinned installer scripts; .NET restores are locked, and Rust and Gradle cache writes are restricted to `main`. The semantic index cache remains derived and content-keyed, then passes through `weave ci index` and `weave ci check` before use. Credentials, mutable adapter state, and authoritative source declarations are never cache payloads.
+
 ### Why it is worth exploring
 
 - It makes freshness part of every read instead of depending on a daemon or a remembered indexing step.
