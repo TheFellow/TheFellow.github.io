@@ -51,7 +51,7 @@
 
   <rect x="128" y="360" width="322" height="166" class="box" stroke="#f06595"/>
   <text x="289" y="405" text-anchor="middle" class="label">Refresh providers</text>
-  <text x="289" y="440" text-anchor="middle" class="small">Go · C# / F#</text>
+  <text x="289" y="440" text-anchor="middle" class="small">Go · C# / F# · Python</text>
   <text x="289" y="469" text-anchor="middle" class="small">declared bridges</text>
   <text x="289" y="498" text-anchor="middle" class="tiny">disjoint owned inventories</text>
 
