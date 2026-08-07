@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">One bounded semantic graph query feeds three presentations</title>
+  <desc id="desc">Compiler, workspace, and authored relationship providers feed one normalized graph. A focused bounded graph query emits deterministic DOT, versioned JSON, or an animated loopback explorer while preserving identities, providers, evidence, and truncation.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#b197fc"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 25px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.purple{stroke:#b197fc;stroke-width:5;fill:none;marker-end:url(#arrow-purple)}
+    </style>
+  </defs>
+  <rect width="1440" height="810" class="bg"/>
+  <text x="720" y="74" text-anchor="middle" class="title">One bounded graph, three presentations</text>
+
+  <text x="52" y="146" class="lane">EVIDENCE PROVIDERS</text>
+  <rect x="52" y="174" width="310" height="142" class="box" stroke="#4dabf7"/>
+  <text x="207" y="220" text-anchor="middle" class="label">Indexed facts</text>
+  <text x="207" y="256" text-anchor="middle" class="small">compilers · workspace</text>
+  <text x="207" y="286" text-anchor="middle" class="small">generated bridges</text>
+
+  <rect x="52" y="376" width="310" height="142" class="box" stroke="#f06595"/>
+  <text x="207" y="422" text-anchor="middle" class="label">Authored context</text>
+  <text x="207" y="458" text-anchor="middle" class="small">weave links add</text>
+  <text x="207" y="488" text-anchor="middle" class="small">exact stored endpoints</text>
+
+  <path d="M362 245 H470" class="blue"/>
+  <path d="M362 447 H414 Q450 447 450 411 V347 Q450 311 486 311" class="blue"/>
+
+  <text x="486" y="146" class="lane">APPLICATION QUERY</text>
+  <rect x="486" y="174" width="420" height="344" class="box" stroke="#b197fc"/>
+  <text x="696" y="224" text-anchor="middle" class="label">weave graph TARGET</text>
+  <text x="696" y="269" text-anchor="middle" class="small">resolve one exact focus</text>
+  <text x="696" y="309" text-anchor="middle" class="small">incoming · outgoing · both</text>
+  <text x="696" y="349" text-anchor="middle" class="small">depth · node · edge budgets</text>
+  <text x="696" y="389" text-anchor="middle" class="small">local or catalog scope</text>
+  <text x="696" y="440" text-anchor="middle" class="tiny">freshness before every read</text>
+  <text x="696" y="472" text-anchor="middle" class="tiny">explicit truncation when bounded</text>
+
+  <path d="M906 247 H1018" class="purple"/>
+  <path d="M906 346 H1018" class="purple"/>
+  <path d="M906 445 H1018" class="purple"/>
+
+  <text x="1018" y="146" class="lane">PRESENTATIONS</text>
+  <rect x="1018" y="174" width="370" height="142" class="box" stroke="#51cf66"/>
+  <text x="1203" y="220" text-anchor="middle" class="label">Deterministic DOT</text>
+  <text x="1203" y="256" text-anchor="middle" class="small">readable labels · exact metadata</text>
+  <text x="1203" y="286" text-anchor="middle" class="tiny">renderer optional</text>
+
+  <rect x="1018" y="346" width="370" height="142" class="box" stroke="#4dabf7"/>
+  <text x="1203" y="392" text-anchor="middle" class="label">Versioned JSON</text>
+  <text x="1203" y="428" text-anchor="middle" class="small">nodes · edges · provenance</text>
+  <text x="1203" y="458" text-anchor="middle" class="tiny">agent-readable evidence</text>
+
+  <rect x="1018" y="518" width="370" height="142" class="box" stroke="#f06595"/>
+  <text x="1203" y="564" text-anchor="middle" class="label">Local explorer</text>
+  <text x="1203" y="600" text-anchor="middle" class="small">click · filter · pan · zoom</text>
+  <text x="1203" y="630" text-anchor="middle" class="tiny">embedded assets · loopback only</text>
+  <path d="M906 445 H952 Q986 445 986 518 V589 H1018" class="purple"/>
+
+  <rect x="230" y="706" width="980" height="56" fill="#242021" stroke="#51cf66" stroke-width="3" rx="16"/>
+  <text x="720" y="741" text-anchor="middle" class="small">Every surface retains identity · provider · evidence · bounds</text>
+</svg>
