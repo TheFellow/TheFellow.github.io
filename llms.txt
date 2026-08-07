@@ -32,6 +32,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building a File-Backed Columnar Event Pipeline](https://thefellow.github.io/articles/building-a-file-backed-columnar-event-pipeline.md): Immutable Parquet snapshots support direct analytical queries and typed results.
 - [Building an Application TUI Toolkit](https://thefellow.github.io/articles/building-an-application-tui-toolkit.md): How Mixology adapts MVVM and Elm ideas into an application toolkit.
 - [Building High-Quality Software](https://thefellow.github.io/articles/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
+- [Caching a Federated Graph Without Weakening Freshness](https://thefellow.github.io/articles/caching-a-federated-graph-without-weakening-freshness.md): Authoritative worktree generations select one immutable hot federation projection.
 - [Composing Source-Rich Context Without a Second Index](https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index.md): One bounded dossier joins exact graph facts to current Git-visible source.
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.

@@ -46,6 +46,7 @@ SUMMARIES = {
     "/articles/making-language-support-a-process-contract/": ("Compiler plugins", "A bounded process contract keeps language runtimes isolated and evidence complete."),
     "/articles/making-a-semantic-graph-inspectable/": ("Inspectable graphs", "One bounded semantic neighborhood feeds DOT, JSON, and a local animated explorer."),
     "/articles/composing-source-rich-context-without-a-second-index/": ("Source-rich context", "One bounded dossier joins exact graph facts to current Git-visible source."),
+    "/articles/caching-a-federated-graph-without-weakening-freshness/": ("Exact graph cache", "Authoritative worktree generations select one immutable hot federation projection."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
