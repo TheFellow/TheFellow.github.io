@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 10:31:00 -0700
+last_modified_at: 2026-08-07 11:09:00 -0700
 excerpt: "A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries."
 language: "Go"
 license: "MIT"
@@ -54,7 +54,7 @@ The current implementation is an early alpha with a usable Go indexing and query
 
 The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, ordered the F# project graph, and proved genuine FKYeah indexing. The large-solution bound remains visible.
 
-The first tagged release is still ahead; its workflow is already shaped around checksummed core archives, a portable bundle for the pure-Go C++, TypeScript, and JVM bridges, same-version .NET adapter artifacts, and an independently installable Python wheel. The bridge bundle does not hide its external compiler or runtime requirements, and Rust remains separate until its native target matrix is reproducible.
+The first tagged release is still ahead; its workflow is already shaped around checksummed core archives, a portable bundle for the pure-Go C++, TypeScript, JVM, and Universal Ctags bridges, same-version .NET adapter artifacts, and an independently installable Python wheel. Commit-derived timestamps, per-archive SPDX SBOMs, an archive allowlist validator, and one SHA-256 inventory make the candidate reproducible and inspectable before publication. A tag first creates a private draft, then publishes it only after the exact artifacts pass validation and receive GitHub build provenance. The bridge bundle does not hide its external compiler or runtime requirements, Rust remains separate until its native target matrix is reproducible, and the prerelease executables remain explicitly unsigned by Apple or Windows.
 
 ### Why it is worth exploring
 

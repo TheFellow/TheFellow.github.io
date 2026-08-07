@@ -210,9 +210,13 @@ This distinction keeps the extension point open without silently executing a new
 
 ## Package the bridge without hiding the runtime
 
-The process boundary also makes distribution honest. The release configuration can ship the pure-Go C++, TypeScript, and JVM bridges together for macOS, Linux, and Windows on amd64 and arm64. Those small executables still report their external requirements: `scip-clang`, Node plus `scip-typescript`, or Java plus `scip-java` remain explicit installations.
+The process boundary also makes distribution honest. The release configuration can ship the pure-Go C++, TypeScript, JVM, and Universal Ctags bridges together for macOS, Linux, and Windows on amd64 and arm64. Those small executables still report their external requirements: `scip-clang`, Node plus `scip-typescript`, Java plus `scip-java`, or Universal Ctags remain explicit installations.
 
 The other runtimes keep their native delivery shapes. .NET uses self-contained companion archives, Python uses a wheel, and Rust waits for a reproducible native target matrix. A bundle name is convenience, not evidence that the language toolchain is embedded or trusted. `describe` stays side-effect free when the producer is absent, and `weave adapters doctor` reports the missing requirement.
+
+Release construction is another validated boundary. GoReleaser derives binary and archive timestamps from the commit, emits an SPDX JSON SBOM beside every core and bridge archive, and hashes the archives, SBOMs, .NET companions, and Python wheel into one SHA-256 inventory. A repository-owned verifier reads GoReleaser's artifact manifest, inspects archives without extracting them, rejects unsafe or unexpected paths and modes, checks the complete six-platform matrix and SPDX document shape, and recomputes every listed digest.
+
+A tag starts with a private draft release. The workflow validates the exact local artifacts, uses GitHub's keyless provenance to attest every checksum-listed subject, and only then makes the draft public. These early binaries remain explicitly unsigned at the operating-system layer. Provenance does not substitute for Apple notarization or Windows code signing, and package-manager distribution can wait until those platform commitments are deliberate.
 
 ## Build against the bytes
 
