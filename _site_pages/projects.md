@@ -1,7 +1,7 @@
 ---
 title: "Projects"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-07 01:02:00 -0700
+last_modified_at: 2026-08-07 01:15:00 -0700
 permalink: /projects/
 layout: single
 author_profile: true

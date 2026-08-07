@@ -49,7 +49,7 @@
   <rect x="230" y="476" width="326" height="170" class="box" stroke="#b197fc"/>
   <text x="393" y="522" text-anchor="middle" class="label">Compiler-native runtime</text>
   <text x="393" y="558" text-anchor="middle" class="small">Roslyn · FCS · CPython</text>
-  <text x="393" y="588" text-anchor="middle" class="small">build and semantic units</text>
+  <text x="393" y="588" text-anchor="middle" class="small">rust-analyzer · scip-clang</text>
   <text x="393" y="618" text-anchor="middle" class="tiny">never writes the graph database</text>
 
   <rect x="720" y="476" width="490" height="170" class="box" stroke="#b197fc"/>

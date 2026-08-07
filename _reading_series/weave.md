@@ -1,7 +1,7 @@
 ---
 title: "Building Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 01:02:00 -0700
+last_modified_at: 2026-08-07 01:15:00 -0700
 excerpt: "An ordered path through Weave's Git-aware freshness, compiler-backed facts, semantic graph, bounded queries, and architecture policy."
 order: 5
 entries_label: "2 articles"
