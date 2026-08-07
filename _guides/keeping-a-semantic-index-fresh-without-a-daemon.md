@@ -1,7 +1,7 @@
 ---
 title: "Keeping a Semantic Index Fresh Without a Daemon"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 00:31:00 -0700
+last_modified_at: 2026-08-07 01:02:00 -0700
 excerpt: "How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence."
 permalink: /articles/keeping-a-semantic-index-fresh-without-a-daemon/
 series: weave
@@ -72,11 +72,13 @@ Hooks and watch processes can eventually make that path warmer, but they cannot 
 
 ## Providers own complete semantic units
 
-Weave normalizes facts from several semantic worlds. The native Go provider uses `go/packages` and `go/types`. The optional .NET process uses Roslyn and MSBuild for C#, and FSharp.Compiler.Service for F#. The optional Python process uses CPython's parser and compiler symbol table for exact lexical binding facts while labeling imports `declared` and calls `syntactic`. Its capability probe includes the interpreter implementation and patch version in freshness, so changing Python cannot silently reuse an older inventory. A checked-in [bridge file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes exact `depends-on`, `documents`, and `generates` relationships that no single compiler can establish.
+Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths and extracts structured document, section, link, asset, route, topic, series, and code-fence facts without executing a renderer. The native Go provider uses `go/packages` and `go/types`. The optional .NET process uses Roslyn and MSBuild for C#, and FSharp.Compiler.Service for F#. The optional Python process uses CPython's parser and compiler symbol table for exact lexical binding facts while labeling imports `declared` and calls `syntactic`. Its capability probe includes the interpreter implementation and patch version in freshness, so changing Python cannot silently reuse an older inventory. A checked-in [bridge file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes exact `depends-on`, `documents`, and `generates` relationships that no single compiler can establish.
+
+The workspace provider has a deliberately different failure boundary. Malformed, non-UTF-8, or oversized structured content retains exact file-topology facts and publishes a bounded diagnostic with the manifest, so one prose file cannot make compiler queries unavailable. A transient read or identity race still aborts the refresh. Persisting the first kind and retrying the second keeps stable source limitations distinct from an unsafe snapshot.
 
 The [`CompositeProvider`](https://github.com/TheFellow/weave/blob/main/internal/freshness/composite.go) gives each active producer an owner name and a view of only its previous units. It rejects duplicate owners and rejects a semantic unit claimed by two providers. If an installed provider disappears, the composite result explicitly removes its former units instead of leaving their facts behind.
 
-That ownership prevents a subtle failure. Suppose the Go provider refreshes its package inventory while the .NET and Python adapters are unchanged. If absence from the Go result meant global deletion, a correct Go refresh could erase C#, F#, and Python facts. Provider-scoped inventories make omission meaningful only inside the producer that owns the unit.
+That ownership prevents a subtle failure. Suppose the Go provider refreshes its package inventory while the workspace, .NET, and Python providers are unchanged. If absence from the Go result meant global deletion, a correct Go refresh could erase structured content, C#, F#, and Python facts. Provider-scoped inventories make omission meaningful only inside the producer that owns the unit.
 
 Explicit SCIP import follows a separate lifecycle. It accepts a bounded compiler-backed snapshot, preserves inventories from other SCIP producers, and replaces only the importing producer's units. It does not yet know how to rerun that producer before a query, so the user must reimport changed output. Keeping that limitation explicit is better than pretending an imported snapshot is a live provider; a future producer contract can join the freshness path once it can describe how its inputs and executable identity change.
 
