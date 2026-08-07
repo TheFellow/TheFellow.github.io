@@ -23,6 +23,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [go-modular-monolith](https://thefellow.github.io/projects/go-modular-monolith.md): A Go reference app enforcing modular boundaries and cross-cutting concerns.
 - [go-riblt](https://thefellow.github.io/projects/go-riblt.md): A generic Go RIBLT library reconciling sets with difference-sized communication.
 - [ValueTypes](https://thefellow.github.io/projects/value-types.md): A compact C# library for modeling value-object equality and composition.
+- [Weave](https://thefellow.github.io/projects/weave.md): A Git-aware semantic index for deterministic compiler-backed code queries.
 
 ## Articles
 
@@ -33,6 +34,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building High-Quality Software](https://thefellow.github.io/articles/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
+- [Keeping a Semantic Index Fresh Without a Daemon](https://thefellow.github.io/articles/keeping-a-semantic-index-fresh-without-a-daemon.md): Query-driven refresh keeps semantic evidence aligned with live Git state.
 - [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go.md): F# techniques make Go domain constraints explicit and enforceable.
 - [Preserving Truth Through Operational Degradation](https://thefellow.github.io/articles/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.
 - [Testing Native Go Desktop Applications Headlessly](https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly.md): Layered evidence for native GUI behavior without opening windows.
@@ -53,3 +55,4 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 ## Series
 
 - [Building Mixology](https://thefellow.github.io/series/mixology.md): An ordered path through Mixology's executable application architecture.
+- [Building Weave](https://thefellow.github.io/series/weave.md): An ordered path through Weave's fresh compiler-backed semantic graph.
