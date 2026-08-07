@@ -1,7 +1,7 @@
 ---
 title: "Building Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 16:31:22 -0700
+last_modified_at: 2026-08-07 16:33:25 -0700
 excerpt: "An ordered path through Weave's fresh compiler-backed graph, source-only declarations, exact storage, semantic comparison, guarded authoring, and managed adapters."
 order: 5
 entries_label: "11 articles"

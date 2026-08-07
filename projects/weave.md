@@ -65,6 +65,8 @@ The first tagged release is still ahead; its workflow is already shaped around c
 
 That validation matrix now conserves runners without relaxing its boundaries. Path filters avoid unrelated adapter jobs, and workflow-plus-PR-or-ref concurrency cancels superseded runs without coupling independent changes. Ecosystem caches follow lockfiles and checksum-pinned installer scripts; .NET restores are locked, and Rust and Gradle cache writes are restricted to `main`. The semantic index cache remains derived and content-keyed, then passes through `weave ci index` and `weave ci check` before use. SARIF and deterministic graph exports are produced under runner-temporary state rather than the worktree. Credentials, mutable adapter state, and authoritative source declarations are never cache payloads.
 
+The repository's approved nine-increment completion pass is now complete at its documented scope: release readiness, source-rich context, machine-wide aggregation, compact storage, semantic diffs, optional watch warming, the human explorer and editor, managed adapters, and source-only schema/build facts all have durable implementation and test evidence. That closure does not declare the broader vision or useful-first-release definition complete. The first public prerelease remains a separate product milestone, and the project page keeps the measured and deliberately deferred gaps visible.
+
 ### Why it is worth exploring
 
 - It makes freshness part of every read instead of depending on a daemon or a remembered indexing step.
