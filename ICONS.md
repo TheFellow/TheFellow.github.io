@@ -12,6 +12,8 @@ The local semantic names map to Lucide icons as follows:
 | `shield` | `shield-check` |
 | `boundaries` | `network` |
 | `branch` | `git-branch` |
+| `compare` | `git-compare` |
+| `watch` | `activity` |
 | `route` | `route` |
 | `fluid` | `waves-horizontal` |
 | `values` | `shapes` |

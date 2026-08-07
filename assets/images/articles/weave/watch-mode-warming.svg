@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="860" viewBox="0 0 1440 860" role="img" aria-labelledby="title desc">
+  <title id="title">An optional watch loop warms the query-authoritative freshness pipeline</title>
+  <desc id="desc">Queries always call the freshness manager. An optional foreground watch loop polls exact Git observation tokens. Current observations do nothing, while stale observations call the same non-forced Ensure operation. Both paths share the worktree lock, provider pipeline, unchanged-state checks, graph generation, and atomic manifest publication. Watch events report lifecycle without becoming authority.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4}.title{fill:#f8f9fa;font:700 32px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 22px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:17px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:15px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.orange{stroke:#ff922b;stroke-width:5;fill:none;marker-end:url(#arrow-orange)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}
+    </style>
+  </defs>
+  <rect width="1440" height="860" class="bg"/>
+  <text x="720" y="62" text-anchor="middle" class="title">Warm earlier, prove freshness again at query time</text>
+
+  <text x="52" y="118" class="lane">TWO CALLERS</text>
+  <rect x="52" y="146" width="326" height="156" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="215" y="190" text-anchor="middle" class="label">Ordinary query</text>
+  <text x="215" y="230" text-anchor="middle" class="small">always calls Ensure(false)</text>
+  <text x="215" y="266" text-anchor="middle" class="tiny">watcher absent · stopped · failed</text>
+
+  <rect x="52" y="344" width="326" height="250" rx="16" class="box" stroke="#ff922b"/>
+  <text x="215" y="388" text-anchor="middle" class="label">weave watch</text>
+  <text x="215" y="426" text-anchor="middle" class="small">optional foreground loop</text>
+  <text x="215" y="468" text-anchor="middle" class="tiny">poll exact observation token</text>
+  <text x="215" y="500" text-anchor="middle" class="tiny">current → no work, no output</text>
+  <text x="215" y="532" text-anchor="middle" class="tiny">stale → Ensure(false)</text>
+  <text x="215" y="568" text-anchor="middle" class="tiny">one loop coalesces edit bursts</text>
+
+  <path d="M378 224 H474" class="blue"/>
+  <path d="M378 500 H430 Q458 500 458 472 V382 Q458 354 486 354" class="orange"/>
+
+  <text x="486" y="118" class="lane">ONE AUTHORITY</text>
+  <rect x="486" y="146" width="430" height="448" rx="16" class="box" stroke="#b197fc"/>
+  <text x="701" y="190" text-anchor="middle" class="label">Freshness manager</text>
+  <text x="701" y="230" text-anchor="middle" class="small">exact Git + provider observation</text>
+  <line x1="528" y1="260" x2="874" y2="260" stroke="#495057" stroke-width="2"/>
+  <text x="701" y="304" text-anchor="middle" class="label">Per-worktree writer lock</text>
+  <text x="701" y="342" text-anchor="middle" class="small">second inspection after waiting</text>
+  <text x="701" y="392" text-anchor="middle" class="label">Configured provider</text>
+  <text x="701" y="430" text-anchor="middle" class="small">same incremental refresh pipeline</text>
+  <text x="701" y="480" text-anchor="middle" class="label">Atomic publication</text>
+  <text x="701" y="518" text-anchor="middle" class="small">generation → graph → manifest</text>
+  <text x="701" y="558" text-anchor="middle" class="tiny">state changed during work → retry</text>
+
+  <path d="M916 280 H1012" class="green"/>
+  <path d="M916 474 H966 Q994 474 994 510 H1012" class="green"/>
+
+  <text x="1012" y="118" class="lane">OBSERVABLE RESULTS</text>
+  <rect x="1012" y="146" width="376" height="190" rx="16" class="box" stroke="#51cf66"/>
+  <text x="1200" y="190" text-anchor="middle" class="label">Current graph</text>
+  <text x="1200" y="230" text-anchor="middle" class="small">queries verify and read</text>
+  <text x="1200" y="270" text-anchor="middle" class="tiny">warmer changes latency only</text>
+  <text x="1200" y="304" text-anchor="middle" class="tiny">no second graph or manifest</text>
+
+  <rect x="1012" y="376" width="376" height="218" rx="16" class="box" stroke="#ff922b"/>
+  <text x="1200" y="420" text-anchor="middle" class="label">Watch event stream</text>
+  <text x="1200" y="458" text-anchor="middle" class="small">ready · refreshed · error</text>
+  <text x="1200" y="496" text-anchor="middle" class="tiny">weave.watch-event/v1 JSONL</text>
+  <text x="1200" y="528" text-anchor="middle" class="tiny">sequence · trigger · observation</text>
+  <text x="1200" y="564" text-anchor="middle" class="tiny">unchanged polls stay silent</text>
+
+  <text x="52" y="652" class="lane">FAILURE AND LIFECYCLE</text>
+  <rect x="52" y="680" width="410" height="118" rx="16" class="box" stroke="#f06595"/>
+  <text x="257" y="724" text-anchor="middle" class="label">Same failed state</text>
+  <text x="257" y="760" text-anchor="middle" class="small">exponential retry ≤ 30s</text>
+  <text x="257" y="786" text-anchor="middle" class="tiny">last complete manifest remains</text>
+
+  <rect x="516" y="680" width="410" height="118" rx="16" class="box" stroke="#ffd43b"/>
+  <text x="721" y="724" text-anchor="middle" class="label">New observation</text>
+  <text x="721" y="760" text-anchor="middle" class="small">eligible immediately</text>
+  <text x="721" y="786" text-anchor="middle" class="tiny">new evidence bypasses old backoff</text>
+
+  <rect x="980" y="680" width="408" height="118" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="1184" y="724" text-anchor="middle" class="label">Interrupt or terminate</text>
+  <text x="1184" y="760" text-anchor="middle" class="small">cancel work · stop ticker</text>
+  <text x="1184" y="786" text-anchor="middle" class="tiny">graceful foreground shutdown</text>
+</svg>

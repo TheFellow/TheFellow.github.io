@@ -48,6 +48,8 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Caching a Federated Graph Without Weakening Freshness](/articles/caching-a-federated-graph-without-weakening-freshness.md): How Weave accelerates machine-wide symbol and graph queries with an immutable hot projection keyed by exact worktree generations while keeping every repository authoritative.
 - [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 - [Shrinking a Semantic Graph Without Changing Its Meaning](/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): How Weave separates its stable graph model from a compact private schema with numeric identities, interned strings, hot and cold records, exact ordering, and rebuild-only evolution.
+- [Comparing Semantic Graphs Without Mutating the Worktree](/articles/comparing-semantic-graphs-without-mutating-the-worktree.md): How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence.
+- [Warming a Semantic Index Without Making the Watcher Authoritative](/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
 - [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
 - [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
 - [Preserving Truth Through Operational Degradation](/articles/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
@@ -1231,6 +1233,98 @@ The resulting lifecycle is compact even though each boundary is strict:
 6. If acceleration fails, execute against those authoritative graphs and report the cache diagnostic.
 
 There is still no daemon and no independently updated global index. A foreground query does the authority checks, and the aggregate remains disposable state beside the catalog. That is the useful distinction: Weave caches a proven answer space, not the right to decide what is true.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/articles/comparing-semantic-graphs-without-mutating-the-worktree/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Comparing Semantic Graphs Without Mutating the Worktree
+
+Source: [https://thefellow.github.io/articles/comparing-semantic-graphs-without-mutating-the-worktree/](https://thefellow.github.io/articles/comparing-semantic-graphs-without-mutating-the-worktree/)
+
+## Pyramid summary
+
+- **~2 words:** Semantic snapshot diffs
+- **~8 words:** Exact Git sides become bounded graph, API, impact, and affected-test evidence.
+- **Expanded:** How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence.
+
+## Full content
+
+**Part 7 of [Building Weave](/series/weave.md).**
+
+`git diff` can tell me that a file moved, a line changed, or an untracked path appeared. It cannot tell me whether a normalized symbol changed, an edge disappeared, a provider-owned public surface moved, or a test became semantically downstream of the edit. A semantic index can answer those questions about its current graph, but comparing only the current database with Git history would mix two different moments and call the result a diff.
+
+[Weave](https://github.com/TheFellow/weave) closes that gap by building an exact graph snapshot for each side through the same configured provider pipeline. It resolves the baseline and optional head to immutable Git objects, materializes historical revisions away from the user's working tree, compares normalized facts by stable identity, and exposes four bounded views: graph, API surface, reverse impact, and affected tests.
+
+<figure class="article-figure">
+  <img src="/assets/images/articles/weave/semantic-snapshot-diff.svg" alt="A Git baseline resolves to exact commit and tree objects, enters a temporary detached worktree, and runs through the configured freshness providers to produce a normalized graph snapshot. The other side is either another isolated revision or the current dirty worktree followed by a freshness recheck. Git separately provides the authoritative source-change inventory. Stable graph identities produce added, removed, and changed facts, which feed graph, API surface, reverse-impact, and evidence-backed affected-test views.">
+  <figcaption>Two exact semantic snapshots and one Git-authoritative source inventory meet at a bounded diff contract. Historical indexing never checks out the user's branch.</figcaption>
+</figure>
+
+## Keep source changes and semantic changes separate
+
+Git is the authority for additions, deletions, modifications, copies, renames, type changes, and unresolved merges. Weave asks for the null-delimited name-status form so unusual path names remain unambiguous. An explicit `--head` produces a clean revision-to-revision inventory; omitting it compares the baseline with the index, working tree, and untracked overlay that exists now.
+
+That inventory is useful evidence, but it is not a semantic graph delta. A comment-only edit may change a source file without changing one normalized fact. A provider upgrade may change graph evidence even when a narrow file list looks stable. A rename can preserve a stable semantic identity, while a small declaration edit can replace several symbols and relationships.
+
+The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, symbols, occurrences, and edges each have independent `added`, `removed`, and `changed` collections. A changed record retains both before and after values under the same stable ID. Consumers can correlate the two forms of evidence without pretending they mean the same thing.
+
+## Index the past without checking it out here
+
+Before indexing, Weave resolves every requested revision to exact commit and tree object IDs. Human-friendly inputs remain in the response for context, but object IDs define what was actually compared. A historical side is materialized in a temporary detached linked worktree and passed to the same automatic freshness-provider construction used for the current repository.
+
+This matters more than teaching a second parser to read Git blobs. The configured Go, .NET, Python, Rust, C++, TypeScript, JVM, Ctags, workspace, bridge, and SCIP paths already define what Weave considers authoritative semantic evidence. A lightweight historical mapper would produce facts that look comparable while following different rules.
+
+Temporary graph state belongs to the temporary worktree. It never enters the current worktree's database, and the caller's branch never moves. Cleanup removes both the directory and Git's linked-worktree metadata after success, provider failure, or cancellation. Tests record the worktree inventory before each failing path and require it to be identical afterward.
+
+Historical materialization also supplies an empty `core.hooksPath`, so repository post-checkout hooks do not run merely because a diff needs the past. User-configured Git checkout filters may still execute. They remain part of the developer's local Git trust and configuration boundary, not portable source truth that Weave can safely neutralize without changing checkout semantics.
+
+If automatic providers are unavailable, historical facts are unavailable. Weave reports that boundary instead of comparing a fresh current graph with guessed or stale baseline facts.
+
+## Identify the graph independently of its temporary home
+
+Freshness generations include worktree identity, which is exactly right for protecting a local database but wrong as the durable identity of a historical snapshot. Materializing the same commit in two temporary worktrees can produce two generation values even when every normalized fact is identical.
+
+The diff contract carries both. `generation` proves the exact freshness observation used on that side. `snapshot_digest` sorts the normalized public graph and hashes it with a domain-separated schema, making equivalent semantic snapshots comparable independently of their temporary paths. Commit and tree IDs prove the Git source point; the snapshot digest proves the graph produced from it.
+
+The current dirty side needs one more guard. Weave first refreshes and exports its graph, then asks Git for the source-change inventory, then inspects freshness again. If commit, tree, dirty state, change count, or generation moved during the operation, it asks the caller to retry. A long comparison cannot silently combine a graph from one overlay with file changes from the next.
+
+## Bound every fact family independently
+
+Semantic diffs can become large quickly, especially after a generated package or dependency graph changes. One global limit would let a noisy symbol family consume the response before a document or edge change appeared.
+
+Weave sorts every fact family by stable ID and applies the limit independently to its added, removed, and changed collections. It retains one internal sentinel beyond each public limit so `truncated` is an observed fact rather than an estimate. Source changes have their own bound. The same inputs therefore produce the same prefix and the same truncation signal.
+
+The CLI exposes that contract through `weave diff graph --base REV [--head REV]`. Plain text starts by naming both exact sides, then lists source and graph changes. JSON returns the versioned snapshot-diff result directly. The graph view also projects changed symbols and edges into a compact, stable-ID `transitions` set whose status is added, removed, or changed.
+
+The local explorer exposes that same result through a bounded, same-origin `api/diff` endpoint. It validates revisions, edge kinds, depth, result, and edge bounds before forwarding one ordinary `diff graph` invocation through the application boundary. Its pinned d3-graphviz renderer already keys nodes and edges across animated renders, so the transition set supplies browser-ready enter, update, and exit identities without a second graph comparison implementation.
+
+## Report API evidence without guessing compatibility
+
+A normalized symbol name is not a cross-language compatibility classifier. Removing a public-looking method might be source-breaking, binary-breaking, both, or neither depending on language and provider semantics that the core does not own.
+
+`weave diff api` projects provider-owned unit surface fingerprints instead. It can state exactly that a provider surface was added, removed, or changed, retain the opaque before and after fingerprints, and label the evidence `provider-surface-fingerprint`. Compatibility remains `unknown`.
+
+That word is an important feature. A future language provider can supply a specific ABI or source-compatibility classifier, but the common graph layer does not upgrade evidence merely because a label would be convenient. If no provider-owned surface changed, the response explains that compatibility was not inferred from symbol names.
+
+## Reuse impact traversal, then explain selected tests
+
+Graph changes become useful when they seed the existing reverse-impact traversal. Added and changed symbols, occurrences, edges, units, and documents contribute stable IDs that exist in the head snapshot. Git-changed paths contribute current document roots. Removed facts remain visible in the graph delta, and their stable IDs can still seed relationships that survive in the head, but disconnected removed-only facts cannot be traversed through a graph where they no longer exist. The result says so diagnostically.
+
+`weave diff impact` uses the same edge kinds, depth bound, edge bound, ordering, and truncation behavior as ordinary impact queries. There is no second walker whose semantics can drift just because the roots came from a comparison.
+
+`weave diff tests` is a projection of that impact result, not a new reachability claim. A selected test carries a reason and evidence. An explicit `tests` relationship keeps its edge ID and evidence. A provider-classified test symbol keeps provider evidence. Go declarations recognized through `_test.go` plus `Test`, `Benchmark`, or `Fuzz` naming are labeled syntactic. Empty or partial provider output is not promoted into a completeness promise.
+
+## Make time an explicit part of the query
+
+A semantic diff is not one graph with colored nodes. It is two Git identities, two freshness observations, two normalized snapshot identities, a separate source inventory, and a set of bounded projections with different evidence rules.
+
+Keeping those pieces explicit makes the command more useful and less magical. Historical indexing reuses the real providers. Dirty comparisons detect races. Stable IDs preserve deterministic change records. API output refuses to guess. Impact reuses one traversal contract. Test selection explains why each result is present.
+
+That fidelity has a visible cost. Historical graphs are rebuilt rather than read from a permanent snapshot cache, and the current implementation materializes complete snapshots before bounding its output. A large ref-to-ref comparison can therefore be expensive. The contract leaves room for a measured streaming comparison later without retaining temporary databases or changing what callers receive.
+
+That is the standard Weave keeps returning to: make the evidence and its limits part of the result, then let richer interfaces build on the same honest core.
 
 
 ---
@@ -3959,6 +4053,90 @@ A third surface is therefore most useful when it remains genuinely third: native
 
 ---
 
+<!-- Generated from https://thefellow.github.io/articles/warming-a-semantic-index-without-making-the-watcher-authoritative/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Warming a Semantic Index Without Making the Watcher Authoritative
+
+Source: [https://thefellow.github.io/articles/warming-a-semantic-index-without-making-the-watcher-authoritative/](https://thefellow.github.io/articles/warming-a-semantic-index-without-making-the-watcher-authoritative/)
+
+## Pyramid summary
+
+- **~2 words:** Optional watch warming
+- **~8 words:** One polling loop warms the same query-authoritative freshness pipeline.
+- **Expanded:** How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
+
+## Full content
+
+**Part 8 of [Building Weave](/series/weave.md).**
+
+[Query-driven freshness](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md) gives Weave a simple authority rule: every database-backed question proves the current Git and provider state before reading the graph. That rule remains correct when no background process exists. Its tradeoff is latency. The first question after an edit can inherit provider startup, compilation, normalization, and publication work.
+
+An optional watch mode can move that work earlier, but it can also quietly damage the architecture. If filesystem events decide what is current, if the watcher owns a second incremental indexer, or if queries trust a resident process instead of checking for themselves, the latency optimization has become a new correctness boundary.
+
+[`weave watch`](https://github.com/TheFellow/weave) stays smaller than that. It is an optional foreground polling warmer over the same freshness manager queries already use. It owns no graph, installs no hook, starts no daemon, and publishes nothing directly.
+
+<figure class="article-figure">
+  <img src="/assets/images/articles/weave/watch-mode-warming.svg" alt="Ordinary queries and an optional foreground watch loop both enter the same query-authoritative freshness manager. The watcher periodically obtains an exact opaque Git observation token. Current observations do nothing; stale observations call the same non-forced Ensure operation. The shared per-worktree writer lock, provider pipeline, unchanged-state checks, database generation, and atomic manifest publication remain the only refresh path. Successful, refreshed, and recoverable error events are emitted without affecting authority.">
+  <figcaption>The watcher changes when refresh work starts, not who decides whether the graph is current. Queries keep checking the same authoritative path.</figcaption>
+</figure>
+
+## Optimize latency without changing authority
+
+The first invariant is almost aggressively ordinary: queries continue to call `Freshness.Ensure`. A running watcher is neither required nor consulted as proof. If it refreshed the graph just before a query, the query's check is cheap. If it stopped, failed, or never existed, the query follows exactly the same path it always did.
+
+The watcher uses that same `Ensure(false)` operation. It cannot force a refresh that the coordinator considers unnecessary, bypass the per-worktree writer lock, write graph records itself, or publish a freshness manifest. A foreground query and the warmer may race to help, but the shared lock and second inspection inside `Ensure` ensure only one performs the work.
+
+This also keeps failure semantics unchanged. The generation marker is invalidated before bounded storage replacement and installed only after complete graph publication. The manifest is written last. A watcher failure cannot bless a partial graph because the watcher has no alternative publication mechanism.
+
+## Poll the exact observation, not a second file inventory
+
+Native filesystem notifications look like the obvious implementation. They are useful hints, but a portable watcher still has to handle recursive directory discovery, atomic-save renames, editor backup files, branch and index changes, buffer overflow, finite watch counts, network filesystems, ignored paths, and linked worktrees. After handling all of that, it still needs an exact reconciliation pass.
+
+Weave already has that pass. Repository inspection uses Git porcelain v2 with all untracked paths, hashes changed regular files, resolves shared and per-worktree Git paths correctly, and includes provider identity plus build-relevant input fingerprints in freshness. Background `git status` runs with `--no-optional-locks` so it does not take optional Git locks merely to observe state.
+
+The freshness manager exposes an opaque observation token over repository identity, worktree identity, provider, commit, tree, branch or detached state, and the exact overlay digest. The watch loop may compare tokens for equality but does not parse them. Ignored file noise remains ignored, a branch switch is visible, an atomic rename becomes one resulting state, and linked worktrees retain separate manifests, databases, and locks without watch-specific path logic.
+
+`Observe` is deliberately cheaper than the complete query check. It compares Git, provider, and published manifest state but does not open the graph database to verify its generation on every poll. A current observation suppresses unnecessary warmer work; it does not become proof that a reader may trust the database. The initial non-forced refresh, any stale refresh, and every ordinary query continue through `Ensure` or `Inspect`, where graph generation is verified.
+
+Polling has a cost: every interval runs an exact Git observation, and currently changed regular files are hashed. Very large untracked worktrees may need a longer interval. That cost is explicit and configurable rather than hidden behind a native event subsystem that still requires reconciliation.
+
+## Let one loop coalesce the edit burst
+
+The default interval is 750 milliseconds, bounded between 50 milliseconds and five minutes. It is both the observation cadence and the edit-coalescing window. By default, startup performs one non-forced refresh and emits a ready event. `--initial=false` performs a read-only observation instead and defers warming until a poll finds stale state.
+
+Each tick asks for one observation. A current status produces no output and no provider work. A stale status calls `Ensure(false)`. There is no worker pool. While a refresh is running, Go's ticker may collapse pending ticks into its bounded channel. That is desirable because the finished Git state subsumes the intermediate write, rename, and backup events an editor produced.
+
+At most one refresh runs through this loop, and the ordinary worktree lock covers concurrency with other processes. A new edit that arrives during provider work is caught by the existing unchanged-state check. The attempted refresh fails rather than publishing a mixed generation, and the next observation sees the new token and retries against the resulting state.
+
+This is a much stronger model than replaying filesystem events as commands. Events answer “something happened.” The observation answers “this is the exact state now.”
+
+## Retry evidence, not just time
+
+A broken provider should not run at every poll forever. After a recoverable observation or refresh failure, the watcher emits an error and associates the failure with the observation that produced it. If the same token remains, retry delay doubles from the poll interval up to a 30-second cap. Logs stay bounded and expensive failures stop hammering the machine.
+
+A new observation is new evidence. It bypasses the old state's remaining backoff and is immediately eligible for refresh. Fixing a configuration file or changing the source does not have to wait for a retry schedule derived from a state that no longer exists.
+
+Repository disappearance is different from a transient provider error and terminates the loop. Context cancellation is graceful. The process entry point converts interrupt and termination signals into the same context passed through observation, Git subprocesses, providers, and storage work, while the loop owns and stops its ticker on every return path.
+
+## Make a foreground process scriptable
+
+Human output stays quiet when nothing changes. A ready or refreshed line goes to stdout with repository identity, worktree identity, state, and changed-path count. Provider diagnostics and recoverable errors go to stderr.
+
+`--json` emits newline-delimited `weave.watch-event/v1` records. Each invocation owns a monotonic sequence number, and event types are `ready`, `refreshed`, or `error`. A trigger distinguishes initial work, a changed observation, and a retry. Successful records carry the observed token and freshness status; error text is made valid UTF-8 and capped at 8 KiB without pretending the graph became current.
+
+The stream is intentionally an observation surface, not a command protocol or durable log. Restarting the process restarts its sequence. Current-state polls do not create heartbeat noise. Consumers that care about the graph still ask Weave, whose query path performs its own freshness proof.
+
+## Leave native events as an optimization layer
+
+Polling is not declared universally faster than native notification. It is the smallest cross-platform design that preserves the existing truth boundary and handles Git state, ignored paths, atomic saves, linked worktrees, event loss, and overflow through one tested observation.
+
+If measurements show periodic Git inspection is material at repository scale, native events can wake the same reconciliation loop earlier. They still cannot replace periodic or query-time exact checks. The watcher may reduce latency; only the freshness coordinator can establish currency.
+
+There are two other explicit boundaries. The loop observes the provider input universe already represented by Git freshness. An explicitly imported unmanaged SCIP file remains unmanaged. Setting `WEAVE_DATABASE` also selects an unmanaged database snapshot, so watch mode is unavailable in that mode. Optional warming does not expand the system's authority merely because a process stays alive.
+
+
+---
+
 <!-- Generated from https://thefellow.github.io/notes/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Notes
@@ -5600,6 +5778,10 @@ The current implementation is an early alpha with a usable Go indexing and query
 
 Storage v2 pursues that remaining size explicitly without changing the public graph model. Stable string identities map to compact numeric entities, repeated categorical values are reference-counted interns, and search/adjacency rows separate from colder provider, evidence, range, and document details. Batched hydration reconstructs the same deterministic export, while private verification checks ownership, matching details, indirection, and reference counts. On a retained 5,000-symbol, 4,999-edge fixture, v2 reduced the database from 96.8 MB to 63.6 MB, or 34.3%, while recording slower cold-detail and whole-export paths rather than weakening graph evidence. Legacy indexes are rejected without modification and rebuilt from source rather than migrated in place.
 
+Git-aware semantic diffs extend the same evidence model across time. `weave diff graph`, `api`, `impact`, and `tests` index exact baseline and optional head revisions through the configured providers in isolated detached worktrees, or compare a baseline with the current dirty overlay. Git source changes remain separate from stable-ID graph changes, snapshot digests identify normalized facts independently of temporary worktree state, provider surface changes keep compatibility `unknown`, and affected tests retain their selection reason and evidence. A bounded explorer endpoint returns the same graph diff and stable transition identities for keyed browser animation.
+
+An optional `weave watch` foreground process can warm that same query-authoritative index after changes without installing a daemon, hook, native watcher, or second provider pipeline. It polls an exact opaque Git/provider observation, coalesces edits through one loop, refreshes only through the existing worktree lock and non-forced freshness operation, and retries unchanged failures with bounded backoff. Queries still prove freshness independently; the watcher changes latency, not authority.
+
 The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, ordered the F# project graph, and proved genuine FKYeah indexing. The large-solution bound remains visible.
 
 The first tagged release is still ahead; its workflow is already shaped around checksummed core archives, a portable bundle for the pure-Go C++, TypeScript, JVM, and Universal Ctags bridges, same-version .NET adapter artifacts, and an independently installable Python wheel. Commit-derived timestamps, per-archive SPDX SBOMs, an archive allowlist validator, and one SHA-256 inventory make the candidate reproducible and inspectable before publication. A tag first creates a private draft, then publishes it only after the exact artifacts pass validation and receive GitHub build provenance. The bridge bundle does not hide its external compiler or runtime requirements, Rust remains separate until its native target matrix is reproducible, and the prerelease executables remain explicitly unsigned by Apple or Windows.
@@ -5772,7 +5954,7 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, current source context, exact federated caching, and compact private storage.
+- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, exact caching and storage, semantic comparison, and optional watch-mode warming.
 - [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 
@@ -5823,11 +6005,11 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 - **~2 words:** Weave series
 - **~8 words:** An ordered path through Weave's fresh compiler-backed semantic graph.
-- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, current source context, exact federated caching, and compact private storage.
+- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, exact caching and storage, semantic comparison, and optional watch-mode warming.
 
 ## Full content
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, and architecture rules.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, and architecture rules.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
@@ -5838,6 +6020,8 @@ Weave turns language-native compiler facts and live Git state into a local seman
 4. **Article:** [Composing Source-Rich Context Without a Second Index](/articles/composing-source-rich-context-without-a-second-index.md): How Weave composes exact graph facts, current source excerpts, direct relationships, and repository provenance into one bounded dossier without adding embeddings or another store.
 5. **Article:** [Caching a Federated Graph Without Weakening Freshness](/articles/caching-a-federated-graph-without-weakening-freshness.md): How Weave accelerates machine-wide symbol and graph queries with an immutable hot projection keyed by exact worktree generations while keeping every repository authoritative.
 6. **Article:** [Shrinking a Semantic Graph Without Changing Its Meaning](/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): How Weave separates its stable graph model from a compact private schema with numeric identities, interned strings, hot and cold records, exact ordering, and rebuild-only evolution.
+7. **Article:** [Comparing Semantic Graphs Without Mutating the Worktree](/articles/comparing-semantic-graphs-without-mutating-the-worktree.md): How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence.
+8. **Article:** [Warming a Semantic Index Without Making the Watcher Authoritative](/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
 
 
 ---
