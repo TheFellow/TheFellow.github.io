@@ -5,6 +5,7 @@ last_modified_at: 2026-08-06 16:00:00 -0700
 permalink: /notes/riblt-in-go/
 excerpt: "A step-by-step implementation of generic, rateless set reconciliation in Go, from XOR-coded cells through peeling and measured communication."
 icon: "sitemap"
+accent: "#63e6be"
 tags: ["Go", "Generics", "RIBLT", "Distributed Systems", "Algorithms"]
 ---
 

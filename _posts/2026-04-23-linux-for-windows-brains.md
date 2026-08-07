@@ -5,6 +5,7 @@ last_modified_at: 2026-08-06 17:10:00 -0700
 permalink: /notes/linux-for-windows-brains/
 excerpt: "A practical translation from familiar Windows concepts to Linux filesystems, permissions, shells, services, SSH, and containers."
 icon: "storage"
+accent: "#ffa94d"
 tags: ["Linux", "Windows", "Shell", "SSH", "Containers"]
 toc: true
 toc_sticky: true

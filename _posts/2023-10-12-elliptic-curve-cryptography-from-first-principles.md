@@ -5,6 +5,7 @@ last_modified_at: 2026-08-01 12:00:00 -0700
 permalink: /notes/elliptic-curve-cryptography-from-first-principles/
 excerpt: "A ground-up path to ECDSA through groups, finite fields, elliptic-curve point arithmetic, and scalar multiplication."
 icon: "key"
+accent: "#b197fc"
 tags: ["Cryptography", "ECDSA", "Mathematics"]
 ---
 

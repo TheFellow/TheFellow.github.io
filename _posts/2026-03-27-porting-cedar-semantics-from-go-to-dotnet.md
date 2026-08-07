@@ -5,6 +5,7 @@ last_modified_at: 2026-08-06 17:20:00 -0700
 permalink: /notes/porting-cedar-semantics-from-go-to-dotnet/
 excerpt: "How cedar-dotnet establishes correct Cedar behavior through conformance tests, then uses benchmarks to make it fast."
 icon: "shield"
+accent: "#845ef7"
 tags: ["Cedar", "Authorization", "Go", ".NET"]
 ---
 

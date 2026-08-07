@@ -5,6 +5,7 @@ last_modified_at: 2026-08-06 16:10:00 -0700
 permalink: /notes/octonions-and-the-standard-model-in-fsharp/
 excerpt: "An executable tour from non-associative octonion multiplication to a Furey-inspired eight-state particle pattern."
 icon: "asterisk"
+accent: "#f783ac"
 tags: ["F#", "Octonions", "Mathematical Physics"]
 math: true
 ---
