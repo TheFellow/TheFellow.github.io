@@ -52,6 +52,7 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Warming a Semantic Index Without Making the Watcher Authoritative](/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
 - [Editing Contextual Graph Links Without Losing Source Truth](/articles/editing-contextual-graph-links-without-losing-source-truth.md): How Weave turns its local graph explorer into a source-evidence inspector and revision-guarded editor while keeping checked-in declarations, application use cases, and query-driven refresh authoritative.
 - [Managing Compiler Adapters Without Inventing a Package Registry](/articles/managing-compiler-adapters-without-inventing-a-package-registry.md): How Weave turns an explicitly selected local adapter executable into pinned, routable automatic language support with no remote registry, ambient discovery, or hidden trust expansion.
+- [Indexing Schemas and Build Declarations Without Executing the Repository](/articles/indexing-schemas-and-build-declarations-without-executing-the-repository.md): How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools.
 - [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
 - [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
 - [Preserving Truth Through Operational Degradation](/articles/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
@@ -2073,6 +2074,122 @@ The completed experiment also produced focused follow-ups:
 
 ---
 
+<!-- Generated from https://thefellow.github.io/articles/indexing-schemas-and-build-declarations-without-executing-the-repository/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Indexing Schemas and Build Declarations Without Executing the Repository
+
+Source: [https://thefellow.github.io/articles/indexing-schemas-and-build-declarations-without-executing-the-repository/](https://thefellow.github.io/articles/indexing-schemas-and-build-declarations-without-executing-the-repository/)
+
+## Pyramid summary
+
+- **~2 words:** Source-only declarations
+- **~8 words:** Bounded parsers turn schemas, infrastructure, migrations, and manifests into category-atomic graph evidence.
+- **Expanded:** How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools.
+
+## Full content
+
+**Part 11 of [Building Weave](/series/weave.md).**
+
+Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable.md) explains files, documents, headings, routes, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
+
+Those declarations are too useful to leave as plain text. They are also not permission to run every tool that understands them. Evaluating a build can execute plugins and targets. Terraform can load providers and state. An OpenAPI loader can follow files or URLs. A migration framework can apply templates or connect to a database. Automatic indexing should not acquire any of those powers merely because a matching file exists.
+
+[Weave](https://github.com/TheFellow/weave) adds one built-in `weave-schema-build` freshness provider for that middle layer. It feeds bounded Git-visible bytes to maintained parsers for Protobuf, OpenAPI 3, GraphQL, PostgreSQL migrations, Terraform HCL, and a deliberately declarative build-manifest subset. The result is ordinary provider-owned graph evidence, so existing context, graph, diff, watch, explorer, export, and CI paths gain the new facts without a second data model or query surface.
+
+The [accepted design record](https://github.com/TheFellow/weave/blob/main/.ai/decisions/0017-source-only-schema-build-provider.md) states the trust and freshness rules, while the [parser research](https://github.com/TheFellow/weave/blob/main/.ai/prior-art/schema-build-providers/README.md) records why each upstream library and exclusion was chosen.
+
+```sh
+weave context listPets
+weave dependencies example.test/service
+weave graph listPets --kind references --kind depends-on
+weave symbols aws_instance --json
+weave export --json
+```
+
+<figure class="article-figure">
+  <img src="/assets/images/articles/weave/source-only-schema-build.svg" alt="A bounded inventory supplies Git-visible regular non-symlink bytes without running builds, generators, package managers, Terraform, databases, templates, or network loaders. Six maintained parser lanes cover Protobuf, OpenAPI 3, GraphQL, PostgreSQL migrations, Terraform HCL, and declarative build manifests. One atomic freshness unit per category reuses an unchanged fingerprint or completely relinks a changed category. Malformed cross-file schema categories are omitted with a diagnostic, while one malformed independent build manifest is omitted without hiding valid projects. Normal graph facts then carry declared, generated, inferred, or syntactic evidence through existing context, graph, diff, watch, CI, and explorer consumers; the provider never claims compiler-exact evidence.">
+  <figcaption>Maintained parsers recover declared structure. The byte boundary, category units, and evidence classes prevent parser convenience from becoming execution authority.</figcaption>
+</figure>
+
+## Establish the byte boundary before choosing a parser
+
+The provider begins with Git's cached and untracked, non-ignored path inventory. It normalizes repository-relative paths, accepts only supported regular files, rejects symlinks, and checks that an opened file still has the identity inspected before the read. The inventory, each source, total corpus, file count, fact count, diagnostics, and parser concurrency all have explicit bounds.
+
+That boundary matters more than whether a parser is written in Go. A library may expose a pure syntax API beside a loader that reads the filesystem, follows a URI, invokes a compiler, or evaluates expressions. Weave supplies already-bounded bytes directly to the syntax or model layer and does not make the loader reachable.
+
+The automatic provider never runs `protoc`, a build, a restore, a package manager, a generator, a template, Terraform, a database, a repository hook, or a network resolver. It does run Git for the same worktree-aware file inventory used by the rest of freshness. The distinction is concrete: Git tells Weave which local source bytes exist; the declared file does not grant its ecosystem permission to do work.
+
+## Reuse ecosystem parsers without adopting their authority
+
+Writing one convenient grammar for six formats would repeat the mistake the adapter boundary avoids for programming languages. Weave instead selects a maintained parser for each declaration family and narrows what enters it.
+
+| Category | Facts retained | Source-only boundary |
+| --- | --- | --- |
+| Protobuf | packages, messages, fields, enums, services, RPCs, imports, and linked types | Buf protocompile receives an in-memory local corpus plus standard imports, uses at most two workers, and never runs `protoc` or loads a registry |
+| OpenAPI 3 | documents, paths, operations, component schemas, properties, and `$ref` relationships | kin-openapi models identifiable version 3 roots while YAML source nodes retain locations; its URI loader is not used |
+| GraphQL | SDL types, fields, arguments, enums, operations, fragments, type references, and fragment spreads | gqlparser receives a bounded token stream; queries are validated where a local schema exists but never executed |
+| PostgreSQL migrations | migration files, inferred per-directory filename order, schemas, tables, columns, views, indexes, sequences, enums, functions, and supported dependencies | Bytebase Omni parses selected migration files as PostgreSQL; no database or migration engine is contacted |
+| Terraform | module directories, resources, data sources, variables, outputs, locals, module calls, providers, and traversals | HashiCorp HCL parses native `.tf` syntax without evaluation, provider schemas, plugins, state, plans, or registry access |
+| Build manifests | project identities, explicit dependencies, selected targets, and one proven generation mapping | x/mod, TOML, JSON, and XML parsers read `go.mod`, `Cargo.toml`, `package.json`, Maven POMs, and MSBuild C#/F#/VB project files without invoking their build systems |
+
+The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it.
+
+This honesty is visible in diagnostics. A PostgreSQL statement the upstream parser recognizes but the first semantic slice does not model remains in the source and produces a bounded warning. It does not disappear silently, and it does not become a guessed edge.
+
+## Make a complete declaration family the freshness unit
+
+Cross-file schemas are linked systems. A Protobuf import, GraphQL type extension, OpenAPI reference, Terraform module, or local project dependency can change meaning when a different file changes. Reusing facts one file at a time before that dependency surface is proven would make refresh look incremental while retaining stale relationships.
+
+Weave therefore starts with six conservative units, one per category. Each fingerprint covers the provider schema, category name, sorted repository-relative paths, and source content digests. Five categories require a complete cross-file parse. Build manifests are the deliberate exception because each manifest can be parsed independently before exact local project paths are linked across the valid set. The refresh outcomes are still small enough to state precisely:
+
+- An unchanged fingerprint reuses the previous complete unit without invoking its parser and preserves its category diagnostics.
+- A changed fingerprint reparses and relinks the complete category, validates the resulting graph batch, and publishes it atomically.
+- A malformed or unsupported Protobuf, OpenAPI, GraphQL, PostgreSQL, or Terraform corpus publishes no partial facts, removes only that category's previous unit, and emits a bounded diagnostic.
+- A malformed build manifest is diagnosed and excluded while independently valid projects still link and publish together. If every build manifest is invalid, the build category is omitted.
+- A fact-over-limit category is omitted. Inventory, file, and corpus limits reject the read before any category parser runs.
+- A removed category removes its unit, while every independent category remains available.
+
+This is deliberately broader invalidation than the final system may need. It is also an auditable guarantee: no old GraphQL edge survives a new schema corpus merely because its own file was untouched, while an unrelated broken project fixture cannot erase the valid build graph. Finer parser caches can follow measurement. Complete linked answers come first.
+
+## Resolve a local identity only when source proves it
+
+Stable IDs are separated by provider schema, repository identity, semantic domain, and declared stable name. Repository-relative paths disambiguate file-scoped declarations without embedding an absolute checkout location. That makes a declaration stable across worktrees while preventing an unrelated repository from acquiring the same local identity accidentally.
+
+Resolution is stricter than name matching. A Protobuf type becomes local when linked descriptors prove it. An OpenAPI `$ref` becomes local only when its normalized contained path is already in the Git-visible OpenAPI corpus and its fragment resolves. A build dependency becomes local only when an explicit relative manifest path identifies an indexed project. A static Terraform module source may resolve to an indexed module directory.
+
+Everything else becomes a stable open endpoint. Remote OpenAPI references, standard non-local Protobuf imports, package names, version ranges, provider sources, imported SDK targets, and unproven modules remain traversable identities without pretending their definitions were indexed. A missing non-standard Protobuf import instead makes the linked Protobuf category incomplete. Absolute, backslash, root-escaping, missing, and remote OpenAPI references produce diagnostics and never trigger an opportunistic read.
+
+The rule prevents two opposite errors. Weave does not discard a useful declared dependency merely because its target lives elsewhere, and it does not collapse unrelated declarations because their short names happen to match.
+
+## Keep evidence narrower than parser success
+
+A maintained parser can establish structure without establishing compiler truth. The new provider never emits `exact` evidence.
+
+| Evidence | What it means here |
+| --- | --- |
+| `declared` | A schema, migration, infrastructure file, or manifest states the entity or relationship |
+| `generated` | An MSBuild item explicitly pairs `AutoGen=true` with `DependentUpon`, proving one source/output mapping |
+| `inferred` | Sorted filenames establish useful migration topology inside one directory, without claiming the SQL or an unselected migration engine declared that order |
+| `syntactic` | Executable GraphQL syntax exposes a relationship that is not promoted to compiler-resolved truth |
+| `exact` | Never claimed by this provider |
+
+Even successful GraphQL validation does not turn an executable selection into compiler evidence. Migration filename order remains inferred because no selected engine has established its execution semantics. Likewise, a Protobuf option that conventionally influences a generated filename does not prove that the generator ran or where its output landed. Generation needs an explicit source/output declaration, not an ecosystem convention.
+
+The same restraint excludes Gradle and CMake from the first build set. Their common files are executable DSLs whose accurate graphs depend on evaluation. A future maintained source-only representation or an explicitly permissioned adapter may support them. A regex approximation inside the automatic core would erase the boundary this provider exists to preserve.
+
+## Publish ordinary graph facts
+
+Each parser produces normal documents, symbols, occurrences, source ranges, and edges through the shared relationship builder. The provider owns those facts, but its edges may point at workspace path identities, another local declaration, or an open endpoint. It never writes discovered relationships into `.weave/bridges.json`; authored intent and rebuildable automatic evidence remain separate owners.
+
+That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can join an OpenAPI operation to its current source excerpt and adjacent schema. `weave graph` can render the same reference edge as DOT. A project dependency can participate in impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common graph and evidence model.
+
+The end-to-end test follows that public route. It initializes a real Git repository containing an OpenAPI document, runs an ordinary index, asks `context --json` for `listPets`, then asks `graph --kind references` for the neighborhood connecting the operation and `Pet`. The parser implementation is not the integration point. The graph contract is.
+
+This fills an important space without turning Weave into six new runtimes. Compiler facts still own executable semantics. Workspace facts still own repository topology and content. Authored bridges still own reviewed human intent. The schema/build provider adds what inert declarations can prove, stops where evaluation would begin, and lets every existing graph consumer do the rest.
+
+
+---
+
 <!-- Generated from https://thefellow.github.io/articles/keeping-a-semantic-index-fresh-without-a-daemon/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Keeping a Semantic Index Fresh Without a Daemon
@@ -3057,7 +3174,7 @@ An open process boundary creates a wide validation matrix. Every bridge has its 
 
 The caches follow the same ownership rule as the graph. Go modules, Python packages, npm packages, NuGet packages, Gradle dependencies, and Cargo dependencies are replaceable inputs. They can be restored from ecosystem-aware caches without becoming declarations about what Weave supports. The .NET workflows commit `packages*.lock.json`, place NuGet packages inside the workspace, restore the solution, fixtures, package build, and release build in locked mode, then build without restoring again. A test module initializer registers MSBuild before FSharp.Compiler.Service or compiler test code can be loaded by the JIT, keeping that cached restore compatible with deterministic compiler startup.
 
-The larger SCIP producers get a narrower cache. `scip-clang` and `scip-java` are already selected by checksum-pinned installer scripts, so their cache keys include the runner operating system, architecture, and installer-script digest. A hit avoids another download; a changed pin selects different bytes. Rust pins its cache action and lets pull requests restore while only `main` saves. Gradle uses its open-source basic cache provider with the same write boundary. Neither path caches failed work or treats Weave's own workspace output as a reusable authority.
+The larger SCIP producers get a narrower cache. `scip-clang` and `scip-java` are already selected by checksum-pinned installer scripts, so their cache keys include the runner operating system, architecture, and installer-script digest. A hit avoids another download; a changed pin selects different bytes. Rust pins its cache action and lets pull requests restore while only `main` saves. `cargo package` writes into a runner-temporary target directory so its packaging output cannot enter the shared workspace cache. Gradle uses its open-source basic cache provider with the same write boundary. Neither path caches failed work or treats Weave's own workspace output as a reusable authority.
 
 The core semantic workflow may restore `.git/weave` by a content-derived key, but that index remains disposable. `weave ci index` still brings it current and `weave ci check` still verifies the graph and architecture policy. Credentials, mutable managed-adapter state, and checked-in declarations stay outside these caches. Runner conservation changes validation latency, not the evidence being validated.
 
@@ -5990,6 +6107,8 @@ The native Go provider uses `go/packages` and `go/types` for declarations, refer
 
 An always-on workspace provider covers what does not compile. It inventories exact Git-visible paths and parses Markdown/GFM, YAML front matter, inert HTML, headings, links, images, fences, routes, topics, series, and explicit generated-from declarations. It never executes Jekyll, Liquid, Mermaid, plugins, network requests, or embedded examples. The resulting `workspace find`, `outline`, `links`, and `backlinks` queries can navigate a repository with no buildable artifact and join documentation to compiler-owned path anchors.
 
+A second source-only provider covers declarations that sit between compiler facts and repository content. It feeds bounded Git-visible regular-file bytes to maintained parsers for Protobuf, OpenAPI 3, GraphQL, PostgreSQL migrations, Terraform HCL, and a declarative Go, Cargo, npm, Maven, and MSBuild manifest subset. One atomic unit per category reuses an unchanged fingerprint or completely relinks a changed corpus. A malformed cross-file schema category is omitted with a diagnostic; one malformed independent build manifest is omitted without hiding valid projects. Contained path-proven references may resolve locally, while remote, name-only, and otherwise unproven targets remain stable open endpoints. Declarations remain `declared`, migration filename order is `inferred`, explicit MSBuild generation is `generated`, and executable GraphQL navigation is `syntactic`. The provider runs no compiler, package manager, build, generator, Terraform runtime, database, template, or network loader, and never promotes parser success to compiler-exact evidence.
+
 Language support uses an open, protoc-style process extension point. Any executable can implement the experimental [`weave.adapter/v0`](https://github.com/TheFellow/weave/blob/main/protocol/adapter/v0/README.md) request and frame contract without importing Weave's Go packages. The core owns capability negotiation, permissions, deadlines, bounds, validation, and atomic publication; the adapter owns its compiler and semantic units. Every fact must match that provider ownership, while an owned edge may point at entities supplied by another provider. Capability documents now declare normalized input and evidence claims so routing does not depend on provider names. `weave adapters install` can copy an explicitly selected local executable into private platform state, pin its artifact and capability digests, and make it automatic without a core change. Same-name precedence is selected registry, explicit companion environment path, then managed state. Overlapping precise owners, changed bytes, changed claims, or invalid configuration fail closed. A syntactic fallback receives only unclaimed `input_paths`, and the host rejects output outside that routed allowlist. Weave neither discovers registry files inside repositories nor scans `PATH` for arbitrary adapters, and its black-box conformance corpus tests the public executable contract without requiring a Go SDK or inventing a remote package registry. Direct SCIP import remains a bounded snapshot path whose producer output must currently be reimported when it changes.
 
 The automatic workspace, Go, .NET, Python, Rust, C++, TypeScript, relationship, and explicitly registered producers own disjoint inventories of semantic units. A refresh validates complete batches, replaces each changed unit atomically, and publishes a new freshness manifest only after the graph update succeeds. The manifest includes the repository, worktree, commit, tree, branch, dirty overlay, provider and runtime identities, configuration, and unit fingerprints. Branch switches, untracked files, route or heading-surface changes, build-context changes, an interpreter or toolchain upgrade, or a new adapter policy therefore cannot leave an old automatic inventory looking current.
@@ -5998,7 +6117,7 @@ The same normalized graph supports local and cross-repository questions. Explici
 
 Repeated catalog graph queries can use an immutable machine-wide hot projection without making it a freshness authority. Every selected worktree still refreshes first; the complete sorted set of manifest generations selects a cache containing only symbols, search tokens, edges, and fact provenance. Exact hits avoid query fan-out across every worktree graph, generation changes build a different file, and cache failures fall back to authoritative federation. Definitions, occurrences, documents, and source-rich context remain in their owning indexes.
 
-The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C#, F#, Python, Rust, C, C++, CUDA, TypeScript, JavaScript, Java, and Kotlin coverage, a broad syntactic fallback, structured workspace navigation, authored contextual relationships, focused DOT export and an animated local explorer, bounded source-rich context dossiers, an open process protocol with managed local adapters and executable conformance, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. `weave context` composes one exact entity, its definition and reference excerpts, direct relationships, adjacent entities, repository provenance, freshness, and independent truncation without adding a source cache or embedding index. The first repository-scale baseline has already changed the implementation: bounded per-unit storage transactions, candidate pruning for interface analysis, and fixed-size domain-separated Go fact identities brought a 433,523-fact Mixology index from beyond the five-minute measurement bound to 37.8 seconds. Compact identities reduced the graph from 7.54 GB to 1.11 GB, which is a substantial correction and still an explicit target for further reduction.
+The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C#, F#, Python, Rust, C, C++, CUDA, TypeScript, JavaScript, Java, and Kotlin coverage, a broad syntactic fallback, structured workspace navigation, source-only schema and build graphs, authored contextual relationships, focused DOT export and an animated local explorer, bounded source-rich context dossiers, an open process protocol with managed local adapters and executable conformance, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. `weave context` composes one exact entity, its definition and reference excerpts, direct relationships, adjacent entities, repository provenance, freshness, and independent truncation without adding a source cache or embedding index. The first repository-scale baseline has already changed the implementation: bounded per-unit storage transactions, candidate pruning for interface analysis, and fixed-size domain-separated Go fact identities brought a 433,523-fact Mixology index from beyond the five-minute measurement bound to 37.8 seconds. Compact identities reduced the graph from 7.54 GB to 1.11 GB, which is a substantial correction and still an explicit target for further reduction.
 
 Storage v2 pursues that remaining size explicitly without changing the public graph model. Stable string identities map to compact numeric entities, repeated categorical values are reference-counted interns, and search/adjacency rows separate from colder provider, evidence, range, and document details. Batched hydration reconstructs the same deterministic export, while private verification checks ownership, matching details, indirection, and reference counts. On a retained 5,000-symbol, 4,999-edge fixture, v2 reduced the database from 96.8 MB to 63.6 MB, or 34.3%, while recording slower cold-detail and whole-export paths rather than weakening graph evidence. Legacy indexes are rejected without modification and rebuilt from source rather than migrated in place.
 
@@ -6183,7 +6302,7 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, exact storage, semantic comparison, guarded authoring, and locally managed adapter ecosystem.
+- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, source-only declarations, exact storage, semantic comparison, guarded authoring, and managed adapters.
 - [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 
@@ -6234,11 +6353,11 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 - **~2 words:** Weave series
 - **~8 words:** An ordered path through Weave's fresh compiler-backed semantic graph.
-- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, exact storage, semantic comparison, guarded authoring, and locally managed adapter ecosystem.
+- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, source-only declarations, exact storage, semantic comparison, guarded authoring, and managed adapters.
 
 ## Full content
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, and architecture rules.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only schema and build declarations, and architecture rules.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
@@ -6253,6 +6372,7 @@ Weave turns language-native compiler facts and live Git state into a local seman
 8. **Article:** [Warming a Semantic Index Without Making the Watcher Authoritative](/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
 9. **Article:** [Editing Contextual Graph Links Without Losing Source Truth](/articles/editing-contextual-graph-links-without-losing-source-truth.md): How Weave turns its local graph explorer into a source-evidence inspector and revision-guarded editor while keeping checked-in declarations, application use cases, and query-driven refresh authoritative.
 10. **Article:** [Managing Compiler Adapters Without Inventing a Package Registry](/articles/managing-compiler-adapters-without-inventing-a-package-registry.md): How Weave turns an explicitly selected local adapter executable into pinned, routable automatic language support with no remote registry, ambient discovery, or hidden trust expansion.
+11. **Article:** [Indexing Schemas and Build Declarations Without Executing the Repository](/articles/indexing-schemas-and-build-declarations-without-executing-the-repository.md): How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools.
 
 
 ---
