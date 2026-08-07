@@ -9,7 +9,7 @@ series: mixology
 series_order: 2
 order: 15
 status: "Architecture guide"
-icon: "branch"
+icon: "boundaries"
 accent: "#66d9e8"
 topics: ["Bounded contexts", "Transactional events", "Executable architecture"]
 ---

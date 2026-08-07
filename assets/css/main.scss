@@ -21,6 +21,21 @@
   padding-block: 5rem;
 }
 
+/* Keep primary navigation available while reading long articles and notes. */
+.masthead {
+  background: $background-color;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+@media (min-width: 64em) {
+  .sticky,
+  .sidebar__right.sticky {
+    top: 5rem;
+  }
+}
+
 /* Keep the author profile's Follow control behind the expanded mobile menu. */
 @media (max-width: 63.9375em) {
   .author__urls-wrapper {
