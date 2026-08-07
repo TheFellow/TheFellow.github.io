@@ -1,7 +1,7 @@
 ---
 title: "Series"
 date: 2026-08-06 08:00:00 -0700
-last_modified_at: 2026-08-07 01:15:00 -0700
+last_modified_at: 2026-08-07 01:27:00 -0700
 permalink: /series/
 layout: single
 author_profile: true

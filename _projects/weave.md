@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 01:15:00 -0700
+last_modified_at: 2026-08-07 01:27:00 -0700
 excerpt: "A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries."
 language: "Go"
 license: "MIT"

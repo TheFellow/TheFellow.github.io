@@ -180,6 +180,10 @@ Python also exposed an assumption that the original graph could not keep. A sing
 
 Weave now treats `Symbol.Definition` as the canonical display anchor and retains every binding site as a `definition` occurrence. The `definition` query prefers those complete occurrences, with the singular anchor as a fallback for older providers. A capability discovered through the Python adapter improved the language-neutral query model rather than becoming a Python-only output special case.
 
+C++ exposed a different interchange assumption. SCIP permits a producer to repeat the same global `SymbolInformation` in every document that uses it. Weave's C++ import path now retains every occurrence while selecting one canonical symbol fact deterministically, preferring a definition and then stable path and unit order. Equivalent repetitions collapse; conflicting semantic descriptions reject the complete index.
+
+`scip-clang` can also omit a symbol's presentation name or kind even when its canonical SCIP descriptor contains both. The normalizer derives only that presentation from the parsed descriptor instead of leaking a long encoded identity into query output or inventing a semantic relationship. A language adapter should be allowed to expose pressure in the shared representation, then fix that representation at the narrowest truthful boundary.
+
 That is the architectural test an external adapter should create. It may extend the fact vocabulary or reveal a missing invariant, but the resulting semantics belong in the shared graph and protocol. Presentation code should not inspect `provider == "weave-python"` to decide what a definition means.
 
 ## Make automatic authority an explicit choice
