@@ -1810,7 +1810,9 @@ The adjacent measured run made the result concrete:
 
 The current lookup includes Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. The remaining size is still large enough to guide the next storage work rather than being presented as finished.
 
-The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the current .NET 9 adapter host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
+The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
+
+The FKYeah result also gave the next change a precise target. The adapter now runs on .NET 10, keeps the prebuilt reference outputs FSharp.Compiler.Service requires, and indexes dependents before referenced F# projects so design-time cleanup cannot remove a dependency output before its consumers have used it. A genuine FKYeah graph now completes. The Cedar timeout remains an honest limit of the current full-refresh adapter rather than being hidden behind partial facts.
 
 ## Derived state follows the worktree
 
@@ -4911,7 +4913,9 @@ The same normalized graph supports local and cross-repository questions. Explici
 
 The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C# and F# coverage through the optional adapter, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. The first repository-scale baseline has already changed the implementation: bounded per-unit storage transactions, candidate pruning for interface analysis, and fixed-size domain-separated Go fact identities brought a 433,523-fact Mixology index from beyond the five-minute measurement bound to 37.8 seconds. Compact identities reduced the graph from 7.54 GB to 1.11 GB, which is a substantial correction and still an explicit target for further reduction.
 
-The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The first tagged release remains ahead; its workflow is already shaped around checksummed core archives and same-version .NET adapter artifacts so packaging and runtime limitations are visible parts of the product.
+The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, ordered the F# project graph, and proved genuine FKYeah indexing. The large-solution bound remains visible.
+
+The first tagged release is still ahead; its workflow is already shaped around checksummed core archives and same-version .NET adapter artifacts so packaging and runtime limitations remain visible parts of the product.
 
 ### Why it is worth exploring
 
