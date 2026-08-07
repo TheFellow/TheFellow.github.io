@@ -33,6 +33,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building an Application TUI Toolkit](https://thefellow.github.io/articles/building-an-application-tui-toolkit.md): How Mixology adapts MVVM and Elm ideas into an application toolkit.
 - [Building High-Quality Software](https://thefellow.github.io/articles/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
 - [Caching a Federated Graph Without Weakening Freshness](https://thefellow.github.io/articles/caching-a-federated-graph-without-weakening-freshness.md): Authoritative worktree generations select one immutable hot federation projection.
+- [Comparing Semantic Graphs Without Mutating the Worktree](https://thefellow.github.io/articles/comparing-semantic-graphs-without-mutating-the-worktree.md): Exact Git sides become bounded graph, API, impact, and affected-test evidence.
 - [Composing Source-Rich Context Without a Second Index](https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index.md): One bounded dossier joins exact graph facts to current Git-visible source.
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
@@ -46,6 +47,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Turning Cross-Domain Calls into Enforced Boundaries](https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries.md): Transactional events replace cross-domain calls with enforced ownership.
 - [Typed Filtering over bstore](https://thefellow.github.io/articles/typed-filtering-over-bstore.md): How typed expressions become safe, exact bstore query plans.
 - [Using a Third Surface as an Architecture Test](https://thefellow.github.io/articles/using-a-third-surface-as-an-architecture-test.md): A third presentation runtime tests whether application boundaries are real.
+- [Warming a Semantic Index Without Making the Watcher Authoritative](https://thefellow.github.io/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): One polling loop warms the same query-authoritative freshness pipeline.
 
 ## Notes
 

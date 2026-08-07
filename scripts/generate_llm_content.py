@@ -48,6 +48,8 @@ SUMMARIES = {
     "/articles/composing-source-rich-context-without-a-second-index/": ("Source-rich context", "One bounded dossier joins exact graph facts to current Git-visible source."),
     "/articles/caching-a-federated-graph-without-weakening-freshness/": ("Exact graph cache", "Authoritative worktree generations select one immutable hot federation projection."),
     "/articles/shrinking-a-semantic-graph-without-changing-its-meaning/": ("Compact graph storage", "Numeric identities and hot/cold records preserve one stable public graph."),
+    "/articles/comparing-semantic-graphs-without-mutating-the-worktree/": ("Semantic snapshot diffs", "Exact Git sides become bounded graph, API, impact, and affected-test evidence."),
+    "/articles/warming-a-semantic-index-without-making-the-watcher-authoritative/": ("Optional watch warming", "One polling loop warms the same query-authoritative freshness pipeline."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),

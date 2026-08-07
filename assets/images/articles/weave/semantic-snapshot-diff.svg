@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Exact Git revisions become normalized graph snapshots before semantic comparison</title>
+  <desc id="desc">A baseline revision and either a head revision or current dirty worktree pass through the same provider pipeline into normalized graph snapshots. Git independently supplies source changes. Stable identities produce bounded fact deltas, which project into graph, API surface, reverse-impact, and affected-test results. Historical revisions use temporary detached worktrees, and live overlays are rechecked for races.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-yellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ffd43b"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4}.title{fill:#f8f9fa;font:700 32px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 22px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:17px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:15px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.yellow{stroke:#ffd43b;stroke-width:5;fill:none;marker-end:url(#arrow-yellow)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}
+    </style>
+  </defs>
+  <rect width="1440" height="900" class="bg"/>
+  <text x="720" y="62" text-anchor="middle" class="title">Compare semantic snapshots, not guesses about files</text>
+
+  <text x="52" y="120" class="lane">EXACT SIDES</text>
+  <rect x="52" y="146" width="330" height="170" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="217" y="188" text-anchor="middle" class="label">--base REV</text>
+  <text x="217" y="226" text-anchor="middle" class="small">resolve commit + tree</text>
+  <text x="217" y="264" text-anchor="middle" class="small">detached temp worktree</text>
+  <text x="217" y="294" text-anchor="middle" class="tiny">never switch caller's branch</text>
+
+  <rect x="52" y="350" width="330" height="206" rx="16" class="box" stroke="#ffd43b"/>
+  <text x="217" y="392" text-anchor="middle" class="label">HEAD SIDE</text>
+  <text x="217" y="430" text-anchor="middle" class="small">--head REV → detached</text>
+  <text x="217" y="468" text-anchor="middle" class="small">or current dirty worktree</text>
+  <text x="217" y="510" text-anchor="middle" class="tiny">live overlay rechecked after diff</text>
+  <text x="217" y="538" text-anchor="middle" class="tiny">retry if generation moved</text>
+
+  <path d="M382 230 H454" class="blue"/>
+  <path d="M382 452 H454" class="yellow"/>
+
+  <text x="464" y="120" class="lane">SAME PROVIDER PIPELINE</text>
+  <rect x="464" y="146" width="378" height="410" rx="16" class="box" stroke="#b197fc"/>
+  <text x="653" y="192" text-anchor="middle" class="label">Configured providers</text>
+  <text x="653" y="232" text-anchor="middle" class="small">freshness → index → export</text>
+  <line x1="502" y1="260" x2="804" y2="260" stroke="#495057" stroke-width="2"/>
+  <text x="653" y="302" text-anchor="middle" class="label">Baseline graph</text>
+  <text x="653" y="338" text-anchor="middle" class="tiny">generation · snapshot digest</text>
+  <text x="653" y="388" text-anchor="middle" class="label">Head graph</text>
+  <text x="653" y="424" text-anchor="middle" class="tiny">generation · snapshot digest</text>
+  <text x="653" y="474" text-anchor="middle" class="small">units · documents · symbols</text>
+  <text x="653" y="508" text-anchor="middle" class="small">occurrences · edges</text>
+  <text x="653" y="538" text-anchor="middle" class="tiny">stable public facts on both sides</text>
+
+  <path d="M842 310 H914" class="green"/>
+  <path d="M842 410 H914" class="green"/>
+
+  <text x="924" y="120" class="lane">TWO AUTHORITIES</text>
+  <rect x="924" y="146" width="464" height="170" rx="16" class="box" stroke="#51cf66"/>
+  <text x="1156" y="190" text-anchor="middle" class="label">Semantic fact delta</text>
+  <text x="1156" y="228" text-anchor="middle" class="small">added · removed · changed</text>
+  <text x="1156" y="264" text-anchor="middle" class="tiny">stable-ID sorted · independently bounded</text>
+  <text x="1156" y="292" text-anchor="middle" class="tiny">before + after retained for changes</text>
+
+  <rect x="924" y="350" width="464" height="206" rx="16" class="box" stroke="#ff922b"/>
+  <text x="1156" y="394" text-anchor="middle" class="label">Git source inventory</text>
+  <text x="1156" y="432" text-anchor="middle" class="small">add · delete · modify · rename</text>
+  <text x="1156" y="468" text-anchor="middle" class="tiny">null-delimited name-status records</text>
+  <text x="1156" y="510" text-anchor="middle" class="small">correlated, never conflated</text>
+  <text x="1156" y="538" text-anchor="middle" class="tiny">a file edit is not a graph edit</text>
+
+  <path d="M1388 230 H1410 V588 Q1410 618 1380 618 H1156" class="green"/>
+  <path d="M1156 556 V618" class="green"/>
+  <text x="52" y="642" class="lane">BOUNDED PROJECTIONS</text>
+  <rect x="52" y="670" width="310" height="118" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="207" y="714" text-anchor="middle" class="label">diff graph</text>
+  <text x="207" y="750" text-anchor="middle" class="small">facts + transitions</text>
+  <text x="207" y="776" text-anchor="middle" class="tiny">exact before / after</text>
+
+  <rect x="394" y="670" width="310" height="118" rx="16" class="box" stroke="#ffd43b"/>
+  <text x="549" y="714" text-anchor="middle" class="label">diff api</text>
+  <text x="549" y="750" text-anchor="middle" class="small">provider surfaces</text>
+  <text x="549" y="776" text-anchor="middle" class="tiny">compatibility: unknown</text>
+
+  <rect x="736" y="670" width="310" height="118" rx="16" class="box" stroke="#f06595"/>
+  <text x="891" y="714" text-anchor="middle" class="label">diff impact</text>
+  <text x="891" y="750" text-anchor="middle" class="small">reverse traversal</text>
+  <text x="891" y="776" text-anchor="middle" class="tiny">same bounds + edge kinds</text>
+
+  <rect x="1078" y="670" width="310" height="118" rx="16" class="box" stroke="#b197fc"/>
+  <text x="1233" y="714" text-anchor="middle" class="label">diff tests</text>
+  <text x="1233" y="750" text-anchor="middle" class="small">reason + evidence</text>
+  <text x="1233" y="776" text-anchor="middle" class="tiny">edge · provider · syntactic</text>
+
+  <path d="M1156 618 H207 Q177 618 177 648 V660" class="blue"/>
+  <path d="M1156 618 H549 Q519 618 519 648 V660" class="yellow"/>
+  <path d="M1156 618 H891 Q861 618 861 648 V660" class="green"/>
+  <path d="M1156 618 H1233 Q1263 618 1263 648 V660" class="green"/>
+
+  <rect x="260" y="830" width="920" height="44" rx="14" fill="#242021" stroke="#ff6b6b" stroke-width="3"/>
+  <text x="720" y="858" text-anchor="middle" class="small">Failure, cancellation, or race → clean up and report, never blend snapshots</text>
+</svg>
