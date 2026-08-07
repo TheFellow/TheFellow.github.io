@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="980" viewBox="0 0 1440 980" role="img" aria-labelledby="title desc">
+  <title id="title">Source-only schema and build declarations join the ordinary Weave graph</title>
+  <desc id="desc">A bounded inventory supplies Git-visible regular non-symlink bytes without running builds, generators, package managers, Terraform, databases, templates, or network loaders. Six maintained parser lanes cover Protobuf, OpenAPI 3, GraphQL, PostgreSQL migrations, Terraform HCL, and declarative build manifests. One atomic freshness unit per category reuses an unchanged fingerprint or completely relinks a changed category. Malformed cross-file schema categories are omitted with a diagnostic, while one malformed independent build manifest is omitted without hiding valid projects. Normal graph facts then carry declared, generated, inferred, or syntactic evidence through existing context, graph, diff, watch, CI, and explorer consumers; the provider never claims compiler-exact evidence.</desc>
+  <defs>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#20c997"/></marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4}.title{fill:#f8f9fa;font:700 30px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 19px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:15px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:13px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.teal{stroke:#20c997;stroke-width:5;fill:none;marker-end:url(#arrow-teal)}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}
+    </style>
+  </defs>
+  <rect width="1440" height="980" class="bg"/>
+  <text x="720" y="55" text-anchor="middle" class="title">Index declarations without executing the repository</text>
+
+  <text x="45" y="100" class="lane">BOUNDED SOURCE INVENTORY</text>
+  <rect x="45" y="120" width="1350" height="130" rx="16" class="box" stroke="#20c997"/>
+  <text x="720" y="162" text-anchor="middle" class="label">Git-visible regular non-symlink bytes</text>
+  <text x="720" y="198" text-anchor="middle" class="small">bounded inventory · bounded files and corpus · content hashes · identity recheck after open</text>
+  <text x="720" y="226" text-anchor="middle" class="tiny">no build · restore · generator · package manager · Terraform · database · template · network loader</text>
+
+  <path d="M720 250 V280" class="teal"/>
+  <path d="M150 280 H1290" stroke="#20c997" stroke-width="5" fill="none"/>
+  <path d="M150 280 V305M378 280V305M606 280V305M834 280V305M1062 280V305M1290 280V305" stroke="#20c997" stroke-width="5" fill="none"/>
+
+  <text x="45" y="294" class="lane">MAINTAINED PARSERS</text>
+  <rect x="45" y="315" width="210" height="170" rx="14" class="box" stroke="#4dabf7"/>
+  <text x="150" y="356" text-anchor="middle" class="label">Protobuf</text>
+  <text x="150" y="394" text-anchor="middle" class="small">Buf protocompile</text>
+  <text x="150" y="426" text-anchor="middle" class="tiny">linked descriptors</text>
+  <text x="150" y="452" text-anchor="middle" class="tiny">at most 2 workers</text>
+
+  <rect x="273" y="315" width="210" height="170" rx="14" class="box" stroke="#b197fc"/>
+  <text x="378" y="356" text-anchor="middle" class="label">OpenAPI 3</text>
+  <text x="378" y="394" text-anchor="middle" class="small">kin-openapi</text>
+  <text x="378" y="426" text-anchor="middle" class="tiny">YAML source nodes</text>
+  <text x="378" y="452" text-anchor="middle" class="tiny">contained $ref only</text>
+
+  <rect x="501" y="315" width="210" height="170" rx="14" class="box" stroke="#ff922b"/>
+  <text x="606" y="356" text-anchor="middle" class="label">GraphQL</text>
+  <text x="606" y="394" text-anchor="middle" class="small">gqlparser</text>
+  <text x="606" y="426" text-anchor="middle" class="tiny">SDL + operations</text>
+  <text x="606" y="452" text-anchor="middle" class="tiny">bounded tokens</text>
+
+  <rect x="729" y="315" width="210" height="170" rx="14" class="box" stroke="#ff6b6b"/>
+  <text x="834" y="356" text-anchor="middle" class="label">PostgreSQL</text>
+  <text x="834" y="394" text-anchor="middle" class="small">Bytebase Omni</text>
+  <text x="834" y="426" text-anchor="middle" class="tiny">migration DDL</text>
+  <text x="834" y="452" text-anchor="middle" class="tiny">unsupported is visible</text>
+
+  <rect x="957" y="315" width="210" height="170" rx="14" class="box" stroke="#51cf66"/>
+  <text x="1062" y="356" text-anchor="middle" class="label">Terraform</text>
+  <text x="1062" y="394" text-anchor="middle" class="small">HashiCorp HCL</text>
+  <text x="1062" y="426" text-anchor="middle" class="tiny">addresses + traversals</text>
+  <text x="1062" y="452" text-anchor="middle" class="tiny">no runtime or state</text>
+
+  <rect x="1185" y="315" width="210" height="170" rx="14" class="box" stroke="#ffd43b"/>
+  <text x="1290" y="356" text-anchor="middle" class="label">Build manifests</text>
+  <text x="1290" y="394" text-anchor="middle" class="small">x/mod · TOML</text>
+  <text x="1290" y="426" text-anchor="middle" class="tiny">JSON · XML subsets</text>
+  <text x="1290" y="452" text-anchor="middle" class="tiny">no target execution</text>
+
+  <path d="M150 485V515M378 485V515M606 485V515M834 485V515M1062 485V515M1290 485V515" stroke="#20c997" stroke-width="5" fill="none"/>
+  <path d="M150 515 H1290" stroke="#20c997" stroke-width="5" fill="none"/>
+  <path d="M720 515 V545" class="teal"/>
+
+  <text x="45" y="555" class="lane">CATEGORY-ATOMIC FRESHNESS</text>
+  <rect x="45" y="575" width="1350" height="190" rx="16" class="box" stroke="#20c997"/>
+  <text x="720" y="615" text-anchor="middle" class="label">One atomic freshness unit per declaration family</text>
+
+  <rect x="85" y="640" width="390" height="88" rx="12" fill="#1d2927" stroke="#51cf66" stroke-width="3"/>
+  <text x="280" y="674" text-anchor="middle" class="small">fingerprint unchanged</text>
+  <text x="280" y="704" text-anchor="middle" class="tiny">reuse the previous unit · invoke no parser</text>
+
+  <rect x="525" y="640" width="390" height="88" rx="12" fill="#1d2927" stroke="#4dabf7" stroke-width="3"/>
+  <text x="720" y="674" text-anchor="middle" class="small">fingerprint changed</text>
+  <text x="720" y="704" text-anchor="middle" class="tiny">relink the full category · publish atomically</text>
+
+  <rect x="965" y="640" width="390" height="88" rx="12" fill="#2a2020" stroke="#ff6b6b" stroke-width="3"/>
+  <text x="1160" y="674" text-anchor="middle" class="small">input malformed</text>
+  <text x="1160" y="700" text-anchor="middle" class="tiny">cross-file schema: omit category</text>
+  <text x="1160" y="720" text-anchor="middle" class="tiny">build: omit bad file · retain valid projects</text>
+
+  <path d="M720 765 V800" class="blue"/>
+
+  <text x="45" y="811" class="lane">ONE ORDINARY EVIDENCE GRAPH</text>
+  <rect x="45" y="830" width="1350" height="115" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="720" y="868" text-anchor="middle" class="label">graph.UnitFacts through the shared relationship builder</text>
+  <text x="720" y="900" text-anchor="middle" class="small">declared · explicit generated · migration-order inferred · executable syntactic · never compiler exact</text>
+  <text x="720" y="930" text-anchor="middle" class="tiny">context · graph / DOT · export · diff · watch · CI · explorer · architecture policy</text>
+</svg>

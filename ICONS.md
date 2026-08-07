@@ -16,6 +16,7 @@ The local semantic names map to Lucide icons as follows:
 | `watch` | `activity` |
 | `link` | `link-2` |
 | `package` | `package-check` |
+| `braces` | `braces` |
 | `route` | `route` |
 | `fluid` | `waves-horizontal` |
 | `values` | `shapes` |
