@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 12:15:00 -0700
+last_modified_at: 2026-08-07 12:45:59 -0700
 excerpt: "A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries."
 language: "Go"
 license: "MIT"
@@ -53,6 +53,8 @@ The same normalized graph supports local and cross-repository questions. Explici
 Repeated catalog graph queries can use an immutable machine-wide hot projection without making it a freshness authority. Every selected worktree still refreshes first; the complete sorted set of manifest generations selects a cache containing only symbols, search tokens, edges, and fact provenance. Exact hits avoid query fan-out across every worktree graph, generation changes build a different file, and cache failures fall back to authoritative federation. Definitions, occurrences, documents, and source-rich context remain in their owning indexes.
 
 The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C#, F#, Python, Rust, C, C++, CUDA, TypeScript, JavaScript, Java, and Kotlin coverage, a broad syntactic fallback, structured workspace navigation, authored contextual relationships, focused DOT export and an animated local explorer, bounded source-rich context dossiers, an open process protocol and registry, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. `weave context` composes one exact entity, its definition and reference excerpts, direct relationships, adjacent entities, repository provenance, freshness, and independent truncation without adding a source cache or embedding index. The first repository-scale baseline has already changed the implementation: bounded per-unit storage transactions, candidate pruning for interface analysis, and fixed-size domain-separated Go fact identities brought a 433,523-fact Mixology index from beyond the five-minute measurement bound to 37.8 seconds. Compact identities reduced the graph from 7.54 GB to 1.11 GB, which is a substantial correction and still an explicit target for further reduction.
+
+Storage v2 pursues that remaining size explicitly without changing the public graph model. Stable string identities map to compact numeric entities, repeated categorical values are reference-counted interns, and search/adjacency rows separate from colder provider, evidence, range, and document details. Batched hydration reconstructs the same deterministic export, while private verification checks ownership, matching details, indirection, and reference counts. On a retained 5,000-symbol, 4,999-edge fixture, v2 reduced the database from 96.8 MB to 63.6 MB, or 34.3%, while recording slower cold-detail and whole-export paths rather than weakening graph evidence. Legacy indexes are rejected without modification and rebuilt from source rather than migrated in place.
 
 The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, ordered the F# project graph, and proved genuine FKYeah indexing. The large-solution bound remains visible.
 
