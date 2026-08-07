@@ -35,6 +35,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
 - [Keeping a Semantic Index Fresh Without a Daemon](https://thefellow.github.io/articles/keeping-a-semantic-index-fresh-without-a-daemon.md): Query-driven refresh keeps semantic evidence aligned with live Git state.
+- [Making a Semantic Graph Inspectable](https://thefellow.github.io/articles/making-a-semantic-graph-inspectable.md): One bounded semantic neighborhood feeds DOT, JSON, and a local animated explorer.
 - [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go.md): F# techniques make Go domain constraints explicit and enforceable.
 - [Making Language Support a Process Contract](https://thefellow.github.io/articles/making-language-support-a-process-contract.md): A bounded process contract keeps language runtimes isolated and evidence complete.
 - [Preserving Truth Through Operational Degradation](https://thefellow.github.io/articles/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.

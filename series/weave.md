@@ -19,3 +19,4 @@ Weave turns language-native compiler facts and live Git state into a local seman
 
 1. **Article:** [Keeping a Semantic Index Fresh Without a Daemon](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md): How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence.
 2. **Article:** [Making Language Support a Process Contract](/articles/making-language-support-a-process-contract.md): How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication.
+3. **Article:** [Making a Semantic Graph Inspectable](/articles/making-a-semantic-graph-inspectable.md): How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model.
