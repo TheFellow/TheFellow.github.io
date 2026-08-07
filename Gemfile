@@ -2,6 +2,13 @@ source "https://rubygems.org"
 
 ruby "3.3.12"
 
-gem "github-pages", group: :jekyll_plugins
-gem "jekyll-include-cache", group: :jekyll_plugins
-gem "jekyll-redirect-from", group: :jekyll_plugins
+gem "jekyll", "~> 4.4"
+
+group :jekyll_plugins do
+  gem "jekyll-feed"
+  gem "jekyll-include-cache"
+  gem "jekyll-redirect-from"
+  gem "jekyll-remote-theme"
+  gem "jekyll-seo-tag"
+  gem "jekyll-sitemap"
+end
