@@ -1,10 +1,10 @@
 ---
 title: "Building Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 13:56:40 -0700
-excerpt: "An ordered path through Weave's fresh compiler-backed graph, exact caching and storage, semantic comparison, and optional watch-mode warming."
+last_modified_at: 2026-08-07 14:28:12 -0700
+excerpt: "An ordered path through Weave's fresh compiler-backed graph, exact storage, semantic comparison, watch warming, and revision-guarded contextual authoring."
 order: 5
-entries_label: "8 articles"
+entries_label: "9 articles"
 icon: "route"
 accent: "#4dabf7"
 topics: ["Go", "Code intelligence", "Developer tools"]
@@ -12,7 +12,7 @@ project_url: "/projects/weave/"
 repository_url: "https://github.com/TheFellow/weave"
 ---
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, and architecture rules.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, and architecture rules.
 
 [Explore the project](/projects/weave/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/weave){: .btn }

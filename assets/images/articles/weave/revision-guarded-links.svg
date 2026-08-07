@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">The explorer inspects graph evidence and edits revision-guarded source declarations</title>
+  <desc id="desc">Stable node and visual-edge selections use the bounded context application path to return current source evidence. The browser separately loads canonical contextual links and their revision. Mutations carry that revision through strict loopback endpoints. Under a private lock, Weave reloads the declaration, rejects stale revisions, validates the edit, atomically writes bridges.json, and refreshes the normal graph provider.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#b197fc"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff6b6b"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4}.title{fill:#f8f9fa;font:700 31px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 21px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:17px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:15px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.purple{stroke:#b197fc;stroke-width:5;fill:none;marker-end:url(#arrow-purple)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}.red{stroke:#ff6b6b;stroke-width:5;fill:none;marker-end:url(#arrow-red)}
+    </style>
+  </defs>
+  <rect width="1440" height="900" class="bg"/>
+  <text x="720" y="60" text-anchor="middle" class="title">Inspect graph evidence, edit the checked-in declaration</text>
+
+  <text x="52" y="112" class="lane">SELECTION EVIDENCE</text>
+  <rect x="52" y="138" width="310" height="174" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="207" y="180" text-anchor="middle" class="label">Node or visual edge</text>
+  <text x="207" y="220" text-anchor="middle" class="small">stable SVG identity</text>
+  <text x="207" y="256" text-anchor="middle" class="tiny">collapsed edge retains all facts</text>
+  <text x="207" y="286" text-anchor="middle" class="tiny">exact edge ID selected</text>
+
+  <path d="M362 225 H454" class="blue"/>
+
+  <rect x="464" y="138" width="416" height="174" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="672" y="180" text-anchor="middle" class="label">Bounded context use case</text>
+  <text x="672" y="220" text-anchor="middle" class="small">current graph + provenance</text>
+  <text x="672" y="256" text-anchor="middle" class="tiny">same safe source loader and budget</text>
+  <text x="672" y="286" text-anchor="middle" class="tiny">stale edge selection fails closed</text>
+
+  <path d="M880 225 H972" class="green"/>
+
+  <rect x="982" y="138" width="406" height="174" rx="16" class="box" stroke="#51cf66"/>
+  <text x="1185" y="180" text-anchor="middle" class="label">Inspector detail</text>
+  <text x="1185" y="220" text-anchor="middle" class="small">facts · evidence · source</text>
+  <text x="1185" y="256" text-anchor="middle" class="tiny">document + range + repository</text>
+  <text x="1185" y="286" text-anchor="middle" class="tiny">no arbitrary filesystem reads</text>
+
+  <text x="52" y="382" class="lane">REVISION-GUARDED AUTHORING</text>
+  <rect x="52" y="408" width="310" height="214" rx="16" class="box" stroke="#b197fc"/>
+  <text x="207" y="452" text-anchor="middle" class="label">Link editor</text>
+  <text x="207" y="492" text-anchor="middle" class="small">GET links + revision</text>
+  <text x="207" y="532" text-anchor="middle" class="small">POST · PUT · DELETE</text>
+  <text x="207" y="570" text-anchor="middle" class="tiny">exact ID + expected revision</text>
+  <text x="207" y="600" text-anchor="middle" class="tiny">strict same-origin JSON</text>
+
+  <path d="M362 514 H454" class="purple"/>
+
+  <rect x="464" y="408" width="416" height="214" rx="16" class="box" stroke="#b197fc"/>
+  <text x="672" y="452" text-anchor="middle" class="label">Application link use case</text>
+  <text x="672" y="492" text-anchor="middle" class="small">resolve exact endpoints</text>
+  <text x="672" y="532" text-anchor="middle" class="small">validate operation shape</text>
+  <text x="672" y="570" text-anchor="middle" class="tiny">same commands as CLI clients</text>
+  <text x="672" y="600" text-anchor="middle" class="tiny">never write graph storage</text>
+
+  <path d="M880 514 H972" class="purple"/>
+
+  <rect x="982" y="408" width="406" height="214" rx="16" class="box" stroke="#ff922b"/>
+  <text x="1185" y="452" text-anchor="middle" class="label">Locked source edit</text>
+  <text x="1185" y="492" text-anchor="middle" class="small">reload latest bridges.json</text>
+  <text x="1185" y="532" text-anchor="middle" class="small">compare revision · validate</text>
+  <text x="1185" y="570" text-anchor="middle" class="tiny">sort · temp · sync · rename</text>
+  <text x="1185" y="600" text-anchor="middle" class="tiny">Git-private edit lock</text>
+
+  <path d="M1185 622 V686 Q1185 706 1165 706 H719 V714" class="green"/>
+  <path d="M1040 622 V652 Q1040 672 1020 672 H243 V714" class="red"/>
+
+  <text x="52" y="698" class="lane">OUTCOMES</text>
+  <rect x="52" y="724" width="382" height="126" rx="16" class="box" stroke="#ff6b6b"/>
+  <text x="243" y="768" text-anchor="middle" class="label">Revision mismatch</text>
+  <text x="243" y="806" text-anchor="middle" class="small">409 conflict · reload first</text>
+  <text x="243" y="834" text-anchor="middle" class="tiny">stale form changes nothing</text>
+
+  <rect x="528" y="724" width="382" height="126" rx="16" class="box" stroke="#51cf66"/>
+  <text x="719" y="768" text-anchor="middle" class="label">Canonical declaration</text>
+  <text x="719" y="806" text-anchor="middle" class="small">checked-in reviewed intent</text>
+  <text x="719" y="834" text-anchor="middle" class="tiny">.weave/bridges.json is authority</text>
+
+  <rect x="1006" y="724" width="382" height="126" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="1197" y="768" text-anchor="middle" class="label">Normal graph refresh</text>
+  <text x="1197" y="806" text-anchor="middle" class="small">bridge provider rebuilds facts</text>
+  <text x="1197" y="834" text-anchor="middle" class="tiny">freshness remains authoritative</text>
+
+  <path d="M910 787 H996" class="green"/>
+</svg>

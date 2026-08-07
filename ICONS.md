@@ -14,6 +14,7 @@ The local semantic names map to Lucide icons as follows:
 | `branch` | `git-branch` |
 | `compare` | `git-compare` |
 | `watch` | `activity` |
+| `link` | `link-2` |
 | `route` | `route` |
 | `fluid` | `waves-horizontal` |
 | `values` | `shapes` |

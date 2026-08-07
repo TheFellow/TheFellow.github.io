@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 13:56:40 -0700
+last_modified_at: 2026-08-07 14:28:12 -0700
 excerpt: "A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries."
 language: "Go"
 license: "MIT"
@@ -59,6 +59,8 @@ Storage v2 pursues that remaining size explicitly without changing the public gr
 Git-aware semantic diffs extend the same evidence model across time. `weave diff graph`, `api`, `impact`, and `tests` index exact baseline and optional head revisions through the configured providers in isolated detached worktrees, or compare a baseline with the current dirty overlay. Git source changes remain separate from stable-ID graph changes, snapshot digests identify normalized facts independently of temporary worktree state, provider surface changes keep compatibility `unknown`, and affected tests retain their selection reason and evidence. A bounded explorer endpoint returns the same graph diff and stable transition identities for keyed browser animation.
 
 An optional `weave watch` foreground process can warm that same query-authoritative index after changes without installing a daemon, hook, native watcher, or second provider pipeline. It polls an exact opaque Git/provider observation, coalesces edits through one loop, refreshes only through the existing worktree lock and non-forced freshness operation, and retries unchanged failures with bounded backoff. Queries still prove freshness independently; the watcher changes latency, not authority.
+
+The local explorer is also growing into a source-evidence inspector and contextual-link editor without becoming a graph database editor. Stable node and collapsed-edge identities retrieve bounded current source through the existing context use case. Browser mutations carry an order-independent declaration revision into the normal link application boundary; the latest `.weave/bridges.json` is reloaded under a Git-private lock, stale forms receive a conflict, successful writes are atomic, and the bridge provider refreshes the canonical graph.
 
 The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, ordered the F# project graph, and proved genuine FKYeah indexing. The large-solution bound remains visible.
 
