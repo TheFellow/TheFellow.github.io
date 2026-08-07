@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-06 22:55:00 -0700
+last_modified_at: 2026-08-06 23:14:00 -0700
 excerpt: "A local-first semantic index that turns compiler facts and live Git state into bounded, deterministic code queries."
 language: "Go"
 license: "MIT"
@@ -41,7 +41,9 @@ The automatic Go, .NET, and bridge producers own disjoint inventories of semanti
 
 The same normalized graph supports local and cross-repository questions. Explicitly registered worktrees can participate in catalog queries, but each member refreshes before its database is opened. A member that cannot refresh is excluded with a diagnostic instead of silently contributing stale facts. Architecture rules then evaluate the same imports, calls, dependencies, and declared bridges that interactive queries expose, with deterministic text, JSON, and SARIF output for local use and CI.
 
-The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C# and F# coverage through the optional adapter, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. The first tagged release remains ahead. The release workflow is already shaped around checksummed core archives and same-version .NET adapter artifacts so the packaging boundary is tested as part of the product rather than left as a manual follow-up.
+The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C# and F# coverage through the optional adapter, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. The first repository-scale baseline has already changed the implementation: bounded per-unit storage transactions, candidate pruning for interface analysis, and fixed-size domain-separated Go fact identities brought a 433,523-fact Mixology index from beyond the five-minute measurement bound to 37.8 seconds. Compact identities reduced the graph from 7.54 GB to 1.11 GB, which is a substantial correction and still an explicit target for further reduction.
+
+The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The first tagged release remains ahead; its workflow is already shaped around checksummed core archives and same-version .NET adapter artifacts so packaging and runtime limitations are visible parts of the product.
 
 ### Why it is worth exploring
 
