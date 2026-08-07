@@ -1,7 +1,7 @@
 ---
 title: "Making Language Support a Process Contract"
 date: 2026-08-07 01:02:00 -0700
-last_modified_at: 2026-08-07 01:27:00 -0700
+last_modified_at: 2026-08-07 10:19:00 -0700
 excerpt: "How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication."
 permalink: /articles/making-language-support-a-process-contract/
 series: weave
@@ -25,7 +25,7 @@ weave adapters doctor
 weave index --adapter ./my-compiler-adapter --timeout 2m
 ```
 
-The same [experimental protocol](https://github.com/TheFellow/weave/blob/main/protocol/adapter/v0/README.md) is implemented by the .NET adapter in C# and the Python adapter in Python. That makes language neutrality observable rather than architectural intent.
+The same [experimental protocol](https://github.com/TheFellow/weave/blob/main/protocol/adapter/v0/README.md) is implemented directly in C#, Python, and Rust, while small Go bridges supervise compiler-native SCIP producers and Universal Ctags. Language neutrality is observable in running processes rather than left as architectural intent.
 
 <figure class="article-figure">
   <img src="{{ '/assets/images/articles/weave/adapter-contract.svg' | relative_url }}" alt="The Weave core first asks an isolated adapter process to describe its capabilities. It then sends a bounded request containing repository context, permissions, and limits. The adapter uses its native compiler runtime and streams complete unit frames. The core stages and validates the full response before publishing semantic units to the graph.">
@@ -165,6 +165,8 @@ The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, 
 
 Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
 
+TypeScript, JavaScript, Java, and Kotlin reuse that SCIP boundary with different trust profiles. `weave-typescript` requires an existing root compiler configuration and never invokes a package manager, infers a configuration, or writes into the checkout. `weave-jvm` delegates to `scip-java`, which can run Gradle, Maven, or Bazel and execute build extensions. JVM indexing therefore remains an explicit run with all four grants unless a user-controlled registry deliberately records those powers and a conservative input inventory. Both adapters translate their producers' legacy UTF-16 ranges to Weave's byte coordinates instead of guessing from source encoding metadata.
+
 Python makes the distinction sharper. CPython's `symtable` can establish that a name is a local, global, free, or nonlocal lexical binding slot. It cannot establish which object that slot will hold when a call executes. The adapter therefore emits:
 
 | Python fact | Evidence |
@@ -175,6 +177,8 @@ Python makes the distinction sharper. CPython's `symtable` can establish that a 
 | Dynamic attributes, decorators' effects, and runtime-generated symbols | omitted |
 
 `exact` is scoped to the claim. An exact Python fact says the recorded interpreter made that lexical decision, not that Python's runtime dispatch has become static.
+
+The Universal Ctags adapter makes the lower boundary equally explicit. It emits documents, symbols, and definition occurrences as `syntactic` evidence for a broad collection of languages and formats. References, calls, inheritance, and other relationships are absent. It is an explicit enrichment provider, not an automatic replacement for a compiler-backed adapter.
 
 ## Let a new language improve the common graph
 
@@ -188,9 +192,15 @@ C++ exposed a different interchange assumption. SCIP permits a producer to repea
 
 That is the architectural test an external adapter should create. It may extend the fact vocabulary or reveal a missing invariant, but the resulting semantics belong in the shared graph and protocol. Presentation code should not inspect `provider == "weave-python"` to decide what a definition means.
 
+## Keep enrichment additive
+
+Every completed run may replace only facts owned by its provider. The host now rejects a document, symbol, occurrence, or edge whose provider differs from the enclosing unit and run. A broad syntactic adapter therefore cannot relabel compiler facts, and a compiler upgrade cannot delete document relationships owned by the workspace provider.
+
+Owning an edge does not imply owning either endpoint. A precise compiler relationship, a syntactic outline, a generated-schema bridge, and a declared human relationship can connect the same graph without one provider calling another or writing storage directly. The core unions those observations while retaining provider and evidence. Any future reconciliation must add its own evidenced relationship rather than silently merging identities or promoting a heuristic to compiler truth.
+
 ## Make automatic authority an explicit choice
 
-The core includes conservative automatic profiles for its known adapters. A third-party language can join the same freshness path without adding its executable name or file extensions to Go. The user selects a strict [`weave.adapters/v1` registry](https://github.com/TheFellow/weave/blob/main/internal/adapter/registry.go) with `WEAVE_ADAPTER_CONFIG`; each registration declares a provider name, a literal argv array, Git-visible input extensions and filenames, explicit permissions, and an optional timeout.
+The core includes conservative automatic profiles for known adapters whose query-time permissions are bounded. TypeScript activates only for a root `tsconfig.json` or `jsconfig.json` and fingerprints every Git-visible input rather than guessing through a monorepo. A third-party language or a more powerful JVM build can join the same freshness path without adding its executable name or file extensions to Go. The user selects a strict [`weave.adapters/v1` registry](https://github.com/TheFellow/weave/blob/main/internal/adapter/registry.go) with `WEAVE_ADAPTER_CONFIG`; each registration declares a provider name, a literal argv array, Git-visible input extensions and filenames, explicit permissions, and an optional timeout.
 
 The registry is never discovered inside the repository or inferred by scanning `PATH` for a naming convention. Weave resolves the selected file to an absolute path; selecting it is the trust decision. Bare command names receive normal platform executable lookup only after that decision, arguments never pass through a shell, and permissions remain denied unless the registration grants them. The normalized registration and registry path participate in provider identity, so changing execution policy invalidates the appropriate inventory.
 
@@ -199,6 +209,12 @@ That configuration also fails closed. Unknown fields, duplicate or reserved prov
 An arbitrary executable can already be run with `weave index --adapter PATH`. That explicit command validates and atomically publishes its inventory, but it does not yet teach future queries how to rediscover and rerun the executable. Its facts are an imported snapshot until the user runs it again. Automatic discovery of arbitrary PATH entries would need an installation registry and trust policy, not a broader filename convention.
 
 This distinction keeps the extension point open without silently executing a newly installed program inside every repository. The protocol is public; automatic authority remains a user-controlled policy.
+
+## Package the bridge without hiding the runtime
+
+The process boundary also makes distribution honest. The release configuration can ship the pure-Go C++, TypeScript, and JVM bridges together for macOS, Linux, and Windows on amd64 and arm64. Those small executables still report their external requirements: `scip-clang`, Node plus `scip-typescript`, or Java plus `scip-java` remain explicit installations.
+
+The other runtimes keep their native delivery shapes. .NET uses self-contained companion archives, Python uses a wheel, and Rust waits for a reproducible native target matrix. A bundle name is convenience, not evidence that the language toolchain is embedded or trusted. `describe` stays side-effect free when the producer is absent, and `weave adapters doctor` reports the missing requirement.
 
 ## Build against the bytes
 
@@ -220,6 +236,6 @@ weave export --json
 
 No Go helper library is required for conformance. A generated binding or ecosystem SDK may reduce boilerplate later, but the bytes and behavior remain authoritative.
 
-Version zero is intentionally experimental. Its newline JSON framing lets the fact model and failure contract evolve before compatibility is promised. A stable version one is planned around a checked-in protobuf schema with optional generated bindings. A persistent worker mode may eventually reduce compiler startup time, but one-shot execution remains the compatibility floor and correctness cannot depend on a resident process.
+Version zero is intentionally experimental. Its newline JSON framing lets the fact model and failure contract evolve before compatibility is promised. A stable version one will require a checked-in language-neutral wire specification, compatibility rules, fixtures, and a reusable executable conformance suite, but it is not required to use protobuf merely because the process model resembles `protoc`. A persistent worker mode may eventually reduce compiler startup time, but one-shot execution remains the compatibility floor and correctness cannot depend on a resident process.
 
 That leaves Weave with a narrow center. The core knows how to supervise evidence, validate it, keep it fresh, and query it. Each adapter knows how its language establishes that evidence. Adding a compiler no longer requires pretending every runtime belongs inside one program.

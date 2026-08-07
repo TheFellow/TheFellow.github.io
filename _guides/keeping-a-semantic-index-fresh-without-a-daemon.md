@@ -1,7 +1,7 @@
 ---
 title: "Keeping a Semantic Index Fresh Without a Daemon"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 01:15:00 -0700
+last_modified_at: 2026-08-07 10:19:00 -0700
 excerpt: "How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence."
 permalink: /articles/keeping-a-semantic-index-fresh-without-a-daemon/
 series: weave
@@ -72,7 +72,7 @@ Hooks and watch processes can eventually make that path warmer, but they cannot 
 
 ## Providers own complete semantic units
 
-Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths and extracts structured document, section, link, asset, route, topic, series, and code-fence facts without executing a renderer. The native Go provider uses `go/packages` and `go/types`. The optional .NET process uses Roslyn and MSBuild for C#, and FSharp.Compiler.Service for F#. The optional Python process uses CPython's parser and compiler symbol table for exact lexical binding facts while labeling imports `declared` and calls `syntactic`. Rust-analyzer and `scip-clang` now supply compiler-resolved Rust and C/C++/CUDA facts through bounded process adapters. Runtime, compiler, configuration, and toolchain probes participate in freshness so an environment change cannot silently reuse an older inventory. A checked-in [bridge file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes exact `depends-on`, `documents`, and `generates` relationships that no single compiler can establish.
+Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths and extracts structured document, section, link, asset, route, topic, series, and code-fence facts without executing a renderer. The native Go provider uses `go/packages` and `go/types`. The optional .NET process uses Roslyn and MSBuild for C#, and FSharp.Compiler.Service for F#. The optional Python process uses CPython's parser and compiler symbol table for exact lexical binding facts while labeling imports `declared` and calls `syntactic`. Rust-analyzer, `scip-clang`, `scip-typescript`, and `scip-java` supply compiler-resolved Rust, C/C++/CUDA, TypeScript/JavaScript, and Java/Kotlin facts through bounded process adapters. Runtime, compiler, configuration, and toolchain probes participate in freshness so an environment change cannot silently reuse an older inventory. A checked-in [relationship file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes reviewed connections that no single compiler can establish.
 
 The workspace provider has a deliberately different failure boundary. Malformed, non-UTF-8, or oversized structured content retains exact file-topology facts and publishes a bounded diagnostic with the manifest, so one prose file cannot make compiler queries unavailable. A transient read or identity race still aborts the refresh. Persisting the first kind and retrying the second keeps stable source limitations distinct from an unsafe snapshot.
 
