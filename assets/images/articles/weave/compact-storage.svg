@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
+  <title id="title">A compact private storage schema reconstructs the same public semantic graph</title>
+  <desc id="desc">Stable public graph facts pass through a storage codec. Repeated strings become reference-counted intern and entity records. Narrow hot records support search and adjacency while cold details hold ranges, providers, evidence, and documents. Batched hydration reconstructs unchanged graph facts, and storage verification checks indirection and reference counts.</desc>
+  <defs>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 24px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.cyan{stroke:#22b8cf;stroke-width:5;fill:none;marker-end:url(#arrow-cyan)}
+    </style>
+  </defs>
+  <rect width="1440" height="810" class="bg"/>
+  <text x="720" y="74" text-anchor="middle" class="title">Compact representation, unchanged graph meaning</text>
+
+  <text x="52" y="146" class="lane">PUBLIC MODEL</text>
+  <rect x="52" y="174" width="326" height="336" class="box" stroke="#4dabf7"/>
+  <text x="215" y="222" text-anchor="middle" class="label">Stable graph facts</text>
+  <text x="215" y="270" text-anchor="middle" class="small">units · documents</text>
+  <text x="215" y="310" text-anchor="middle" class="small">symbols · occurrences</text>
+  <text x="215" y="350" text-anchor="middle" class="small">typed relationships</text>
+  <text x="215" y="402" text-anchor="middle" class="tiny">string identities</text>
+  <text x="215" y="434" text-anchor="middle" class="tiny">provider · evidence · ranges</text>
+  <text x="215" y="466" text-anchor="middle" class="tiny">canonical ordering</text>
+
+  <path d="M378 342 H486" class="blue"/>
+
+  <text x="486" y="146" class="lane">PRIVATE STORAGE V2</text>
+  <rect x="486" y="174" width="430" height="154" class="box" stroke="#51cf66"/>
+  <text x="701" y="220" text-anchor="middle" class="label">Shared dictionaries</text>
+  <text x="701" y="258" text-anchor="middle" class="small">numeric entities · interned strings</text>
+  <text x="701" y="292" text-anchor="middle" class="tiny">reference-counted across units</text>
+
+  <rect x="486" y="366" width="430" height="154" class="box" stroke="#22b8cf"/>
+  <text x="701" y="412" text-anchor="middle" class="label">Narrow hot records</text>
+  <text x="701" y="450" text-anchor="middle" class="small">names · tokens · numeric endpoints</text>
+  <text x="701" y="484" text-anchor="middle" class="tiny">search and bounded adjacency</text>
+
+  <rect x="486" y="558" width="430" height="116" class="box" stroke="#b197fc"/>
+  <text x="701" y="602" text-anchor="middle" class="label">Cold detail records</text>
+  <text x="701" y="640" text-anchor="middle" class="small">ranges · provider · evidence · document</text>
+
+  <path d="M916 251 H1020" class="cyan"/>
+  <path d="M916 443 H966 Q994 443 994 363 H1020" class="cyan"/>
+  <path d="M916 616 H966 Q994 616 994 457 H1020" class="cyan"/>
+
+  <text x="1020" y="146" class="lane">BOUNDED HYDRATION</text>
+  <rect x="1020" y="174" width="368" height="336" class="box" stroke="#f06595"/>
+  <text x="1204" y="222" text-anchor="middle" class="label">Same public facts</text>
+  <text x="1204" y="270" text-anchor="middle" class="small">batch required IDs</text>
+  <text x="1204" y="310" text-anchor="middle" class="small">load selected details</text>
+  <text x="1204" y="350" text-anchor="middle" class="small">restore stable strings</text>
+  <text x="1204" y="402" text-anchor="middle" class="tiny">same export · order · bounds</text>
+  <text x="1204" y="434" text-anchor="middle" class="tiny">corruption never guessed around</text>
+  <text x="1204" y="466" text-anchor="middle" class="tiny">graph schema unchanged</text>
+
+  <rect x="232" y="716" width="976" height="48" fill="#242021" stroke="#ff922b" stroke-width="3" rx="16"/>
+  <text x="720" y="747" text-anchor="middle" class="small">Verification checks ownership · details · indirection · reference counts</text>
+</svg>
