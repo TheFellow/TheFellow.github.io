@@ -51,6 +51,7 @@ SUMMARIES = {
     "/articles/comparing-semantic-graphs-without-mutating-the-worktree/": ("Semantic snapshot diffs", "Exact Git sides become bounded graph, API, impact, and affected-test evidence."),
     "/articles/warming-a-semantic-index-without-making-the-watcher-authoritative/": ("Optional watch warming", "One polling loop warms the same query-authoritative freshness pipeline."),
     "/articles/editing-contextual-graph-links-without-losing-source-truth/": ("Revision-guarded graph links", "The explorer inspects current evidence and edits checked-in intent without writing graph storage."),
+    "/articles/managing-compiler-adapters-without-inventing-a-package-registry/": ("Managed local adapters", "Pinned artifacts, capability claims, deterministic routing, and black-box conformance make local adapters safely automatic."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),

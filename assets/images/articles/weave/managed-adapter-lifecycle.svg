@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="930" viewBox="0 0 1440 930" role="img" aria-labelledby="title desc">
+  <title id="title">A local adapter becomes pinned, routable automatic language support</title>
+  <desc id="desc">A user explicitly selects one local executable. Weave stages a private copy, negotiates and normalizes its public claims, then atomically stores artifact and capability digests. Automatic indexing merges managed and explicit policy, rejects overlapping owners, routes Git-visible paths, rechecks integrity and capabilities, and uses the existing bounded index pipeline. Metadata listing, doctor, and a black-box conformance corpus expose each layer independently.</desc>
+  <defs>
+    <marker id="arrow-yellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ffd43b"/></marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4}.title{fill:#f8f9fa;font:700 30px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 20px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:14px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.yellow{stroke:#ffd43b;stroke-width:5;fill:none;marker-end:url(#arrow-yellow)}.blue{stroke:#4dabf7;stroke-width:5;fill:none;marker-end:url(#arrow-blue)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}
+    </style>
+  </defs>
+  <rect width="1440" height="930" class="bg"/>
+  <text x="720" y="58" text-anchor="middle" class="title">Trust a local adapter without inventing a remote registry</text>
+
+  <text x="52" y="108" class="lane">EXPLICIT INSTALLATION</text>
+  <rect x="52" y="134" width="350" height="190" rx="16" class="box" stroke="#ffd43b"/>
+  <text x="227" y="178" text-anchor="middle" class="label">Selected local artifact</text>
+  <text x="227" y="218" text-anchor="middle" class="small">relocatable · regular · non-symlink</text>
+  <text x="227" y="254" text-anchor="middle" class="tiny">no download or package manager</text>
+  <text x="227" y="284" text-anchor="middle" class="tiny">literal args + explicit permissions</text>
+
+  <path d="M402 229 H455" class="yellow"/>
+
+  <rect x="465" y="134" width="430" height="190" rx="16" class="box" stroke="#ffd43b"/>
+  <text x="680" y="178" text-anchor="middle" class="label">Stage and describe</text>
+  <text x="680" y="218" text-anchor="middle" class="small">private platform-state copy</text>
+  <text x="680" y="254" text-anchor="middle" class="tiny">normalize inputs · evidence · provider</text>
+  <text x="680" y="284" text-anchor="middle" class="tiny">side-effect-free capability handshake</text>
+
+  <path d="M895 229 H948" class="yellow"/>
+
+  <rect x="958" y="134" width="430" height="190" rx="16" class="box" stroke="#ffd43b"/>
+  <text x="1173" y="178" text-anchor="middle" class="label">Pin atomic manifest</text>
+  <text x="1173" y="218" text-anchor="middle" class="small">artifact SHA-256 + capability SHA-256</text>
+  <text x="1173" y="254" text-anchor="middle" class="tiny">strict · bounded · sorted · locked</text>
+  <text x="1173" y="284" text-anchor="middle" class="tiny">sync temporary file · rename</text>
+
+  <path d="M1173 324 V360 Q1173 376 1157 376 H227 V400" class="blue"/>
+
+  <text x="52" y="384" class="lane">AUTOMATIC ROUTING</text>
+  <rect x="52" y="410" width="350" height="204" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="227" y="454" text-anchor="middle" class="label">Merge explicit policy</text>
+  <text x="227" y="494" text-anchor="middle" class="small">registry &gt; environment &gt; managed</text>
+  <text x="227" y="530" text-anchor="middle" class="tiny">same-name precedence only</text>
+  <text x="227" y="560" text-anchor="middle" class="tiny">ambient PATH grants nothing</text>
+
+  <path d="M402 512 H455" class="blue"/>
+
+  <rect x="465" y="410" width="430" height="204" rx="16" class="box" stroke="#4dabf7"/>
+  <text x="680" y="454" text-anchor="middle" class="label">Route concrete inputs</text>
+  <text x="680" y="494" text-anchor="middle" class="small">extensions · filenames · markers</text>
+  <text x="680" y="530" text-anchor="middle" class="tiny">one precise owner, else one fallback</text>
+  <text x="680" y="560" text-anchor="middle" class="tiny">routed input_paths bound fallback output</text>
+
+  <path d="M895 512 H948" class="blue"/>
+
+  <rect x="958" y="410" width="430" height="204" rx="16" class="box" stroke="#51cf66"/>
+  <text x="1173" y="454" text-anchor="middle" class="label">Verify, then index</text>
+  <text x="1173" y="494" text-anchor="middle" class="small">recheck bytes · provider · claims</text>
+  <text x="1173" y="530" text-anchor="middle" class="tiny">bounded existing process protocol</text>
+  <text x="1173" y="560" text-anchor="middle" class="tiny">atomic graph + freshness publication</text>
+
+  <path d="M1173 614 V650 Q1173 666 1157 666 H227 V690" class="green"/>
+
+  <text x="52" y="674" class="lane">OBSERVABILITY</text>
+  <rect x="52" y="700" width="350" height="174" rx="16" class="box" stroke="#b197fc"/>
+  <text x="227" y="744" text-anchor="middle" class="label">adapters list</text>
+  <text x="227" y="784" text-anchor="middle" class="small">metadata only</text>
+  <text x="227" y="820" text-anchor="middle" class="tiny">does not execute or index</text>
+  <text x="227" y="848" text-anchor="middle" class="tiny">safe for cheap inspection</text>
+
+  <rect x="465" y="700" width="430" height="174" rx="16" class="box" stroke="#ff922b"/>
+  <text x="680" y="744" text-anchor="middle" class="label">adapters doctor</text>
+  <text x="680" y="784" text-anchor="middle" class="small">integrity + bounded describe</text>
+  <text x="680" y="820" text-anchor="middle" class="tiny">requirements and drift made visible</text>
+  <text x="680" y="848" text-anchor="middle" class="tiny">never sends an index request</text>
+
+  <rect x="958" y="700" width="430" height="174" rx="16" class="box" stroke="#51cf66"/>
+  <text x="1173" y="744" text-anchor="middle" class="label">adapters conformance</text>
+  <text x="1173" y="784" text-anchor="middle" class="small">opaque executable + real fixture</text>
+  <text x="1173" y="820" text-anchor="middle" class="tiny">malformed · replay · host bounds</text>
+  <text x="1173" y="848" text-anchor="middle" class="tiny">no implementation SDK required</text>
+</svg>
