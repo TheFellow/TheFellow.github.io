@@ -59,6 +59,7 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Preserving Truth Through Operational Degradation](/articles/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
 - [Making Source Bodies Discoverable Without Copying Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave attaches bounded provider-owned lexical terms to exact content entities, retrieves prose and unsupported files through the existing graph, and still reads current source only at query time.
 - [Serving Persistent Agent Queries Without a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+- [Turning Cross-Repository Soaks into Indexing Contracts](/articles/turning-cross-repository-soaks-into-indexing-contracts.md): How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability.
 - [Building an Application TUI Toolkit](/articles/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
 - [Growing Mixology with a GUI Surface](/articles/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
 - [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
@@ -2332,6 +2333,10 @@ The unsuccessful repositories exercised the other half of the contract. Cedar's 
 
 The FKYeah result also gave the next change a precise target. The adapter now runs on .NET 10, keeps the prebuilt reference outputs FSharp.Compiler.Service requires, and indexes dependents before referenced F# projects so design-time cleanup cannot remove a dependency output before its consumers have used it. A genuine FKYeah graph now completes. The Cedar timeout remains an honest limit of the current full-refresh adapter rather than being hidden behind partial facts.
 
+A later [twelve-repository indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md) closed that Cedar result and broadened the measurement contract. Every candidate ran in an isolated prepared clone, indexed offline, answered five current no-change queries, verified, exported, and left its source status unchanged. Cedar completed in 51.338 seconds and FKYeah in 132.146 seconds. The same matrix exposed recursive Go dependency syntax retention, nested .NET and Rust project roots, repeated Rust SCIP symbols, and divergent adapter environments. Those findings belong to freshness because a provider inventory is complete only when it identifies the correct build boundary and can reproduce it under the same bounded process inputs.
+
+An installed-binary smoke covered the incremental half of that lifecycle. One comment added inside an isolated go-riblt clone produced a dirty generation with one changed path, refreshed in 2.990 seconds at 142 MiB peak RSS, and passed `weave verify`. The original source repository remained clean. Cold completeness and ordinary edit-driven replacement therefore use the same observable publication boundary.
+
 ## Derived state follows the worktree
 
 The detailed graph and manifest live at the location returned by `git rev-parse --git-path weave`, normally `.git/weave`. Git resolves a distinct path for each linked worktree, so a dirty overlay in one checkout does not claim freshness for another. The cross-repository catalog lives in the platform user data directory because it describes explicitly registered local worktrees rather than one repository snapshot.
@@ -3102,6 +3107,8 @@ weave index \
 
 The permission flags describe authority. They do not cause Weave to run a restore, generator, or network operation itself.
 
+That authority now travels through one bounded child environment for adapter doctoring, explicit indexing, and automatic freshness. The allowlist carries the selected platform path and home, .NET host and package roots, Java home, Cargo and Rust locations, SCIP executable overrides, and temporary-system paths required by the compiler runtimes. It does not inherit the entire parent environment. One adapter therefore observes the same toolchain inputs regardless of which supported entry point launched it, without receiving unrelated credentials as an accidental convenience.
+
 ## Stream a complete inventory
 
 The adapter's `index` operation reserves stdout for newline-delimited protocol frames. Human diagnostics go to bounded stderr. Every stdout line repeats the protocol and request ID, names a frame kind, and carries its payload.
@@ -3151,6 +3158,8 @@ The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, 
 
 Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
 
+Repository-scale Rust validation made the root and ownership rules concrete. The adapter discovers the nearest nested Cargo manifest or `rust-project.json`, runs rust-analyzer at that build root, and rebases its SCIP documents to repository-relative paths. rust-analyzer may repeat one equivalent global symbol record across library, binary, and test documents. The adapter assigns that record to the lexically first document while retaining every occurrence and relationship; conflicting descriptions still reject the run. Per-document line indexes and memoized symbol validation bound coordinate normalization without weakening the imported evidence.
+
 TypeScript, JavaScript, Java, and Kotlin reuse that SCIP boundary with different trust profiles. `weave-typescript` requires an existing root compiler configuration and never invokes a package manager, infers a configuration, or writes into the checkout. `weave-jvm` delegates to `scip-java`, which can run Gradle, Maven, or Bazel and execute build extensions. JVM indexing therefore remains an explicit run with all four grants unless a user-controlled registry deliberately records those powers and a conservative input inventory. Both adapters translate their producers' legacy UTF-16 ranges to Weave's byte coordinates instead of guessing from source encoding metadata.
 
 Python makes the distinction sharper. CPython's `symtable` can establish that a name is a local, global, free, or nonlocal lexical binding slot. It cannot establish which object that slot will hold when a call executes. The adapter therefore emits:
@@ -3195,6 +3204,14 @@ None of these routes is discovered inside the repository or inferred by scanning
 That policy also stays inspectable. `weave adapters list` reads metadata without executing adapters. `weave adapters doctor` verifies integrity and performs bounded capability negotiation without indexing. An arbitrary `weave index --adapter PATH` remains a deliberate snapshot import, while `weave adapters install PATH` is the separate action that grants reproducible automatic authority.
 
 [The managed lifecycle](/articles/managing-compiler-adapters-without-inventing-a-package-registry.md) keeps the extension point open without silently executing a newly available program in every repository. The protocol is public; automatic authority remains a user-controlled policy.
+
+## Pressure-test the complete process
+
+Protocol fixtures prove framing, bounds, and atomic publication. They do not prove that a real repository places its solution at the checkout root, avoids SDK-generated documents outside that root, lists every buildable project in one solution, or emits each global SCIP symbol once.
+
+The [cross-repository indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md) therefore exercises the complete process across Go, C#, F#, Rust, and structured content. Each isolated clone is prepared before timing; the candidate then indexes offline, answers current queries, verifies, exports, and proves the original source status unchanged. Failures corrected nearest-root discovery, project de-duplication, F# restore policy, generated-document handling, Rust symbol ownership, environment consistency, and memory accounting before the full twelve-repository matrix passed.
+
+That matrix is not a claim that every language or repository is covered. It is retained evidence that the protocol, compiler adapters, graph publication, and storage verifier compose under pinned real inputs. A future optimization must preserve those complete results rather than merely making an adapter process exit faster.
 
 ## Package the bridge without hiding the runtime
 
@@ -4419,6 +4436,133 @@ The useful progression is therefore:
 7. Test the complete operation through public boundaries.
 
 That is how a modular monolith stays modular under ordinary feature work. The event changes the dependency direction, and the executable constraints keep it changed.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/articles/turning-cross-repository-soaks-into-indexing-contracts/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Turning Cross-Repository Soaks into Indexing Contracts
+
+Source: [https://thefellow.github.io/articles/turning-cross-repository-soaks-into-indexing-contracts/](https://thefellow.github.io/articles/turning-cross-repository-soaks-into-indexing-contracts/)
+
+## Pyramid summary
+
+- **~2 words:** Cross-repository indexing soak
+- **~8 words:** A strict mixed-language matrix turns real compiler failures into bounded indexing contracts.
+- **Expanded:** How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability.
+
+## Full content
+
+**Part 15 of [Building Weave](/series/weave.md).**
+
+A compiler adapter can pass every fixture and still misunderstand a repository. Real workspaces hide solutions below their checkout root, let project references pull the same assembly into a workspace twice, keep buildable projects outside the primary solution, repeat global SCIP symbols across targets, and depend on compiler caches whose contents are not part of the timed operation.
+
+Those are not benchmark inconveniences. They are pressure on the indexing contract. [Weave](https://github.com/TheFellow/weave) therefore runs one candidate across a mixed local corpus, keeps dependency preparation outside the measurement, denies network and restore during indexing, verifies and exports every successful graph, and proves that the source repositories did not change. A failure either identifies a bounded implementation correction or remains an explicit residual.
+
+<figure class="article-figure">
+  <img src="/assets/images/articles/weave/cross-repository-indexing-soak.svg" alt="Twelve mixed-language source repositories enter isolated local clones. Dependency download, restore, and F-sharp reference builds prepare those clones before timing. A candidate Weave build performs an offline cold index, five current no-change queries, graph verification, and a full export while collecting elapsed time, peak resident memory, database size, and fact counts. Source status is compared before and after. Failures feed bounded corrections to Go package loading, dotnet project discovery, F-sharp restore policy, Rust SCIP normalization, adapter environment handling, and the benchmark harness before the complete matrix is rerun.">
+  <figcaption>The corpus is an executable contract. Preparation makes the timed operation honest, every graph must verify and export, and a failure returns to the narrowest responsible boundary before the whole matrix runs again.</figcaption>
+</figure>
+
+## Make the corpus part of the test
+
+The retained soak covers twelve repositories at pinned commits: this website, a profile repository, C# value types and Cedar authorization, two Go analyzers, F# agent workflows, a Go fluid simulation, a large Go modular monolith, a Go set-reconciliation library, Weave itself, and a Rust rigid-body project. That mix is intentionally uneven. It includes tiny and large graphs, source and documentation, nested build roots, multi-project solutions, standalone fixtures, library and executable targets, and several compiler runtimes.
+
+The harness builds the candidate core and adapters once, then creates a detached local clone for each repository without hard links. Every clone gets its own Git-private index. The source checkout remains the authority being tested, not a scratch directory that the benchmark may quietly repair.
+
+```sh
+WEAVE_RUST_ADAPTER="$PWD/adapters/rust/target/release/weave-rust" \
+WEAVE_BENCHMARK_TIMEOUT=900 \
+scripts/benchmark-repositories.sh .. RESULTS \
+  TheFellow.github.io TheFellow ValueTypes arch-lint cedar-dotnet enumstruct \
+  fkyeah fluid go-modular-monolith go-riblt weave ai-rigidbody
+```
+
+The explicit repository list makes a diagnostic rerun small without giving the final run an easier corpus. A failure does not stop the remaining repositories. The harness records every outcome, then returns failure if any member failed. One early repository can no longer hide evidence from the rest of the matrix.
+
+## Prepare dependencies without timing a restore
+
+Offline indexing is meaningful only if the clone already contains the compiler inputs the adapter is allowed to use. Preparation and measurement are therefore separate phases.
+
+For Go, the harness runs `go mod download all` in the disposable clone before the timed command. This can complete an incomplete `go.sum` inside that clone, while the actual Weave process still runs with readonly module behavior and networking denied. For .NET, every discovered C# and F# project is restored before timing, not only the projects reachable from one selected solution. F# projects are also built in advance because FSharp.Compiler.Service needs reference outputs that a restore alone does not produce.
+
+The timed request cannot restore what preparation missed. Buildalyzer once performed an implicit F# `/restore` during design-time evaluation even though the adapter request denied it. The adapter now disables that default explicitly. A green result therefore means the requested operation stayed offline and restore-free, not merely that an unreported network path happened to succeed.
+
+This separation also makes elapsed time interpretable. Cold index time measures provider discovery, compiler analysis, fact normalization, graph publication, and manifest publication. It does not mix those operations with package download speed.
+
+## Treat repository shape as semantic input
+
+The first diagnostic passes found failures that isolated fixtures did not contain:
+
+| Pressure | Incorrect assumption | Bounded correction |
+| --- | --- | --- |
+| Large Go module | `go/packages.NeedDeps` was necessary to resolve dependency types | Keep repository syntax and type information, but let dependency types arrive through compiler export data without retaining recursive dependency ASTs |
+| Nested .NET solution | Every recursively discovered project should join the same workspace | Select the nearest solution depth, reject ambiguity at that depth, and avoid reopening projects Roslyn already loaded through references |
+| Generated C# documents | Every compiler document must be repository-contained | Diagnose and omit SDK-generated documents outside the checkout instead of aborting the repository inventory |
+| Standalone F# fixtures | Restoring the selected solution prepares the whole checkout | Restore every project, prebuild F# references, and explicitly keep design-time evaluation restore-free |
+| Nested Rust crate | rust-analyzer always runs from the repository root | Discover the nearest Cargo or `rust-project.json` root and rebase SCIP document paths to the repository |
+| Rust library, binary, and test targets | One global SCIP symbol record appears only once | Select deterministic first-document ownership for equivalent symbol records while retaining every occurrence and relationship |
+| Adapter startup | Doctor, explicit index, and automatic refresh can carry different toolchain variables | Use one bounded environment allowlist for every adapter entry point |
+
+None of those corrections weaken graph validation. The C# adapter still rejects two equally near solutions because choosing one lexically would invent build intent. Rust still rejects conflicting descriptions of one global symbol; it collapses only equivalent producer repetition. Generated C# source remains visible as a diagnostic rather than being assigned a false repository path.
+
+The normalization work also removed accidental scale costs. C# edge de-duplication now uses a per-project identity set instead of scanning every prior edge for every insertion. Rust builds one line index per document instead of rescanning its source from byte zero for every occurrence, and it memoizes symbol validation and stable IDs. The Go provider no longer keeps the full dependency graph's syntax resident when it emits facts only for repository packages.
+
+## Measure publication, not only compiler startup
+
+Each successful repository performs one cold index, five current no-change queries, `weave verify`, and a complete JSON export. The harness records elapsed time, the measured process tree's peak resident set, database bytes, and graph counts. It captures source status before preparation and compares it after the complete run.
+
+The strict final invocation exited zero. All twelve graphs verified and exported, every source status remained unchanged, and all sixty no-change queries completed between 0.706 and 1.001 seconds on the development machine.
+
+| Repository | Cold index | Peak RSS | Warm query range | Graph database |
+| --- | ---: | ---: | ---: | ---: |
+| TheFellow.github.io | 48.465 s | 310 MiB | 0.750–0.778 s | 146,608,128 bytes |
+| TheFellow | 1.412 s | 20 MiB | 0.713–0.720 s | 1,048,576 bytes |
+| ValueTypes | 10.100 s | 168 MiB | 0.706–0.757 s | 43,679,744 bytes |
+| arch-lint | 11.456 s | 149 MiB | 0.879–0.921 s | 67,198,976 bytes |
+| cedar-dotnet | 51.338 s | 520 MiB | 0.756–0.782 s | 397,537,280 bytes |
+| enumstruct | 4.866 s | 106 MiB | 0.711–0.775 s | 47,013,888 bytes |
+| fkyeah | 132.146 s | 1,118 MiB | 0.774–0.783 s | 418,791,424 bytes |
+| fluid | 4.112 s | 135 MiB | 0.816–0.876 s | 63,754,240 bytes |
+| go-modular-monolith | 82.122 s | 1,129 MiB | 0.834–1.001 s | 903,421,952 bytes |
+| go-riblt | 3.832 s | 103 MiB | 0.772–0.806 s | 51,290,112 bytes |
+| weave | 81.763 s | 770 MiB | 0.918–0.966 s | 655,515,648 bytes |
+| ai-rigidbody | 82.406 s | 1,978 MiB | 0.708–0.768 s | 197,996,544 bytes |
+
+These are development-machine observations, not service-level objectives. The full [retained benchmark record](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-08-indexing-soak.md) pins the commits and environment and includes units, documents, symbols, occurrences, and edges for every graph.
+
+The matrix closes two earlier unknowns. Cedar previously exceeded a four-minute adapter bound; it now produces 287 units, 7,629 symbols, 69,794 occurrences, and 88,135 edges in 51.338 seconds. FKYeah now produces a complete 915-unit graph, including standalone fixture projects, in 132.146 seconds without restoring inside the timed adapter request.
+
+The Go result needs more careful interpretation. The large monolith's peak fell from roughly 2.45 GB in the adjacent diagnostic baseline to 1.13 GiB after removing recursive dependency syntax retention. Its 82.122-second cold time is slower than the earlier 37.785-second repository baseline because compiler export-data and cache conditions changed, and the provider and measurement scope are not identical. Warm queries remain below 1.01 seconds. Memory improved, but the table does not justify pretending cold performance improved in every dimension.
+
+## Exercise the installed incremental path
+
+The full matrix uses binaries built from the candidate worktree and proves cold publication. A separate smoke installs `./cmd/weave`, creates an isolated clone of go-riblt, indexes and verifies it, then adds one comment to `codec.go` inside that clone.
+
+The next observation reports `dirty: true`, `change_count: 1`, and `index: refreshed 1 changed paths`. The refresh completes in 2.990 seconds at 142 MiB peak RSS, publishes a new generation, and passes `weave verify`. The original go-riblt repository remains clean.
+
+That small result covers a different boundary from the cold table. The installed entry point can observe an ordinary dirty overlay, select the one changed path, replace the affected derived facts, publish a current manifest, and verify the result without requiring a special benchmark-only invocation. The disposable clone absorbs the deliberate edit, preserving the same source-isolation rule as dependency preparation.
+
+## Keep the residuals in the result
+
+All green does not mean all small. The Rust rigid-body repository peaked at 1,978 MiB while rust-analyzer produced SCIP. Weave's normalization no longer adds an occurrence-by-source-length scan, but it does not control the producer's complete working set. That boundary is now measured rather than hidden.
+
+The matrix also does not prove every repository shape, operating system, compiler version, or warm-cache state. It proves something narrower and more useful: these pinned repositories can be prepared without mutating their sources, indexed offline by this candidate, queried through current manifests, verified structurally, and exported completely under recorded bounds.
+
+That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare graph counts, storage, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, omits repeated Rust occurrences, skips verification, or silently restores packages is a failed run.
+
+## Let failures improve the shared boundary
+
+The most valuable result is not twelve green rows. It is the path by which red rows changed reusable boundaries:
+
+1. The harness made preparation, isolation, continuation, peak memory, and source immutability explicit.
+2. Provider discovery learned to respect the nearest actual build root instead of assuming the checkout root is the compilation root.
+3. Compiler-specific repetition became deterministic normalization only where the producer format permits it.
+4. Every adapter entry point began carrying the same small toolchain environment rather than acquiring different behavior by command path.
+5. Verification and export stayed mandatory after performance fixes, so reduced work could not quietly become reduced truth.
+
+That loop belongs beside unit tests and protocol conformance. Fixtures prove narrow behavior. A cross-repository soak proves that the behaviors compose across real toolchains, graph sizes, and repository topology. Keeping both is how a language-neutral index earns the right to call its green result complete.
 
 
 ---
@@ -6462,6 +6606,7 @@ Source: [https://thefellow.github.io/projects/weave/](https://thefellow.github.i
 [Read the Weave series](/series/weave.md)
 [Start with fresh queries](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md)
 [Read the agent dogfood](/articles/measuring-agent-research-beyond-query-latency.md)
+[Inspect the indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md)
 
 Weave is a local-first, Git-aware semantic index for the knowledge encoded in a workspace. It combines language-native compiler facts with files, structured documents, sections, links, assets, routes, and metadata in one evidence-carrying graph, then exposes bounded CLI queries for people and coding agents. The index is disposable derived state. It stays beside Git instead of entering commits, requires no hosted service, and refreshes its automatic provider inventories before a query can observe stale answers.
 
@@ -6513,7 +6658,9 @@ An optional `weave watch` foreground process can warm that same query-authoritat
 
 The local explorer is also growing into a source-evidence inspector and contextual-link editor without becoming a graph database editor. Stable node and collapsed-edge identities retrieve bounded current source through the existing context use case. Browser mutations carry an order-independent declaration revision into the normal link application boundary; the latest `.weave/bridges.json` is reloaded under a Git-private lock, stale forms receive a conflict, successful writes are atomic, and the bridge provider refreshes the canonical graph.
 
-The same measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, ordered the F# project graph, and proved genuine FKYeah indexing. The large-solution bound remains visible.
+The first repository measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, and ordered the F# project graph.
+
+A later [strict twelve-repository soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md) closed those two open results while finding broader repository-shape assumptions. Isolated clones prepared dependencies before a timed offline, restore-free index, then ran five current queries, graph verification, a complete export, and a source-status comparison. Every repository completed. Cedar produced a verified 287-unit graph in 51.338 seconds; FKYeah produced 915 units, including standalone fixture projects, in 132.146 seconds. The same pass bounded recursive Go dependency syntax retention, nested .NET solution and Rust crate discovery, repeated Rust SCIP symbols, generated C# documents, adapter environment handling, and harness continuation. All no-change queries completed in 0.706–1.001 seconds. An installed-binary smoke then refreshed one dirty go-riblt path in 2.990 seconds at 142 MiB and verified the new generation. The 1,978 MiB rust-analyzer peak on ai-rigidbody remains an explicit resource target rather than disappearing behind the green matrix.
 
 The first tagged release is still ahead; its workflow is already shaped around checksummed core archives, a portable bundle for the pure-Go C++, TypeScript, JVM, and Universal Ctags bridges, same-version .NET adapter artifacts, and an independently installable Python wheel. Commit-derived timestamps, per-archive SPDX SBOMs, an archive allowlist validator, and one SHA-256 inventory make the candidate reproducible and inspectable before publication. A tag first creates a private draft, then publishes it only after the exact artifacts pass validation and receive GitHub build provenance. The bridge bundle does not hide its external compiler or runtime requirements, Rust remains separate until its native target matrix is reproducible, and the prerelease executables remain explicitly unsigned by Apple or Windows.
 
@@ -6690,7 +6837,7 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, source-body discovery, exact storage, guarded authoring, managed adapters, paired agent measurement, and resident query sessions.
+- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, exact storage, managed adapters, agent measurement, resident query sessions, and cross-repository validation.
 - [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 
@@ -6741,11 +6888,11 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 - **~2 words:** Weave series
 - **~8 words:** An ordered path through Weave's fresh compiler-backed semantic graph.
-- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, source-body discovery, exact storage, guarded authoring, managed adapters, paired agent measurement, and resident query sessions.
+- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, exact storage, managed adapters, agent measurement, resident query sessions, and cross-repository validation.
 
 ## Full content
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only declarations, paired agent-research measurement, body-concept discovery, and a resident query session that keeps the graph hot without installing a daemon.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only declarations, paired agent-research measurement, body-concept discovery, a resident query session that keeps the graph hot without installing a daemon, and a strict cross-repository soak that makes real compiler and repository behavior part of the indexing contract.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
@@ -6764,6 +6911,7 @@ Weave turns language-native compiler facts and live Git state into a local seman
 12. **Article:** [Measuring Agent Research Beyond Query Latency](/articles/measuring-agent-research-beyond-query-latency.md): Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations.
 13. **Article:** [Making Source Bodies Discoverable Without Copying Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave attaches bounded provider-owned lexical terms to exact content entities, retrieves prose and unsupported files through the existing graph, and still reads current source only at query time.
 14. **Article:** [Serving Persistent Agent Queries Without a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+15. **Article:** [Turning Cross-Repository Soaks into Indexing Contracts](/articles/turning-cross-repository-soaks-into-indexing-contracts.md): How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability.
 
 
 ---
