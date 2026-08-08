@@ -81,9 +81,9 @@
 
   <path d="M720 765 V800" class="blue"/>
 
-  <text x="45" y="811" class="lane">ONE ORDINARY EVIDENCE GRAPH</text>
+  <text x="45" y="811" class="lane">ONE NAVIGATION PROJECTION</text>
   <rect x="45" y="830" width="1350" height="115" rx="16" class="box" stroke="#4dabf7"/>
-  <text x="720" y="868" text-anchor="middle" class="label">graph.UnitFacts through the shared relationship builder</text>
+  <text x="720" y="868" text-anchor="middle" class="label">validated provider facts projected for navigation</text>
   <text x="720" y="900" text-anchor="middle" class="small">declared · explicit generated · migration-order inferred · executable syntactic · never compiler exact</text>
-  <text x="720" y="930" text-anchor="middle" class="tiny">context · graph / DOT · export · diff · watch · CI · explorer · architecture policy</text>
+  <text x="720" y="930" text-anchor="middle" class="tiny">anchors · dependencies · generation · context · graph · diff · CI · explorer</text>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
-  <title id="title">A compact private storage schema reconstructs the same public semantic graph</title>
-  <desc id="desc">Stable public graph facts pass through a storage codec. Repeated strings become reference-counted intern and entity records. Narrow hot records support search and adjacency while cold details hold ranges, providers, evidence, and documents. Batched hydration reconstructs unchanged graph facts, and storage verification checks indirection and reference counts.</desc>
+  <title id="title">A broad provider graph becomes a compact navigation index</title>
+  <desc id="desc">Language and content providers emit rich normalized facts. Format 4 retains documents, useful declaration anchors, and high-value navigation edges while dropping occurrences, calls, references, containment duplication, fields, constants, locals, and broad token postings. Compact lookup then points agents back to current source.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
     <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
@@ -9,49 +9,49 @@
     </style>
   </defs>
   <rect width="1440" height="810" class="bg"/>
-  <text x="720" y="74" text-anchor="middle" class="title">Compact representation, unchanged graph meaning</text>
+  <text x="720" y="74" text-anchor="middle" class="title">Retain navigation, recover detail from source</text>
 
-  <text x="52" y="146" class="lane">PUBLIC MODEL</text>
+  <text x="52" y="146" class="lane">PROVIDER OUTPUT</text>
   <rect x="52" y="174" width="326" height="336" class="box" stroke="#4dabf7"/>
-  <text x="215" y="222" text-anchor="middle" class="label">Stable graph facts</text>
+  <text x="215" y="222" text-anchor="middle" class="label">Rich normalized facts</text>
   <text x="215" y="270" text-anchor="middle" class="small">units · documents</text>
   <text x="215" y="310" text-anchor="middle" class="small">symbols · occurrences</text>
-  <text x="215" y="350" text-anchor="middle" class="small">typed relationships</text>
+  <text x="215" y="350" text-anchor="middle" class="small">all provider relationships</text>
   <text x="215" y="402" text-anchor="middle" class="tiny">string identities</text>
   <text x="215" y="434" text-anchor="middle" class="tiny">provider · evidence · ranges</text>
   <text x="215" y="466" text-anchor="middle" class="tiny">canonical ordering</text>
 
   <path d="M378 342 H486" class="blue"/>
 
-  <text x="486" y="146" class="lane">PRIVATE STORAGE V2</text>
+  <text x="486" y="146" class="lane">FORMAT-4 PROJECTION</text>
   <rect x="486" y="174" width="430" height="154" class="box" stroke="#51cf66"/>
-  <text x="701" y="220" text-anchor="middle" class="label">Shared dictionaries</text>
-  <text x="701" y="258" text-anchor="middle" class="small">numeric entities · interned strings</text>
-  <text x="701" y="292" text-anchor="middle" class="tiny">reference-counted across units</text>
+  <text x="701" y="220" text-anchor="middle" class="label">Keep useful anchors</text>
+  <text x="701" y="258" text-anchor="middle" class="small">documents · packages · types</text>
+  <text x="701" y="292" text-anchor="middle" class="tiny">functions · methods · tests</text>
 
   <rect x="486" y="366" width="430" height="154" class="box" stroke="#22b8cf"/>
-  <text x="701" y="412" text-anchor="middle" class="label">Narrow hot records</text>
-  <text x="701" y="450" text-anchor="middle" class="small">names · tokens · numeric endpoints</text>
-  <text x="701" y="484" text-anchor="middle" class="tiny">search and bounded adjacency</text>
+  <text x="701" y="412" text-anchor="middle" class="label">Keep navigation edges</text>
+  <text x="701" y="450" text-anchor="middle" class="small">imports · dependencies · implements</text>
+  <text x="701" y="484" text-anchor="middle" class="tiny">tests · docs · generation · links</text>
 
   <rect x="486" y="558" width="430" height="116" class="box" stroke="#b197fc"/>
-  <text x="701" y="602" text-anchor="middle" class="label">Cold detail records</text>
-  <text x="701" y="640" text-anchor="middle" class="small">ranges · provider · evidence · document</text>
+  <text x="701" y="602" text-anchor="middle" class="label">Drop event exhaust</text>
+  <text x="701" y="640" text-anchor="middle" class="small">occurrences · calls · refs · locals</text>
 
   <path d="M916 251 H1020" class="cyan"/>
   <path d="M916 443 H966 Q994 443 994 363 H1020" class="cyan"/>
   <path d="M916 616 H966 Q994 616 994 457 H1020" class="cyan"/>
 
-  <text x="1020" y="146" class="lane">BOUNDED HYDRATION</text>
+  <text x="1020" y="146" class="lane">SOURCE HANDOFF</text>
   <rect x="1020" y="174" width="368" height="336" class="box" stroke="#f06595"/>
-  <text x="1204" y="222" text-anchor="middle" class="label">Same public facts</text>
-  <text x="1204" y="270" text-anchor="middle" class="small">batch required IDs</text>
-  <text x="1204" y="310" text-anchor="middle" class="small">load selected details</text>
-  <text x="1204" y="350" text-anchor="middle" class="small">restore stable strings</text>
-  <text x="1204" y="402" text-anchor="middle" class="tiny">same export · order · bounds</text>
-  <text x="1204" y="434" text-anchor="middle" class="tiny">corruption never guessed around</text>
-  <text x="1204" y="466" text-anchor="middle" class="tiny">graph schema unchanged</text>
+  <text x="1204" y="222" text-anchor="middle" class="label">Progressive discovery</text>
+  <text x="1204" y="270" text-anchor="middle" class="small">semantic anchors</text>
+  <text x="1204" y="310" text-anchor="middle" class="small">bounded ripgrep hits</text>
+  <text x="1204" y="350" text-anchor="middle" class="small">exact context follow-up</text>
+  <text x="1204" y="402" text-anchor="middle" class="tiny">current Git-visible bytes</text>
+  <text x="1204" y="434" text-anchor="middle" class="tiny">small first response</text>
+  <text x="1204" y="466" text-anchor="middle" class="tiny">statement detail stays in source</text>
 
   <rect x="232" y="716" width="976" height="48" fill="#242021" stroke="#ff922b" stroke-width="3" rx="16"/>
-  <text x="720" y="747" text-anchor="middle" class="small">Verification checks ownership · details · indirection · reference counts</text>
+  <text x="720" y="747" text-anchor="middle" class="small">1.03 GB → 16.8 MB · 171.5 KB explore → 3.2 KB · same recorded repository</text>
 </svg>

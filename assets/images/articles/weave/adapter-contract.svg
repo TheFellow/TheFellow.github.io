@@ -37,14 +37,14 @@
   <text x="558" y="301" text-anchor="middle" class="tiny">deadline · negotiated limits</text>
 
   <rect x="778" y="194" width="252" height="132" class="box" stroke="#4dabf7"/>
-  <text x="904" y="239" text-anchor="middle" class="label">4. Stage + validate</text>
-  <text x="904" y="273" text-anchor="middle" class="small">frames · counts · graph</text>
-  <text x="904" y="301" text-anchor="middle" class="tiny">reject incomplete runs</text>
+  <text x="904" y="239" text-anchor="middle" class="label">4. Validate + project</text>
+  <text x="904" y="273" text-anchor="middle" class="small">frames · counts · ownership</text>
+  <text x="904" y="301" text-anchor="middle" class="tiny">retain navigation facts</text>
 
   <rect x="1124" y="194" width="252" height="132" class="box" stroke="#51cf66"/>
   <text x="1250" y="239" text-anchor="middle" class="label">5. Publish</text>
-  <text x="1250" y="273" text-anchor="middle" class="small">semantic units</text>
-  <text x="1250" y="301" text-anchor="middle" class="tiny">complete units only</text>
+  <text x="1250" y="273" text-anchor="middle" class="small">navigation units</text>
+  <text x="1250" y="301" text-anchor="middle" class="tiny">complete projected units only</text>
 
   <rect x="230" y="476" width="326" height="170" class="box" stroke="#b197fc"/>
   <text x="393" y="522" text-anchor="middle" class="label">Compiler-native runtime</text>

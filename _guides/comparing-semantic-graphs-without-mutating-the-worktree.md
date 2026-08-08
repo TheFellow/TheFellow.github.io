@@ -1,7 +1,7 @@
 ---
 title: "Comparing Semantic Graphs Without Mutating the Worktree"
 date: 2026-08-07 13:15:28 -0700
-last_modified_at: 2026-08-07 13:15:28 -0700
+last_modified_at: 2026-08-08 13:10:00 -0700
 excerpt: "How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence."
 permalink: /articles/comparing-semantic-graphs-without-mutating-the-worktree/
 series: weave
@@ -31,7 +31,7 @@ Git is the authority for additions, deletions, modifications, copies, renames, t
 
 That inventory is useful evidence, but it is not a semantic graph delta. A comment-only edit may change a source file without changing one normalized fact. A provider upgrade may change graph evidence even when a narrow file list looks stable. A rename can preserve a stable semantic identity, while a small declaration edit can replace several symbols and relationships.
 
-The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, symbols, occurrences, and edges each have independent `added`, `removed`, and `changed` collections. A changed record retains both before and after values under the same stable ID. Consumers can correlate the two forms of evidence without pretending they mean the same thing.
+The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, retained symbols, and retained navigation edges each have independent `added`, `removed`, and `changed` collections. The schema can represent occurrence changes from richer snapshots, but managed format-4 indexes retain no occurrences. A changed record keeps both before and after values under the same stable ID.
 
 ## Index the past without checking it out here
 
@@ -73,9 +73,9 @@ That word is an important feature. A future language provider can supply a speci
 
 ## Reuse impact traversal, then explain selected tests
 
-Graph changes become useful when they seed the existing reverse-impact traversal. Added and changed symbols, occurrences, edges, units, and documents contribute stable IDs that exist in the head snapshot. Git-changed paths contribute current document roots. Removed facts remain visible in the graph delta, and their stable IDs can still seed relationships that survive in the head, but disconnected removed-only facts cannot be traversed through a graph where they no longer exist. The result says so diagnostically.
+Graph changes become useful when they seed the existing reverse-impact traversal. Added and changed retained symbols, navigation edges, units, and documents contribute stable IDs that exist in the head snapshot. Git-changed paths contribute current document roots. Removed facts remain visible in the graph delta, and their stable IDs can still seed relationships that survive in the head, but disconnected removed-only facts cannot be traversed through a graph where they no longer exist. The result says so diagnostically.
 
-`weave diff impact` uses the same edge kinds, depth bound, edge bound, ordering, and truncation behavior as ordinary impact queries. There is no second walker whose semantics can drift just because the roots came from a comparison.
+`weave diff impact` uses the same retained navigation edge kinds, depth bound, edge bound, ordering, and truncation behavior as ordinary impact queries. There is no second walker whose semantics can drift just because the roots came from a comparison. Statement-level call and reference changes are deliberately outside this managed snapshot contract.
 
 `weave diff tests` is a projection of that impact result, not a new reachability claim. A selected test carries a reason and evidence. An explicit `tests` relationship keeps its edge ID and evidence. A provider-classified test symbol keeps provider evidence. Go declarations recognized through `_test.go` plus `Test`, `Benchmark`, or `Fuzz` naming are labeled syntactic. Empty or partial provider output is not promoted into a completeness promise.
 

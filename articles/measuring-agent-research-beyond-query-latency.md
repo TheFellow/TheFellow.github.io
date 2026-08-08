@@ -6,137 +6,72 @@ Source: [https://thefellow.github.io/articles/measuring-agent-research-beyond-qu
 
 ## Pyramid summary
 
-- **~2 words:** Agent research dogfood
-- **~8 words:** A real repository investigation measures useful evidence, fallbacks, friction, and the product corrections that follow.
-- **Expanded:** Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations.
+- **~2 words:** Practical agent research
+- **~8 words:** Outcome and payload measurements drive smaller progressive discovery.
+- **Expanded:** How paired agent research and a storage-payload audit moved Weave from large graph dossiers to compact progressive discovery without losing answer quality.
 
 ## Full content
 
 **Part 12 of [Building Weave](/series/weave.md).**
 
-A semantic query completing in a second is not yet a useful product result. An agent can receive a fast list of opaque IDs, fail to understand it, and spend the rest of the investigation rediscovering the repository with text search and whole-file reads. Query latency looks excellent while the actual research task changes very little.
+A semantic query completing in a second is not yet a useful product result. An agent can receive a fast list of opaque identities or an enormous graph response, fail to select useful source, and spend the rest of the investigation rediscovering the repository. Latency, index size, response bytes, tool calls, source reads, model tokens, and answer completeness all describe different parts of the experience.
 
-[Weave](https://github.com/TheFellow/weave) now measures the larger outcome. Its first agent-research dogfood record gave an unfamiliar agent a concrete question about [Mixology](/projects/go-modular-monolith.md), required it to begin with Weave, and recorded every fallback. The run found the right architecture quickly. More importantly, it exposed exactly where the graph still made the agent work around the tool.
-
-## Ask a repository question, not a synthetic lookup
-
-The question crossed domain computation, shared application contracts, two presentation surfaces, publication enforcement, and tests:
-
-> Explain how menu readiness and blocker state flow from domain computation into the GUI and TUI. Identify the central composition function, its direct callers and callees, and the tests most relevant to a behavior change.
-
-This is a useful benchmark because no single symbol answers it. A successful investigation has to connect `AvailabilityCalculator.Readiness` to `queries.Readiness` and `Module.Readiness`, understand the shared `ReadinessReport`, `HasBlockers`, and `RequireReady` contract, then follow `ApplyReadiness` into GUI and TUI presentation. It also has to notice that `Commands.Publish` independently enforces readiness at publication time.
-
-The agent received only the question, the repository path, and an instruction to use the installed `weave` CLI before filesystem tools. It inherited no implementation context from the parent session. It recorded every Weave command, source read, fallback search, and criticism of the tool.
+[Weave](https://github.com/TheFellow/weave) used paired agent research to test the outcome, then used a storage and payload audit to test whether the successful behavior was practical. The combination changed the design more than either benchmark could have done alone.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/agent-research-dogfood.svg" alt="An unfamiliar agent begins with a menu-readiness question and bounded Weave evidence. Exact semantic evidence traces domain readiness through a central ApplyReadiness composition into GUI, TUI, publication enforcement, and tests. Recorded friction drives retrieval changes, then an isolated paired benchmark gives both arms the same publication question and scores both 8 out of 8 while measuring fewer tokens, commands, searches, reads, and seconds with Weave.">
-  <figcaption>The first trace turns friction into retrieval changes. The paired run then holds the question and correctness rubric constant while measuring the investigation around the answer.</figcaption>
+  <img src="/assets/images/articles/weave/agent-research-dogfood.svg" alt="A fixed repository question and evidence rubric feed paired agents with and without Weave. Their answers, tool events, searches, reads, commands, tokens, and elapsed time are retained. A second audit measures database amplification and encoded discovery bytes. The evidence leads to a compact navigation index, semantic anchors plus ripgrep hits, and exact context only after selection.">
+  <figcaption>Outcome evidence says whether discovery helps; storage and payload evidence says whether its implementation is practical.</figcaption>
 </figure>
 
-## Follow the evidence into both surfaces
+## Score repository understanding
 
-The central topology came from ordinary relationship queries:
+The first controlled question asked an unfamiliar agent to trace Mixology's menu publication flow through readiness, authorization, persistence, GUI and TUI surfaces, and tests. The harness fixed the repository revision, prompt, rubric, tool availability, and evidence standard. It retained the raw agent event stream, stderr, final answer, process measurements, and post-run worktree status.
 
-```sh
-weave callers ApplyReadiness
-weave callees ApplyReadiness
-weave references HasBlockers
-weave symbols RequireReady
-```
+Both arms scored 8/8. In that single paired code-flow sample, the Weave arm used 51.1% fewer input tokens, 37.5% fewer commands, 75% fewer filesystem searches, 33.3% fewer source reads, and 16.3% less wall time. The result showed that semantic discovery could reduce navigation work without reducing answer completeness.
 
-`callers` and `callees` found the exact `ApplyReadiness` neighborhood with source locations. Symbol and reference queries then located the domain, GUI, TUI, and test seams. The agent reconstructed the readiness flow correctly:
+A second paired question targeted concepts found in benchmark prose rather than headings. Both arms again scored 8/8. The Weave arm used 21.3% fewer input tokens, 8.6% fewer output tokens, no filesystem searches, and the same two-command count, but finished 1.90 seconds slower. Content discovery helped the evidence path without winning every metric.
 
-1. `AvailabilityCalculator.Readiness` computes the domain result exposed through `queries.Readiness` and `Module.Readiness`.
-2. `ReadinessReport` carries readiness and blocker state through the shared application boundary; `HasBlockers` and `RequireReady` express the two important decisions over it.
-3. `ApplyReadiness` turns that shared result into presentation state used by `Presenter.loadReadiness`, `Presenter.permissionsFor`, and `ListViewModel.Update`.
-4. `Commands.Publish` checks the same readiness independently, so a presentation decision cannot become the publication authority.
-5. Unit, GUI, TUI, and stale-result tests provide the evidence set for a behavior change.
+These are two auditable samples, not a population estimate. They justify preserving the behavior, not freezing its first implementation.
 
-Most Weave queries completed in under 1.5 seconds. The remaining filesystem work was targeted: `sed` read ranges discovered through graph output, one `rg` pass validated references and tests, and `git status` confirmed worktree state. The agent reported that the graph materially reduced broad discovery.
+## Record what the agent had to work around
 
-That is a useful qualitative result, but it is not a numeric savings claim. This run had no comparable without-Weave arm. It cannot establish a percentage reduction in time, tool calls, bytes, or tokens.
+Early dogfood exposed several forms of friction:
 
-## Record where the tool lost the agent
+- ambiguous short names produced opaque choices;
+- definition, reference, call, and context results repeated overlapping facts;
+- variables and generic references consumed bounded relationship slots;
+- one broad exploration could place roughly 16,000 tokens into context; and
+- a correct second trace still used 32 Weave commands.
 
-The critical part of dogfooding was preserving the friction:
+The first response was to rank and compact graph dossiers more carefully. That improved the original model but retained its basic assumption: discovery should serialize several complete semantic neighborhoods before the agent chose one.
 
-- Ambiguous methods pushed the agent toward opaque graph IDs because natural names such as `AvailabilityCalculator.Readiness` did not resolve.
-- A context dossier repeated a specific call and its underlying reference edge for the same endpoint.
-- Variable and builtin references crowded flow relationships out of bounded context and caused truncation.
-- A batch of broad context queries produced roughly 16,000 tokens. Discovery improved substantially, but context ingestion improved only moderately.
-- Default impact traversal escaped through generic methods such as `Update` and `Select`, producing a noisy, truncated blast radius.
+## Audit the physical and encoded cost
 
-None of those problems appears in a query-latency percentile. They appear only when someone uses the output to finish a research task and counts the work the output creates downstream.
+The later audit measured a 3,019,968-byte Go repository whose format-3 database occupied 1,034,616,832 bytes. It contained 25,678 symbols, 184,826 occurrences, and 247,013 edges. The representative ordinary `explore --json` response occupied 171,537 bytes.
 
-## Turn benchmark friction into product behavior
+Only a small fraction of that response was current source. Repeated stable and opaque identities, unit and document IDs, ranges, provenance, evidence, hashes, and full edges dominated the payload. Persisting every compiler event also multiplied source bytes into storage records and indexes that agents rarely needed during first-stage discovery.
 
-The first four findings produced direct changes to Weave. The shared resolver now accepts concise qualified names such as `AvailabilityCalculator.Readiness`, `Presenter.loadReadiness`, and `ReadinessReport.HasBlockers` as deterministic fallbacks over compiler-qualified stable names. Exact graph IDs, exact stable names, and normal provider ranking still take precedence. Ambiguity errors show candidate stable names and kinds before their internal IDs.
+This evidence reframed the problem. The product did not need a better-compressed exhaustive dossier. It needed a smaller contract between semantic navigation and source inspection.
 
-Context relationships now read a bounded surplus, collapse repeated edges by adjacent endpoint, and keep the most useful relationship for each one. Calls rank ahead of contracts, dependencies, authored navigation, state access, containment, and raw references. Local-variable, parameter, and language-builtin references are omitted from the bounded dossier while remaining available in exhaustive graph data. The limit applies after compaction and filtering, which stops low-value evidence from consuming the small response an agent requested.
+## Make discovery progressive
 
-Text output prefers stable semantic names and source paths. Inside a context dossier it also removes repeated repository and compiler-category prefixes, while JSON preserves full names and opaque IDs for exact follow-up.
+Format 4 retains semantic anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, noisy declaration kinds, containment duplication, and broad content-token postings. `weave explore` now returns at most a few semantic anchors plus diversified ripgrep hits. Each semantic anchor includes an exact `weave context` follow-up. The discovery array has a 12 KiB encoded ceiling.
 
-`weave explore` turns a research phrase into a bounded ranked set of those same [source-rich context dossiers](/articles/composing-source-rich-context-without-a-second-index.md):
+The selected `context` call then reads current source for one exact anchor. It does not expand eight candidates speculatively or pretend that the graph should replace text search for statement-level investigation.
 
-```sh
-weave explore how menu readiness reaches GUI and TUI
-weave explore AvailabilityCalculator.Readiness --limit 6 --relationship-limit 6 --json
-```
+On the same repository and commit, the format-4 database occupied 16,777,216 bytes, a 98.38% reduction and 5.56 times source size. The representative first-stage response occupied 3,157 bytes, 98.16% smaller than the old response. Its selected context response occupied 3,195 bytes and included 337 bytes of source.
 
-An exact short entity naturally produces one dossier. A longer research question skips exact-symbol resolution and becomes at most 32 useful terms plus a few mechanical suffix variants. Ordinary question words disappear, while generic scope terms refine ranking instead of becoming broad searches when more specific terms exist. Candidate ranking combines symbol-search position, posting rarity, term coverage, display-name matches, stable-name and path scope, explicit domain scope, presentation scope, kind, content specificity, and evidence origin. It also diversifies methods across containers, preserves explicitly requested GUI and TUI surfaces, and defers repeated content names. The default returns at most eight entities, independently caps each dossier's occurrence, incoming, and outgoing sections at six, and divides one 64 KiB source budget across all results. Go functions, methods, and Markdown sections expand to their complete parsed definitions when the budget permits. Relationship ranking uses semantic-unit and stable-path proximity after evidence kind, keeping relevant local flow ahead of distant same-named endpoints. Natural-language reasoning stays in the consuming agent. Weave supplies bounded compiler, SCIP, content, and authored evidence from its existing graph without adding an embedded model or a second persisted search database.
+## Keep the benchmark honest after the redesign
 
-The noisy default impact policy remains open. `weave impact TARGET --kind calls` already supplies a narrow alternative, but changing the default requires evidence across more languages and repositories. One dogfood trace is enough to expose a problem, not enough to declare a universal traversal policy.
+The paired 8/8 results belong to the earlier retrieval implementation. They demonstrate that graph-guided discovery can preserve evidence quality while reducing navigation work. They do not yet prove that the new compact semantic-plus-ripgrep shape preserves the same token and command improvements.
 
-## Repeat the task before claiming consolidation
+That distinction creates the next useful benchmark. Re-run the fixed questions and rubrics against progressive discovery, then compare:
 
-A second fresh agent followed menu-publishing authorization from GUI and TUI action availability through the public module, command middleware, readiness enforcement, and persistence. Its architectural account was correct and it kept the repository clean, but the route required 32 Weave commands, two filesystem searches, one source-file read, and one cleanliness check. The graph again avoided broad discovery; it did not yet provide the intended one-to-four-call research experience.
+1. rubric completeness and cited evidence;
+2. actual input and output tokens;
+3. Weave commands, filesystem searches, and source reads;
+4. elapsed time and startup mode;
+5. first-stage and cumulative encoded response bytes; and
+6. database size and refresh cost for the tested repository.
 
-The initial phrase command failed because `explore` was still only an exact-context alias during that run. That evidence caused the command to become the phrase-to-dossier composition described above. A representative menu-publish question now returns the GUI publish boundary, `Module.Publish`, and `Commands.Publish` in one roughly two-second call on Mixology.
-
-That post-change call was a functional check, not a post-change agent benchmark. A new implementation can show that the intended entities rank together without proving that a fresh agent now finishes the research in fewer calls. The distinction kept a promising correction from quietly becoming an unsupported savings claim while the paired harness was built.
-
-## Hold the question and evidence standard constant
-
-The checked-in harness creates an isolated local clone for each arm and gives both fresh agents the same read-only question: follow menu-publish authorization and enforcement from GUI and TUI action availability through `Module.Publish`, `Commands.Publish`, `RunCommand`, readiness validation, persistence, and relevant tests. A deterministic eight-item rubric checks those seams in each final answer.
-
-The Weave arm receives a current index and an instruction to start with one `weave explore` call. The control arm places a same-named blocking executable on `PATH` and tells the agent to use ordinary repository search and source-reading tools. That prevents accidental contamination without giving one arm a different architectural question. Both clones must remain unchanged.
-
-Every run retains its prompt, raw Codex event stream, standard error, final answer, process measurement, worktree status, and machine-readable summary. The summary counts tokens, elapsed time, command executions, successful Weave calls, filesystem searches, source reads, blocked Weave attempts, and rubric matches. A number in the report can therefore be traced back to the tool events and answer that produced it.
-
-## Read the first paired result
-
-The first valid paired run used Weave commit `9c756c7`, Mixology commit `7b01054`, Codex CLI 0.147.0, and one isolated clone per arm. The indexed agent made one successful `weave explore` call. Both agents produced complete answers and scored 8/8, so the efficiency comparison does not trade away the architectural result.
-
-| Measure | With Weave | Without Weave | Reduction |
-| --- | ---: | ---: | ---: |
-| Correctness rubric | 8/8 | 8/8 | n/a |
-| Input tokens | 167,344 | 342,080 | 51.1% |
-| Output tokens | 2,816 | 3,621 | 22.2% |
-| Wall time | 27.8s | 33.2s | 16.3% |
-| Command executions | 5 | 8 | 37.5% |
-| Filesystem searches | 1 | 4 | 75.0% |
-| Source-read commands | 4 | 6 | 33.3% |
-
-The important result is not simply that one query ran quickly. Its initial dossier supplied the GUI, TUI, module, command, readiness, persistence, and test seams while the final answer preserved the same rubric completeness as ordinary exploration. That reduced rediscovery across every recorded measure in this sample.
-
-This is one paired sample, not a population estimate. It proves that the harness can isolate the tool, preserve correctness, retain auditable artifacts, and capture a concrete successful workload. Repeated cases across repositories and languages are still needed before treating these percentages as general expectations. That is a much stronger next position than either query latency alone or an uncontrolled success story: the measurement boundary now surrounds the agent's complete research task.
-
-## Aim the second case at prose, not declarations
-
-The second retained case turns the benchmark back on its own research record. Its question asks why query latency is insufficient, where the uncontrolled dogfood lost the agent, how friction became product behavior, how the paired arms isolate Weave, which artifacts and measurements survive, and how the first paired result should be interpreted. Most of that evidence lives in paragraphs rather than declaration names or section headings.
-
-An eight-item rubric makes the expected account explicit: latency must be separated from task completion; the uncontrolled run cannot support attribution; product changes must be tied to recorded friction; both arms must share the question inside isolated clones; the control must block the Weave executable; retained token, command, search, and read measurements must be named; correctness must remain 8/8; and one pair must not become a population claim.
-
-The case first exposed a retrieval gap: an exact Markdown section graph was still searchable mainly by its heading. That pressure produced the [bounded source-body discovery layer](/articles/making-source-bodies-discoverable-without-copying-them.md) rather than a special benchmark shortcut. Both completed arms then scored 8/8. The Weave arm made one `explore` call and one targeted source read; the control made two filesystem searches and one source read.
-
-| Measure | With Weave | Without Weave | Difference |
-| --- | ---: | ---: | ---: |
-| Correctness rubric | 8/8 | 8/8 | n/a |
-| Input tokens | 50,461 | 64,117 | 21.3% fewer |
-| Output tokens | 1,322 | 1,447 | 8.6% fewer |
-| Wall time | 16.17s | 14.27s | 1.90s slower |
-| Command executions | 2 | 2 | equal |
-| Filesystem searches | 0 | 2 | 2 fewer |
-| Source-read commands | 1 | 1 | equal |
-
-The result is useful because it is mixed. Body discovery removed filesystem search and reduced tokens while preserving the complete answer, but it did not win wall time and it did not reduce the command count. The retained run then drove ranking corrections for broad generated pages, rare terms, entity length, related-section coherence, Markdown preludes, and generic-file source anchoring. This remains one content-repository pair, not a general estimate. The benchmark can now describe exactly which part improved without flattening every measurement into a victory.
+A smaller payload is not automatically better if it makes the agent issue many blind follow-ups. A rich graph is not automatically better if most of its bytes are repeated coordinates. The acceptance boundary is practical research: preserve correct answers while reducing total discovery work and keeping the local index proportional to the source it helps navigate.

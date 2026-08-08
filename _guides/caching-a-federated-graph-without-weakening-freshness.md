@@ -1,7 +1,7 @@
 ---
 title: "Caching a Federated Graph Without Weakening Freshness"
 date: 2026-08-07 11:41:00 -0700
-last_modified_at: 2026-08-07 12:15:00 -0700
+last_modified_at: 2026-08-08 13:10:00 -0700
 excerpt: "How Weave accelerates machine-wide symbol and graph queries with an immutable hot projection keyed by exact worktree generations while keeping every repository authoritative."
 permalink: /articles/caching-a-federated-graph-without-weakening-freshness/
 series: weave
@@ -45,11 +45,11 @@ This is intentionally stronger than a timestamp or "last updated" field. The cac
 
 ## Project only the hot facts
 
-The machine aggregate is not a copy of every worktree database. It contains symbols, search-token postings, edges, and normalized fact-to-worktree provenance. Units, documents, occurrences, source text, verbose evidence records, and freshness manifests stay with their owning repositories.
+The machine aggregate is not a copy of every worktree database. It contains retained navigation symbols, their name lookup projection, retained edges, and normalized fact-to-worktree provenance. Units, documents, source text, verbose evidence records, and freshness manifests stay with their owning repositories. Format 4 has no per-worktree occurrences or broad body-token postings to copy.
 
-That narrow projection supports the catalog operations that repeatedly need symbol search and graph adjacency: `symbols`, `callers`, `callees`, `dependencies`, `path`, `impact`, and `graph`. Exact IDs, normalized display names, stable names, providers, evidence, edge kinds, ranges, and document identities remain sufficient for those operations.
+That narrow projection supports the catalog operations that repeatedly need symbol search and retained graph adjacency: `symbols`, `dependencies`, `path`, `impact`, and `graph`. Exact IDs, normalized display names, stable names, providers, evidence, retained edge kinds, ranges, and document identities remain sufficient for those operations.
 
-Other reads deliberately bypass it. Definitions and references need occurrence rows. [`weave context`](/articles/composing-source-rich-context-without-a-second-index/) also needs documents, exact occurrence coordinates, and current source from the owning worktree. An optimization should not broaden its schema until measurement shows the extra facts are both necessary and cheaper to duplicate.
+Other reads deliberately bypass it. [`weave context`](/articles/composing-source-rich-context-without-a-second-index/) needs the owning worktree's document identity, declaration anchor, and current source. Compact `explore` also combines semantic anchors with a bounded ripgrep pass in the selected worktree rather than pretending that the aggregate contains source bodies. An optimization should not broaden its schema until measurement shows the extra facts are both necessary and cheaper to duplicate.
 
 When the same semantic identity appears in more than one member, its searchable names and other fields may differ across branches or worktrees. The aggregate retains compact per-source variants, reproduces each member's ranking and truncation behavior, then merges the visible result by semantic identity. Relationships receive the same per-source treatment before equivalent edges collapse. Deterministic output still reports every repository and worktree that supplied an observed fact. Deduplication does not erase a variant or its provenance.
 
@@ -63,7 +63,7 @@ Builders serialize through a small process lock. A process that waited for the l
 
 Only after the published generation opens and validates can older generation files be removed. A source-generation change therefore creates a different complete database rather than mutating the file a concurrent reader already opened.
 
-This first implementation favors complete replacement over clever incremental reconciliation. The aggregate already omits the heavy document and occurrence surfaces, and measurements need to show that full projection rebuilds are a real bottleneck before layered shards, set reconciliation, or compaction protocols earn their complexity.
+This first implementation favors complete replacement over clever incremental reconciliation. The aggregate omits worktree documents and source-serving state, and measurements need to show that full projection rebuilds are a real bottleneck before layered shards, set reconciliation, or compaction protocols earn their complexity.
 
 ## Measure the cache honestly
 
@@ -71,7 +71,7 @@ The first checked-in benchmark uses eight worktrees and 5,000 total symbols. It 
 
 Reverse edge adjacency is 3.3 to 3.9 times faster through the aggregate and allocates about 74 percent fewer bytes. Opening the query surface and then searching improves by only about 6 percent because the required Git and freshness checks dominate the fixture. An aggregate hit still avoids holding eight database handles and locks through query execution.
 
-The hot projection is half the physical size of a deliberately verbose worktree fixture containing documents, occurrences, long paths, and symbols. These measurements justify the cache for traversal, lock fan-out, and a narrower duplicated schema. They do not justify claiming every catalog query gets faster or weakening collision behavior to make the prefix-search benchmark prettier.
+The original hot-projection fixture was half the physical size of a deliberately verbose format-3 worktree fixture containing documents, occurrences, long paths, and symbols. That historical result justified generation-keyed aggregation, but format 4 changed the source databases underneath it. Current claims are narrower: the aggregate avoids repeated catalog fan-out for retained navigation queries, and its own projection remains a future reduction target.
 
 ## Fall back toward authority
 

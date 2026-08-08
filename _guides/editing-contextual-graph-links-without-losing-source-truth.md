@@ -1,7 +1,7 @@
 ---
 title: "Editing Contextual Graph Links Without Losing Source Truth"
 date: 2026-08-07 14:28:12 -0700
-last_modified_at: 2026-08-07 14:28:12 -0700
+last_modified_at: 2026-08-08 13:10:00 -0700
 excerpt: "How Weave turns its local graph explorer into a source-evidence inspector and revision-guarded editor while keeping checked-in declarations, application use cases, and query-driven refresh authoritative."
 permalink: /articles/editing-contextual-graph-links-without-losing-source-truth/
 series: weave
@@ -43,7 +43,7 @@ A node detail request becomes the same bounded `context` invocation used by the 
 
 An edge begins at its exact `From` entity and adds one stricter check. The current outgoing context must still contain the selected edge ID. If a refresh removed it or the bounded result no longer includes it, the server fails closed and asks the browser to refresh the graph. A stale visual line cannot silently display evidence for a different relationship.
 
-[Source-rich context](/articles/composing-source-rich-context-without-a-second-index/) now hydrates relationship source too. When an edge carries a document and range, the context builder loads that document, resolves repository provenance first from the edge and then from the document, and passes the range through the same current-source loader used for definitions and references. Missing documents and unavailable provenance remain explicit statuses. Relationship excerpts share the global byte ceiling, UTF-8 checks, Git-visible path rules, and file-race detection instead of opening a more permissive browser-only file endpoint.
+[Exact context](/articles/composing-source-rich-context-without-a-second-index/) now opens current source only after a caller selects a retained anchor. When an explorer selection maps to a materialized node or a retained relationship endpoint, the browser reuses that application boundary rather than opening a permissive file endpoint. Missing documents and unavailable provenance remain explicit statuses, and source reads keep the same byte ceiling, UTF-8 checks, Git-visible path rules, and file-race detection as the CLI.
 
 ## Keep the declaration canonical
 
@@ -66,6 +66,8 @@ The browser pins the revision when an editor or removal confirmation opens and m
 After a conflict, reloading the canonical list does not silently rebase the open form. The user must cancel it and explicitly reopen the editor against the new revision. That small inconvenience preserves the meaning of the human review: an edit prepared against one declaration is never transformed into an edit against another without being seen again.
 
 One-shot CLI callers may omit a revision and retain the existing serialized edit behavior. The guard is an application option for clients that hold state across time, not an incompatible requirement imposed on every command.
+
+Format 4 also narrows what can be authored. Link add and update accept only dependency, import, extension, implementation, test, generation, documentation, exposure, link, and embed relationships retained by the navigation index. A declaration cannot promise a statement-level edge that storage will discard.
 
 ## Write one validated declaration atomically
 

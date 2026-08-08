@@ -23,7 +23,7 @@
 
   <rect x="42" y="122" width="230" height="118" class="box" stroke="#4dabf7"/>
   <text x="157" y="169" text-anchor="middle" class="label">weave query</text>
-  <text x="157" y="204" text-anchor="middle" class="small">callers · impact · path</text>
+  <text x="157" y="204" text-anchor="middle" class="small">explore · context · impact</text>
 
   <rect x="346" y="98" width="310" height="166" class="box" stroke="#4dabf7"/>
   <text x="501" y="145" text-anchor="middle" class="label">Inspect current identity</text>
@@ -57,9 +57,9 @@
 
   <rect x="559" y="360" width="322" height="166" class="box" stroke="#f06595"/>
   <text x="720" y="405" text-anchor="middle" class="label">Validate and replace</text>
-  <text x="720" y="440" text-anchor="middle" class="small">complete semantic units</text>
-  <text x="720" y="469" text-anchor="middle" class="small">bounded transactions</text>
-  <text x="720" y="498" text-anchor="middle" class="tiny">unit replacement stays atomic</text>
+  <text x="720" y="440" text-anchor="middle" class="small">validate complete provider units</text>
+  <text x="720" y="469" text-anchor="middle" class="small">project retained navigation facts</text>
+  <text x="720" y="498" text-anchor="middle" class="tiny">compact before publication</text>
 
   <rect x="990" y="360" width="322" height="166" class="box" stroke="#f06595"/>
   <text x="1151" y="405" text-anchor="middle" class="label">Publish manifest</text>
@@ -73,7 +73,7 @@
   <path d="M1151 360 C1210 314 1265 295 1265 240" class="line-blue"/>
 
   <rect x="196" y="622" width="1048" height="82" fill="#242021" stroke="#51cf66" stroke-width="3" rx="16"/>
-  <text x="720" y="656" text-anchor="middle" class="small">stdout: requested result or weave.query/v1</text>
+  <text x="720" y="656" text-anchor="middle" class="small">stdout: requested result or weave.query/v2</text>
   <text x="720" y="685" text-anchor="middle" class="small">stderr: refresh notices and diagnostics</text>
   <path d="M1265 240 V575 C1265 600 1238 620 1212 622" class="line-blue"/>
 </svg>

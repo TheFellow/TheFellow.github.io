@@ -16,7 +16,7 @@ Source: [https://thefellow.github.io/articles/warming-a-semantic-index-without-m
 
 [Query-driven freshness](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md) gives Weave a simple authority rule: every database-backed question proves the current Git and provider state before reading the graph. That rule remains correct when no background process exists. Its tradeoff is latency. The first question after an edit can inherit provider startup, compilation, normalization, and publication work.
 
-An optional watch mode can move that work earlier, but it can also quietly damage the architecture. If filesystem events decide what is current, if the watcher owns a second incremental indexer, or if queries trust a resident process instead of checking for themselves, the latency optimization has become a new correctness boundary.
+An optional watch mode can move that work earlier, but it can also quietly damage the architecture. If filesystem events decide what is current, if the watcher owns a second incremental indexer, or if queries trust the transient broker instead of checking for themselves, the latency optimization has become a new correctness boundary.
 
 [`weave watch`](https://github.com/TheFellow/weave) stays smaller than that. It is an optional foreground polling warmer over the same freshness manager queries already use. It owns no graph, installs no hook, starts no daemon, and publishes nothing directly.
 

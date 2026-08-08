@@ -25,7 +25,7 @@ The [accepted design record](https://github.com/TheFellow/weave/blob/main/.ai/de
 ```sh
 weave context listPets
 weave dependencies example.test/service
-weave graph listPets --kind references --kind depends-on
+weave graph example.test/service --kind depends-on --kind generates
 weave symbols aws_instance --json
 weave export --json
 ```
@@ -47,7 +47,7 @@ The automatic provider never runs `protoc`, a build, a restore, a package manage
 
 Writing one convenient grammar for six formats would repeat the mistake the adapter boundary avoids for programming languages. Weave instead selects a maintained parser for each declaration family and narrows what enters it.
 
-| Category | Facts retained | Source-only boundary |
+| Category | Facts parsed | Source-only boundary |
 | --- | --- | --- |
 | Protobuf | packages, messages, fields, enums, services, RPCs, imports, and linked types | Buf protocompile receives an in-memory local corpus plus standard imports, uses at most two workers, and never runs `protoc` or loads a registry |
 | OpenAPI 3 | documents, paths, operations, component schemas, properties, and `$ref` relationships | kin-openapi models identifiable version 3 roots while YAML source nodes retain locations; its URI loader is not used |
@@ -56,7 +56,7 @@ Writing one convenient grammar for six formats would repeat the mistake the adap
 | Terraform | module directories, resources, data sources, variables, outputs, locals, module calls, providers, and traversals | HashiCorp HCL parses native `.tf` syntax without evaluation, provider schemas, plugins, state, plans, or registry access |
 | Build manifests | project identities, explicit dependencies, selected targets, and one proven generation mapping | x/mod, TOML, JSON, and XML parsers read `go.mod`, `Cargo.toml`, `package.json`, Maven POMs, and MSBuild C#/F#/VB project files without invoking their build systems |
 
-The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it.
+The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it. Format 4 further retains only declaration anchors and navigation relationships from this parsed inventory; fields, local references, and other statement-level detail are available from current source rather than the database.
 
 This honesty is visible in diagnostics. A PostgreSQL statement the upstream parser recognizes but the first semantic slice does not model remains in the source and produces a bounded warning. It does not disappear silently, and it does not become a guessed edge.
 
@@ -103,10 +103,10 @@ The same restraint excludes Gradle and CMake from the first build set. Their com
 
 ## Publish ordinary graph facts
 
-Each parser produces normal documents, symbols, occurrences, source ranges, and edges through the shared relationship builder. The provider owns those facts, but its edges may point at workspace path identities, another local declaration, or an open endpoint. It never writes discovered relationships into `.weave/bridges.json`; authored intent and rebuildable automatic evidence remain separate owners.
+Each parser produces normal documents, symbols, source ranges, and relationships through the shared graph model. The provider may emit occurrence-level detail, but format 4 projects managed storage down to anchors and retained navigation edges. Provider-owned edges may point at workspace path identities, another local declaration, or an open endpoint. Automatic evidence never writes into `.weave/bridges.json`; authored intent remains a separate owner.
 
-That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can join an OpenAPI operation to its current source excerpt and adjacent schema. `weave graph` can render the same reference edge as DOT. A project dependency can participate in impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common graph and evidence model.
+That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can open the current declaration source. Retained project dependencies and explicit generation mappings can participate in graph, impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common navigation model. Detailed schema references remain in source rather than being advertised as persisted edges.
 
-The end-to-end test follows that public route. It initializes a real Git repository containing an OpenAPI document, runs an ordinary index, asks `context --json` for `listPets`, then asks `graph --kind references` for the neighborhood connecting the operation and `Pet`. The parser implementation is not the integration point. The graph contract is.
+The end-to-end test follows that public route. It initializes a real Git repository containing an OpenAPI document, runs an ordinary index, asks `context --json` for `listPets`, then asks a retained dependency or generation graph query for its surrounding declarations. Statement-level schema references are no longer advertised by the managed index. The parser implementation is not the integration point; the navigation contract is.
 
 This fills an important space without turning Weave into six new runtimes. Compiler facts still own executable semantics. Workspace facts still own repository topology and content. Authored bridges still own reviewed human intent. The schema/build provider adds what inert declarations can prove, stops where evaluation would begin, and lets every existing graph consumer do the rest.

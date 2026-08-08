@@ -1,7 +1,7 @@
 ---
 title: "Making Language Support a Process Contract"
 date: 2026-08-07 01:02:00 -0700
-last_modified_at: 2026-08-08 04:04:08 -0700
+last_modified_at: 2026-08-08 13:10:00 -0700
 excerpt: "How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication."
 permalink: /articles/making-language-support-a-process-contract/
 series: weave
@@ -144,6 +144,8 @@ run.end
 
 `run.begin` repeats the negotiated provider and fact encoding. Each `unit.begin` declares one atomically replaceable semantic unit. `facts` frames carry documents, symbols, occurrences, and edges in bounded batches. `unit.end` supplies exact counts, and `run.end` supplies the complete duplicate-free unit inventory.
 
+That protocol inventory is richer than the current managed database. Format 4 validates complete adapter output, then retains declaration anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, fields, constants, and locals. The adapter remains responsible for semantic truth; the storage projection remains responsible for what is practical to keep.
+
 This lifecycle gives the core more than a collection of objects. It gives it a proof of completeness that can be checked mechanically. A unit that began must end. Counts must match. Every fact must name the unit and provider that owns it. The terminal inventory must name exactly the units that completed.
 
 Diagnostics remain part of that structure. An adapter can attach an informational, warning, or error message to a run or unit without putting log text in the fact stream. A process failure and a repository semantic diagnostic are therefore different outcomes.
@@ -170,7 +172,7 @@ An explicit `--adapter` run uses the same validation and atomic unit publication
 
 A shared wire shape does not make every language equally static. It gives each adapter one vocabulary for saying how it knows a fact.
 
-The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, and calls, plus compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# definitions and references, while F# call edges remain absent until the compiler-backed implementation can support them. Omitting an edge is more accurate than filling the shape with a guess.
+The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, and calls, plus compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# definitions and references. Those richer facts remain useful during normalization, but the format-4 worktree index persists declaration anchors and project, import, implementation, and other navigation relationships rather than statement-level events. Omitting unsupported evidence is still more accurate than filling the provider stream with a guess.
 
 Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
 
@@ -195,7 +197,7 @@ The Universal Ctags adapter makes the lower boundary equally explicit. It emits 
 
 Python also exposed an assumption that the original graph could not keep. A single Python lexical slot may be assigned, imported, or defined several times. Modeling every statement as a different symbol would lose the compiler's binding decision; storing only one definition would lose real source locations.
 
-Weave now treats `Symbol.Definition` as the canonical display anchor and retains every binding site as a `definition` occurrence. The `definition` query prefers those complete occurrences, with the singular anchor as a fallback for older providers. A capability discovered through the Python adapter improved the language-neutral query model rather than becoming a Python-only output special case.
+Weave treats `Symbol.Definition` as the canonical retained declaration anchor. Providers may emit repeated binding occurrences, but format 4 omits occurrence rows and `definition` points to the retained anchor. The Python experiment still improved the language-neutral fact model; the practical projection now makes the narrower query contract explicit.
 
 C++ exposed a different interchange assumption. SCIP permits a producer to repeat the same global `SymbolInformation` in every document that uses it. Weave's C++ import path now retains every occurrence while selecting one canonical symbol fact deterministically, preferring a definition and then stable path and unit order. Equivalent repetitions collapse; conflicting semantic descriptions reject the complete index.
 
