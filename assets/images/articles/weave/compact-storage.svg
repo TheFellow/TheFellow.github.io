@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
-  <title id="title">A broad provider graph becomes a compact navigation index</title>
-  <desc id="desc">Language and content providers emit rich normalized facts. Format 4 retains documents, useful declaration anchors, and high-value navigation edges while dropping occurrences, calls, references, containment duplication, fields, constants, locals, and broad token postings. Compact lookup then points agents back to current source.</desc>
+  <title id="title">Providers produce a compact navigation index</title>
+  <desc id="desc">Language and content providers produce the navigation-v1 profile. Format 5 keeps documents, useful declaration anchors, and high-value navigation edges while occurrences, calls, references, containment duplication, fields, constants, locals, and search terms stay outside the production contract. Compact lookup then points agents back to current source.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
     <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
@@ -13,17 +13,17 @@
 
   <text x="52" y="146" class="lane">PROVIDER OUTPUT</text>
   <rect x="52" y="174" width="326" height="336" class="box" stroke="#4dabf7"/>
-  <text x="215" y="222" text-anchor="middle" class="label">Rich normalized facts</text>
+  <text x="215" y="222" text-anchor="middle" class="label">Navigation facts</text>
   <text x="215" y="270" text-anchor="middle" class="small">units · documents</text>
-  <text x="215" y="310" text-anchor="middle" class="small">symbols · occurrences</text>
-  <text x="215" y="350" text-anchor="middle" class="small">all provider relationships</text>
+  <text x="215" y="310" text-anchor="middle" class="small">declaration anchors</text>
+  <text x="215" y="350" text-anchor="middle" class="small">retained relationships</text>
   <text x="215" y="402" text-anchor="middle" class="tiny">string identities</text>
   <text x="215" y="434" text-anchor="middle" class="tiny">provider · evidence · ranges</text>
   <text x="215" y="466" text-anchor="middle" class="tiny">canonical ordering</text>
 
   <path d="M378 342 H486" class="blue"/>
 
-  <text x="486" y="146" class="lane">FORMAT-4 PROJECTION</text>
+  <text x="486" y="146" class="lane">FORMAT-5 PROFILE</text>
   <rect x="486" y="174" width="430" height="154" class="box" stroke="#51cf66"/>
   <text x="701" y="220" text-anchor="middle" class="label">Keep useful anchors</text>
   <text x="701" y="258" text-anchor="middle" class="small">documents · packages · types</text>
@@ -35,8 +35,8 @@
   <text x="701" y="484" text-anchor="middle" class="tiny">tests · docs · generation · links</text>
 
   <rect x="486" y="558" width="430" height="116" class="box" stroke="#b197fc"/>
-  <text x="701" y="602" text-anchor="middle" class="label">Drop event exhaust</text>
-  <text x="701" y="640" text-anchor="middle" class="small">occurrences · calls · refs · locals</text>
+  <text x="701" y="602" text-anchor="middle" class="label">Reject event exhaust</text>
+  <text x="701" y="640" text-anchor="middle" class="small">not produced · not transmitted · not stored</text>
 
   <path d="M916 251 H1020" class="cyan"/>
   <path d="M916 443 H966 Q994 443 994 363 H1020" class="cyan"/>
@@ -53,5 +53,5 @@
   <text x="1204" y="466" text-anchor="middle" class="tiny">statement detail stays in source</text>
 
   <rect x="232" y="716" width="976" height="48" fill="#242021" stroke="#ff922b" stroke-width="3" rx="16"/>
-  <text x="720" y="747" text-anchor="middle" class="small">1.03 GB → 16.8 MB · 171.5 KB explore → 3.2 KB · same recorded repository</text>
+  <text x="720" y="747" text-anchor="middle" class="small">measured format 4: 1.03 GB → 16.8 MB · 171.5 KB explore → 3.2 KB</text>
 </svg>

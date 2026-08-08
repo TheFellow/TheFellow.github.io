@@ -14,7 +14,7 @@ Source: [https://thefellow.github.io/articles/indexing-schemas-and-build-declara
 
 **Part 11 of [Building Weave](/series/weave.md).**
 
-Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable.md) explains files, documents, headings, routes, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
+Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable.md) explains structured documents, headings, routes, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
 
 Those declarations are too useful to leave as plain text. They are also not permission to run every tool that understands them. Evaluating a build can execute plugins and targets. Terraform can load providers and state. An OpenAPI loader can follow files or URLs. A migration framework can apply templates or connect to a database. Automatic indexing should not acquire any of those powers merely because a matching file exists.
 
@@ -103,7 +103,7 @@ The same restraint excludes Gradle and CMake from the first build set. Their com
 
 ## Publish ordinary graph facts
 
-Each parser produces normal documents, symbols, source ranges, and relationships through the shared graph model. The provider may emit occurrence-level detail, but format 4 projects managed storage down to anchors and retained navigation edges. Provider-owned edges may point at workspace path identities, another local declaration, or an open endpoint. Automatic evidence never writes into `.weave/bridges.json`; authored intent remains a separate owner.
+Each parser produces documents, declaration anchors, source ranges, and retained relationships through the shared navigation profile. Fine-grained fields, properties, columns, enum values, locals, occurrences, and containment edges are omitted. Provider-owned edges may point at a provider-neutral workspace path identity without requiring a stored file symbol, another local declaration, or an open endpoint. Automatic evidence never writes into `.weave/bridges.json`; authored intent remains a separate owner.
 
 That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can open the current declaration source. Retained project dependencies and explicit generation mappings can participate in graph, impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common navigation model. Detailed schema references remain in source rather than being advertised as persisted edges.
 

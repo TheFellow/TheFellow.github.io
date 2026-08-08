@@ -1,7 +1,7 @@
 ---
 title: "Keeping a Semantic Index Fresh Without a Daemon"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-08 13:10:00 -0700
+last_modified_at: 2026-08-08 14:20:00 -0700
 excerpt: "How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence."
 permalink: /articles/keeping-a-semantic-index-fresh-without-a-daemon/
 series: weave
@@ -72,9 +72,9 @@ Hooks and watch processes can eventually make that path warmer, but they cannot 
 
 ## Providers own complete semantic units
 
-Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths and extracts structured document, section, link, asset, route, topic, series, and code-fence facts without executing a renderer. The native Go provider uses `go/packages` and `go/types`. The optional .NET process uses Roslyn and MSBuild for C#, and FSharp.Compiler.Service for F#. The optional Python process uses CPython's parser and compiler symbol table for exact lexical binding facts while labeling imports `declared` and calls `syntactic`. Rust-analyzer, `scip-clang`, `scip-typescript`, and `scip-java` supply compiler-resolved Rust, C/C++/CUDA, TypeScript/JavaScript, and Java/Kotlin facts through bounded process adapters. Runtime, compiler, configuration, and toolchain probes participate in freshness so an environment change cannot silently reuse an older inventory. A checked-in [relationship file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes reviewed connections that no single compiler can establish.
+Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths for resolution and persists structured Markdown documents, sections, routes, links, and embeds without executing a renderer. The native Go provider uses `go/packages` for the exact build-selected package and file inventory, then walks declarations and direct imports without requesting type checking, identifier maps, dependency syntax, or test variants. Optional .NET, Python, Rust, C/C++, TypeScript/JavaScript, JVM, and Universal Ctags processes use their native parsers or compilers to produce the same declaration-and-navigation profile. Runtime, compiler, configuration, and toolchain probes participate in freshness so an environment change cannot silently reuse an older inventory. A checked-in [relationship file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes reviewed connections that no single compiler can establish.
 
-The workspace provider has a deliberately different failure boundary. Malformed, non-UTF-8, or oversized structured content retains exact file-topology facts and publishes a bounded diagnostic with the manifest, so one prose file cannot make compiler queries unavailable. A transient read or identity race still aborts the refresh. Persisting the first kind and retrying the second keeps stable source limitations distinct from an unsafe snapshot.
+The workspace provider has a deliberately different failure boundary. Malformed, non-UTF-8, or oversized structured content is omitted with a bounded diagnostic, so one prose file cannot make compiler queries unavailable. A transient read or identity race still aborts the refresh. Recording the first kind of omission and retrying the second keeps stable source limitations distinct from an unsafe snapshot.
 
 The [`CompositeProvider`](https://github.com/TheFellow/weave/blob/main/internal/freshness/composite.go) gives each active producer an owner name and a view of only its previous units. It rejects duplicate owners and rejects a semantic unit claimed by two providers. If an installed provider disappears, the composite result explicitly removes its former units instead of leaving their facts behind.
 
@@ -82,7 +82,7 @@ That ownership prevents a subtle failure. Suppose the Go provider refreshes its 
 
 Explicit SCIP import follows a separate lifecycle. It accepts a bounded compiler-backed snapshot, preserves inventories from other SCIP producers, and replaces only the importing producer's units. It does not yet know how to rerun that producer before a query, so the user must reimport changed output. Keeping that limitation explicit is better than pretending an imported snapshot is a live provider; a future producer contract can join the freshness path once it can describe how its inputs and executable identity change.
 
-Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. A provider can emit its unit, documents, symbols, occurrences, and edges. Validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes. Format 4 then projects that rich provider output into retained documents, declaration anchors, and high-value navigation edges before storage. Occurrences, statement-level calls and references, and noisy declaration kinds do not become durable managed-index facts.
+Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. Format 5 asks built-in providers and external adapters to produce documents, declaration anchors, and navigation edges directly. The adapter and storage boundaries project again defensively, while validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes.
 
 ## Publish completeness after the graph
 
@@ -108,7 +108,7 @@ Publishing the manifest first would invert that guarantee. A crash could leave a
 
 The bounded publication path came from a real failure, not an estimated future scale. Weave's first [repository-scale baseline](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-06-repositories.md) indexed Mixology, arch-lint, cedar-dotnet, and FKYeah in isolated local clones. The original Mixology cold index exceeded the harness's 300-second bound. Its Go graph contained 165 compilation units and 433,523 document, symbol, occurrence, and edge facts, enough for a single storage transaction to consume multiple gigabytes of memory and miss the same bound.
 
-Three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs.
+At that stage, three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs. Format 5 later removed the type-checking and implementation-analysis path from the built-in Go provider entirely; this older sequence remains useful evidence of why reducing representation alone was not enough.
 
 The adjacent measured run made the first correction concrete:
 
@@ -119,7 +119,7 @@ The adjacent measured run made the first correction concrete:
 
 The current lookup included Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. That historical result exposed the next problem rather than finishing the storage work.
 
-The format-4 navigation projection later changed what the managed database retains. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. The projection retains documents, declaration anchors, and navigation relationships while omitting occurrences, statement-level calls and references, fields, constants, locals, and broad body-token postings. Freshness still governs the complete provider inventory even though persistence is now deliberately smaller than provider output.
+The measured format-4 projection changed what the managed database retained. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. Format 5 moves that navigation boundary earlier so providers avoid producing occurrences, statement-level calls and references, fields, constants, locals, and body terms in the first place. Freshness still governs the complete inventory promised by that narrower profile.
 
 The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
 

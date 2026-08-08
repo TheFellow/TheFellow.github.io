@@ -16,7 +16,7 @@
   <rect x="44" y="150" width="418" height="214" class="box" stroke="#fab005"/>
   <text x="253" y="198" text-anchor="middle" class="label">Navigation anchors</text>
   <text x="253" y="238" text-anchor="middle" class="small">documents · sections</text>
-  <text x="253" y="270" text-anchor="middle" class="small">code blocks · declarations</text>
+  <text x="253" y="270" text-anchor="middle" class="small">packages · types · callables</text>
   <text x="253" y="302" text-anchor="middle" class="small">stable names + ranges</text>
   <text x="253" y="340" text-anchor="middle" class="tiny">compact semantic lookup</text>
 

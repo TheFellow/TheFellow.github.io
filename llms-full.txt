@@ -1192,7 +1192,7 @@ This is intentionally stronger than a timestamp or "last updated" field. The cac
 
 ## Project only the hot facts
 
-The machine aggregate is not a copy of every worktree database. It contains retained navigation symbols, their name lookup projection, retained edges, and normalized fact-to-worktree provenance. Units, documents, source text, verbose evidence records, and freshness manifests stay with their owning repositories. Format 4 has no per-worktree occurrences or broad body-token postings to copy.
+The machine aggregate is not a copy of every worktree database. It contains retained navigation symbols, their name lookup projection, retained edges, and normalized fact-to-worktree provenance. Units, documents, source text, verbose evidence records, and freshness manifests stay with their owning repositories. The navigation profile has no per-worktree occurrences or body-token postings to copy.
 
 That narrow projection supports the catalog operations that repeatedly need symbol search and retained graph adjacency: `symbols`, `dependencies`, `path`, `impact`, and `graph`. Exact IDs, normalized display names, stable names, providers, evidence, retained edge kinds, ranges, and document identities remain sufficient for those operations.
 
@@ -1218,7 +1218,7 @@ The first checked-in benchmark uses eight worktrees and 5,000 total symbols. It 
 
 Reverse edge adjacency is 3.3 to 3.9 times faster through the aggregate and allocates about 74 percent fewer bytes. Opening the query surface and then searching improves by only about 6 percent because the required Git and freshness checks dominate the fixture. An aggregate hit still avoids holding eight database handles and locks through query execution.
 
-The original hot-projection fixture was half the physical size of a deliberately verbose format-3 worktree fixture containing documents, occurrences, long paths, and symbols. That historical result justified generation-keyed aggregation, but format 4 changed the source databases underneath it. Current claims are narrower: the aggregate avoids repeated catalog fan-out for retained navigation queries, and its own projection remains a future reduction target.
+The original hot-projection fixture was half the physical size of a deliberately verbose format-3 worktree fixture containing documents, occurrences, long paths, and symbols. That historical result justified generation-keyed aggregation, but the later navigation formats changed the source databases underneath it. Current claims are narrower: the aggregate avoids repeated catalog fan-out for retained navigation queries, and its own projection remains a future reduction target.
 
 ## Fall back toward authority
 
@@ -1275,7 +1275,7 @@ Git is the authority for additions, deletions, modifications, copies, renames, t
 
 That inventory is useful evidence, but it is not a semantic graph delta. A comment-only edit may change a source file without changing one normalized fact. A provider upgrade may change graph evidence even when a narrow file list looks stable. A rename can preserve a stable semantic identity, while a small declaration edit can replace several symbols and relationships.
 
-The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, retained symbols, and retained navigation edges each have independent `added`, `removed`, and `changed` collections. The schema can represent occurrence changes from richer snapshots, but managed format-4 indexes retain no occurrences. A changed record keeps both before and after values under the same stable ID.
+The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, retained symbols, and retained navigation edges each have independent `added`, `removed`, and `changed` collections. The schema can represent occurrence changes from older or external snapshots, but the managed navigation profile contains no occurrences. A changed record keeps both before and after values under the same stable ID.
 
 ## Index the past without checking it out here
 
@@ -1377,7 +1377,7 @@ This is intentionally less than a dossier. Discovery does not load occurrences, 
 
 ## Let source search do statement-level work
 
-The format-4 database no longer stores occurrences, call or reference edges, fields, locals, or broad content-token postings. Once a package or declaration is known, current source is a cheaper and more useful place to recover that detail.
+The navigation profile does not produce or store occurrences, call or reference edges, fields, locals, or content-token postings. Once a package or declaration is known, current source is a cheaper and more useful place to recover that detail.
 
 The lexical half of `explore` extracts a bounded set of useful terms from the research phrase and runs one fixed-string ripgrep operation. It respects ignore files, excludes `.git`, `vendor`, and `node_modules`, rejects files larger than 1 MiB, limits captured output, scores term overlap, and diversifies results across files before filling remaining slots. Missing ripgrep or no matches is a soft miss; semantic anchors remain available.
 
@@ -1398,7 +1398,7 @@ The split also makes the CLI easier to reason about:
 3. Use `dependencies`, `path`, `impact`, `graph`, or an architecture check for retained navigation relationships.
 4. Use current source search for statement-level callers, references, and local data flow.
 
-The last step is a deliberate contract change. `references`, `callers`, and `callees` are no longer managed-index commands because format 4 does not retain the facts needed to answer them exhaustively. Providers may still use those facts while deriving higher-level navigation, but the database does not advertise what it discards.
+The last step is a deliberate contract change. `references`, `callers`, and `callees` are no longer managed-index commands because the navigation profile does not contain the facts needed to answer them exhaustively. Providers may use compiler analysis to derive higher-level navigation, but they do not transmit the discarded statement events.
 
 ## Measure the complete handoff
 
@@ -1476,7 +1476,7 @@ After a conflict, reloading the canonical list does not silently rebase the open
 
 One-shot CLI callers may omit a revision and retain the existing serialized edit behavior. The guard is an application option for clients that hold state across time, not an incompatible requirement imposed on every command.
 
-Format 4 also narrows what can be authored. Link add and update accept only dependency, import, extension, implementation, test, generation, documentation, exposure, link, and embed relationships retained by the navigation index. A declaration cannot promise a statement-level edge that storage will discard.
+The navigation profile also narrows what can be authored. Link add and update accept only dependency, import, extension, implementation, test, generation, documentation, exposure, link, and embed relationships retained by the index. A declaration cannot promise a statement-level edge that storage will discard.
 
 ## Write one validated declaration atomically
 
@@ -2073,7 +2073,7 @@ Source: [https://thefellow.github.io/articles/indexing-schemas-and-build-declara
 
 **Part 11 of [Building Weave](/series/weave.md).**
 
-Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable.md) explains files, documents, headings, routes, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
+Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable.md) explains structured documents, headings, routes, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
 
 Those declarations are too useful to leave as plain text. They are also not permission to run every tool that understands them. Evaluating a build can execute plugins and targets. Terraform can load providers and state. An OpenAPI loader can follow files or URLs. A migration framework can apply templates or connect to a database. Automatic indexing should not acquire any of those powers merely because a matching file exists.
 
@@ -2162,7 +2162,7 @@ The same restraint excludes Gradle and CMake from the first build set. Their com
 
 ## Publish ordinary graph facts
 
-Each parser produces normal documents, symbols, source ranges, and relationships through the shared graph model. The provider may emit occurrence-level detail, but format 4 projects managed storage down to anchors and retained navigation edges. Provider-owned edges may point at workspace path identities, another local declaration, or an open endpoint. Automatic evidence never writes into `.weave/bridges.json`; authored intent remains a separate owner.
+Each parser produces documents, declaration anchors, source ranges, and retained relationships through the shared navigation profile. Fine-grained fields, properties, columns, enum values, locals, occurrences, and containment edges are omitted. Provider-owned edges may point at a provider-neutral workspace path identity without requiring a stored file symbol, another local declaration, or an open endpoint. Automatic evidence never writes into `.weave/bridges.json`; authored intent remains a separate owner.
 
 That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can open the current declaration source. Retained project dependencies and explicit generation mappings can participate in graph, impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common navigation model. Detailed schema references remain in source rather than being advertised as persisted edges.
 
@@ -2245,9 +2245,9 @@ Hooks and watch processes can eventually make that path warmer, but they cannot 
 
 ## Providers own complete semantic units
 
-Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths and extracts structured document, section, link, asset, route, topic, series, and code-fence facts without executing a renderer. The native Go provider uses `go/packages` and `go/types`. The optional .NET process uses Roslyn and MSBuild for C#, and FSharp.Compiler.Service for F#. The optional Python process uses CPython's parser and compiler symbol table for exact lexical binding facts while labeling imports `declared` and calls `syntactic`. Rust-analyzer, `scip-clang`, `scip-typescript`, and `scip-java` supply compiler-resolved Rust, C/C++/CUDA, TypeScript/JavaScript, and Java/Kotlin facts through bounded process adapters. Runtime, compiler, configuration, and toolchain probes participate in freshness so an environment change cannot silently reuse an older inventory. A checked-in [relationship file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes reviewed connections that no single compiler can establish.
+Weave normalizes facts from several semantic worlds. The always-on workspace provider inventories Git-visible paths for resolution and persists structured Markdown documents, sections, routes, links, and embeds without executing a renderer. The native Go provider uses `go/packages` for the exact build-selected package and file inventory, then walks declarations and direct imports without requesting type checking, identifier maps, dependency syntax, or test variants. Optional .NET, Python, Rust, C/C++, TypeScript/JavaScript, JVM, and Universal Ctags processes use their native parsers or compilers to produce the same declaration-and-navigation profile. Runtime, compiler, configuration, and toolchain probes participate in freshness so an environment change cannot silently reuse an older inventory. A checked-in [relationship file](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) contributes reviewed connections that no single compiler can establish.
 
-The workspace provider has a deliberately different failure boundary. Malformed, non-UTF-8, or oversized structured content retains exact file-topology facts and publishes a bounded diagnostic with the manifest, so one prose file cannot make compiler queries unavailable. A transient read or identity race still aborts the refresh. Persisting the first kind and retrying the second keeps stable source limitations distinct from an unsafe snapshot.
+The workspace provider has a deliberately different failure boundary. Malformed, non-UTF-8, or oversized structured content is omitted with a bounded diagnostic, so one prose file cannot make compiler queries unavailable. A transient read or identity race still aborts the refresh. Recording the first kind of omission and retrying the second keeps stable source limitations distinct from an unsafe snapshot.
 
 The [`CompositeProvider`](https://github.com/TheFellow/weave/blob/main/internal/freshness/composite.go) gives each active producer an owner name and a view of only its previous units. It rejects duplicate owners and rejects a semantic unit claimed by two providers. If an installed provider disappears, the composite result explicitly removes its former units instead of leaving their facts behind.
 
@@ -2255,7 +2255,7 @@ That ownership prevents a subtle failure. Suppose the Go provider refreshes its 
 
 Explicit SCIP import follows a separate lifecycle. It accepts a bounded compiler-backed snapshot, preserves inventories from other SCIP producers, and replaces only the importing producer's units. It does not yet know how to rerun that producer before a query, so the user must reimport changed output. Keeping that limitation explicit is better than pretending an imported snapshot is a live provider; a future producer contract can join the freshness path once it can describe how its inputs and executable identity change.
 
-Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. A provider can emit its unit, documents, symbols, occurrences, and edges. Validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes. Format 4 then projects that rich provider output into retained documents, declaration anchors, and high-value navigation edges before storage. Occurrences, statement-level calls and references, and noisy declaration kinds do not become durable managed-index facts.
+Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. Format 5 asks built-in providers and external adapters to produce documents, declaration anchors, and navigation edges directly. The adapter and storage boundaries project again defensively, while validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes.
 
 ## Publish completeness after the graph
 
@@ -2281,7 +2281,7 @@ Publishing the manifest first would invert that guarantee. A crash could leave a
 
 The bounded publication path came from a real failure, not an estimated future scale. Weave's first [repository-scale baseline](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-06-repositories.md) indexed Mixology, arch-lint, cedar-dotnet, and FKYeah in isolated local clones. The original Mixology cold index exceeded the harness's 300-second bound. Its Go graph contained 165 compilation units and 433,523 document, symbol, occurrence, and edge facts, enough for a single storage transaction to consume multiple gigabytes of memory and miss the same bound.
 
-Three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs.
+At that stage, three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs. Format 5 later removed the type-checking and implementation-analysis path from the built-in Go provider entirely; this older sequence remains useful evidence of why reducing representation alone was not enough.
 
 The adjacent measured run made the first correction concrete:
 
@@ -2292,7 +2292,7 @@ The adjacent measured run made the first correction concrete:
 
 The current lookup included Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. That historical result exposed the next problem rather than finishing the storage work.
 
-The format-4 navigation projection later changed what the managed database retains. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. The projection retains documents, declaration anchors, and navigation relationships while omitting occurrences, statement-level calls and references, fields, constants, locals, and broad body-token postings. Freshness still governs the complete provider inventory even though persistence is now deliberately smaller than provider output.
+The measured format-4 projection changed what the managed database retained. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. Format 5 moves that navigation boundary earlier so providers avoid producing occurrences, statement-level calls and references, fields, constants, locals, and body terms in the first place. Freshness still governs the complete inventory promised by that narrower profile.
 
 The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
 
@@ -2391,7 +2391,7 @@ The first design choice is refusing to render everything. `weave graph TARGET` r
 
 Bidirectional traversal keeps independent incoming and outgoing queues and interleaves them. That detail matters when the global node or edge budget is small. Walking every caller first could consume the entire budget before showing a single callee. The result records whether a bound truncated the view rather than letting a small picture imply a complete universe.
 
-The default edge set is exactly the relationship vocabulary retained by format 4: dependencies, imports, extension and implementation, tests, generation, documentation, exposure, links, and embeds. Statement-level calls and references, containment duplication, reads, writes, membership, and resolution are not hidden filters; they are absent from the managed navigation index and must be investigated in current source.
+The default edge set is exactly the relationship vocabulary retained by `navigation-v1`: dependencies, imports, extension and implementation, tests, generation, documentation, exposure, links, and embeds. Statement-level calls and references, containment duplication, reads, writes, membership, and resolution are not hidden filters; they are absent from the managed navigation index and must be investigated in current source.
 
 The operation works over a local worktree or the bounded repository catalog. Catalog members still refresh before their databases are opened. Graph breadth does not weaken the [freshness contract](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md); it makes the current facts easier to inspect.
 
@@ -2408,7 +2408,7 @@ Weave hydrates graph responses with the materialized anchors and documents refer
 
 Human input gets the same treatment. Compiler-qualified stable names can encode ownership as segments such as `package`, `type`, and `method`, but `Server.Serve` is the spelling a person naturally reaches for. The resolver keeps exact IDs, exact stable names, and provider search order authoritative, then falls back to the concise qualified suffix when it selects exactly one symbol. An ambiguous query reports stable names, kinds, and graph IDs for several candidates, plus the remaining count, so refinement does not begin with two opaque hashes.
 
-That hydration exposed provider details that matter to the answer. The native Go index now materializes external packages and referenced external objects as readable endpoints, includes implicit declarations such as type-switch variables, and preserves stable ownership through aliases and reconstructed type objects. Explicit open-world endpoints remain valid when another provider has not materialized them.
+That hydration originally exposed provider details such as external objects, implicit declarations, and reconstructed type ownership. The current format-5 Go provider is intentionally smaller: it retains build-selected package, type, function, and method anchors plus direct package dependencies, without type checking or referenced-object materialization. External package identities and other open endpoints can still appear on retained relationships without requiring a stored symbol.
 
 Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from retained declarations actually owned by the selected file. These are presentation and traversal corrections over the same navigation evidence, but they are what turn stored facts into a useful answer.
 
@@ -2449,13 +2449,13 @@ weave links remove guide-documents-handler
 
 Add and update require each query to resolve uniquely. The stored `.weave/bridges.json` declaration uses `entity:<exact-id>` endpoints, so a later display-name collision cannot silently retarget it. `id:<exact-id>` deliberately creates an open endpoint for an immutable commit or resource that is not materialized yet; it is not a fuzzy-resolution escape hatch.
 
-Endpoints are graph entities rather than only compiler symbols. A relationship can connect packages, files, Markdown sections, routes, assets, URLs, or code declarations. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
+Endpoints are graph identities rather than only stored compiler symbols. A relationship can connect packages, Markdown documents and sections, routes, URLs, code declarations, or open provider-neutral path identities. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
 
 Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes concurrent read-modify-write operations, while the reviewed declaration remains in the worktree. After publication, Weave refreshes the current repository so the new relationship immediately participates in graph, path, impact, export, architecture, and federation queries.
 
 ## Keep one relationship contract
 
-Authored links do not enter a side annotation database. The built-in Go, SCIP, workspace, and relationship providers construct the same normalized `graph.Edge` shape through one relationship builder. Provider ownership and evidence defaults are validated in one place.
+Authored links do not enter a side annotation database. The built-in Go, adapter, workspace, schema/build, and relationship providers construct the same normalized `graph.Edge` shape. Provider ownership, the retained edge vocabulary, and evidence defaults are validated at shared boundaries.
 
 That common shape is what makes mixed neighborhoods useful. A compiler-owned `implements` edge can meet an exposed route and a reviewed `documents` link to a Markdown section. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
 
@@ -3091,9 +3091,9 @@ run.begin
 run.end
 ```
 
-`run.begin` repeats the negotiated provider and fact encoding. Each `unit.begin` declares one atomically replaceable semantic unit. `facts` frames carry documents, symbols, occurrences, and edges in bounded batches. `unit.end` supplies exact counts, and `run.end` supplies the complete duplicate-free unit inventory.
+The host request includes the required `navigation-v1` profile. `run.begin` repeats the negotiated provider and fact encoding. Each `unit.begin` declares one atomically replaceable semantic unit. `facts` frames carry documents, declaration symbols, and navigation edges in bounded batches. Occurrences, lexical search terms, and call, reference, definition, or containment edges are outside this profile. `unit.end` supplies exact received counts, and `run.end` supplies the complete duplicate-free unit inventory.
 
-That protocol inventory is richer than the current managed database. Format 4 validates complete adapter output, then retains declaration anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, fields, constants, and locals. The adapter remains responsible for semantic truth; the storage projection remains responsible for what is practical to keep.
+The adapter is responsible for compiler-backed truth within that deliberately narrow contract. The host filters the streamed batches and projects complete units again before publication, so an older or third-party producer cannot expand the managed index by sending discarded fact kinds.
 
 This lifecycle gives the core more than a collection of objects. It gives it a proof of completeness that can be checked mechanically. A unit that began must end. Counts must match. Every fact must name the unit and provider that owns it. The terminal inventory must name exactly the units that completed.
 
@@ -3121,11 +3121,11 @@ An explicit `--adapter` run uses the same validation and atomic unit publication
 
 A shared wire shape does not make every language equally static. It gives each adapter one vocabulary for saying how it knows a fact.
 
-The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, and calls, plus compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# definitions and references. Those richer facts remain useful during normalization, but the format-4 worktree index persists declaration anchors and project, import, implementation, and other navigation relationships rather than statement-level events. Omitting unsupported evidence is still more accurate than filling the provider stream with a guess.
+The .NET adapter uses Roslyn and MSBuild to select exact C# declaration anchors and compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# anchors. Both now emit the common navigation profile directly rather than serializing statement-level references and calls that the host would discard. Omitting unsupported evidence is still more accurate than filling the provider stream with a guess.
 
-Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
+Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and projects their output into declaration anchors and retained navigation relationships. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
 
-Repository-scale Rust validation made the root and ownership rules concrete. The adapter discovers the nearest nested Cargo manifest or `rust-project.json`, runs rust-analyzer at that build root, and rebases its SCIP documents to repository-relative paths. rust-analyzer may repeat one equivalent global symbol record across library, binary, and test documents. The adapter assigns that record to the lexically first document while retaining every occurrence and relationship; conflicting descriptions still reject the run. Per-document line indexes and memoized symbol validation bound coordinate normalization without weakening the imported evidence.
+Repository-scale Rust validation made the root and ownership rules concrete. The adapter discovers the nearest nested Cargo manifest or `rust-project.json`, runs rust-analyzer at that build root, and rebases its SCIP documents to repository-relative paths. It retains one deterministic declaration anchor for equivalent global records and only relationships allowed by `navigation-v1`; conflicting descriptions still reject the run.
 
 TypeScript, JavaScript, Java, and Kotlin reuse that SCIP boundary with different trust profiles. `weave-typescript` requires an existing root compiler configuration and never invokes a package manager, infers a configuration, or writes into the checkout. `weave-jvm` delegates to `scip-java`, which can run Gradle, Maven, or Bazel and execute build extensions. JVM indexing therefore remains an explicit run with all four grants unless a user-controlled registry deliberately records those powers and a conservative input inventory. Both adapters translate their producers' legacy UTF-16 ranges to Weave's byte coordinates instead of guessing from source encoding metadata.
 
@@ -3133,22 +3133,22 @@ Python makes the distinction sharper. CPython's `symtable` can establish that a 
 
 | Python fact | Evidence |
 | --- | --- |
-| Compiler-accepted declarations and lexical references | `exact` |
+| Compiler-accepted module, class, function, method, and type-alias anchors | `exact` |
 | Import and dependency statements | `declared` |
-| A call spelled through a resolved lexical slot | `syntactic` |
+| Parameters, locals, repeated bindings, references, and calls | omitted |
 | Dynamic attributes, decorators' effects, and runtime-generated symbols | omitted |
 
 `exact` is scoped to the claim. An exact Python fact says the recorded interpreter made that lexical decision, not that Python's runtime dispatch has become static.
 
-The Universal Ctags adapter makes the lower boundary equally explicit. It emits documents, symbols, and definition occurrences as `syntactic` evidence for a broad collection of languages and formats. References, calls, inheritance, and other relationships are absent. It is an explicit enrichment provider, not an automatic replacement for a compiler-backed adapter.
+The Universal Ctags adapter makes the lower boundary equally explicit. It emits document and declaration anchors as `syntactic` evidence for a broad collection of languages and formats. References, calls, inheritance, and other relationships are absent. It is an explicit enrichment provider, not an automatic replacement for a compiler-backed adapter.
 
 ## Let a new language improve the common graph
 
 Python also exposed an assumption that the original graph could not keep. A single Python lexical slot may be assigned, imported, or defined several times. Modeling every statement as a different symbol would lose the compiler's binding decision; storing only one definition would lose real source locations.
 
-Weave treats `Symbol.Definition` as the canonical retained declaration anchor. Providers may emit repeated binding occurrences, but format 4 omits occurrence rows and `definition` points to the retained anchor. The Python experiment still improved the language-neutral fact model; the practical projection now makes the narrower query contract explicit.
+Weave treats `Symbol.Definition` as the canonical retained declaration anchor. The navigation profile does not emit repeated binding occurrences; `definition` points directly to the retained anchor. The Python experiment still improved the language-neutral fact model, and the practical profile now makes the narrower query contract explicit.
 
-C++ exposed a different interchange assumption. SCIP permits a producer to repeat the same global `SymbolInformation` in every document that uses it. Weave's C++ import path now retains every occurrence while selecting one canonical symbol fact deterministically, preferring a definition and then stable path and unit order. Equivalent repetitions collapse; conflicting semantic descriptions reject the complete index.
+C++ exposed a different interchange assumption. SCIP permits a producer to repeat the same global `SymbolInformation` in every document that uses it. Weave's C++ import path selects one canonical declaration fact deterministically, preferring a definition and then stable path and unit order. Occurrences are discarded, equivalent symbol repetitions collapse, and conflicting semantic descriptions reject the complete index.
 
 `scip-clang` can also omit a symbol's presentation name or kind even when its canonical SCIP descriptor contains both. The normalizer derives only that presentation from the parsed descriptor instead of leaking a long encoded identity into query output or inventing a semantic relationship. A language adapter should be allowed to expose pressure in the shared representation, then fix that representation at the narrowest truthful boundary.
 
@@ -3156,7 +3156,7 @@ That is the architectural test an external adapter should create. It may extend 
 
 ## Keep enrichment additive
 
-Every completed run may replace only facts owned by its provider. The host now rejects a document, symbol, occurrence, or edge whose provider differs from the enclosing unit and run. A broad syntactic adapter therefore cannot relabel compiler facts, and a compiler upgrade cannot delete document relationships owned by the workspace provider.
+Every completed run may replace only facts owned by its provider. The host rejects a document, symbol, or edge whose provider differs from the enclosing unit and run. A broad syntactic adapter therefore cannot relabel compiler facts, and a compiler upgrade cannot delete document relationships owned by the workspace provider.
 
 Owning an edge does not imply owning either endpoint. A precise compiler relationship, a syntactic outline, a generated-schema bridge, and a declared human relationship can connect the same graph without one provider calling another or writing storage directly. The core unions those observations while retaining provider and evidence. Any future reconciliation must add its own evidenced relationship rather than silently merging identities or promoting a heuristic to compiler truth.
 
@@ -3246,7 +3246,7 @@ Source: [https://thefellow.github.io/articles/making-source-bodies-discoverable-
 
 A structured-content index can know that a heading exists and still miss a concept written only in the paragraph below it. Weave first addressed that gap by attaching body-derived search terms to graph entities and publishing them through token postings. The source text stayed outside the database, but its vocabulary still multiplied index and response cost.
 
-The format-4 navigation index removes those broad content postings. [Weave](https://github.com/TheFellow/weave) now combines retained document and section anchors with one bounded ripgrep pass over current source. The index answers which semantic entities exist; source search answers which current lines contain the research terms.
+The navigation index removes those broad content postings. [Weave](https://github.com/TheFellow/weave) now combines retained document and section anchors with one bounded ripgrep pass over current source. The index answers which semantic entities exist; source search answers which current lines contain the research terms.
 
 <figure class="article-figure">
   <img src="/assets/images/articles/weave/source-body-discovery.svg" alt="A research phrase is normalized into a small set of useful fixed-string terms. Compact semantic lookup returns structured document and declaration anchors. In parallel, bounded ignore-aware ripgrep reads current Git-visible files and returns scored path, line, column, and preview hits. Results are diversified by file and combined under one item and byte budget. A selected semantic anchor can then open exact current context.">
@@ -3259,7 +3259,7 @@ The previous design allowed providers to attach thousands of normalized terms to
 
 The storage audit found that this was the wrong default for a disposable local tool. Name and stable-name lookup are valuable because they map human concepts onto compiler and content identities. Broad body vocabulary is different: ripgrep already searches those bytes efficiently, respects repository ignore rules, and returns the exact current line an agent needs.
 
-Format 4 therefore clears search terms from ordinary code anchors and does not persist broad content-token postings. Structured document, section, and code-block entities remain available as anchors, with a small bounded lexical allowance where the provider needs it for their identity. Whole-body discovery no longer depends on storing every term.
+Format 5 removes search terms at the navigation-profile boundary and does not persist code-block entities or generic source-file anchors. Structured Markdown documents and sections remain available by their names and stable identities. Concepts that appear only in body text are discovered directly in current source.
 
 ## Bound the source search
 
@@ -3308,7 +3308,7 @@ Automatic execution needs durable answers to harder questions. Which local artif
 
 [Weave](https://github.com/TheFellow/weave) adds a deliberately local adapter lifecycle instead. The user selects one existing executable. Weave copies it into private platform state, records normalized capabilities and two content digests, and routes Git-visible inputs only through non-overlapping claims. A metadata-only list, bounded doctor, and language-neutral conformance runner make each layer observable. There is no download command, remote catalog, archive extraction, package-manager invocation, or repository-local executable discovery hiding inside the convenience.
 
-The current format-4 database also separates adapter authority from retention. An adapter may emit rich compiler facts through the protocol, while the host validates that complete output and persists only declaration anchors and supported navigation relationships. Installing a more precise compiler does not silently opt the worktree into storing every occurrence, call, reference, field, or local it can report.
+The current `navigation-v1` adapter profile aligns authority with retention. An adapter emits declaration anchors and supported navigation relationships, while the host filters and validates the complete streamed inventory before publication. Installing a more precise compiler does not silently opt the worktree into producing or storing every occurrence, call, reference, field, or local it can report.
 
 <figure class="article-figure">
   <img src="/assets/images/articles/weave/managed-adapter-lifecycle.svg" alt="An explicitly selected regular local adapter executable is copied into Weave's private platform state and asked for its side-effect-free capability document. Weave normalizes input and evidence claims, then atomically records artifact and capability SHA-256 digests in a locked manifest. For automatic indexing, registry, environment, and managed policy merge with fixed precedence, conflicting claims fail closed, concrete Git-visible paths route to one precise or fallback owner, and both artifact and capability identity are checked before the existing bounded index protocol runs. Separate list, doctor, and conformance commands expose metadata, integrity and negotiation, and black-box fixture behavior without creating a remote package registry.">
@@ -3463,11 +3463,11 @@ This evidence reframed the problem. The product did not need a better-compressed
 
 ## Make discovery progressive
 
-Format 4 retains semantic anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, noisy declaration kinds, containment duplication, and broad content-token postings. `weave explore` now returns at most a few semantic anchors plus diversified ripgrep hits. Each semantic anchor includes an exact `weave context` follow-up. The discovery array has a 12 KiB encoded ceiling.
+The measured format-4 implementation retained semantic anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, noisy declaration kinds, containment duplication, and broad content-token postings. Format 5 makes the same narrow shape the producer and adapter contract. `weave explore` returns at most a few semantic anchors plus diversified ripgrep hits. Each semantic anchor includes an exact `weave context` follow-up. The discovery array has a 12 KiB encoded ceiling.
 
 The selected `context` call then reads current source for one exact anchor. It does not expand eight candidates speculatively or pretend that the graph should replace text search for statement-level investigation.
 
-On the same repository and commit, the format-4 database occupied 16,777,216 bytes, a 98.38% reduction and 5.56 times source size. The representative first-stage response occupied 3,157 bytes, 98.16% smaller than the old response. Its selected context response occupied 3,195 bytes and included 337 bytes of source.
+On the same repository and commit, that format-4 database occupied 16,777,216 bytes, a 98.38% reduction and 5.56 times source size. The representative first-stage response occupied 3,157 bytes, 98.16% smaller than the old response. Its selected context response occupied 3,195 bytes and included 337 bytes of source. Those measurements remain a historical baseline until format 5 is rerun on the same fixture.
 
 ## Keep the benchmark honest after the redesign
 
@@ -3682,7 +3682,7 @@ printf '%s\n' \
 
 Requests map to the same application invocations as the CLI. The session accepts bounded local research operations such as symbols, compact explore, context, definition anchors, dependencies, paths, impact, and graphs. It rejects maintenance, mutation, catalog, adapter, index, full-export, and the removed posting-dependent workspace operations.
 
-Every frame has a fixed maximum size, one request ID, validated command arity, bounded limits, traversal depth, edge counts, source lines, and source bytes. Removed statement-level commands such as `references`, `callers`, and `callees` are not part of the session surface because the format-4 navigation index does not retain their facts.
+Every frame has a fixed maximum size, one request ID, validated command arity, bounded limits, traversal depth, edge counts, source lines, and source bytes. Removed statement-level commands such as `references`, `callers`, and `callees` are not part of the session surface because the navigation profile does not contain their facts.
 
 ## Add an ephemeral broker for ordinary commands
 
@@ -3708,7 +3708,7 @@ Per-worktree and aggregate queries now use bstore's shared read-only mode after 
 
 The original session experiment measured a 0.379 ms warm median after a 1,453.892 ms first request in one 20-request local sample, compared with 751.974 ms for one one-shot call. That sample justified reusing startup state, not treating a resident process as the product.
 
-It also exposed a different problem: the old eight-focus exploration response still occupied tens of kilobytes because it repeated graph dossiers. The later format-4 work solved that at the query boundary. Progressive discovery now returns a representative 3,157-byte first-stage response and fetches exact context only for a selected anchor.
+It also exposed a different problem: the old eight-focus exploration response still occupied tens of kilobytes because it repeated graph dossiers. The later progressive-discovery work solved that at the query boundary. Its measured format-4 fixture returned a representative 3,157-byte first-stage response and fetched exact context only for a selected anchor.
 
 These optimizations compose cleanly because they solve different costs. The broker makes repeated commands cheaper to start. The navigation projection makes the database smaller. Progressive discovery makes agent responses smaller. Freshness and current source remain shared correctness boundaries underneath all three.
 
@@ -3733,10 +3733,10 @@ Source: [https://thefellow.github.io/articles/shrinking-a-semantic-graph-without
 
 The first storage correction in Weave changed representation while preserving an exhaustive graph. Numeric identities, interned strings, and narrower records reduced one large index from 7.54 GB to 1.11 GB. That was useful engineering, but it did not answer the more important product question: why should a local navigation tool store hundreds of compiler events for every byte of source?
 
-The later audit answered by changing the retained contract. [Weave](https://github.com/TheFellow/weave) format 4 is a navigation index, not a compiler-event archive. Compilers and adapters may still produce rich facts during analysis, but persistence keeps only the anchors and relationships that reliably move a person or agent toward the right source.
+The later audit answered by changing the retained contract. [Weave](https://github.com/TheFellow/weave) became a navigation index, not a compiler-event archive. Format 4 first narrowed persistence. Format 5 makes `navigation-v1` the production contract too, so built-in providers and external adapters avoid constructing or transmitting facts the product will discard.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/compact-storage.svg" alt="Language and content providers emit normalized facts. A format-4 navigation projection retains documents, package and declaration anchors, and high-value dependency, implementation, test, generation, documentation, link, and embed edges. It drops occurrences, calls, references, containment duplication, fields, constants, locals, and token postings. The compact database points discovery back to current source.">
+  <img src="/assets/images/articles/weave/compact-storage.svg" alt="Language and content providers emit navigation facts. The format-5 navigation profile retains documents, package and declaration anchors, and high-value dependency, implementation, test, generation, documentation, link, and embed edges. It omits occurrences, calls, references, containment duplication, fields, constants, locals, and search terms. The compact database points discovery back to current source.">
   <figcaption>The decisive reduction came from narrowing the durable product contract, then compacting the representation that remained.</figcaption>
 </figure>
 
@@ -3748,7 +3748,7 @@ Those numbers showed that the index was duplicating statement-level evidence mor
 
 ## Retain the navigation layer
 
-Format 4 keeps:
+The navigation profile keeps:
 
 - units and documents needed for source identity and freshness;
 - repository, content, package, type, function, method, test, and unknown provider-defined anchors;
@@ -3757,13 +3757,13 @@ Format 4 keeps:
 
 It drops occurrences, statement-level calls and references, definition and containment edges, variables, fields, constants, builtins, locals, and broad content-token postings. Declaration ranges on retained symbols remain enough for `definition` and exact `context` follow-ups. Current source and bounded ripgrep recover the lower-level detail after discovery has selected a useful area.
 
-This is a change in meaning, and naming it matters. The earlier storage-v2 work proved that a private encoding could become smaller without changing public facts. Format 4 makes a different trade: exhaustive compiler events are no longer part of the managed query contract. Commands and edge filters now advertise only relationships the navigation projection actually retains.
+This is a change in meaning, and naming it matters. The earlier storage-v2 work proved that a private encoding could become smaller without changing public facts. The navigation profile makes a different trade: exhaustive compiler events are no longer part of the managed query contract. Commands and edge filters advertise only relationships the profile retains.
 
 ## Project before publishing
 
-Each provider still owns its analysis boundary. The storage projection runs after normalization, filters noisy symbol kinds and relationship families, clears unnecessary search terms, and publishes only the retained facts. A clean refresh compacts the closed database before installing its manifest.
+Each provider still owns its analysis boundary. Format 5 asks every external adapter for `profile: navigation-v1`, and built-in providers produce the same declaration-and-relationship shape directly. The adapter parser and storage layer apply the projection again as cheap safety boundaries. A clean refresh compacts the closed database before installing its manifest.
 
-This keeps adapter protocols independent from one storage experiment. A precise provider can expose richer facts to validation or future consumers without forcing every worktree database to retain them indefinitely. The local index pays for the product surface that current queries use.
+The graph vocabulary can still describe richer facts, but the indexing protocol no longer spends process, validation, or storage work on them. The local index pays for the product surface that current queries use.
 
 ## Follow the evidence back to source
 
@@ -3773,7 +3773,7 @@ This division uses each mechanism where it is strongest. Compiler-backed identit
 
 ## Verify the practical result
 
-On the same repository and commit, format 4 produced a 16,777,216-byte database with 6,269 symbols, no occurrences, and 9,535 retained edges. That is 5.56 index bytes per source byte and a 98.38% reduction from format 3. A forced refresh completed in 10.2 seconds.
+On the same repository and commit, the measured format-4 implementation produced a 16,777,216-byte database with 6,269 symbols, no occurrences, and 9,535 retained edges. That is 5.56 index bytes per source byte and a 98.38% reduction from format 3. A forced refresh completed in 10.2 seconds. Format 5 is a still narrower implementation of the same product decision; it needs its own like-for-like measurement.
 
 The response boundary improved with it. The representative `explore --json` result fell from 171,537 bytes to 3,157 bytes. Selecting its first anchor produced a 3,195-byte `context --json` response containing 337 bytes of current source. These are controlled measurements from one repository, but they test the actual product constraints: disk amplification and useful evidence placed into an agent's context.
 
@@ -4310,7 +4310,9 @@ The first diagnostic passes found failures that isolated fixtures did not contai
 
 None of those corrections weaken graph validation. The C# adapter still rejects two equally near solutions because choosing one lexically would invent build intent. Rust still rejects conflicting descriptions of one global symbol; it collapses only equivalent producer repetition. Generated C# source remains visible as a diagnostic rather than being assigned a false repository path.
 
-The normalization work also removed accidental scale costs. C# edge de-duplication now uses a per-project identity set instead of scanning every prior edge for every insertion. Rust builds one line index per document instead of rescanning its source from byte zero for every occurrence, and it memoizes symbol validation and stable IDs. The Go provider no longer keeps the full dependency graph's syntax resident when it emits facts only for repository packages.
+The normalization work also removed accidental scale costs. C# edge de-duplication used a per-project identity set instead of scanning every prior edge for every insertion. Rust built one line index per document instead of rescanning its source from byte zero for every occurrence, and memoized symbol validation and stable IDs. The Go provider stopped retaining the full dependency graph's syntax when it emitted facts only for repository packages.
+
+Format 5 makes those observations historical implementation steps rather than the current endpoint. The built-in Go provider no longer requests type checking, identifier maps, dependency syntax, or test variants; it walks build-selected declarations and direct imports. External adapters project compiler output to declaration anchors and retained navigation edges before transmission, so occurrence-normalization costs are outside the managed profile.
 
 ## Measure publication, not only compiler startup
 
@@ -4355,7 +4357,7 @@ All green does not mean all small. The Rust rigid-body repository peaked at 1,97
 
 The matrix also does not prove every repository shape, operating system, compiler version, or warm-cache state. It proves something narrower and more useful: these pinned repositories can be prepared without mutating their sources, indexed offline by this candidate, queried through current manifests, verified structurally, and exported completely under recorded bounds.
 
-That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare provider inventories, retained navigation counts, storage amplification, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, skips validation, or silently restores packages is a failed run. A smaller format-4 database that deliberately omits occurrences is expected.
+That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare provider inventories, retained navigation counts, storage amplification, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, skips validation, or silently restores packages is a failed run. A smaller navigation-profile database that deliberately omits occurrences is expected.
 
 ## Let failures improve the shared boundary
 
@@ -6413,7 +6415,7 @@ Source: [https://thefellow.github.io/projects/weave/](https://thefellow.github.i
 [Read the agent dogfood](/articles/measuring-agent-research-beyond-query-latency.md)
 [Inspect the indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md)
 
-Weave is a local-first, Git-aware semantic index for the knowledge encoded in a workspace. It combines language-native compiler facts with files, structured documents, sections, links, assets, routes, and metadata in one evidence-carrying graph, then exposes bounded CLI queries for people and coding agents. The index is disposable derived state. It stays beside Git instead of entering commits, requires no hosted service, and refreshes its automatic provider inventories before a query can observe stale answers.
+Weave is a local-first, Git-aware navigation index for the knowledge encoded in a workspace. It combines language-native declaration anchors with structured documents, sections, routes, and high-value relationships, then exposes bounded CLI queries for people and coding agents. The index is disposable derived state. It stays beside Git instead of entering commits, requires no hosted service, and refreshes its automatic provider inventories before a query can observe stale answers.
 
 The problem is familiar when working in a large repository. A coding agent can inspect source well once it reaches the right package, type, function, document, or file. Reaching that point repeatedly is the expensive part. Weave keeps a compact set of semantic anchors and high-value navigation relationships, then hands statement-level investigation back to current source instead of persisting a second, much larger copy of what compilers and text search can recover.
 
@@ -6433,13 +6435,13 @@ weave graph docs/design.md --kind links-to --kind embeds
 
 `weave explore` is deliberately small. It returns a few semantic anchors plus diversified, ignore-aware ripgrep hits with paths, coordinates, previews, and exact `weave context` follow-ups. `context` then opens current Git-visible source for the selected declaration. The first stage has both an item limit and a 12 KiB encoded ceiling, so discovery cannot quietly turn into a graph dump.
 
-The stored format is a navigation projection, not a compiler-event archive. It retains repository documents; package, type, function, method, test, and provider-defined anchors; and relationships such as imports, dependencies, implementations, tests, generation, documentation, exposure, links, and embeds. It omits occurrences, statement-level calls and references, containment duplication, fields, constants, locals, and broad content-token postings. Providers may emit richer facts during indexing, but the projection decides what is worth paying to retain.
+Storage format 5 is a navigation profile, not a compiler-event archive. It retains documents; package, namespace, type, callable, test, and content anchors; and relationships such as imports, dependencies, implementations, tests, generation, documentation, exposure, links, and embeds. It omits occurrences, statement-level calls and references, containment duplication, fields, constants, locals, and content search terms. The same `navigation-v1` boundary now applies when built-in providers construct facts, when external adapters stream them, and again before storage.
 
-That boundary changed the physical and agent-facing shape substantially. On the recorded 3,019,968-byte Go repository, format 4 reduced the database from 1,034,616,832 bytes to 16,777,216 bytes, a 98.38% reduction and 5.56 times the non-Git source size. The representative `explore --json` response fell from 171,537 bytes to 3,157 bytes, and its selected `context --json` response was 3,195 bytes. These are one reproducible audit, not universal performance claims, but they establish the practical acceptance boundary the implementation now tests.
+The measured format-4 transition established the practical boundary. On a recorded 3,019,968-byte Go repository, it reduced the database from 1,034,616,832 bytes to 16,777,216 bytes, a 98.38% reduction and 5.56 times the non-Git source size. The representative `explore --json` response fell from 171,537 bytes to 3,157 bytes, and its selected `context --json` response was 3,195 bytes. Format 5 goes further by avoiding discarded facts during production; those earlier numbers remain historical evidence until the newer format is measured on the same fixture.
 
-The native Go provider and optional .NET, Python, Rust, C/C++, TypeScript/JavaScript, JVM, and Universal Ctags adapters still use their language-native tools to establish identities and navigation facts. The open process protocol keeps those runtimes outside the Go core. Explicit permissions, capability claims, input routing, validation, and atomic publication prevent an adapter from silently broadening its authority. The compact projection is shared across providers, so adding a precise compiler does not imply retaining all of its event exhaust forever.
+The native Go provider and optional .NET, Python, Rust, C/C++, TypeScript/JavaScript, JVM, and Universal Ctags adapters use their language-native tools to establish identities and navigation facts. The open process protocol keeps those runtimes outside the Go core. Every index request now requires `profile: navigation-v1`; explicit permissions, capability claims, input routing, validation, and atomic publication prevent an adapter from silently broadening its authority. Adding a precise compiler does not imply producing or retaining all of its event exhaust.
 
-The workspace provider gives the same treatment to repositories that do not compile. It indexes Git-visible paths and structured Markdown, front matter, headings, links, assets, routes, and metadata without executing the site. Documents and sections are found through `explore` or `symbols`, opened through `context`, and connected through retained graph kinds such as `documents`, `links-to`, and `embeds`. The older posting- and containment-dependent `workspace` command family is intentionally gone. A source-only provider adds bounded facts from Protobuf, OpenAPI, GraphQL, PostgreSQL migrations, Terraform, and declarative project manifests without running builds, generators, package managers, databases, or network loaders.
+The workspace provider gives the same treatment to repositories that do not compile. It inventories Git-visible paths only to resolve links, while persisting structured Markdown documents, headings, routes, and retained relationships without executing the site. Generic files, directories, assets, code blocks, topics, and body terms are not separate stored entities. Documents and sections are found through `explore` or `symbols`, opened through `context`, and connected through graph kinds such as `documents`, `links-to`, and `embeds`. A source-only provider adds bounded facts from Protobuf, OpenAPI, GraphQL, PostgreSQL migrations, Terraform, and declarative project manifests without running builds, generators, package managers, databases, or network loaders.
 
 Freshness remains query-authoritative. A query compares the current Git and provider observation with the published manifest and refreshes changed semantic units before reading. `weave watch` can warm that same path, and a transient local broker can amortize process, schema, and dictionary startup, but neither becomes a second authority. The broker uses shared read-only handles and reaps itself after inactivity; `WEAVE_NO_BROKER=1` keeps the one-shot path available.
 
@@ -6672,9 +6674,9 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 ## Full content
 
-Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation keeps a compact navigation projection, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
+Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation produces a compact navigation profile, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
 
-This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the format-4 navigation index retained, replaced, or removed. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
+This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the navigation profile retained, replaced, or removed. Format 4 first narrowed persistence, and format 5 moved that boundary into fact production and the adapter contract. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)

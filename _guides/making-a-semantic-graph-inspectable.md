@@ -1,7 +1,7 @@
 ---
 title: "Making a Semantic Graph Inspectable"
 date: 2026-08-07 10:28:00 -0700
-last_modified_at: 2026-08-08 13:10:00 -0700
+last_modified_at: 2026-08-08 14:20:00 -0700
 excerpt: "How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model."
 permalink: /articles/making-a-semantic-graph-inspectable/
 series: weave
@@ -37,7 +37,7 @@ The first design choice is refusing to render everything. `weave graph TARGET` r
 
 Bidirectional traversal keeps independent incoming and outgoing queues and interleaves them. That detail matters when the global node or edge budget is small. Walking every caller first could consume the entire budget before showing a single callee. The result records whether a bound truncated the view rather than letting a small picture imply a complete universe.
 
-The default edge set is exactly the relationship vocabulary retained by format 4: dependencies, imports, extension and implementation, tests, generation, documentation, exposure, links, and embeds. Statement-level calls and references, containment duplication, reads, writes, membership, and resolution are not hidden filters; they are absent from the managed navigation index and must be investigated in current source.
+The default edge set is exactly the relationship vocabulary retained by `navigation-v1`: dependencies, imports, extension and implementation, tests, generation, documentation, exposure, links, and embeds. Statement-level calls and references, containment duplication, reads, writes, membership, and resolution are not hidden filters; they are absent from the managed navigation index and must be investigated in current source.
 
 The operation works over a local worktree or the bounded repository catalog. Catalog members still refresh before their databases are opened. Graph breadth does not weaken the [freshness contract](/articles/keeping-a-semantic-index-fresh-without-a-daemon/); it makes the current facts easier to inspect.
 
@@ -54,7 +54,7 @@ Weave hydrates graph responses with the materialized anchors and documents refer
 
 Human input gets the same treatment. Compiler-qualified stable names can encode ownership as segments such as `package`, `type`, and `method`, but `Server.Serve` is the spelling a person naturally reaches for. The resolver keeps exact IDs, exact stable names, and provider search order authoritative, then falls back to the concise qualified suffix when it selects exactly one symbol. An ambiguous query reports stable names, kinds, and graph IDs for several candidates, plus the remaining count, so refinement does not begin with two opaque hashes.
 
-That hydration exposed provider details that matter to the answer. The native Go index now materializes external packages and referenced external objects as readable endpoints, includes implicit declarations such as type-switch variables, and preserves stable ownership through aliases and reconstructed type objects. Explicit open-world endpoints remain valid when another provider has not materialized them.
+That hydration originally exposed provider details such as external objects, implicit declarations, and reconstructed type ownership. The current format-5 Go provider is intentionally smaller: it retains build-selected package, type, function, and method anchors plus direct package dependencies, without type checking or referenced-object materialization. External package identities and other open endpoints can still appear on retained relationships without requiring a stored symbol.
 
 Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from retained declarations actually owned by the selected file. These are presentation and traversal corrections over the same navigation evidence, but they are what turn stored facts into a useful answer.
 
@@ -95,13 +95,13 @@ weave links remove guide-documents-handler
 
 Add and update require each query to resolve uniquely. The stored `.weave/bridges.json` declaration uses `entity:<exact-id>` endpoints, so a later display-name collision cannot silently retarget it. `id:<exact-id>` deliberately creates an open endpoint for an immutable commit or resource that is not materialized yet; it is not a fuzzy-resolution escape hatch.
 
-Endpoints are graph entities rather than only compiler symbols. A relationship can connect packages, files, Markdown sections, routes, assets, URLs, or code declarations. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
+Endpoints are graph identities rather than only stored compiler symbols. A relationship can connect packages, Markdown documents and sections, routes, URLs, code declarations, or open provider-neutral path identities. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
 
 Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes concurrent read-modify-write operations, while the reviewed declaration remains in the worktree. After publication, Weave refreshes the current repository so the new relationship immediately participates in graph, path, impact, export, architecture, and federation queries.
 
 ## Keep one relationship contract
 
-Authored links do not enter a side annotation database. The built-in Go, SCIP, workspace, and relationship providers construct the same normalized `graph.Edge` shape through one relationship builder. Provider ownership and evidence defaults are validated in one place.
+Authored links do not enter a side annotation database. The built-in Go, adapter, workspace, schema/build, and relationship providers construct the same normalized `graph.Edge` shape. Provider ownership, the retained edge vocabulary, and evidence defaults are validated at shared boundaries.
 
 That common shape is what makes mixed neighborhoods useful. A compiler-owned `implements` edge can meet an exposed route and a reviewed `documents` link to a Markdown section. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
 

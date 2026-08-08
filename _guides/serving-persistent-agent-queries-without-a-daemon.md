@@ -1,7 +1,7 @@
 ---
 title: "Reusing Local Query State Without Installing a Daemon"
 date: 2026-08-08 01:46:00 -0700
-last_modified_at: 2026-08-08 13:10:00 -0700
+last_modified_at: 2026-08-08 14:20:00 -0700
 excerpt: "How Weave serves bounded reads through an explicit NDJSON session or an idle-reaping per-worktree broker while preserving one-shot freshness and maintenance paths."
 permalink: /articles/serving-persistent-agent-queries-without-a-daemon/
 series: weave
@@ -38,7 +38,7 @@ printf '%s\n' \
 
 Requests map to the same application invocations as the CLI. The session accepts bounded local research operations such as symbols, compact explore, context, definition anchors, dependencies, paths, impact, and graphs. It rejects maintenance, mutation, catalog, adapter, index, full-export, and the removed posting-dependent workspace operations.
 
-Every frame has a fixed maximum size, one request ID, validated command arity, bounded limits, traversal depth, edge counts, source lines, and source bytes. Removed statement-level commands such as `references`, `callers`, and `callees` are not part of the session surface because the format-4 navigation index does not retain their facts.
+Every frame has a fixed maximum size, one request ID, validated command arity, bounded limits, traversal depth, edge counts, source lines, and source bytes. Removed statement-level commands such as `references`, `callers`, and `callees` are not part of the session surface because the navigation profile does not contain their facts.
 
 ## Add an ephemeral broker for ordinary commands
 
@@ -64,6 +64,6 @@ Per-worktree and aggregate queries now use bstore's shared read-only mode after 
 
 The original session experiment measured a 0.379 ms warm median after a 1,453.892 ms first request in one 20-request local sample, compared with 751.974 ms for one one-shot call. That sample justified reusing startup state, not treating a resident process as the product.
 
-It also exposed a different problem: the old eight-focus exploration response still occupied tens of kilobytes because it repeated graph dossiers. The later format-4 work solved that at the query boundary. Progressive discovery now returns a representative 3,157-byte first-stage response and fetches exact context only for a selected anchor.
+It also exposed a different problem: the old eight-focus exploration response still occupied tens of kilobytes because it repeated graph dossiers. The later progressive-discovery work solved that at the query boundary. Its measured format-4 fixture returned a representative 3,157-byte first-stage response and fetched exact context only for a selected anchor.
 
 These optimizations compose cleanly because they solve different costs. The broker makes repeated commands cheaper to start. The navigation projection makes the database smaller. Progressive discovery makes agent responses smaller. Freshness and current source remain shared correctness boundaries underneath all three.

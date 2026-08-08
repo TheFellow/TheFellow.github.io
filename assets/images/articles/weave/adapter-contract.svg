@@ -33,7 +33,7 @@
 
   <rect x="432" y="194" width="252" height="132" class="box" stroke="#4dabf7"/>
   <text x="558" y="239" text-anchor="middle" class="label">2. Bound request</text>
-  <text x="558" y="273" text-anchor="middle" class="small">repository · permissions</text>
+  <text x="558" y="273" text-anchor="middle" class="small">navigation-v1 · repository</text>
   <text x="558" y="301" text-anchor="middle" class="tiny">deadline · negotiated limits</text>
 
   <rect x="778" y="194" width="252" height="132" class="box" stroke="#4dabf7"/>
