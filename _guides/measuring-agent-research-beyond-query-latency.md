@@ -18,7 +18,7 @@ topics: ["Coding agents", "Developer tools", "Benchmarks"]
 
 A semantic query completing in a second is not yet a useful product result. An agent can receive a fast list of opaque IDs, fail to understand it, and spend the rest of the investigation rediscovering the repository with text search and whole-file reads. Query latency looks excellent while the actual research task changes very little.
 
-[Weave](https://github.com/TheFellow/weave) now measures the larger outcome. Its [first agent-research dogfood record](https://github.com/TheFellow/weave/blob/d975e32da1d44b7defdaf74f1648400e91cd5078/.ai/benchmarks/go-modular-monolith-agent-research.md) gave an unfamiliar agent a concrete question about [Mixology](/projects/go-modular-monolith/), required it to begin with Weave, and recorded every fallback. The run found the right architecture quickly. More importantly, it exposed exactly where the graph still made the agent work around the tool.
+[Weave](https://github.com/TheFellow/weave) now measures the larger outcome. Its first agent-research dogfood record gave an unfamiliar agent a concrete question about [Mixology](/projects/go-modular-monolith/), required it to begin with Weave, and recorded every fallback. The run found the right architecture quickly. More importantly, it exposed exactly where the graph still made the agent work around the tool.
 
 ## Ask a repository question, not a synthetic lookup
 
