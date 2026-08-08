@@ -1,7 +1,7 @@
 ---
 title: "Making Language Support a Process Contract"
 date: 2026-08-07 01:02:00 -0700
-last_modified_at: 2026-08-07 16:31:22 -0700
+last_modified_at: 2026-08-08 04:04:08 -0700
 excerpt: "How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication."
 permalink: /articles/making-language-support-a-process-contract/
 series: weave
@@ -123,6 +123,8 @@ weave index \
 
 The permission flags describe authority. They do not cause Weave to run a restore, generator, or network operation itself.
 
+That authority now travels through one bounded child environment for adapter doctoring, explicit indexing, and automatic freshness. The allowlist carries the selected platform path and home, .NET host and package roots, Java home, Cargo and Rust locations, SCIP executable overrides, and temporary-system paths required by the compiler runtimes. It does not inherit the entire parent environment. One adapter therefore observes the same toolchain inputs regardless of which supported entry point launched it, without receiving unrelated credentials as an accidental convenience.
+
 ## Stream a complete inventory
 
 The adapter's `index` operation reserves stdout for newline-delimited protocol frames. Human diagnostics go to bounded stderr. Every stdout line repeats the protocol and request ID, names a frame kind, and carries its payload.
@@ -172,6 +174,8 @@ The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, 
 
 Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
 
+Repository-scale Rust validation made the root and ownership rules concrete. The adapter discovers the nearest nested Cargo manifest or `rust-project.json`, runs rust-analyzer at that build root, and rebases its SCIP documents to repository-relative paths. rust-analyzer may repeat one equivalent global symbol record across library, binary, and test documents. The adapter assigns that record to the lexically first document while retaining every occurrence and relationship; conflicting descriptions still reject the run. Per-document line indexes and memoized symbol validation bound coordinate normalization without weakening the imported evidence.
+
 TypeScript, JavaScript, Java, and Kotlin reuse that SCIP boundary with different trust profiles. `weave-typescript` requires an existing root compiler configuration and never invokes a package manager, infers a configuration, or writes into the checkout. `weave-jvm` delegates to `scip-java`, which can run Gradle, Maven, or Bazel and execute build extensions. JVM indexing therefore remains an explicit run with all four grants unless a user-controlled registry deliberately records those powers and a conservative input inventory. Both adapters translate their producers' legacy UTF-16 ranges to Weave's byte coordinates instead of guessing from source encoding metadata.
 
 Python makes the distinction sharper. CPython's `symtable` can establish that a name is a local, global, free, or nonlocal lexical binding slot. It cannot establish which object that slot will hold when a call executes. The adapter therefore emits:
@@ -216,6 +220,14 @@ None of these routes is discovered inside the repository or inferred by scanning
 That policy also stays inspectable. `weave adapters list` reads metadata without executing adapters. `weave adapters doctor` verifies integrity and performs bounded capability negotiation without indexing. An arbitrary `weave index --adapter PATH` remains a deliberate snapshot import, while `weave adapters install PATH` is the separate action that grants reproducible automatic authority.
 
 [The managed lifecycle](/articles/managing-compiler-adapters-without-inventing-a-package-registry/) keeps the extension point open without silently executing a newly available program in every repository. The protocol is public; automatic authority remains a user-controlled policy.
+
+## Pressure-test the complete process
+
+Protocol fixtures prove framing, bounds, and atomic publication. They do not prove that a real repository places its solution at the checkout root, avoids SDK-generated documents outside that root, lists every buildable project in one solution, or emits each global SCIP symbol once.
+
+The [cross-repository indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts/) therefore exercises the complete process across Go, C#, F#, Rust, and structured content. Each isolated clone is prepared before timing; the candidate then indexes offline, answers current queries, verifies, exports, and proves the original source status unchanged. Failures corrected nearest-root discovery, project de-duplication, F# restore policy, generated-document handling, Rust symbol ownership, environment consistency, and memory accounting before the full twelve-repository matrix passed.
+
+That matrix is not a claim that every language or repository is covered. It is retained evidence that the protocol, compiler adapters, graph publication, and storage verifier compose under pinned real inputs. A future optimization must preserve those complete results rather than merely making an adapter process exit faster.
 
 ## Package the bridge without hiding the runtime
 

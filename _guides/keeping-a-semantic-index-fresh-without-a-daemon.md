@@ -1,7 +1,7 @@
 ---
 title: "Keeping a Semantic Index Fresh Without a Daemon"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 10:19:00 -0700
+last_modified_at: 2026-08-08 04:04:08 -0700
 excerpt: "How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence."
 permalink: /articles/keeping-a-semantic-index-fresh-without-a-daemon/
 series: weave
@@ -122,6 +122,10 @@ The current lookup includes Git inspection, manifest and provider comparison, da
 The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
 
 The FKYeah result also gave the next change a precise target. The adapter now runs on .NET 10, keeps the prebuilt reference outputs FSharp.Compiler.Service requires, and indexes dependents before referenced F# projects so design-time cleanup cannot remove a dependency output before its consumers have used it. A genuine FKYeah graph now completes. The Cedar timeout remains an honest limit of the current full-refresh adapter rather than being hidden behind partial facts.
+
+A later [twelve-repository indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts/) closed that Cedar result and broadened the measurement contract. Every candidate ran in an isolated prepared clone, indexed offline, answered five current no-change queries, verified, exported, and left its source status unchanged. Cedar completed in 51.338 seconds and FKYeah in 132.146 seconds. The same matrix exposed recursive Go dependency syntax retention, nested .NET and Rust project roots, repeated Rust SCIP symbols, and divergent adapter environments. Those findings belong to freshness because a provider inventory is complete only when it identifies the correct build boundary and can reproduce it under the same bounded process inputs.
+
+An installed-binary smoke covered the incremental half of that lifecycle. One comment added inside an isolated go-riblt clone produced a dirty generation with one changed path, refreshed in 2.990 seconds at 142 MiB peak RSS, and passed `weave verify`. The original source repository remained clean. Cold completeness and ordinary edit-driven replacement therefore use the same observable publication boundary.
 
 ## Derived state follows the worktree
 

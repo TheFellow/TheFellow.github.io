@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">A cross-repository indexing soak becomes an executable contract</title>
+  <desc id="desc">Twelve repositories enter isolated prepared clones, then a timed offline Weave index. Every result runs warm current queries, verification, export, and a source-status comparison. Failures feed bounded fixes to language providers and the harness before the complete matrix reruns.</desc>
+  <defs>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 22px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.metric{fill:#f8f9fa;font:700 28px ui-monospace,SFMono-Regular,Menlo,monospace}.cyan{stroke:#22b8cf;stroke-width:5;fill:none;marker-end:url(#arrow-cyan)}.orange{stroke:#ff922b;stroke-width:5;fill:none;marker-end:url(#arrow-orange)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}
+    </style>
+  </defs>
+  <rect width="1440" height="900" class="bg"/>
+  <text x="720" y="62" text-anchor="middle" class="title">Make the repository matrix an executable contract</text>
+
+  <text x="44" y="116" class="lane">CORPUS</text>
+  <rect x="44" y="140" width="288" height="220" class="box" stroke="#4dabf7"/>
+  <text x="188" y="188" text-anchor="middle" class="metric">12 repositories</text>
+  <text x="188" y="228" text-anchor="middle" class="small">Go · C# · F# · Rust</text>
+  <text x="188" y="260" text-anchor="middle" class="small">source · docs · fixtures</text>
+  <text x="188" y="300" text-anchor="middle" class="tiny">pinned commits</text>
+  <text x="188" y="330" text-anchor="middle" class="tiny">tiny through 247k edges</text>
+
+  <path d="M332 250 H378" class="cyan"/>
+
+  <text x="378" y="116" class="lane">ISOLATE + PREPARE</text>
+  <rect x="378" y="140" width="300" height="220" class="box" stroke="#22b8cf"/>
+  <text x="528" y="188" text-anchor="middle" class="label">Detached local clone</text>
+  <text x="528" y="228" text-anchor="middle" class="small">no hard links</text>
+  <text x="528" y="260" text-anchor="middle" class="small">download · restore · build</text>
+  <text x="528" y="300" text-anchor="middle" class="tiny">dependencies before timing</text>
+  <text x="528" y="330" text-anchor="middle" class="tiny">record source status</text>
+
+  <path d="M678 250 H724" class="cyan"/>
+
+  <text x="724" y="116" class="lane">TIMED INDEX</text>
+  <rect x="724" y="140" width="300" height="220" class="box" stroke="#ff922b"/>
+  <text x="874" y="188" text-anchor="middle" class="label">Candidate Weave</text>
+  <text x="874" y="228" text-anchor="middle" class="small">offline · restore-free</text>
+  <text x="874" y="260" text-anchor="middle" class="small">complete provider inventory</text>
+  <text x="874" y="300" text-anchor="middle" class="tiny">elapsed · peak RSS</text>
+  <text x="874" y="330" text-anchor="middle" class="tiny">database · fact counts</text>
+
+  <path d="M1024 250 H1070" class="cyan"/>
+
+  <text x="1070" y="116" class="lane">PROVE</text>
+  <rect x="1070" y="140" width="326" height="220" class="box" stroke="#51cf66"/>
+  <text x="1233" y="188" text-anchor="middle" class="label">Published graph</text>
+  <text x="1233" y="228" text-anchor="middle" class="small">5 current queries</text>
+  <text x="1233" y="260" text-anchor="middle" class="small">verify · full export</text>
+  <text x="1233" y="300" text-anchor="middle" class="tiny">source status unchanged</text>
+  <text x="1233" y="330" text-anchor="middle" class="tiny">all checks required</text>
+
+  <text x="44" y="430" class="lane">FAILURE BECOMES A BOUNDED CORRECTION</text>
+
+  <rect x="44" y="456" width="250" height="142" class="box" stroke="#ff922b"/>
+  <text x="169" y="500" text-anchor="middle" class="label">Go</text>
+  <text x="169" y="538" text-anchor="middle" class="small">drop recursive ASTs</text>
+  <text x="169" y="570" text-anchor="middle" class="tiny">keep export-data types</text>
+
+  <rect x="318" y="456" width="250" height="142" class="box" stroke="#b197fc"/>
+  <text x="443" y="500" text-anchor="middle" class="label">.NET + F#</text>
+  <text x="443" y="538" text-anchor="middle" class="small">nearest solution root</text>
+  <text x="443" y="570" text-anchor="middle" class="tiny">no restore in adapter</text>
+
+  <rect x="592" y="456" width="250" height="142" class="box" stroke="#4dabf7"/>
+  <text x="717" y="500" text-anchor="middle" class="label">Rust SCIP</text>
+  <text x="717" y="538" text-anchor="middle" class="small">rebase nested crates</text>
+  <text x="717" y="570" text-anchor="middle" class="tiny">own duplicates once</text>
+
+  <rect x="866" y="456" width="250" height="142" class="box" stroke="#22b8cf"/>
+  <text x="991" y="500" text-anchor="middle" class="label">Process</text>
+  <text x="991" y="538" text-anchor="middle" class="small">one env allowlist</text>
+  <text x="991" y="570" text-anchor="middle" class="tiny">every entry point</text>
+
+  <rect x="1140" y="456" width="256" height="142" class="box" stroke="#51cf66"/>
+  <text x="1268" y="500" text-anchor="middle" class="label">Harness</text>
+  <text x="1268" y="538" text-anchor="middle" class="small">continue full corpus</text>
+  <text x="1268" y="570" text-anchor="middle" class="tiny">fail after evidence</text>
+
+  <path d="M1268 598 V648 H874 V366" class="orange"/>
+  <text x="1098" y="636" text-anchor="middle" class="tiny">rerun the complete matrix</text>
+
+  <text x="44" y="690" class="lane">STRICT FINAL RUN</text>
+  <rect x="44" y="716" width="1352" height="128" class="box" stroke="#51cf66"/>
+  <text x="188" y="766" text-anchor="middle" class="metric">12 / 12</text>
+  <text x="188" y="804" text-anchor="middle" class="small">cold indexes</text>
+
+  <text x="472" y="766" text-anchor="middle" class="metric">60 / 60</text>
+  <text x="472" y="804" text-anchor="middle" class="small">current queries</text>
+
+  <text x="754" y="766" text-anchor="middle" class="metric">12 + 12</text>
+  <text x="754" y="804" text-anchor="middle" class="small">verify + export</text>
+
+  <text x="1044" y="766" text-anchor="middle" class="metric">unchanged</text>
+  <text x="1044" y="804" text-anchor="middle" class="small">source statuses</text>
+
+  <text x="1280" y="766" text-anchor="middle" class="metric">1.98 GiB</text>
+  <text x="1280" y="804" text-anchor="middle" class="small">largest residual</text>
+
+  <path d="M1233 360 V694" class="green"/>
+  <text x="720" y="878" text-anchor="middle" class="tiny">green means complete under recorded bounds · it does not erase the measured residuals</text>
+</svg>

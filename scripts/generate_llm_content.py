@@ -56,6 +56,7 @@ SUMMARIES = {
     "/articles/measuring-agent-research-beyond-query-latency/": ("Agent research dogfood", "A real repository investigation measures useful evidence, fallbacks, friction, and the product corrections that follow."),
     "/articles/making-source-bodies-discoverable-without-copying-them/": ("Body concept discovery", "Bounded lexical hints find exact content entities without copying source text."),
     "/articles/serving-persistent-agent-queries-without-a-daemon/": ("Resident agent queries", "One foreground owner keeps bounded graph queries warm and fresh."),
+    "/articles/turning-cross-repository-soaks-into-indexing-contracts/": ("Cross-repository indexing soak", "A strict mixed-language matrix turns real compiler failures into bounded indexing contracts."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),

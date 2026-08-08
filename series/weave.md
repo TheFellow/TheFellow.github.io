@@ -8,11 +8,11 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 - **~2 words:** Weave series
 - **~8 words:** An ordered path through Weave's fresh compiler-backed semantic graph.
-- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, source-body discovery, exact storage, guarded authoring, managed adapters, paired agent measurement, and resident query sessions.
+- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, exact storage, managed adapters, agent measurement, resident query sessions, and cross-repository validation.
 
 ## Full content
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only declarations, paired agent-research measurement, body-concept discovery, and a resident query session that keeps the graph hot without installing a daemon.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only declarations, paired agent-research measurement, body-concept discovery, a resident query session that keeps the graph hot without installing a daemon, and a strict cross-repository soak that makes real compiler and repository behavior part of the indexing contract.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
@@ -31,3 +31,4 @@ Weave turns language-native compiler facts and live Git state into a local seman
 12. **Article:** [Measuring Agent Research Beyond Query Latency](/articles/measuring-agent-research-beyond-query-latency.md): Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations.
 13. **Article:** [Making Source Bodies Discoverable Without Copying Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave attaches bounded provider-owned lexical terms to exact content entities, retrieves prose and unsupported files through the existing graph, and still reads current source only at query time.
 14. **Article:** [Serving Persistent Agent Queries Without a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+15. **Article:** [Turning Cross-Repository Soaks into Indexing Contracts](/articles/turning-cross-repository-soaks-into-indexing-contracts.md): How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability.
