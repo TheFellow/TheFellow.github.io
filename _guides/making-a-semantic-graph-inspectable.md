@@ -1,7 +1,7 @@
 ---
 title: "Making a Semantic Graph Inspectable"
 date: 2026-08-07 10:28:00 -0700
-last_modified_at: 2026-08-07 10:31:00 -0700
+last_modified_at: 2026-08-07 17:28:08 -0700
 excerpt: "How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model."
 permalink: /articles/making-a-semantic-graph-inspectable/
 series: weave
@@ -40,6 +40,23 @@ Bidirectional traversal keeps independent incoming and outgoing queues and inter
 The default edge set favors relationships people can reason about at neighborhood scale: calls, imports, containment, inheritance, implementation, dependencies, tests, generation, documentation, exposure, handling, reads, writes, links, embeds, membership, and resolution. Occurrence-level `defines` and `references` remain available through explicit `--kind` filters, but do not drown the first view.
 
 The operation works over a local worktree or the bounded repository catalog. Catalog members still refresh before their databases are opened. Graph breadth does not weaken the [freshness contract](/articles/keeping-a-semantic-index-fresh-without-a-daemon/); it makes the current facts easier to inspect.
+
+## Make the first terminal answer readable
+
+Inspectability starts before DOT. The ordinary relationship commands have to answer a question without making a person decode internal graph IDs or join document records by hand:
+
+```text
+$ weave callers authorize
+fixture.HandleRequest  calls  fixture.authorize  main.go:8:3
+```
+
+Weave now hydrates every query response with the materialized symbols and documents referenced by its nodes, edges, and occurrences. The text renderer can therefore show stable names and repository-relative source locations, while `--json` retains the exact IDs and complete records. `callers`, `callees`, `dependencies`, `path`, and `impact` all use the same relationship presentation. A path with no result says so directly instead of printing an ambiguous empty line, and Ctrl-C is a successful end to an interactive graph session rather than a command failure.
+
+That hydration exposed provider details that matter to the answer. The native Go index now materializes external packages and referenced external objects as readable endpoints, includes implicit declarations such as type-switch variables, and preserves stable ownership through aliases and reconstructed type objects. Explicit open-world endpoints remain valid when another provider has not materialized them.
+
+Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from declarations actually owned by the selected file instead of treating every referenced external occurrence as another root. These are presentation and traversal corrections over the same evidence graph, but they are what turn stored facts into a useful answer.
+
+The help surface follows the same rule. Required operands are now visible in command usage, including `QUERY`, `FROM TO`, repository identities, adapter names and executables, and the conformance fixture directory. The CLI explains the shape of a valid question before asking the graph to answer it.
 
 ## Emit DOT without depending on Graphviz
 

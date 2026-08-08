@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 16:33:25 -0700
+last_modified_at: 2026-08-07 17:28:08 -0700
 excerpt: "A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries."
 language: "Go"
 license: "MIT"
@@ -70,7 +70,7 @@ The first tagged release is still ahead; its workflow is already shaped around c
 
 That validation matrix now conserves runners without relaxing its boundaries. Path filters avoid unrelated adapter jobs, and workflow-plus-PR-or-ref concurrency cancels superseded runs without coupling independent changes. Ecosystem caches follow lockfiles and checksum-pinned installer scripts; .NET restores are locked, and Rust and Gradle cache writes are restricted to `main`. The semantic index cache remains derived and content-keyed, then passes through `weave ci index` and `weave ci check` before use. SARIF and deterministic graph exports are produced under runner-temporary state rather than the worktree. Credentials, mutable adapter state, and authoritative source declarations are never cache payloads.
 
-The repository's approved nine-increment completion pass is now complete at its documented scope: release readiness, source-rich context, machine-wide aggregation, compact storage, semantic diffs, optional watch warming, the human explorer and editor, managed adapters, and source-only schema/build facts all have durable implementation and test evidence. That closure does not declare the broader vision or useful-first-release definition complete. The first public prerelease remains a separate product milestone, and the project page keeps the measured and deliberately deferred gaps visible.
+The repository recorded its approved nine-increment completion pass as complete at its documented scope: release readiness, source-rich context, machine-wide aggregation, compact storage, semantic diffs, optional watch warming, the human explorer and editor, managed adapters, and source-only schema/build facts all have durable implementation and test evidence. The next usability pass then made indexed graph queries live up to that evidence. Relationship text now carries stable names and source paths, duplicate dependency evidence collapses by endpoint, Go references materialize readable external identities, file impact avoids unmaterialized reference roots, required operands appear in help, and an intentionally closed interactive explorer exits cleanly. The checkpoint does not declare the broader vision or useful-first-release definition complete. The first public prerelease remains a separate product milestone, and the project page keeps the measured and deliberately deferred gaps visible.
 
 ### Why it is worth exploring
 
