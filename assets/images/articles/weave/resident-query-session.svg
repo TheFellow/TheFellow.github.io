@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">One foreground query session owns the local Weave index</title>
+  <desc id="desc">An agent host starts one foreground Weave child and exchanges bounded versioned NDJSON frames. The first request runs authoritative freshness and opens bstore. Warm requests reuse one serialized handle while exact Git observation runs in the background. A detected change causes the next request to close, refresh through the ordinary provider pipeline, reopen, and answer. EOF releases ownership.</desc>
+  <defs>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#20c997"/></marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 23px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.green{stroke:#20c997;stroke-width:5;fill:none;marker-end:url(#arrow-green)}.cyan{stroke:#22b8cf;stroke-width:5;fill:none;marker-end:url(#arrow-cyan)}.orange{stroke:#ff922b;stroke-width:5;fill:none;marker-end:url(#arrow-orange)}
+    </style>
+  </defs>
+  <rect width="1440" height="900" class="bg"/>
+  <text x="720" y="66" text-anchor="middle" class="title">Keep the graph hot, keep freshness authoritative</text>
+
+  <text x="44" y="126" class="lane">CLIENT-OWNED LIFETIME</text>
+  <rect x="44" y="150" width="300" height="214" class="box" stroke="#20c997"/>
+  <text x="194" y="198" text-anchor="middle" class="label">Agent host</text>
+  <text x="194" y="238" text-anchor="middle" class="small">starts weave session</text>
+  <text x="194" y="270" text-anchor="middle" class="small">writes NDJSON stdin</text>
+  <text x="194" y="302" text-anchor="middle" class="small">reads protocol stdout</text>
+  <text x="194" y="340" text-anchor="middle" class="tiny">EOF owns graceful shutdown</text>
+
+  <path d="M344 220 H424" class="green"/>
+  <path d="M424 300 H344" class="cyan"/>
+  <text x="384" y="206" text-anchor="middle" class="tiny">request</text>
+  <text x="384" y="326" text-anchor="middle" class="tiny">frame</text>
+
+  <text x="424" y="126" class="lane">FOREGROUND SESSION</text>
+  <rect x="424" y="150" width="548" height="474" class="box" stroke="#20c997"/>
+  <text x="698" y="198" text-anchor="middle" class="label">weave.query-session/v1</text>
+  <text x="698" y="232" text-anchor="middle" class="tiny">bounded local read commands · typed per-request errors</text>
+  <rect x="468" y="268" width="460" height="116" class="box" stroke="#4dabf7"/>
+  <text x="698" y="312" text-anchor="middle" class="label">Serialized application queries</text>
+  <text x="698" y="350" text-anchor="middle" class="small">same weave.query/v1 semantics</text>
+  <path d="M698 384 V430" class="green"/>
+  <rect x="468" y="430" width="460" height="126" class="box" stroke="#20c997"/>
+  <text x="698" y="474" text-anchor="middle" class="label">One resident bstore handle</text>
+  <text x="698" y="512" text-anchor="middle" class="small">pages + intern dictionaries stay warm</text>
+  <text x="698" y="542" text-anchor="middle" class="tiny">one owner, never concurrent process access</text>
+  <text x="698" y="600" text-anchor="middle" class="tiny">cold first request · warm following requests</text>
+
+  <text x="1020" y="126" class="lane">FRESHNESS LOOP</text>
+  <rect x="1020" y="150" width="376" height="214" class="box" stroke="#22b8cf"/>
+  <text x="1208" y="198" text-anchor="middle" class="label">Exact Git observer</text>
+  <text x="1208" y="238" text-anchor="middle" class="small">runs at bounded interval</text>
+  <text x="1208" y="270" text-anchor="middle" class="small">unchanged → retain handle</text>
+  <text x="1208" y="302" text-anchor="middle" class="small">changed → mark pending</text>
+  <text x="1208" y="340" text-anchor="middle" class="tiny">observation error remains visible</text>
+
+  <path d="M1020 286 H972" class="cyan"/>
+  <path d="M928 493 H980 V410 H1020" class="orange"/>
+
+  <rect x="1020" y="410" width="376" height="214" class="box" stroke="#ff922b"/>
+  <text x="1208" y="458" text-anchor="middle" class="label">Next request after change</text>
+  <text x="1208" y="498" text-anchor="middle" class="small">1 · close current database</text>
+  <text x="1208" y="530" text-anchor="middle" class="small">2 · authoritative provider refresh</text>
+  <text x="1208" y="562" text-anchor="middle" class="small">3 · reopen published generation</text>
+  <text x="1208" y="600" text-anchor="middle" class="tiny">then execute the ordinary query</text>
+
+  <text x="44" y="700" class="lane">OWNERSHIP BOUNDARY</text>
+  <rect x="44" y="726" width="1352" height="112" class="box" stroke="#495057"/>
+  <text x="720" y="772" text-anchor="middle" class="small">session: symbols · context · explore · relationships · path · impact · graph · workspace navigation</text>
+  <text x="720" y="812" text-anchor="middle" class="small">one-shot only: index · verify · GC · export · mutation · adapters · catalog · authored links</text>
+</svg>

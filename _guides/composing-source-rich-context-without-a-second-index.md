@@ -1,7 +1,7 @@
 ---
 title: "Composing Source-Rich Context Without a Second Index"
 date: 2026-08-07 11:25:00 -0700
-last_modified_at: 2026-08-08 00:58:17 -0700
+last_modified_at: 2026-08-08 02:00:00 -0700
 excerpt: "How Weave composes exact graph facts, complete function definitions, current source excerpts, direct relationships, and repository provenance into bounded dossiers without adding embeddings or another store."
 permalink: /articles/composing-source-rich-context-without-a-second-index/
 series: weave
@@ -79,7 +79,7 @@ The structured result uses `weave.context/v1` inside the ordinary `weave.query/v
 
 ## Reuse the dossier for a research phrase
 
-An agent does not always begin with one entity. `weave explore RESEARCH PHRASE` adds bounded deterministic lexical retrieval in front of the same context composition. It first gives an exact or uniquely resolvable entity the usual single result. Otherwise it extracts up to 24 useful terms, removes ordinary question words, derives a small set of mechanical suffix variants, and treats generic scope words as ranking evidence rather than standalone search terms when a phrase contains more specific language. Candidates accumulate explicit scores from symbol-search position, exact or partial display-name matches, stable-name matches, scope matches, and kind weights. Explicit domain terms can narrow the candidate set. The final pass diversifies same-named methods across their containers and preserves named GUI and TUI surfaces, rather than allowing one prolific type or presentation layer to consume the complete bound. Score, stable name, and graph ID define the underlying order.
+An agent does not always begin with one entity. `weave explore RESEARCH PHRASE` adds bounded deterministic lexical retrieval in front of the same context composition. A short exact or uniquely resolvable entity receives the usual single result. A longer research question skips the speculative exact-symbol lookup and extracts up to 32 useful terms, removes ordinary question words, derives a small set of mechanical suffix variants, and treats generic scope words as ranking evidence rather than standalone search terms when a phrase contains more specific language. Candidates accumulate explicit scores from symbol-search position, posting rarity, term coverage, display-name matches, stable-name and path scope, kind, content specificity, and evidence origin. Explicit domain terms can narrow the candidate set. The final pass diversifies same-named methods across their containers, preserves named GUI and TUI surfaces, and defers repeated document and section names, rather than allowing one prolific type, presentation layer, broad aggregation, or generated copy to consume the complete bound. Score, stable name, and graph ID define the underlying order.
 
 ```sh
 weave explore how menu readiness reaches GUI and TUI \
@@ -88,7 +88,7 @@ weave explore how menu readiness reaches GUI and TUI \
   --context-lines 1
 ```
 
-The default returns at most six entities and independently caps each dossier's occurrences, incoming relationships, and outgoing relationships at six. One 64 KiB source allowance is divided across the selected entities rather than silently multiplying with the result count. For a Go function or method definition, exploration expands the indexed location to the complete parsed declaration so the first dossier can provide the implementation an agent would otherwise open separately. An expansion that does not fit falls back to the indexed range, and other languages retain their normal bounded line windows. Each result is still an ordinary `weave.context/v1` dossier with exact identities, current source checks, provenance, freshness, and truncation. The command adds no model, embedding store, or second persisted query engine; natural-language reasoning remains with the consuming agent.
+The default returns at most eight entities and independently caps each dossier's occurrences, incoming relationships, and outgoing relationships at six. One 64 KiB source allowance is divided across the selected entities rather than silently multiplying with the result count. For a Go function or method definition, exploration expands the indexed location to the complete parsed declaration. For a Markdown section, it returns the current heading and its descendants through the next heading at the same or higher level. An expansion that does not fit falls back to the indexed range, and other entities retain their normal bounded line windows. [Provider-owned body terms](/articles/making-source-bodies-discoverable-without-copying-them/) can discover an exact content entity without storing source text in the graph. Each result remains an ordinary `weave.context/v1` dossier with exact identities, current source checks, provenance, freshness, and truncation. The command adds no model, embedding store, or second persisted query engine; natural-language reasoning remains with the consuming agent.
 
 ## Carry provenance across repositories
 
