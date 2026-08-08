@@ -31,7 +31,7 @@
   <text x="698" y="232" text-anchor="middle" class="tiny">bounded local read commands · typed per-request errors</text>
   <rect x="468" y="268" width="460" height="116" class="box" stroke="#4dabf7"/>
   <text x="698" y="312" text-anchor="middle" class="label">Serialized application queries</text>
-  <text x="698" y="350" text-anchor="middle" class="small">same weave.query/v1 semantics</text>
+  <text x="698" y="350" text-anchor="middle" class="small">rich context · compact multi-focus explore</text>
   <path d="M698 384 V430" class="green"/>
   <rect x="468" y="430" width="460" height="126" class="box" stroke="#20c997"/>
   <text x="698" y="474" text-anchor="middle" class="label">One resident bstore handle</text>
