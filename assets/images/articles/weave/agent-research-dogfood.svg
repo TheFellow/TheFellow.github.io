@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
-  <title id="title">A real agent investigation turns Weave evidence and friction into product changes</title>
-  <desc id="desc">An unfamiliar agent starts with a menu-readiness question. Weave supplies a bounded semantic path through domain readiness, shared application state, GUI and TUI presentation, publication enforcement, and tests. Targeted source reads confirm the trace, while recorded fallback searches, response size, ambiguity, and truncation lead to qualified lookup, ranked context, readable output, and a future controlled benchmark.</desc>
+  <title id="title">A real agent investigation turns Weave friction into a paired benchmark</title>
+  <desc id="desc">An unfamiliar agent starts with a menu-readiness question. Bounded semantic evidence supplies the domain, GUI, TUI, publication, and test path. Recorded friction improves retrieval, then isolated with-Weave and without-Weave arms answer the same publication question with complete rubric scores while measuring the full investigation.</desc>
   <defs>
     <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
     <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
@@ -23,8 +23,8 @@
 
   <text x="452" y="126" class="lane">BOUNDED EVIDENCE</text>
   <rect x="452" y="150" width="536" height="184" class="box" stroke="#22b8cf"/>
-  <text x="720" y="198" text-anchor="middle" class="label">weave explore RESEARCH PHRASE</text>
-  <text x="720" y="238" text-anchor="middle" class="small">lexical rank · bounded dossiers</text>
+  <text x="720" y="198" text-anchor="middle" class="label">weave callers · context · references</text>
+  <text x="720" y="238" text-anchor="middle" class="small">exact graph facts · bounded dossiers</text>
   <text x="720" y="272" text-anchor="middle" class="small">source · callers · callees · references</text>
   <text x="720" y="310" text-anchor="middle" class="tiny">most queries &lt; 1.5 s</text>
 
@@ -68,21 +68,30 @@
   <text x="1313" y="536" text-anchor="middle" class="tiny">stale result</text>
 
   <text x="44" y="622" class="lane">RECORDED FRICTION</text>
-  <rect x="44" y="648" width="540" height="158" class="box" stroke="#ff922b"/>
-  <text x="314" y="692" text-anchor="middle" class="label">What latency misses</text>
-  <text x="314" y="732" text-anchor="middle" class="small">ambiguous methods · duplicate edges</text>
-  <text x="314" y="764" text-anchor="middle" class="small">16k-token batch · 32-command follow-up</text>
-  <text x="314" y="792" text-anchor="middle" class="tiny">no control arm · noisy impact defaults</text>
+  <rect x="44" y="648" width="370" height="158" class="box" stroke="#ff922b"/>
+  <text x="229" y="692" text-anchor="middle" class="label">What latency misses</text>
+  <text x="229" y="732" text-anchor="middle" class="small">ambiguity · duplicate edges</text>
+  <text x="229" y="764" text-anchor="middle" class="small">16k tokens · 32 commands</text>
+  <text x="229" y="792" text-anchor="middle" class="tiny">no control · noisy impact</text>
 
-  <path d="M584 727 H660" class="orange"/>
+  <path d="M414 727 H450" class="orange"/>
 
-  <text x="660" y="622" class="lane">PRODUCT RESPONSE</text>
-  <rect x="660" y="648" width="736" height="158" class="box" stroke="#51cf66"/>
-  <text x="1028" y="692" text-anchor="middle" class="label">Make the next investigation smaller</text>
-  <text x="1028" y="732" text-anchor="middle" class="small">Type.Method lookup · ranked context · stable labels</text>
-  <text x="1028" y="764" text-anchor="middle" class="small">phrase retrieval · controlled comparison next</text>
-  <text x="1028" y="792" text-anchor="middle" class="tiny">impact defaults remain an open measured question</text>
+  <text x="450" y="622" class="lane">PRODUCT RESPONSE</text>
+  <rect x="450" y="648" width="430" height="158" class="box" stroke="#22b8cf"/>
+  <text x="665" y="692" text-anchor="middle" class="label">One research dossier</text>
+  <text x="665" y="732" text-anchor="middle" class="small">qualified lookup · ranked context</text>
+  <text x="665" y="764" text-anchor="middle" class="small">full definitions · stable labels</text>
+  <text x="665" y="792" text-anchor="middle" class="tiny">weave explore RESEARCH PHRASE</text>
 
-  <path d="M1028 806 V842 H20 V242 H44" class="green"/>
-  <text x="650" y="866" text-anchor="middle" class="tiny">repeat with the same question and a comparable without-Weave arm</text>
+  <path d="M880 727 H916" class="green"/>
+
+  <text x="916" y="622" class="lane">PAIRED RESULT</text>
+  <rect x="916" y="648" width="480" height="158" class="box" stroke="#51cf66"/>
+  <text x="1156" y="692" text-anchor="middle" class="label">Both answers 8/8</text>
+  <text x="1156" y="732" text-anchor="middle" class="small">1 explore · 51.1% fewer input tokens</text>
+  <text x="1156" y="764" text-anchor="middle" class="small">37.5% fewer commands · 75% fewer searches</text>
+  <text x="1156" y="792" text-anchor="middle" class="tiny">one sample · raw events and answers retained</text>
+
+  <path d="M1156 806 V842 H20 V242 H44" class="green"/>
+  <text x="650" y="866" text-anchor="middle" class="tiny">friction changes retrieval · the same question and rubric test the complete task</text>
 </svg>

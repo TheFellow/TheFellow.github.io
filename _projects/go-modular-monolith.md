@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-07 17:54:48 -0700
+last_modified_at: 2026-08-08 00:58:17 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -31,7 +31,7 @@ Retiring an ingredient makes those claims concrete. The command may name a compa
 
 That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI all expose the same retirement choices and readiness decision, while their interaction and asynchronous loading remain native to each surface.
 
-That cross-surface readiness path now serves as Weave's first agent-research dogfood question. An unfamiliar agent used semantic callers, callees, references, and source locations to trace the domain calculation through `ReadinessReport`, `ApplyReadiness`, GUI and TUI presenters, independent publication enforcement, and relevant tests. A second trace followed publish authorization through surface action state, the public module, middleware, readiness enforcement, and persistence. The [recorded investigation](/articles/measuring-agent-research-beyond-query-latency/) makes Mixology both the subject of the answer and the repository-scale test of whether semantic indexing actually reduces discovery work.
+That cross-surface readiness path now serves as Weave's first agent-research dogfood question. An unfamiliar agent used semantic callers, callees, references, and source locations to trace the domain calculation through `ReadinessReport`, `ApplyReadiness`, GUI and TUI presenters, independent publication enforcement, and relevant tests. A paired follow-up gave two fresh agents the same publish-authorization question across surface action state, the public module, middleware, readiness enforcement, persistence, and tests. Both answers scored 8/8; the Weave arm began with one source-rich dossier and reduced tokens, commands, filesystem searches, source reads, and wall time in that sample. The [recorded investigation](/articles/measuring-agent-research-beyond-query-latency/) makes Mixology both the subject of the answer and the repository-scale test of whether semantic indexing actually reduces discovery work.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
