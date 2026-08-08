@@ -1,8 +1,8 @@
 ---
 title: "Composing Source-Rich Context Without a Second Index"
 date: 2026-08-07 11:25:00 -0700
-last_modified_at: 2026-08-07 17:54:48 -0700
-excerpt: "How Weave composes exact graph facts, current source excerpts, direct relationships, and repository provenance into one bounded dossier without adding embeddings or another store."
+last_modified_at: 2026-08-08 00:58:17 -0700
+excerpt: "How Weave composes exact graph facts, complete function definitions, current source excerpts, direct relationships, and repository provenance into bounded dossiers without adding embeddings or another store."
 permalink: /articles/composing-source-rich-context-without-a-second-index/
 series: weave
 series_order: 4
@@ -63,7 +63,7 @@ These are data conditions, not excuses to guess. `unsafe-path`, `not-git-visible
 
 A single global limit makes a composite response unpredictable. A symbol with many references could consume the allowance before one incoming relationship appears. Weave instead applies `--limit` independently to occurrences, incoming edges, and outgoing edges. Each section reports its own truncation.
 
-The relationship sections read a bounded surplus before applying that limit, collapse edges that reach the same adjacent entity, and retain the most useful evidence for that endpoint. Calls come before contracts and inheritance, dependencies come before authored navigation, and raw references come last. A reference remains when it is the only useful known connection, but local variables, parameters, and language builtins are omitted from this bounded dossier because their evidence already appears in the source excerpt. They remain available through exhaustive graph data. Repeated reference facts cannot crowd a compiler-resolved call out of a small context response. Stable rank, endpoint, and edge ordering keep the selection deterministic.
+The relationship sections read a bounded surplus before applying that limit, collapse edges that reach the same adjacent entity, and retain the most useful evidence for that endpoint. Calls come before contracts and inheritance, dependencies come before authored navigation, and raw references come last. Within the same relationship class, an entity from the focus symbol's semantic unit ranks first, then common stable-name path segments keep nearby domain code ahead of unrelated same-named endpoints. A reference remains when it is the only useful known connection, but local variables, parameters, and language builtins are omitted from this bounded dossier because their evidence already appears in the source excerpt. They remain available through exhaustive graph data. Repeated reference facts cannot crowd a compiler-resolved call out of a small context response. Stable rank, proximity, name, and edge ordering keep the selection deterministic.
 
 Source has a separate byte budget. The default response allows 64 KiB of excerpt text. If adding surrounding lines would exceed the remaining budget, the loader first tries the exact evidence range. If even that does not fit, the excerpt reports budget exhaustion and returns no partial line. `--context-lines` and `--max-source-bytes` make both choices explicit.
 
@@ -79,7 +79,7 @@ The structured result uses `weave.context/v1` inside the ordinary `weave.query/v
 
 ## Reuse the dossier for a research phrase
 
-An agent does not always begin with one entity. `weave explore RESEARCH PHRASE` adds bounded deterministic lexical retrieval in front of the same context composition. It first gives an exact or uniquely resolvable entity the usual single result. Otherwise it extracts up to twelve useful terms, removes ordinary question words, derives a small set of mechanical suffix variants, and treats generic scope words such as `domain`, `GUI`, and `TUI` as ranking context when more specific terms exist. Candidates accumulate explicit scores from symbol-search position, exact or partial display-name matches, stable-name matches, scope matches, and kind weights. Score, stable name, and graph ID define the complete order.
+An agent does not always begin with one entity. `weave explore RESEARCH PHRASE` adds bounded deterministic lexical retrieval in front of the same context composition. It first gives an exact or uniquely resolvable entity the usual single result. Otherwise it extracts up to 24 useful terms, removes ordinary question words, derives a small set of mechanical suffix variants, and treats generic scope words as ranking evidence rather than standalone search terms when a phrase contains more specific language. Candidates accumulate explicit scores from symbol-search position, exact or partial display-name matches, stable-name matches, scope matches, and kind weights. Explicit domain terms can narrow the candidate set. The final pass diversifies same-named methods across their containers and preserves named GUI and TUI surfaces, rather than allowing one prolific type or presentation layer to consume the complete bound. Score, stable name, and graph ID define the underlying order.
 
 ```sh
 weave explore how menu readiness reaches GUI and TUI \
@@ -88,7 +88,7 @@ weave explore how menu readiness reaches GUI and TUI \
   --context-lines 1
 ```
 
-The default returns at most six entities and independently caps each dossier's occurrences, incoming relationships, and outgoing relationships at six. One 64 KiB source allowance is divided across the selected entities rather than silently multiplying with the result count. Each result is still an ordinary `weave.context/v1` dossier with exact identities, current source checks, provenance, freshness, and truncation. The command adds no model, embedding store, or second persisted query engine; natural-language reasoning remains with the consuming agent.
+The default returns at most six entities and independently caps each dossier's occurrences, incoming relationships, and outgoing relationships at six. One 64 KiB source allowance is divided across the selected entities rather than silently multiplying with the result count. For a Go function or method definition, exploration expands the indexed location to the complete parsed declaration so the first dossier can provide the implementation an agent would otherwise open separately. An expansion that does not fit falls back to the indexed range, and other languages retain their normal bounded line windows. Each result is still an ordinary `weave.context/v1` dossier with exact identities, current source checks, provenance, freshness, and truncation. The command adds no model, embedding store, or second persisted query engine; natural-language reasoning remains with the consuming agent.
 
 ## Carry provenance across repositories
 
