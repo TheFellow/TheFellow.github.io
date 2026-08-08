@@ -234,7 +234,7 @@ def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
     if prefix is None:
         return None
 
-    intro = clean_body(doc["body"].split('<div class="feature-tiles">', 1)[0])
+    intro = clean_body(doc["body"].split('<div class="feature-tiles', 1)[0])
     selected = sorted(
         (item for item in all_docs if str(item["source"]).startswith(prefix)),
         key=sort_value,
