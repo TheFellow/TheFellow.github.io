@@ -25,7 +25,7 @@ Those are not benchmark inconveniences. They are pressure on the indexing contra
 
 ## Make the corpus part of the test
 
-The retained soak covers twelve repositories at pinned commits: this website, a profile repository, C# value types and Cedar authorization, two Go analyzers, F# agent workflows, a Go fluid simulation, a large Go modular monolith, a Go set-reconciliation library, Weave itself, and a Rust rigid-body project. That mix is intentionally uneven. It includes tiny and large graphs, source and documentation, nested build roots, multi-project solutions, standalone fixtures, library and executable targets, and several compiler runtimes.
+The recorded soak covers twelve repositories at pinned commits: this website, a profile repository, C# value types and Cedar authorization, two Go analyzers, F# agent workflows, a Go fluid simulation, a large Go modular monolith, a Go set-reconciliation library, Weave itself, and a Rust rigid-body project. That mix is intentionally uneven. It includes tiny and large provider inventories, source and documentation, nested build roots, multi-project solutions, standalone fixtures, library and executable targets, and several compiler runtimes.
 
 The harness builds the candidate core and adapters once, then creates a detached local clone for each repository without hard links. Every clone gets its own Git-private index. The source checkout remains the authority being tested, not a scratch directory that the benchmark may quietly repair.
 
@@ -88,7 +88,9 @@ The strict final invocation exited zero. All twelve graphs verified and exported
 | weave | 81.763 s | 770 MiB | 0.918–0.966 s | 655,515,648 bytes |
 | ai-rigidbody | 82.406 s | 1,978 MiB | 0.708–0.768 s | 197,996,544 bytes |
 
-These are development-machine observations, not service-level objectives. The full [retained benchmark record](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-08-indexing-soak.md) pins the commits and environment and includes units, documents, symbols, occurrences, and edges for every graph.
+These are development-machine observations, not service-level objectives. The full [benchmark record](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-08-indexing-soak.md) pins the commits and environment and includes units, documents, symbols, occurrences, and edges emitted under the earlier exhaustive storage contract.
+
+Format 4 does not preserve those occurrence and statement-edge counts in the managed database. The soak remains evidence about adapter discovery, compiler preparation, normalization cost, source immutability, and complete provider output; its database sizes and retained fact counts are historical baselines, not current navigation-index targets.
 
 The matrix closes two earlier unknowns. Cedar previously exceeded a four-minute adapter bound; it now produces 287 units, 7,629 symbols, 69,794 occurrences, and 88,135 edges in 51.338 seconds. FKYeah now produces a complete 915-unit graph, including standalone fixture projects, in 132.146 seconds without restoring inside the timed adapter request.
 
@@ -108,7 +110,7 @@ All green does not mean all small. The Rust rigid-body repository peaked at 1,97
 
 The matrix also does not prove every repository shape, operating system, compiler version, or warm-cache state. It proves something narrower and more useful: these pinned repositories can be prepared without mutating their sources, indexed offline by this candidate, queried through current manifests, verified structurally, and exported completely under recorded bounds.
 
-That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare graph counts, storage, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, omits repeated Rust occurrences, skips verification, or silently restores packages is a failed run.
+That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare provider inventories, retained navigation counts, storage amplification, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, skips validation, or silently restores packages is a failed run. A smaller format-4 database that deliberately omits occurrences is expected.
 
 ## Let failures improve the shared boundary
 

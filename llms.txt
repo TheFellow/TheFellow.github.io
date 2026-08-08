@@ -23,7 +23,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [go-modular-monolith](https://thefellow.github.io/projects/go-modular-monolith.md): A Go reference app enforcing modular boundaries and cross-cutting concerns.
 - [go-riblt](https://thefellow.github.io/projects/go-riblt.md): A generic Go RIBLT library reconciling sets with difference-sized communication.
 - [ValueTypes](https://thefellow.github.io/projects/value-types.md): A compact C# library for modeling value-object equality and composition.
-- [Weave](https://thefellow.github.io/projects/weave.md): A Git-aware semantic index joining compiler facts and workspace knowledge.
+- [Weave](https://thefellow.github.io/projects/weave.md): A compact Git-aware index guiding agents to current source.
 
 ## Articles
 
@@ -34,7 +34,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building High-Quality Software](https://thefellow.github.io/articles/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
 - [Caching a Federated Graph Without Weakening Freshness](https://thefellow.github.io/articles/caching-a-federated-graph-without-weakening-freshness.md): Authoritative worktree generations select one immutable hot federation projection.
 - [Comparing Semantic Graphs Without Mutating the Worktree](https://thefellow.github.io/articles/comparing-semantic-graphs-without-mutating-the-worktree.md): Exact Git sides become bounded graph, API, impact, and affected-test evidence.
-- [Composing Source-Rich Context Without a Second Index](https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index.md): One bounded dossier joins exact graph facts to current Git-visible source.
+- [Opening Source Context Only When It Is Useful](https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index.md): Compact discovery opens current source only after anchor selection.
 - [Editing Contextual Graph Links Without Losing Source Truth](https://thefellow.github.io/articles/editing-contextual-graph-links-without-losing-source-truth.md): The explorer inspects current evidence and edits checked-in intent without writing graph storage.
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
@@ -43,12 +43,12 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Making a Semantic Graph Inspectable](https://thefellow.github.io/articles/making-a-semantic-graph-inspectable.md): One bounded semantic neighborhood feeds DOT, JSON, and a local animated explorer.
 - [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go.md): F# techniques make Go domain constraints explicit and enforceable.
 - [Making Language Support a Process Contract](https://thefellow.github.io/articles/making-language-support-a-process-contract.md): A bounded process contract keeps language runtimes isolated and evidence complete.
-- [Making Source Bodies Discoverable Without Copying Them](https://thefellow.github.io/articles/making-source-bodies-discoverable-without-copying-them.md): Bounded lexical hints find exact content entities without copying source text.
+- [Finding Source Bodies Without Indexing Them](https://thefellow.github.io/articles/making-source-bodies-discoverable-without-copying-them.md): Semantic anchors and bounded ripgrep replace broad body postings.
 - [Managing Compiler Adapters Without Inventing a Package Registry](https://thefellow.github.io/articles/managing-compiler-adapters-without-inventing-a-package-registry.md): Pinned artifacts, capability claims, deterministic routing, and black-box conformance make local adapters safely automatic.
-- [Measuring Agent Research Beyond Query Latency](https://thefellow.github.io/articles/measuring-agent-research-beyond-query-latency.md): A real repository investigation measures useful evidence, fallbacks, friction, and the product corrections that follow.
+- [Measuring Agent Research Beyond Query Latency](https://thefellow.github.io/articles/measuring-agent-research-beyond-query-latency.md): Outcome and payload measurements drive smaller progressive discovery.
 - [Preserving Truth Through Operational Degradation](https://thefellow.github.io/articles/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.
-- [Serving Persistent Agent Queries Without a Daemon](https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon.md): One foreground owner keeps bounded graph queries warm and fresh.
-- [Shrinking a Semantic Graph Without Changing Its Meaning](https://thefellow.github.io/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): Numeric identities and hot/cold records preserve one stable public graph.
+- [Reusing Local Query State Without Installing a Daemon](https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon.md): Foreground sessions and an idle broker reuse bounded read state.
+- [Shrinking a Semantic Graph into a Navigation Index](https://thefellow.github.io/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): Retaining useful anchors and relationships cuts index cost drastically.
 - [Testing Native Go Desktop Applications Headlessly](https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly.md): Layered evidence for native GUI behavior without opening windows.
 - [Turning Cross-Domain Calls into Enforced Boundaries](https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries.md): Transactional events replace cross-domain calls with enforced ownership.
 - [Turning Cross-Repository Soaks into Indexing Contracts](https://thefellow.github.io/articles/turning-cross-repository-soaks-into-indexing-contracts.md): A strict mixed-language matrix turns real compiler failures into bounded indexing contracts.
@@ -69,4 +69,4 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 ## Series
 
 - [Building Mixology](https://thefellow.github.io/series/mixology.md): An ordered path through Mixology's executable application architecture.
-- [Building Weave](https://thefellow.github.io/series/weave.md): An ordered path through Weave's fresh compiler-backed semantic graph.
+- [Building Weave](https://thefellow.github.io/series/weave.md): From exhaustive semantic graphs to compact progressive source discovery.

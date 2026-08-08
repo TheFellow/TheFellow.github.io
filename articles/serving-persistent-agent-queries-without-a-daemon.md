@@ -1,90 +1,67 @@
 <!-- Generated from https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Serving Persistent Agent Queries Without a Daemon
+# Reusing Local Query State Without Installing a Daemon
 
 Source: [https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon/](https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon/)
 
 ## Pyramid summary
 
-- **~2 words:** Resident agent queries
-- **~8 words:** One foreground owner keeps bounded graph queries warm and fresh.
-- **Expanded:** How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+- **~2 words:** Reusable local queries
+- **~8 words:** Foreground sessions and an idle broker reuse bounded read state.
+- **Expanded:** How Weave serves bounded reads through an explicit NDJSON session or an idle-reaping per-worktree broker while preserving one-shot freshness and maintenance paths.
 
 ## Full content
 
 **Part 14 of [Building Weave](/series/weave.md).**
 
-A correct one-shot CLI can still be the wrong shape for a long agent session. Every invocation starts a process, observes Git, opens bstore, validates its schema, and hydrates hot dictionaries before answering one bounded query. An IDE keeps its project services alive because navigation is a conversation, not a sequence of unrelated cold starts.
+A correct one-shot CLI still repeats process startup, freshness inspection, schema validation, database open, and dictionary work during a research conversation. The first Weave optimization made that ownership explicit with `weave session`, a foreground NDJSON subprocess controlled by one agent host.
 
-Weave cannot improve that path by pretending its embedded database supports concurrent owners. bstore opens the worktree index read/write and permits one owning process. [Weave](https://github.com/TheFellow/weave) makes that constraint the center of `weave session`: one foreground child owns one database, serializes bounded read requests, observes source state in the background, and releases everything when its client closes the stream.
+The current implementation keeps that protocol and adds a smaller default optimization on supported Unix platforms: ordinary bounded local reads can reuse an ephemeral per-worktree broker. The broker is started on demand, is never installed or supervised, and exits after one minute without an accepted client or active request.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/resident-query-session.svg" alt="An agent host starts a foreground weave session and exchanges versioned NDJSON requests and responses over standard input and output. The first valid request runs authoritative freshness and opens one bstore handle. Warm requests reuse the handle and dictionaries. A background exact Git observer marks a pending change; the next request closes the database, uses the ordinary provider refresh pipeline, reopens the published generation, and answers. EOF or cancellation closes the owner, while maintenance, mutation, and catalog operations stay outside the session.">
-  <figcaption>One client-owned process is the explicit database owner. Warm queries reuse it; a detected source change crosses the same close, authoritative refresh, and reopen boundary as ordinary commands.</figcaption>
+  <img src="/assets/images/articles/weave/resident-query-session.svg" alt="Bounded local read commands either enter an explicit foreground NDJSON session or connect to an on-demand per-worktree Unix-socket broker. Both reuse the same resident application service and query normalization. The broker accepts only matching worktree identity and protocol frames, drains before maintenance or mutation, and exits after one idle minute. The ordinary freshness manager and one-shot fallback remain authoritative.">
+  <figcaption>Persistence is a local latency optimization around the existing application boundary, not another indexing authority.</figcaption>
 </figure>
 
-## Make the long-lived owner explicit
+## Keep the explicit session
 
-`weave session` is a foreground subprocess, not an installed daemon. The client starts it in the repository it wants to query, writes one UTF-8 JSON object per line to stdin, reads one response per line from stdout, and closes stdin when finished. There is no socket discovery, PID file, hook, durable session record, or second index authority.
+`weave session` remains useful for an agent host that already owns a child process. It accepts newline-delimited `weave.query-session/v1` requests on stdin and writes one response frame per request on stdout.
 
-```console
+```sh
 printf '%s\n' \
-  '{"protocol":"weave.query-session/v1","id":"research","command":"explore","arguments":["where is publish authorization enforced"],"limit":6}' \
-  '{"protocol":"weave.query-session/v1","id":"callers","command":"callers","arguments":["Module.Publish"],"limit":25}' \
+  '{"protocol":"weave.query-session/v1","id":"discover","command":"explore","arguments":["menu publication persistence"]}' \
+  '{"protocol":"weave.query-session/v1","id":"context","command":"context","arguments":["example.com/project/menu.Service.Publish"]}' \
   | weave session
 ```
 
-Stdout is protocol-only. The request ID correlates each frame, and the protocol name makes incompatible semantics visible. A successful frame contains the ordinary `weave.query/v1` application response. An invalid request or failed query returns a typed error frame without ending the stream, allowing the client to correct one call while retaining the warm process.
+Requests map to the same application invocations as the CLI. The session accepts bounded local research operations such as symbols, compact explore, context, definition anchors, dependencies, paths, impact, and graphs. It rejects maintenance, mutation, catalog, adapter, index, full-export, and the removed posting-dependent workspace operations.
 
-## Bound the wire before executing a query
+Every frame has a fixed maximum size, one request ID, validated command arity, bounded limits, traversal depth, edge counts, source lines, and source bytes. Removed statement-level commands such as `references`, `callers`, and `callees` are not part of the session surface because the format-4 navigation index does not retain their facts.
 
-The session accepts the local read operations agents use for research: symbols, context, explore, definitions, references, callers, callees, dependencies, paths, impact, graphs, and workspace navigation. Every request maps to the existing application invocation and its limits for results, traversal depth, edges, relationship sections, source lines, and source bytes.
+## Add an ephemeral broker for ordinary commands
 
-One line is limited to 1 MiB, an ID to 128 bytes, source output to at most 4 MiB, and graph traversal to explicit ceilings. Unknown fields, unsupported protocols and commands, unknown edge kinds, incorrect argument counts, and invalid bounds fail before application execution. An oversized frame terminates the process because its next record boundary cannot be recovered safely. Error messages are converted to valid UTF-8 and capped at 8 KiB before they enter a frame.
+An explicit session requires its caller to manage a stream. The local broker lets normal commands reuse the resident path without changing their text or JSON interface. A client discovers a user-private per-worktree endpoint and sends one `weave.local-broker/v1` request containing the exact repository identity and a normalized bounded invocation.
 
-The agent-oriented `explore` default keeps eight focus entities under one 32 KiB focus-source budget and four relationships per direction. A caller can raise either bound. The frame preserves complete focus evidence and source plus every exact relationship edge, but replaces repeated neighbor entity, repository, and source blocks with compact `adjacent` coordinates containing the exact ID, stable and display names, kind, provider, and evidence. Direct `context` retains the complete rich relationship representation.
+The first client starts the current Weave executable. A cross-process startup lock prevents duplicate brokers. The broker accepts only bounded local read queries, validates protocol and worktree identity before execution, limits frames to 16 MiB, and serves each request through the same resident application service. Catalog queries stay outside it.
 
-Maintenance, mutation, indexing, verification, compaction, full export, authored-link changes, adapter management, and catalog queries are deliberately absent. Those operations may open storage independently, replace derived state, or require a different ownership model. The client closes the session and uses the one-shot command instead.
+`WEAVE_NO_BROKER=1` disables the optimization and asks an existing broker to shut down. Windows currently keeps the one-shot path. If a safe broker endpoint cannot be established, the client falls back to ordinary local execution instead of making the optimization a prerequisite.
 
-## Pay the cold path once
+## Preserve maintenance boundaries
 
-The process does not open bstore merely because it started. Its first valid database-backed request performs the ordinary authoritative freshness check, opens the current worktree database, and records the resulting observation and freshness status. Later local requests reuse that handle, its storage pages, and its in-memory intern dictionary.
+Index refresh, initialization, status, garbage collection, architecture mutation, link edits, adapter work, `watch`, and an explicit `session` require a different ownership boundary. Before those operations begin, the application asks an existing broker to stop accepting work, drains active requests, closes its database, and removes its endpoint. It does not start a broker merely to shut one down.
 
-Requests are serialized under one owner. This is not a claim that bstore became a multi-reader server. Another Weave process targeting the same worktree cannot open the file while the session owns it; it waits for the existing bounded timeout and then fails. The correct client behavior is to route its supported research queries through the resident stream and close it before launching maintenance or another owner.
+This keeps ambiguous retries away from mutation. Once a request reached a broker, a transport failure is not replayed as a possibly mutating one-shot action. Remote application errors remain authoritative. Only failure to reach or safely start the read broker falls back before the request is accepted.
 
-EOF, cancellation, or process termination closes the database. Closing is idempotent, stops the observer, waits for it to finish, and releases the file before returning. Tests prove that a second bstore open fails during ownership and succeeds after the resident closes.
+## Keep freshness authoritative
 
-## Move observation off the warm request path
+Neither persistent shape decides what is current. The resident service uses the same query-driven freshness manager as one-shot execution. A background exact Git observation can mark a generation stale; the next request crosses the ordinary close, refresh, publish, and reopen boundary before answering. Current-source reads keep their own path, encoding, hash, range, race, and byte checks.
 
-[Query-driven freshness](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md) remains authoritative, but running a complete exact Git observation synchronously before every warm query would preserve much of the cold overhead. After the first request, the resident starts a background observer at the same bounded interval used by optional watch warming.
+Per-worktree and aggregate queries now use bstore's shared read-only mode after freshness is established, while writers remain exclusive. The broker amortizes process, schema, and dictionary startup; it does not make the database writable by many clients or create a second publication path.
 
-An unchanged observation leaves the open handle alone. A changed or non-current observation becomes pending state. Before answering the next request, the resident closes the database, invokes the ordinary freshness manager, observes the published state, and opens the new generation. There is no resident-only provider pipeline and no refresh against an open file.
+## Separate latency work from payload work
 
-Detection is asynchronous, so a graph-only request can briefly see the preceding generation before the observer notices an edit. Source-rich responses retain a stronger immediate guard: they reopen the current Git-visible file and compare its identity and hash on every request. A changed file is reported as changed rather than paired with stale graph coordinates.
+The original session experiment measured a 0.379 ms warm median after a 1,453.892 ms first request in one 20-request local sample, compared with 751.974 ms for one one-shot call. That sample justified reusing startup state, not treating a resident process as the product.
 
-Observation failures also remain visible. The resident records the failure and returns it through the next valid query instead of silently continuing forever on a generation it can no longer prove current.
+It also exposed a different problem: the old eight-focus exploration response still occupied tens of kilobytes because it repeated graph dossiers. The later format-4 work solved that at the query boundary. Progressive discovery now returns a representative 3,157-byte first-stage response and fetches exact context only for a selected anchor.
 
-## Measure the resident shape directly
-
-One local macOS run against a rebuilt Mixology storage-v3 index compared `symbols Readiness --limit 5` as an ordinary CLI command with 20 identical requests sent through one foreground session:
-
-| Path | Latency |
-| --- | ---: |
-| One-shot CLI | 751.974 ms |
-| Session first request | 1,453.892 ms |
-| Session warm median | 0.379 ms |
-| Session warm range | 0.275–2.193 ms |
-
-This is one latency sample, not a throughput distribution. It demonstrates the intended lifecycle rather than a universal speed ratio: the first session request pays freshness and open costs, while serialized warm requests reuse one handle and its dictionaries.
-
-The same run tested the less glamorous half of the contract. An ordinary CLI process failed with the bounded `inspect database schema: timeout` error while the resident owned bstore. After EOF closed the session, the identical command succeeded. The single-owner constraint is therefore observable at the process boundary and the file is released at the client-owned lifetime boundary.
-
-The installed endpoint matrix also caught response overhead that latency alone would hide. An eight-focus Mixology exploration initially returned 229,134 bytes in 1.19 seconds because every relationship repeated complete source, repository, and symbol records. The compact projection returned 84,036 bytes in 0.74 seconds, a 63.3% byte reduction, while retaining all eight focuses and 60 typed edges. That is another single local regression sample. Its value is the preserved evidence boundary: `explore` stays compact enough for discovery, while `context` remains available when an agent chooses one relationship for full expansion.
-
-## Keep the application boundary shared
-
-The resident service did not duplicate every query. The ordinary local application path was split so one-shot commands can open and close a database around `executeDatabase`, while the resident supplies its already-owned handle to the same function. Human text, CLI JSON, NDJSON session frames, and a future adapter therefore consume the same application semantics.
-
-The wire is language-neutral for the same reason. A query can return facts produced by Go, Roslyn, FSharp.Compiler.Service, rust-analyzer, SCIP, structured content, or an authored declaration without encoding those producers into the session lifecycle. Provider and evidence metadata remain in the normal response.
-
-MCP remains a possible thin facade over this boundary, not a second implementation. A future local broker could multiplex clients through one owner, and a resident catalog service could hold an aggregate with a different lifecycle. Neither is implied by this foreground contract. The useful increment is smaller and more honest: one client can keep its existing local graph hot across a research conversation without installing a daemon or weakening freshness.
+These optimizations compose cleanly because they solve different costs. The broker makes repeated commands cheaper to start. The navigation projection makes the database smaller. Progressive discovery makes agent responses smaller. Freshness and current source remain shared correctness boundaries underneath all three.

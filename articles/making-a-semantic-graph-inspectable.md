@@ -14,12 +14,12 @@ Source: [https://thefellow.github.io/articles/making-a-semantic-graph-inspectabl
 
 **Part 3 of [Building Weave](/series/weave.md).**
 
-A semantic graph can be correct and still be difficult to trust. JSON preserves identities and provenance for an agent, but a person reviewing a dependency direction or a documentation relationship has to reconstruct the shape mentally. Exporting the entire database does not solve that problem. It turns hundreds of thousands of symbols, occurrences, and edges into a hairball.
+A semantic graph can be correct and still be difficult to trust. JSON preserves identities and provenance, but a person reviewing a dependency direction or a documentation relationship has to reconstruct the shape mentally. Exporting the entire database does not solve that problem. Even the compact navigation index needs a focused question and explicit bounds.
 
 [Weave](https://github.com/TheFellow/weave) takes the opposite route. [`weave graph`](https://github.com/TheFellow/weave/blob/main/.ai/decisions/0011-focused-dot-graph-export.md) begins with one resolvable entity, walks a bounded semantic neighborhood, and presents that same result as deterministic Graphviz DOT, versioned JSON, or an animated local view. The graph query remains the product boundary. Renderers do not gain a separate store, resolver, or definition of freshness.
 
 ```sh
-weave graph HandleRequest --kind calls --kind implements > handle.dot
+weave graph HandleRequest --kind implements --kind documents > handle.dot
 weave graph README.md --direction outgoing --max-depth 3 --output docs.dot
 weave graph HandleRequest --interactive
 ```
@@ -35,7 +35,7 @@ The first design choice is refusing to render everything. `weave graph TARGET` r
 
 Bidirectional traversal keeps independent incoming and outgoing queues and interleaves them. That detail matters when the global node or edge budget is small. Walking every caller first could consume the entire budget before showing a single callee. The result records whether a bound truncated the view rather than letting a small picture imply a complete universe.
 
-The default edge set favors relationships people can reason about at neighborhood scale: calls, imports, containment, inheritance, implementation, dependencies, tests, generation, documentation, exposure, handling, reads, writes, links, embeds, membership, and resolution. Occurrence-level `defines` and `references` remain available through explicit `--kind` filters, but do not drown the first view.
+The default edge set is exactly the relationship vocabulary retained by format 4: dependencies, imports, extension and implementation, tests, generation, documentation, exposure, links, and embeds. Statement-level calls and references, containment duplication, reads, writes, membership, and resolution are not hidden filters; they are absent from the managed navigation index and must be investigated in current source.
 
 The operation works over a local worktree or the bounded repository catalog. Catalog members still refresh before their databases are opened. Graph breadth does not weaken the [freshness contract](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md); it makes the current facts easier to inspect.
 
@@ -44,17 +44,17 @@ The operation works over a local worktree or the bounded repository catalog. Cat
 Inspectability starts before DOT. The ordinary relationship commands have to answer a question without making a person decode internal graph IDs or join document records by hand:
 
 ```text
-$ weave callers authorize
-fixture.HandleRequest  calls  fixture.authorize  main.go:8:3
+$ weave path fixture.Handler fixture.RequestHandler --kind implements
+fixture.Handler  implements  fixture.RequestHandler  main.go:8:3
 ```
 
-Weave now hydrates every query response with the materialized symbols and documents referenced by its nodes, edges, and occurrences. The text renderer can therefore show stable names and repository-relative source locations, while `--json` retains the exact IDs and complete records. `callers`, `callees`, `dependencies`, `path`, and `impact` all use the same relationship presentation. A path with no result says so directly instead of printing an ambiguous empty line, and Ctrl-C is a successful end to an interactive graph session rather than a command failure.
+Weave hydrates graph responses with the materialized anchors and documents referenced by retained nodes and edges. The text renderer can therefore show stable names and repository-relative source locations, while `--json` retains exact identities and records. `dependencies`, `path`, and `impact` use the same navigation-relationship presentation. A path with no result says so directly instead of printing an ambiguous empty line, and Ctrl-C is a successful end to an interactive graph session rather than a command failure.
 
 Human input gets the same treatment. Compiler-qualified stable names can encode ownership as segments such as `package`, `type`, and `method`, but `Server.Serve` is the spelling a person naturally reaches for. The resolver keeps exact IDs, exact stable names, and provider search order authoritative, then falls back to the concise qualified suffix when it selects exactly one symbol. An ambiguous query reports stable names, kinds, and graph IDs for several candidates, plus the remaining count, so refinement does not begin with two opaque hashes.
 
 That hydration exposed provider details that matter to the answer. The native Go index now materializes external packages and referenced external objects as readable endpoints, includes implicit declarations such as type-switch variables, and preserves stable ownership through aliases and reconstructed type objects. Explicit open-world endpoints remain valid when another provider has not materialized them.
 
-Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from declarations actually owned by the selected file instead of treating every referenced external occurrence as another root. These are presentation and traversal corrections over the same evidence graph, but they are what turn stored facts into a useful answer.
+Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from retained declarations actually owned by the selected file. These are presentation and traversal corrections over the same navigation evidence, but they are what turn stored facts into a useful answer.
 
 The help surface follows the same rule. Required operands are now visible in command usage, including `QUERY`, `FROM TO`, repository identities, adapter names and executables, and the conformance fixture directory. The CLI explains the shape of a valid question before asking the graph to answer it.
 
@@ -69,7 +69,7 @@ dot -Tsvg auth.dot -o auth.svg
 
 The DOT is a presentation of exact graph identities, not a replacement for them. Nodes receive compact readable labels and shapes based on kind. Tooltips retain stable names and semantic IDs. Materialized nodes are clustered by provider; unresolved endpoints remain visible rather than disappearing. Edge labels name the relationship, while metadata retains its provider and evidence.
 
-Color explains traversal role. The focus is gold, incoming nodes are green, outgoing nodes are purple, and nodes reached in both directions are rose. Evidence selects line treatment. Equivalent parallel edges can collapse visually with a count, while JSON retains every source fact.
+Color explains traversal role. The focus is gold, incoming nodes are green, outgoing nodes are purple, and nodes reached in both directions are rose. Evidence selects line treatment. Equivalent parallel edges can collapse visually with a count, while JSON retains every selected navigation fact.
 
 Generated node names, clusters, attributes, and edges are sorted. Every dynamic DOT string is quoted and escaped, including quotes, backslashes, newlines, and control characters. Determinism makes a graph useful in review and CI artifacts; defensive encoding keeps a hostile symbol name from becoming DOT syntax.
 
@@ -93,7 +93,7 @@ weave links remove guide-documents-handler
 
 Add and update require each query to resolve uniquely. The stored `.weave/bridges.json` declaration uses `entity:<exact-id>` endpoints, so a later display-name collision cannot silently retarget it. `id:<exact-id>` deliberately creates an open endpoint for an immutable commit or resource that is not materialized yet; it is not a fuzzy-resolution escape hatch.
 
-Endpoints are graph entities rather than only compiler symbols. A relationship can connect packages, files, Markdown sections, routes, assets, URLs, or code declarations. Catalog scope can resolve endpoints across registered worktrees. All normalized edge kinds are available, but authored evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
+Endpoints are graph entities rather than only compiler symbols. A relationship can connect packages, files, Markdown sections, routes, assets, URLs, or code declarations. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
 
 Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes concurrent read-modify-write operations, while the reviewed declaration remains in the worktree. After publication, Weave refreshes the current repository so the new relationship immediately participates in graph, path, impact, export, architecture, and federation queries.
 
@@ -101,7 +101,7 @@ Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes
 
 Authored links do not enter a side annotation database. The built-in Go, SCIP, workspace, and relationship providers construct the same normalized `graph.Edge` shape through one relationship builder. Provider ownership and evidence defaults are validated in one place.
 
-That common shape is what makes mixed neighborhoods useful. A compiler-owned `calls` edge can lead to a route supplied by a generated bridge, then to a Markdown section supplied by the workspace provider. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
+That common shape is what makes mixed neighborhoods useful. A compiler-owned `implements` edge can meet an exposed route and a reviewed `documents` link to a Markdown section. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
 
 An exact endpoint can become unmaterialized after a rename. Weave leaves that reviewed relationship explicit and inspectable instead of guessing a new target. The missing node in DOT is evidence of drift that a person can repair.
 
@@ -127,7 +127,7 @@ This is deliberately narrower than a graph editor or IDE. The browser cannot mut
 
 A practical walkthrough now has one sequence:
 
-1. Use `weave symbols` or `weave workspace find` to identify a useful starting entity.
+1. Use `weave explore` or `weave symbols` to identify a useful starting entity.
 2. Add a reviewed relationship with `weave links add` when the graph lacks context no provider can prove.
 3. Run `weave graph TARGET --json` to inspect exact nodes, edges, evidence, provenance, and truncation.
 4. Emit DOT to create a stable review or documentation artifact.

@@ -14,17 +14,17 @@ Source: [https://thefellow.github.io/articles/keeping-a-semantic-index-fresh-wit
 
 **Part 1 of [Building Weave](/series/weave.md).**
 
-A code index becomes dangerous at the moment it is convincing and wrong. A caller result from the checkout before the last edit, a definition from the previous branch, or an impact path built with a different compiler configuration looks precise enough to trust. That makes stale semantic evidence worse than an honest text search.
+A code index becomes dangerous at the moment it is convincing and wrong. A definition from the checkout before the last edit, a dependency path from the previous branch, or an impact result built with a different compiler configuration looks precise enough to trust. That makes stale semantic evidence worse than an honest text search.
 
 [Weave](https://github.com/TheFellow/weave) makes freshness part of the read path for its automatic providers. A query inspects the current Git worktree, compares it with the last completely published semantic inventory, refreshes changed compilation units when necessary, and only then opens the graph for the requested operation. No daemon or hook is required to preserve that contract.
 
 ```text
-$ weave callers Handle
+$ weave explore how request handling reaches persistence
 index: refreshed 3 changed paths
 
-service.Handle
-  called by  api.Login      internal/api/login.go:42
-  called by  api.Refresh    internal/api/refresh.go:31
+symbol  service.Handle  internal/service/handler.go:24
+        next: weave context "example.com/project/service.Handle"
+source  internal/api/login.go:42  service.Handle(ctx, request)
 ```
 
 The refresh notice goes to stderr and the answer goes to stdout. A person sees why the first query took additional work, while a script can consume clean results or request the versioned JSON envelope. The important behavior is less visible: Weave does not open the query database until the freshness decision has completed.
@@ -51,7 +51,7 @@ The distinction between those fingerprints is useful. Editing a function body ch
 
 ## Every read passes through the same gate
 
-Weave's CLI is a thin presentation layer over [`application.Local`](https://github.com/TheFellow/weave/blob/main/internal/application/application.go). Database-backed commands such as `symbols`, `definition`, `references`, `callers`, `callees`, `dependencies`, `path`, `impact`, `export`, and `verify` begin by calling `Freshness.Ensure`. `status` uses the read-only inspection path because its job is to report currency, not to change it.
+Weave's CLI is a thin presentation layer over [`application.Local`](https://github.com/TheFellow/weave/blob/main/internal/application/application.go). Database-backed commands such as `symbols`, `explore`, `context`, `definition`, `dependencies`, `path`, `impact`, `graph`, `export`, and `verify` begin by calling `Freshness.Ensure`. `status` uses the read-only inspection path because its job is to report currency, not to change it.
 
 The manager follows a short sequence:
 
@@ -80,7 +80,7 @@ That ownership prevents a subtle failure. Suppose the Go provider refreshes its 
 
 Explicit SCIP import follows a separate lifecycle. It accepts a bounded compiler-backed snapshot, preserves inventories from other SCIP producers, and replaces only the importing producer's units. It does not yet know how to rerun that producer before a query, so the user must reimport changed output. Keeping that limitation explicit is better than pretending an imported snapshot is a live provider; a future producer contract can join the freshness path once it can describe how its inputs and executable identity change.
 
-Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. It contains its unit, documents, symbols, occurrences, and edges. Validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes. The store never has to merge an ambiguous partial update into an older semantic unit.
+Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. A provider can emit its unit, documents, symbols, occurrences, and edges. Validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes. Format 4 then projects that rich provider output into retained documents, declaration anchors, and high-value navigation edges before storage. Occurrences, statement-level calls and references, and noisy declaration kinds do not become durable managed-index facts.
 
 ## Publish completeness after the graph
 
@@ -108,14 +108,16 @@ The bounded publication path came from a real failure, not an estimated future s
 
 Three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs.
 
-The adjacent measured run made the result concrete:
+The adjacent measured run made the first correction concrete:
 
 | Repository | Cold index | Current empty lookup | Graph database |
 | --- | ---: | ---: | ---: |
 | go-modular-monolith | 37.785 s | 0.536–0.610 s | 1.11 GB |
 | arch-lint | 2.610 s | 0.531–0.549 s | 16.8 MB |
 
-The current lookup includes Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. The remaining size is still large enough to guide the next storage work rather than being presented as finished.
+The current lookup included Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. That historical result exposed the next problem rather than finishing the storage work.
+
+The format-4 navigation projection later changed what the managed database retains. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. The projection retains documents, declaration anchors, and navigation relationships while omitting occurrences, statement-level calls and references, fields, constants, locals, and broad body-token postings. Freshness still governs the complete provider inventory even though persistence is now deliberately smaller than provider output.
 
 The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
 
@@ -137,7 +139,7 @@ The same rule applies to federation. A catalog query refreshes every selected me
 
 Current evidence can still be impractical if one broad name or highly connected symbol consumes unbounded work. Weave's queries carry result and traversal limits into the graph layer. Symbol lookup has a requested limit. Path and impact traversal bound depth, visited nodes, and examined edges. Canonical ordering makes the same graph and bounds produce the same answer, and a truncation flag tells the caller when a boundary stopped the search.
 
-That behavior matters most for automated consumers. An agent can ask a precise question, receive exact provider and source evidence in `weave.query/v1`, and know whether the result is complete. It does not have to infer completeness from output length or accept an unbounded graph dump into its context.
+That behavior matters most for automated consumers. An agent can ask a precise question, receive exact provider and source evidence in `weave.query/v2`, and know whether the result is complete. Compact discovery also has a 12 KiB encoded ceiling, so a small result count cannot conceal an oversized payload.
 
 The output streams preserve the same separation of concerns:
 
@@ -158,11 +160,11 @@ The behavior is easiest to see by letting ordinary development invalidate the gr
 weave index
 weave status
 
-# Read from the current graph.
-weave callers Handle --limit 20
+# Discover compact anchors and source pointers from the current index.
+weave explore how request handling reaches persistence
 
 # After editing, adding, renaming, or deleting source, the query refreshes first.
-weave references Handle --json
+weave context example.com/project/service.Handle --json
 
 # Use Git itself to define a multi-file impact root.
 weave impact --git-diff origin/main --limit 100

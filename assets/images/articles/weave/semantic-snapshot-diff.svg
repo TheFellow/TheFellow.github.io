@@ -39,8 +39,8 @@
   <text x="653" y="388" text-anchor="middle" class="label">Head graph</text>
   <text x="653" y="424" text-anchor="middle" class="tiny">generation · snapshot digest</text>
   <text x="653" y="474" text-anchor="middle" class="small">units · documents · symbols</text>
-  <text x="653" y="508" text-anchor="middle" class="small">occurrences · edges</text>
-  <text x="653" y="538" text-anchor="middle" class="tiny">stable public facts on both sides</text>
+  <text x="653" y="508" text-anchor="middle" class="small">retained navigation edges</text>
+  <text x="653" y="538" text-anchor="middle" class="tiny">format-4 facts on both sides</text>
 
   <path d="M842 310 H914" class="green"/>
   <path d="M842 410 H914" class="green"/>

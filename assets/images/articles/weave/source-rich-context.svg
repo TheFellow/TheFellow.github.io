@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
-  <title id="title">One bounded context query composes graph facts and current source</title>
-  <desc id="desc">An exact target resolves through the normalized graph. Source coordinates locate current Git-visible files in the owning worktree. The bounded query returns a focus, evidence excerpts, direct relationships, adjacent entities, provenance, freshness, and independent truncation metadata.</desc>
+  <title id="title">Compact discovery opens current source only after selection</title>
+  <desc id="desc">A research phrase produces a few semantic anchors and bounded ripgrep hits. Each anchor carries an exact context follow-up. Only the selected declaration opens and verifies current Git-visible source under line and byte limits.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
     <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
@@ -9,12 +9,12 @@
     </style>
   </defs>
   <rect width="1440" height="810" class="bg"/>
-  <text x="720" y="74" text-anchor="middle" class="title">Exact graph facts meet current source</text>
+  <text x="720" y="74" text-anchor="middle" class="title">Discover compactly, open source deliberately</text>
 
   <text x="52" y="146" class="lane">AUTHORITIES</text>
   <rect x="52" y="174" width="330" height="150" class="box" stroke="#4dabf7"/>
-  <text x="217" y="222" text-anchor="middle" class="label">Normalized graph</text>
-  <text x="217" y="260" text-anchor="middle" class="small">identity · ranges · edges</text>
+  <text x="217" y="222" text-anchor="middle" class="label">Navigation index</text>
+  <text x="217" y="260" text-anchor="middle" class="small">anchors · ranges · names</text>
   <text x="217" y="292" text-anchor="middle" class="tiny">provider · evidence · hash</text>
 
   <rect x="52" y="390" width="330" height="150" class="box" stroke="#51cf66"/>
@@ -25,38 +25,38 @@
   <path d="M382 249 H484" class="blue"/>
   <path d="M382 465 H430 Q460 465 460 425 V367 Q460 337 490 337" class="blue"/>
 
-  <text x="490" y="146" class="lane">APPLICATION QUERY</text>
+  <text x="490" y="146" class="lane">PROGRESSIVE QUERY</text>
   <rect x="490" y="174" width="430" height="366" class="box" stroke="#ff922b"/>
-  <text x="705" y="225" text-anchor="middle" class="label">weave context TARGET</text>
-  <text x="705" y="272" text-anchor="middle" class="small">resolve exactly one entity</text>
-  <text x="705" y="312" text-anchor="middle" class="small">definitions · references</text>
-  <text x="705" y="352" text-anchor="middle" class="small">rank + collapse by endpoint</text>
-  <text x="705" y="392" text-anchor="middle" class="small">line windows · source budget</text>
+  <text x="705" y="225" text-anchor="middle" class="label">explore → context</text>
+  <text x="705" y="272" text-anchor="middle" class="small">rank a few semantic anchors</text>
+  <text x="705" y="312" text-anchor="middle" class="small">add diversified ripgrep hits</text>
+  <text x="705" y="352" text-anchor="middle" class="small">select one exact stable name</text>
+  <text x="705" y="392" text-anchor="middle" class="small">then spend source budget</text>
   <text x="705" y="444" text-anchor="middle" class="tiny">freshness before graph and source</text>
-  <text x="705" y="476" text-anchor="middle" class="tiny">one hop · deterministic order</text>
+  <text x="705" y="476" text-anchor="middle" class="tiny">12 KiB discovery ceiling</text>
   <text x="705" y="508" text-anchor="middle" class="tiny">local or bounded catalog scope</text>
 
   <path d="M920 245 H1022" class="orange"/>
   <path d="M920 357 H1022" class="orange"/>
   <path d="M920 469 H1022" class="orange"/>
 
-  <text x="1022" y="146" class="lane">ONE DOSSIER</text>
+  <text x="1022" y="146" class="lane">SMALL HANDOFF</text>
   <rect x="1022" y="174" width="366" height="142" class="box" stroke="#ff922b"/>
-  <text x="1205" y="220" text-anchor="middle" class="label">Focus + evidence</text>
-  <text x="1205" y="256" text-anchor="middle" class="small">line-numbered excerpts</text>
-  <text x="1205" y="286" text-anchor="middle" class="tiny">exact source status</text>
+  <text x="1205" y="220" text-anchor="middle" class="label">Discovery pointers</text>
+  <text x="1205" y="256" text-anchor="middle" class="small">path · line · preview · next</text>
+  <text x="1205" y="286" text-anchor="middle" class="tiny">choose before expansion</text>
 
   <rect x="1022" y="342" width="366" height="142" class="box" stroke="#b197fc"/>
-  <text x="1205" y="388" text-anchor="middle" class="label">Direct relationships</text>
-  <text x="1205" y="424" text-anchor="middle" class="small">flow edges · omit local noise</text>
-  <text x="1205" y="454" text-anchor="middle" class="tiny">stable names · provider · evidence</text>
+  <text x="1205" y="388" text-anchor="middle" class="label">Selected context</text>
+  <text x="1205" y="424" text-anchor="middle" class="small">current declaration source</text>
+  <text x="1205" y="454" text-anchor="middle" class="tiny">stable name · provider · evidence</text>
 
   <rect x="1022" y="510" width="366" height="142" class="box" stroke="#4dabf7"/>
   <text x="1205" y="556" text-anchor="middle" class="label">Honest metadata</text>
-  <text x="1205" y="592" text-anchor="middle" class="small">provenance · freshness · partial</text>
-  <text x="1205" y="622" text-anchor="middle" class="tiny">independent truncation</text>
+  <text x="1205" y="592" text-anchor="middle" class="small">provenance · freshness · bounds</text>
+  <text x="1205" y="622" text-anchor="middle" class="tiny">source race stays visible</text>
   <path d="M920 469 H966 Q994 469 994 510 V581 H1022" class="orange"/>
 
   <rect x="232" y="706" width="976" height="56" fill="#242021" stroke="#51cf66" stroke-width="3" rx="16"/>
-  <text x="720" y="741" text-anchor="middle" class="small">No source cache · no embeddings · no second graph</text>
+  <text x="720" y="741" text-anchor="middle" class="small">No speculative dossiers · no source cache · no embeddings · no second graph</text>
 </svg>

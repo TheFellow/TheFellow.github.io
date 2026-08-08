@@ -1,8 +1,8 @@
 ---
 title: "Building Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-08 04:04:08 -0700
-excerpt: "An ordered path through Weave's fresh compiler-backed graph, exact storage, managed adapters, agent measurement, resident query sessions, and cross-repository validation."
+last_modified_at: 2026-08-08 13:10:00 -0700
+excerpt: "An ordered path through Weave's move from an exhaustive semantic graph to a compact, fresh navigation index built for practical source discovery."
 order: 5
 entries_label: "15 articles"
 icon: "route"
@@ -12,7 +12,9 @@ project_url: "/projects/weave/"
 repository_url: "https://github.com/TheFellow/weave"
 ---
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only declarations, paired agent-research measurement, body-concept discovery, a resident query session that keeps the graph hot without installing a daemon, and a strict cross-repository soak that makes real compiler and repository behavior part of the indexing contract.
+Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation keeps a compact navigation projection, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
+
+This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the format-4 navigation index retained, replaced, or removed. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
 
 [Explore the project](/projects/weave/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/weave){: .btn }

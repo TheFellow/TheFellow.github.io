@@ -1,7 +1,7 @@
 ---
 title: "Managing Compiler Adapters Without Inventing a Package Registry"
 date: 2026-08-07 15:32:05 -0700
-last_modified_at: 2026-08-07 15:35:33 -0700
+last_modified_at: 2026-08-08 13:10:00 -0700
 excerpt: "How Weave turns an explicitly selected local adapter executable into pinned, routable automatic language support with no remote registry, ambient discovery, or hidden trust expansion."
 permalink: /articles/managing-compiler-adapters-without-inventing-a-package-registry/
 series: weave
@@ -21,6 +21,8 @@ The [adapter process contract](/articles/making-language-support-a-process-contr
 Automatic execution needs durable answers to harder questions. Which local artifact did the user trust? What repository inputs may it claim? What evidence can it produce? Did its bytes or public contract change? What happens when two adapters both claim the same file? A filename convention or a scan of `PATH` cannot answer any of them safely.
 
 [Weave](https://github.com/TheFellow/weave) adds a deliberately local adapter lifecycle instead. The user selects one existing executable. Weave copies it into private platform state, records normalized capabilities and two content digests, and routes Git-visible inputs only through non-overlapping claims. A metadata-only list, bounded doctor, and language-neutral conformance runner make each layer observable. There is no download command, remote catalog, archive extraction, package-manager invocation, or repository-local executable discovery hiding inside the convenience.
+
+The current format-4 database also separates adapter authority from retention. An adapter may emit rich compiler facts through the protocol, while the host validates that complete output and persists only declaration anchors and supported navigation relationships. Installing a more precise compiler does not silently opt the worktree into storing every occurrence, call, reference, field, or local it can report.
 
 <figure class="article-figure">
   <img src="{{ '/assets/images/articles/weave/managed-adapter-lifecycle.svg' | relative_url }}" alt="An explicitly selected regular local adapter executable is copied into Weave's private platform state and asked for its side-effect-free capability document. Weave normalizes input and evidence claims, then atomically records artifact and capability SHA-256 digests in a locked manifest. For automatic indexing, registry, environment, and managed policy merge with fixed precedence, conflicting claims fail closed, concrete Git-visible paths route to one precise or fallback owner, and both artifact and capability identity are checked before the existing bounded index protocol runs. Separate list, doctor, and conformance commands expose metadata, integrity and negotiation, and black-box fixture behavior without creating a remote package registry.">

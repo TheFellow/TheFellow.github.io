@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
-  <title id="title">One bounded semantic graph query feeds three presentations</title>
-  <desc id="desc">Compiler, workspace, and authored relationship providers feed one normalized graph. A focused bounded graph query emits deterministic DOT, versioned JSON, or an animated loopback explorer while preserving identities, providers, evidence, and truncation.</desc>
+  <title id="title">One bounded navigation graph query feeds three presentations</title>
+  <desc id="desc">Compiler, workspace, and authored relationship providers feed one compact navigation projection. A focused bounded graph query emits deterministic DOT, versioned JSON, or an animated loopback explorer while preserving identities, providers, evidence, and truncation.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
     <marker id="arrow-purple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#b197fc"/></marker>
@@ -9,13 +9,13 @@
     </style>
   </defs>
   <rect width="1440" height="810" class="bg"/>
-  <text x="720" y="74" text-anchor="middle" class="title">One bounded graph, three presentations</text>
+  <text x="720" y="74" text-anchor="middle" class="title">One bounded navigation graph, three presentations</text>
 
   <text x="52" y="146" class="lane">EVIDENCE PROVIDERS</text>
   <rect x="52" y="174" width="310" height="142" class="box" stroke="#4dabf7"/>
-  <text x="207" y="220" text-anchor="middle" class="label">Indexed facts</text>
+  <text x="207" y="220" text-anchor="middle" class="label">Retained facts</text>
   <text x="207" y="256" text-anchor="middle" class="small">compilers · workspace</text>
-  <text x="207" y="286" text-anchor="middle" class="small">generated bridges</text>
+  <text x="207" y="286" text-anchor="middle" class="small">navigation projection</text>
 
   <rect x="52" y="376" width="310" height="142" class="box" stroke="#f06595"/>
   <text x="207" y="422" text-anchor="middle" class="label">Authored context</text>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
-  <title id="title">A real agent investigation turns Weave friction into a paired benchmark</title>
-  <desc id="desc">An unfamiliar agent starts with a menu-readiness question. Bounded semantic evidence supplies the domain, GUI, TUI, publication, and test path. Recorded friction improves retrieval, then isolated with-Weave and without-Weave arms answer the same publication question with complete rubric scores while measuring the full investigation.</desc>
+  <title id="title">Agent outcomes and payload costs drive progressive Weave discovery</title>
+  <desc id="desc">Paired agents answer fixed repository questions against the same evidence rubrics while commands, searches, reads, tokens, and time are retained. A storage and payload audit then exposes large indexes and repeated graph dossiers. The resulting format-4 design keeps navigation anchors, adds bounded ripgrep hits, and opens exact context only after selection.</desc>
   <defs>
     <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
     <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
@@ -23,18 +23,18 @@
 
   <text x="452" y="126" class="lane">BOUNDED EVIDENCE</text>
   <rect x="452" y="150" width="536" height="184" class="box" stroke="#22b8cf"/>
-  <text x="720" y="198" text-anchor="middle" class="label">weave callers · context · references</text>
-  <text x="720" y="238" text-anchor="middle" class="small">exact graph facts · bounded dossiers</text>
-  <text x="720" y="272" text-anchor="middle" class="small">source · callers · callees · references</text>
-  <text x="720" y="310" text-anchor="middle" class="tiny">most queries &lt; 1.5 s</text>
+  <text x="720" y="198" text-anchor="middle" class="label">Fixed evidence rubric</text>
+  <text x="720" y="238" text-anchor="middle" class="small">same question · pinned revision</text>
+  <text x="720" y="272" text-anchor="middle" class="small">commands · searches · reads · tokens</text>
+  <text x="720" y="310" text-anchor="middle" class="tiny">retain raw events and final answers</text>
 
   <path d="M988 242 H1066" class="cyan"/>
 
   <text x="1066" y="126" class="lane">CONFIRMATION</text>
   <rect x="1066" y="150" width="330" height="184" class="box" stroke="#51cf66"/>
   <text x="1231" y="198" text-anchor="middle" class="label">Targeted source</text>
-  <text x="1231" y="238" text-anchor="middle" class="small">range reads from evidence</text>
-  <text x="1231" y="272" text-anchor="middle" class="small">one reference validation</text>
+  <text x="1231" y="238" text-anchor="middle" class="small">cited source evidence</text>
+  <text x="1231" y="272" text-anchor="middle" class="small">rubric completeness</text>
   <text x="1231" y="310" text-anchor="middle" class="tiny">correct final trace</text>
 
   <text x="44" y="400" class="lane">ARCHITECTURAL TRACE</text>
@@ -76,22 +76,22 @@
 
   <path d="M414 727 H450" class="orange"/>
 
-  <text x="450" y="622" class="lane">PRODUCT RESPONSE</text>
+  <text x="450" y="622" class="lane">COST AUDIT</text>
   <rect x="450" y="648" width="430" height="158" class="box" stroke="#22b8cf"/>
-  <text x="665" y="692" text-anchor="middle" class="label">One research dossier</text>
-  <text x="665" y="732" text-anchor="middle" class="small">qualified lookup · ranked context</text>
-  <text x="665" y="764" text-anchor="middle" class="small">full definitions · stable labels</text>
-  <text x="665" y="792" text-anchor="middle" class="tiny">weave explore RESEARCH PHRASE</text>
+  <text x="665" y="692" text-anchor="middle" class="label">Amplification exposed</text>
+  <text x="665" y="732" text-anchor="middle" class="small">1.03 GB index · 171.5 KB response</text>
+  <text x="665" y="764" text-anchor="middle" class="small">repeated IDs outweigh source</text>
+  <text x="665" y="792" text-anchor="middle" class="tiny">exhaustive graph is not the product</text>
 
   <path d="M880 727 H916" class="green"/>
 
-  <text x="916" y="622" class="lane">PAIRED RESULT</text>
+  <text x="916" y="622" class="lane">PRACTICAL RESULT</text>
   <rect x="916" y="648" width="480" height="158" class="box" stroke="#51cf66"/>
-  <text x="1156" y="692" text-anchor="middle" class="label">Both answers 8/8</text>
-  <text x="1156" y="732" text-anchor="middle" class="small">1 explore · 51.1% fewer input tokens</text>
-  <text x="1156" y="764" text-anchor="middle" class="small">37.5% fewer commands · 75% fewer searches</text>
-  <text x="1156" y="792" text-anchor="middle" class="tiny">one sample · raw events and answers retained</text>
+  <text x="1156" y="692" text-anchor="middle" class="label">Progressive discovery</text>
+  <text x="1156" y="732" text-anchor="middle" class="small">anchors + ripgrep · exact follow-up</text>
+  <text x="1156" y="764" text-anchor="middle" class="small">16.8 MB index · 3.2 KB response</text>
+  <text x="1156" y="792" text-anchor="middle" class="tiny">paired 8/8 result now needs rerun</text>
 
   <path d="M1156 806 V842 H20 V242 H44" class="green"/>
-  <text x="650" y="866" text-anchor="middle" class="tiny">friction changes retrieval · the same question and rubric test the complete task</text>
+  <text x="650" y="866" text-anchor="middle" class="tiny">measure answer quality, total research work, index amplification, and encoded payload together</text>
 </svg>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="810" viewBox="0 0 1440 810" role="img" aria-labelledby="title desc">
   <title id="title">Authoritative worktree generations select one immutable machine aggregate</title>
-  <desc id="desc">Selected worktrees refresh through their authoritative local indexes and emit deterministic generations. The complete sorted source set selects an immutable aggregate containing symbols, edges, tokens, and provenance. Exact hits serve hot queries; misses rebuild from authoritative databases; failures fall back to federation.</desc>
+  <desc id="desc">Selected worktrees refresh through their authoritative local indexes and emit deterministic generations. The complete sorted source set selects an immutable aggregate containing retained navigation symbols, name lookup keys, edges, and provenance. Exact hits serve hot queries; misses rebuild from authoritative databases; failures fall back to federation.</desc>
   <defs>
     <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#4dabf7"/></marker>
     <marker id="arrow-pink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#f06595"/></marker>
@@ -44,7 +44,7 @@
   <text x="1018" y="146" class="lane">DISPOSABLE PROJECTION</text>
   <rect x="1018" y="174" width="370" height="228" class="box" stroke="#f06595"/>
   <text x="1203" y="220" text-anchor="middle" class="label">Immutable hot graph</text>
-  <text x="1203" y="264" text-anchor="middle" class="small">symbols · tokens · edges</text>
+  <text x="1203" y="264" text-anchor="middle" class="small">symbols · name keys · edges</text>
   <text x="1203" y="302" text-anchor="middle" class="small">fact provenance</text>
   <text x="1203" y="346" text-anchor="middle" class="tiny">exact hit or complete rebuild</text>
   <text x="1203" y="374" text-anchor="middle" class="tiny">temporary file + build lock</text>

@@ -44,10 +44,10 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Keeping a Semantic Index Fresh Without a Daemon](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md): How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence.
 - [Making Language Support a Process Contract](/articles/making-language-support-a-process-contract.md): How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication.
 - [Making a Semantic Graph Inspectable](/articles/making-a-semantic-graph-inspectable.md): How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model.
-- [Composing Source-Rich Context Without a Second Index](/articles/composing-source-rich-context-without-a-second-index.md): How Weave composes exact graph facts, complete function definitions, current source excerpts, direct relationships, and repository provenance into bounded dossiers without adding embeddings or another store.
+- [Opening Source Context Only When It Is Useful](/articles/composing-source-rich-context-without-a-second-index.md): How Weave separates compact discovery from exact current-source context instead of serializing complete graph dossiers for every candidate.
 - [Caching a Federated Graph Without Weakening Freshness](/articles/caching-a-federated-graph-without-weakening-freshness.md): How Weave accelerates machine-wide symbol and graph queries with an immutable hot projection keyed by exact worktree generations while keeping every repository authoritative.
 - [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
-- [Shrinking a Semantic Graph Without Changing Its Meaning](/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): How Weave separates its stable graph model from a compact private schema with numeric identities, interned strings, hot and cold records, exact ordering, and rebuild-only evolution.
+- [Shrinking a Semantic Graph into a Navigation Index](/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): How Weave cut a repository index by 98.38% by retaining navigation anchors and high-value relationships instead of treating every compiler event as durable product data.
 - [Comparing Semantic Graphs Without Mutating the Worktree](/articles/comparing-semantic-graphs-without-mutating-the-worktree.md): How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence.
 - [Warming a Semantic Index Without Making the Watcher Authoritative](/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
 - [Editing Contextual Graph Links Without Losing Source Truth](/articles/editing-contextual-graph-links-without-losing-source-truth.md): How Weave turns its local graph explorer into a source-evidence inspector and revision-guarded editor while keeping checked-in declarations, application use cases, and query-driven refresh authoritative.
@@ -55,10 +55,10 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Indexing Schemas and Build Declarations Without Executing the Repository](/articles/indexing-schemas-and-build-declarations-without-executing-the-repository.md): How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools.
 - [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
 - [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
-- [Measuring Agent Research Beyond Query Latency](/articles/measuring-agent-research-beyond-query-latency.md): Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations.
+- [Measuring Agent Research Beyond Query Latency](/articles/measuring-agent-research-beyond-query-latency.md): How paired agent research and a storage-payload audit moved Weave from large graph dossiers to compact progressive discovery without losing answer quality.
 - [Preserving Truth Through Operational Degradation](/articles/preserving-truth-through-operational-degradation.md): How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context.
-- [Making Source Bodies Discoverable Without Copying Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave attaches bounded provider-owned lexical terms to exact content entities, retrieves prose and unsupported files through the existing graph, and still reads current source only at query time.
-- [Serving Persistent Agent Queries Without a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+- [Finding Source Bodies Without Indexing Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave replaced broad body-token postings with bounded ripgrep discovery over current source while keeping structured document anchors in its navigation index.
+- [Reusing Local Query State Without Installing a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave serves bounded reads through an explicit NDJSON session or an idle-reaping per-worktree broker while preserving one-shot freshness and maintenance paths.
 - [Turning Cross-Repository Soaks into Indexing Contracts](/articles/turning-cross-repository-soaks-into-indexing-contracts.md): How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability.
 - [Building an Application TUI Toolkit](/articles/building-an-application-tui-toolkit.md): How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework.
 - [Growing Mixology with a GUI Surface](/articles/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
@@ -1192,11 +1192,11 @@ This is intentionally stronger than a timestamp or "last updated" field. The cac
 
 ## Project only the hot facts
 
-The machine aggregate is not a copy of every worktree database. It contains symbols, search-token postings, edges, and normalized fact-to-worktree provenance. Units, documents, occurrences, source text, verbose evidence records, and freshness manifests stay with their owning repositories.
+The machine aggregate is not a copy of every worktree database. It contains retained navigation symbols, their name lookup projection, retained edges, and normalized fact-to-worktree provenance. Units, documents, source text, verbose evidence records, and freshness manifests stay with their owning repositories. Format 4 has no per-worktree occurrences or broad body-token postings to copy.
 
-That narrow projection supports the catalog operations that repeatedly need symbol search and graph adjacency: `symbols`, `callers`, `callees`, `dependencies`, `path`, `impact`, and `graph`. Exact IDs, normalized display names, stable names, providers, evidence, edge kinds, ranges, and document identities remain sufficient for those operations.
+That narrow projection supports the catalog operations that repeatedly need symbol search and retained graph adjacency: `symbols`, `dependencies`, `path`, `impact`, and `graph`. Exact IDs, normalized display names, stable names, providers, evidence, retained edge kinds, ranges, and document identities remain sufficient for those operations.
 
-Other reads deliberately bypass it. Definitions and references need occurrence rows. [`weave context`](/articles/composing-source-rich-context-without-a-second-index.md) also needs documents, exact occurrence coordinates, and current source from the owning worktree. An optimization should not broaden its schema until measurement shows the extra facts are both necessary and cheaper to duplicate.
+Other reads deliberately bypass it. [`weave context`](/articles/composing-source-rich-context-without-a-second-index.md) needs the owning worktree's document identity, declaration anchor, and current source. Compact `explore` also combines semantic anchors with a bounded ripgrep pass in the selected worktree rather than pretending that the aggregate contains source bodies. An optimization should not broaden its schema until measurement shows the extra facts are both necessary and cheaper to duplicate.
 
 When the same semantic identity appears in more than one member, its searchable names and other fields may differ across branches or worktrees. The aggregate retains compact per-source variants, reproduces each member's ranking and truncation behavior, then merges the visible result by semantic identity. Relationships receive the same per-source treatment before equivalent edges collapse. Deterministic output still reports every repository and worktree that supplied an observed fact. Deduplication does not erase a variant or its provenance.
 
@@ -1210,7 +1210,7 @@ Builders serialize through a small process lock. A process that waited for the l
 
 Only after the published generation opens and validates can older generation files be removed. A source-generation change therefore creates a different complete database rather than mutating the file a concurrent reader already opened.
 
-This first implementation favors complete replacement over clever incremental reconciliation. The aggregate already omits the heavy document and occurrence surfaces, and measurements need to show that full projection rebuilds are a real bottleneck before layered shards, set reconciliation, or compaction protocols earn their complexity.
+This first implementation favors complete replacement over clever incremental reconciliation. The aggregate omits worktree documents and source-serving state, and measurements need to show that full projection rebuilds are a real bottleneck before layered shards, set reconciliation, or compaction protocols earn their complexity.
 
 ## Measure the cache honestly
 
@@ -1218,7 +1218,7 @@ The first checked-in benchmark uses eight worktrees and 5,000 total symbols. It 
 
 Reverse edge adjacency is 3.3 to 3.9 times faster through the aggregate and allocates about 74 percent fewer bytes. Opening the query surface and then searching improves by only about 6 percent because the required Git and freshness checks dominate the fixture. An aggregate hit still avoids holding eight database handles and locks through query execution.
 
-The hot projection is half the physical size of a deliberately verbose worktree fixture containing documents, occurrences, long paths, and symbols. These measurements justify the cache for traversal, lock fan-out, and a narrower duplicated schema. They do not justify claiming every catalog query gets faster or weakening collision behavior to make the prefix-search benchmark prettier.
+The original hot-projection fixture was half the physical size of a deliberately verbose format-3 worktree fixture containing documents, occurrences, long paths, and symbols. That historical result justified generation-keyed aggregation, but format 4 changed the source databases underneath it. Current claims are narrower: the aggregate avoids repeated catalog fan-out for retained navigation queries, and its own projection remains a future reduction target.
 
 ## Fall back toward authority
 
@@ -1275,7 +1275,7 @@ Git is the authority for additions, deletions, modifications, copies, renames, t
 
 That inventory is useful evidence, but it is not a semantic graph delta. A comment-only edit may change a source file without changing one normalized fact. A provider upgrade may change graph evidence even when a narrow file list looks stable. A rename can preserve a stable semantic identity, while a small declaration edit can replace several symbols and relationships.
 
-The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, symbols, occurrences, and edges each have independent `added`, `removed`, and `changed` collections. A changed record retains both before and after values under the same stable ID. Consumers can correlate the two forms of evidence without pretending they mean the same thing.
+The [`weave.snapshot-diff/v1`](https://github.com/TheFellow/weave/blob/main/internal/graphdiff/diff.go) contract therefore keeps `sources` beside, not inside, the graph delta. Units, documents, retained symbols, and retained navigation edges each have independent `added`, `removed`, and `changed` collections. The schema can represent occurrence changes from richer snapshots, but managed format-4 indexes retain no occurrences. A changed record keeps both before and after values under the same stable ID.
 
 ## Index the past without checking it out here
 
@@ -1317,9 +1317,9 @@ That word is an important feature. A future language provider can supply a speci
 
 ## Reuse impact traversal, then explain selected tests
 
-Graph changes become useful when they seed the existing reverse-impact traversal. Added and changed symbols, occurrences, edges, units, and documents contribute stable IDs that exist in the head snapshot. Git-changed paths contribute current document roots. Removed facts remain visible in the graph delta, and their stable IDs can still seed relationships that survive in the head, but disconnected removed-only facts cannot be traversed through a graph where they no longer exist. The result says so diagnostically.
+Graph changes become useful when they seed the existing reverse-impact traversal. Added and changed retained symbols, navigation edges, units, and documents contribute stable IDs that exist in the head snapshot. Git-changed paths contribute current document roots. Removed facts remain visible in the graph delta, and their stable IDs can still seed relationships that survive in the head, but disconnected removed-only facts cannot be traversed through a graph where they no longer exist. The result says so diagnostically.
 
-`weave diff impact` uses the same edge kinds, depth bound, edge bound, ordering, and truncation behavior as ordinary impact queries. There is no second walker whose semantics can drift just because the roots came from a comparison.
+`weave diff impact` uses the same retained navigation edge kinds, depth bound, edge bound, ordering, and truncation behavior as ordinary impact queries. There is no second walker whose semantics can drift just because the roots came from a comparison. Statement-level call and reference changes are deliberately outside this managed snapshot contract.
 
 `weave diff tests` is a projection of that impact result, not a new reachability claim. A selected test carries a reason and evidence. An explicit `tests` relationship keeps its edge ID and evidence. A provider-classified test symbol keeps provider evidence. Go declarations recognized through `_test.go` plus `Test`, `Benchmark`, or `Fuzz` naming are labeled syntactic. Empty or partial provider output is not promoted into a completeness promise.
 
@@ -1338,112 +1338,73 @@ That is the standard Weave keeps returning to: make the evidence and its limits 
 
 <!-- Generated from https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Composing Source-Rich Context Without a Second Index
+# Opening Source Context Only When It Is Useful
 
 Source: [https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index/](https://thefellow.github.io/articles/composing-source-rich-context-without-a-second-index/)
 
 ## Pyramid summary
 
-- **~2 words:** Source-rich context
-- **~8 words:** One bounded dossier joins exact graph facts to current Git-visible source.
-- **Expanded:** How Weave composes exact graph facts, complete function definitions, current source excerpts, direct relationships, and repository provenance into bounded dossiers without adding embeddings or another store.
+- **~2 words:** Selected source context
+- **~8 words:** Compact discovery opens current source only after anchor selection.
+- **Expanded:** How Weave separates compact discovery from exact current-source context instead of serializing complete graph dossiers for every candidate.
 
 ## Full content
 
 **Part 4 of [Building Weave](/series/weave.md).**
 
-A definition is useful when I already know the question is "where is this declared?" A caller list is useful when the question is "what invokes it?" An impact query is useful when I am planning a change. Real investigation usually begins one step earlier. I have a symbol, file, Markdown section, or route and need enough surrounding evidence to decide which question matters next.
+The first `weave context` implementation composed definitions, references, incoming and outgoing relationships, adjacent entities, provenance, and source into one bounded dossier. `weave explore` then ranked several candidates and returned several of those dossiers at once. It was precise, but the response repeated far more graph structure than an agent needed to choose its next file.
 
-That does not justify another index. The definitions, references, relationships, document identities, provider provenance, and current repository already exist. [Weave](https://github.com/TheFellow/weave) composes those facts with [`weave context TARGET`](https://github.com/TheFellow/weave/blob/main/.ai/prior-art/context-query/README.md), returning one bounded source-rich dossier rather than persisting a parallel retrieval model.
+[Weave](https://github.com/TheFellow/weave) now uses two stages. `explore` returns compact navigation choices. `context` opens current source only after the caller selects an exact semantic anchor.
 
 ```sh
-weave context HandleRequest
-weave context README.md --context-lines 4
-weave context docs/design.md#storage --json
-weave context SharedType --scope catalog --repo github.com/example/service
-weave context Server.Serve
+weave explore how menu publication reaches persistence
+weave context example.com/project/menu.Service.Publish
+weave definition example.com/project/menu.Service.Publish
 ```
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/source-rich-context.svg" alt="An exact target resolves through Weave's current normalized graph while source coordinates locate current Git-visible files in the owning worktree. One bounded context query composes the focus, definition and reference excerpts, incoming and outgoing relationships, adjacent entities, provenance, freshness, and independent truncation metadata.">
-  <figcaption>The graph says what evidence to retrieve. The current owning worktree supplies source bytes. One application query composes both under explicit bounds.</figcaption>
+  <img src="/assets/images/articles/weave/source-rich-context.svg" alt="A research phrase enters compact discovery. The navigation index contributes a few semantic anchors while bounded ripgrep contributes diversified source hits. Each result carries a path, coordinate, preview, or exact context follow-up. Only a selected semantic anchor enters context, which reads and verifies current Git-visible source under independent line and byte limits.">
+  <figcaption>Discovery returns choices; context spends source and metadata only on the chosen anchor.</figcaption>
 </figure>
 
-## Compose the graph that already exists
+## Keep discovery small
 
-The context operation starts with the same heterogeneous resolver used by the other query surfaces. A target may identify a compiler symbol, package, file, document section, route, asset, or another materialized entity. Resolution must produce exactly one entity. Concise qualified names such as `Server.Serve` can match compiler stable names whose ownership is encoded as longer package, type, and method segments. Exact IDs and stable names retain precedence. If a query still matches more than one entity, the command reports candidate stable names, kinds, and graph IDs instead of guessing which result looks most relevant.
+`weave explore` resolves up to a few ranked symbols from the navigation index and combines them with ignore-aware ripgrep hits. A semantic anchor contains its kind, stable name, declaration coordinate, provider, evidence, and an exact `weave context` command. A lexical hit contains a path, line, column, and short preview.
 
-Once resolved, the operation asks the existing store for definition and reference occurrences, direct incoming edges, direct outgoing edges, and materialized entities at the other ends of those edges. Human output begins with stable names, then removes a repeated repository identity and compiler category segments such as `type` and `method` inside the dossier. JSON retains the full names and exact graph IDs. The query does not infer a relationship from nearby text or ask a model to summarize the graph. Every returned fact retains its provider and evidence class.
+The array has an encoded 12 KiB ceiling in addition to the result limit. Long names and previews therefore cannot turn an apparently bounded result count into an unbounded agent payload. The application response uses the versioned `weave.query/v2` envelope.
 
-The result is deliberately one hop. A context dossier should help choose the next exact query, not quietly become an unbounded neighborhood walk. [`weave graph`](/articles/making-a-semantic-graph-inspectable.md) remains the right surface for exploring topology; `weave path` remains the right surface for a bounded route; `weave impact` remains the right surface for reverse reachability.
+This is intentionally less than a dossier. Discovery does not load occurrences, expand adjacent symbols, repeat repository metadata for every edge, or speculate about which complete declarations the agent will read.
 
-This separation keeps context useful without creating a second definition of relevance. The implementation is a composition over the normalized store, not a source database, embedding index, MCP server, or hidden LLM call.
+## Let source search do statement-level work
 
-## Read source at query time
+The format-4 database no longer stores occurrences, call or reference edges, fields, locals, or broad content-token postings. Once a package or declaration is known, current source is a cheaper and more useful place to recover that detail.
 
-Graph facts contain stable document identities, source ranges, and, when a provider can supply one, the indexed content hash. They do not contain a private copy of the repository. When a context result needs lines, Weave reads them from the current worktree that owns the evidence.
+The lexical half of `explore` extracts a bounded set of useful terms from the research phrase and runs one fixed-string ripgrep operation. It respects ignore files, excludes `.git`, `vendor`, and `node_modules`, rejects files larger than 1 MiB, limits captured output, scores term overlap, and diversifies results across files before filling remaining slots. Missing ripgrep or no matches is a soft miss; semantic anchors remain available.
 
-That distinction matters. Cached source could agree with an old range while disagreeing with the file a person is about to edit. Query-driven freshness runs before the graph read, then the source loader verifies the file again at the point of use. If the indexed hash and current SHA-256 digest disagree, the result reports changed source and withholds the excerpt. It never pairs fresh-looking lines with stale coordinates.
+This does not claim that text search is semantic. The navigation index supplies compiler-backed identities and retained high-value relationships. Ripgrep supplies current statement-level evidence that is wasteful to duplicate in persistent storage.
 
-Line windows remain evidence, not reconstructed symbol bodies. By default the command adds two surrounding lines to an occurrence range. Human output numbers those current lines; JSON also preserves the exact indexed range and source status. A generated document can still be shown when it is Git-visible, but its `generated` evidence remains visible. An external entity with no document remains an honest graph entity with no invented source.
+## Read one selected declaration
 
-## Make source serving a security boundary
+`weave context TARGET` resolves one stable anchor and reads its current Git-visible file. The source loader enforces repository provenance, path containment, regular-file and UTF-8 checks, line and byte budgets, and file-race detection. A Go function or method can expand from its indexed declaration coordinate to the complete current declaration when the budget permits. Structured content uses its retained document and section coordinates.
 
-Reading a path stored in a database is not automatically safe. The source loader accepts only canonical repository-relative Git paths. It rejects absolute paths, parent traversal, platform-volume paths, backslashes, and anything that resolves outside the owning worktree.
+The source file remains authoritative. Weave stores the coordinate needed to find it, not a second cached body. If the file changed, ordinary query-driven freshness runs before the read; if the file changes during the read, the loader reports that race rather than presenting mixed evidence.
 
-The candidate must be a regular file and must be either tracked or visible as a non-ignored untracked Git path. Weave inspects the path, opens it, and verifies that the opened file is still the same file. A second identity, size, and modification-time check after reading catches replacement or mutation during the read. Symlinks, ignored files, missing paths, non-UTF-8 content, and individual files over 16 MiB produce explicit statuses without returning bytes.
+## Keep graph questions separate
 
-These are data conditions, not excuses to guess. `unsafe-path`, `not-git-visible`, `not-regular`, `changed`, `invalid-range`, and `budget-exhausted` tell a caller why source is absent. The graph evidence and relationships can still be useful while the missing excerpt stays visible as a limitation.
+The split also makes the CLI easier to reason about:
 
-## Give every section its own budget
+1. Use `explore` when the question is still a phrase.
+2. Use `context` or `definition` after one semantic anchor looks relevant.
+3. Use `dependencies`, `path`, `impact`, `graph`, or an architecture check for retained navigation relationships.
+4. Use current source search for statement-level callers, references, and local data flow.
 
-A single global limit makes a composite response unpredictable. A symbol with many references could consume the allowance before one incoming relationship appears. Weave instead applies `--limit` independently to occurrences, incoming edges, and outgoing edges. Each section reports its own truncation.
+The last step is a deliberate contract change. `references`, `callers`, and `callees` are no longer managed-index commands because format 4 does not retain the facts needed to answer them exhaustively. Providers may still use those facts while deriving higher-level navigation, but the database does not advertise what it discards.
 
-The relationship sections read a bounded surplus before applying that limit, collapse edges that reach the same adjacent entity, and retain the most useful evidence for that endpoint. Calls come before contracts and inheritance, dependencies come before authored navigation, and raw references come last. Within the same relationship class, an entity from the focus symbol's semantic unit ranks first, then common stable-name path segments keep nearby domain code ahead of unrelated same-named endpoints. A reference remains when it is the only useful known connection, but local variables, parameters, and language builtins are omitted from this bounded dossier because their evidence already appears in the source excerpt. They remain available through exhaustive graph data. Repeated reference facts cannot crowd a compiler-resolved call out of a small context response. Stable rank, proximity, name, and edge ordering keep the selection deterministic.
+## Measure the complete handoff
 
-Source has a separate byte budget. The default response allows 64 KiB of excerpt text. If adding surrounding lines would exceed the remaining budget, the loader first tries the exact evidence range. If even that does not fit, the excerpt reports budget exhaustion and returns no partial line. `--context-lines` and `--max-source-bytes` make both choices explicit.
+On the recorded `go-modular-monolith` audit, an ordinary multi-focus `explore --json` response occupied 171,537 bytes. Progressive discovery returned 3,157 bytes. Selecting its first anchor with `context --json` returned 3,195 bytes, including 337 bytes of current source.
 
-```sh
-weave context HandleRequest \
-  --limit 24 \
-  --context-lines 3 \
-  --max-source-bytes 131072 \
-  --json
-```
-
-The structured result uses `weave.context/v1` inside the ordinary `weave.query/v1` response. Its metadata records scope, bytes returned, freshness, partial federation, and truncation for occurrences, incoming relationships, outgoing relationships, and source. Deterministic ordering makes two equivalent dossiers compare cleanly.
-
-## Reuse the dossier for a research phrase
-
-An agent does not always begin with one entity. `weave explore RESEARCH PHRASE` adds bounded deterministic lexical retrieval in front of the same context composition. A short exact or uniquely resolvable entity receives the usual single result. A longer research question skips the speculative exact-symbol lookup and extracts up to 32 useful terms, removes ordinary question words, derives a small set of mechanical suffix variants, and treats generic scope words as ranking evidence rather than standalone search terms when a phrase contains more specific language. Candidates accumulate explicit scores from symbol-search position, posting rarity, term coverage, display-name matches, stable-name and path scope, kind, content specificity, and evidence origin. Explicit domain terms can narrow the candidate set. The final pass diversifies same-named methods across their containers, preserves named GUI and TUI surfaces, and defers repeated document and section names, rather than allowing one prolific type, presentation layer, broad aggregation, or generated copy to consume the complete bound. Score, stable name, and graph ID define the underlying order.
-
-```sh
-weave explore how menu readiness reaches GUI and TUI \
-  --limit 6 \
-  --relationship-limit 6 \
-  --context-lines 1
-```
-
-The CLI default returns at most eight entities and independently caps each dossier's occurrences, incoming relationships, and outgoing relationships at six. One 64 KiB focus-source allowance is divided across the selected entities rather than silently multiplying with the result count. For a Go function or method definition, exploration expands the indexed location to the complete parsed declaration. For a Markdown section, it returns the current heading and its descendants through the next heading at the same or higher level. An expansion that does not fit falls back to the indexed range, and other entities retain their normal bounded line windows. [Provider-owned body terms](/articles/making-source-bodies-discoverable-without-copying-them.md) can discover an exact content entity without storing source text in the graph. Each result remains an ordinary `weave.context/v1` dossier with exact identities, current source checks, provenance, freshness, and truncation. Multi-focus exploration keeps complete focus evidence and exact typed relationship edges, but omits repeated source excerpts for every adjacent entity. A direct `context` query remains the full-fidelity follow-up when one relationship needs its complete entity, provenance, and source representation. The command adds no model, embedding store, or second persisted query engine; natural-language reasoning remains with the consuming agent.
-
-## Carry provenance across repositories
-
-Local context has one obvious worktree. Catalog context does not. Two repositories can contain a fact with the same stable identity, and an adjacent entity can come from a different member than the focus.
-
-The federated store therefore records which repository and worktree supplied each symbol, occurrence, and document while it materializes the result. Source loading follows that provenance back to the owning root. It does not assume the process working directory or take an arbitrary repository path from the user.
-
-Catalog reads still use the existing [refresh-before-open contract](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md). A member that cannot refresh is excluded with a diagnostic. The context metadata marks the result partial, allowing a caller to distinguish "no relationship exists" from "one repository could not participate."
-
-## Use the dossier to choose the next query
-
-A practical investigation can now stay narrow:
-
-1. Run `weave context TARGET` to resolve one entity and see its current definition, references, immediate relationships, and provenance.
-2. Inspect source statuses and truncation before treating absence as evidence.
-3. Follow one exact adjacent identity with another context query, or switch to `weave graph` when topology is the question.
-4. Use `weave path`, `weave impact`, `weave references`, or an architecture check once the dossier reveals the precise question.
-
-The useful feature is not a larger blob of context. It is a bounded composition whose omissions are as explicit as its facts. The graph remains the semantic authority, Git remains the source authority, and freshness joins them at query time. That gives people and coding agents enough evidence to continue without asking a new retrieval subsystem to reinterpret what the repository already knows.
+The improvement did not come from compressing the old dossier. It came from avoiding speculative expansion. The first response answers “where should I look?” and the second answers “show me this source.” That is a more practical boundary for both a terminal user and a coding agent.
 
 
 ---
@@ -1491,7 +1452,7 @@ A node detail request becomes the same bounded `context` invocation used by the 
 
 An edge begins at its exact `From` entity and adds one stricter check. The current outgoing context must still contain the selected edge ID. If a refresh removed it or the bounded result no longer includes it, the server fails closed and asks the browser to refresh the graph. A stale visual line cannot silently display evidence for a different relationship.
 
-[Source-rich context](/articles/composing-source-rich-context-without-a-second-index.md) now hydrates relationship source too. When an edge carries a document and range, the context builder loads that document, resolves repository provenance first from the edge and then from the document, and passes the range through the same current-source loader used for definitions and references. Missing documents and unavailable provenance remain explicit statuses. Relationship excerpts share the global byte ceiling, UTF-8 checks, Git-visible path rules, and file-race detection instead of opening a more permissive browser-only file endpoint.
+[Exact context](/articles/composing-source-rich-context-without-a-second-index.md) now opens current source only after a caller selects a retained anchor. When an explorer selection maps to a materialized node or a retained relationship endpoint, the browser reuses that application boundary rather than opening a permissive file endpoint. Missing documents and unavailable provenance remain explicit statuses, and source reads keep the same byte ceiling, UTF-8 checks, Git-visible path rules, and file-race detection as the CLI.
 
 ## Keep the declaration canonical
 
@@ -1514,6 +1475,8 @@ The browser pins the revision when an editor or removal confirmation opens and m
 After a conflict, reloading the canonical list does not silently rebase the open form. The user must cancel it and explicitly reopen the editor against the new revision. That small inconvenience preserves the meaning of the human review: an edit prepared against one declaration is never transformed into an edit against another without being seen again.
 
 One-shot CLI callers may omit a revision and retain the existing serialized edit behavior. The guard is an application option for clients that hold state across time, not an incompatible requirement imposed on every command.
+
+Format 4 also narrows what can be authored. Link add and update accept only dependency, import, extension, implementation, test, generation, documentation, exposure, link, and embed relationships retained by the navigation index. A declaration cannot promise a statement-level edge that storage will discard.
 
 ## Write one validated declaration atomically
 
@@ -2121,7 +2084,7 @@ The [accepted design record](https://github.com/TheFellow/weave/blob/main/.ai/de
 ```sh
 weave context listPets
 weave dependencies example.test/service
-weave graph listPets --kind references --kind depends-on
+weave graph example.test/service --kind depends-on --kind generates
 weave symbols aws_instance --json
 weave export --json
 ```
@@ -2143,7 +2106,7 @@ The automatic provider never runs `protoc`, a build, a restore, a package manage
 
 Writing one convenient grammar for six formats would repeat the mistake the adapter boundary avoids for programming languages. Weave instead selects a maintained parser for each declaration family and narrows what enters it.
 
-| Category | Facts retained | Source-only boundary |
+| Category | Facts parsed | Source-only boundary |
 | --- | --- | --- |
 | Protobuf | packages, messages, fields, enums, services, RPCs, imports, and linked types | Buf protocompile receives an in-memory local corpus plus standard imports, uses at most two workers, and never runs `protoc` or loads a registry |
 | OpenAPI 3 | documents, paths, operations, component schemas, properties, and `$ref` relationships | kin-openapi models identifiable version 3 roots while YAML source nodes retain locations; its URI loader is not used |
@@ -2152,7 +2115,7 @@ Writing one convenient grammar for six formats would repeat the mistake the adap
 | Terraform | module directories, resources, data sources, variables, outputs, locals, module calls, providers, and traversals | HashiCorp HCL parses native `.tf` syntax without evaluation, provider schemas, plugins, state, plans, or registry access |
 | Build manifests | project identities, explicit dependencies, selected targets, and one proven generation mapping | x/mod, TOML, JSON, and XML parsers read `go.mod`, `Cargo.toml`, `package.json`, Maven POMs, and MSBuild C#/F#/VB project files without invoking their build systems |
 
-The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it.
+The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it. Format 4 further retains only declaration anchors and navigation relationships from this parsed inventory; fields, local references, and other statement-level detail are available from current source rather than the database.
 
 This honesty is visible in diagnostics. A PostgreSQL statement the upstream parser recognizes but the first semantic slice does not model remains in the source and produces a bounded warning. It does not disappear silently, and it does not become a guessed edge.
 
@@ -2199,11 +2162,11 @@ The same restraint excludes Gradle and CMake from the first build set. Their com
 
 ## Publish ordinary graph facts
 
-Each parser produces normal documents, symbols, occurrences, source ranges, and edges through the shared relationship builder. The provider owns those facts, but its edges may point at workspace path identities, another local declaration, or an open endpoint. It never writes discovered relationships into `.weave/bridges.json`; authored intent and rebuildable automatic evidence remain separate owners.
+Each parser produces normal documents, symbols, source ranges, and relationships through the shared graph model. The provider may emit occurrence-level detail, but format 4 projects managed storage down to anchors and retained navigation edges. Provider-owned edges may point at workspace path identities, another local declaration, or an open endpoint. Automatic evidence never writes into `.weave/bridges.json`; authored intent remains a separate owner.
 
-That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can join an OpenAPI operation to its current source excerpt and adjacent schema. `weave graph` can render the same reference edge as DOT. A project dependency can participate in impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common graph and evidence model.
+That choice makes the feature larger than a schema listing command without making the CLI larger. `weave context listPets` can open the current declaration source. Retained project dependencies and explicit generation mappings can participate in graph, impact, architecture policy, semantic diff, catalog federation, and the local explorer because those consumers already understand the common navigation model. Detailed schema references remain in source rather than being advertised as persisted edges.
 
-The end-to-end test follows that public route. It initializes a real Git repository containing an OpenAPI document, runs an ordinary index, asks `context --json` for `listPets`, then asks `graph --kind references` for the neighborhood connecting the operation and `Pet`. The parser implementation is not the integration point. The graph contract is.
+The end-to-end test follows that public route. It initializes a real Git repository containing an OpenAPI document, runs an ordinary index, asks `context --json` for `listPets`, then asks a retained dependency or generation graph query for its surrounding declarations. Statement-level schema references are no longer advertised by the managed index. The parser implementation is not the integration point; the navigation contract is.
 
 This fills an important space without turning Weave into six new runtimes. Compiler facts still own executable semantics. Workspace facts still own repository topology and content. Authored bridges still own reviewed human intent. The schema/build provider adds what inert declarations can prove, stops where evaluation would begin, and lets every existing graph consumer do the rest.
 
@@ -2226,17 +2189,17 @@ Source: [https://thefellow.github.io/articles/keeping-a-semantic-index-fresh-wit
 
 **Part 1 of [Building Weave](/series/weave.md).**
 
-A code index becomes dangerous at the moment it is convincing and wrong. A caller result from the checkout before the last edit, a definition from the previous branch, or an impact path built with a different compiler configuration looks precise enough to trust. That makes stale semantic evidence worse than an honest text search.
+A code index becomes dangerous at the moment it is convincing and wrong. A definition from the checkout before the last edit, a dependency path from the previous branch, or an impact result built with a different compiler configuration looks precise enough to trust. That makes stale semantic evidence worse than an honest text search.
 
 [Weave](https://github.com/TheFellow/weave) makes freshness part of the read path for its automatic providers. A query inspects the current Git worktree, compares it with the last completely published semantic inventory, refreshes changed compilation units when necessary, and only then opens the graph for the requested operation. No daemon or hook is required to preserve that contract.
 
 ```text
-$ weave callers Handle
+$ weave explore how request handling reaches persistence
 index: refreshed 3 changed paths
 
-service.Handle
-  called by  api.Login      internal/api/login.go:42
-  called by  api.Refresh    internal/api/refresh.go:31
+symbol  service.Handle  internal/service/handler.go:24
+        next: weave context "example.com/project/service.Handle"
+source  internal/api/login.go:42  service.Handle(ctx, request)
 ```
 
 The refresh notice goes to stderr and the answer goes to stdout. A person sees why the first query took additional work, while a script can consume clean results or request the versioned JSON envelope. The important behavior is less visible: Weave does not open the query database until the freshness decision has completed.
@@ -2263,7 +2226,7 @@ The distinction between those fingerprints is useful. Editing a function body ch
 
 ## Every read passes through the same gate
 
-Weave's CLI is a thin presentation layer over [`application.Local`](https://github.com/TheFellow/weave/blob/main/internal/application/application.go). Database-backed commands such as `symbols`, `definition`, `references`, `callers`, `callees`, `dependencies`, `path`, `impact`, `export`, and `verify` begin by calling `Freshness.Ensure`. `status` uses the read-only inspection path because its job is to report currency, not to change it.
+Weave's CLI is a thin presentation layer over [`application.Local`](https://github.com/TheFellow/weave/blob/main/internal/application/application.go). Database-backed commands such as `symbols`, `explore`, `context`, `definition`, `dependencies`, `path`, `impact`, `graph`, `export`, and `verify` begin by calling `Freshness.Ensure`. `status` uses the read-only inspection path because its job is to report currency, not to change it.
 
 The manager follows a short sequence:
 
@@ -2292,7 +2255,7 @@ That ownership prevents a subtle failure. Suppose the Go provider refreshes its 
 
 Explicit SCIP import follows a separate lifecycle. It accepts a bounded compiler-backed snapshot, preserves inventories from other SCIP producers, and replaces only the importing producer's units. It does not yet know how to rerun that producer before a query, so the user must reimport changed output. Keeping that limitation explicit is better than pretending an imported snapshot is a live provider; a future producer contract can join the freshness path once it can describe how its inputs and executable identity change.
 
-Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. It contains its unit, documents, symbols, occurrences, and edges. Validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes. The store never has to merge an ambiguous partial update into an older semantic unit.
+Each returned [`graph.UnitFacts`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) is complete for one replacement boundary. A provider can emit its unit, documents, symbols, occurrences, and edges. Validation checks ownership, stable identifiers, UTF-8, source ranges, evidence classes, edge kinds, and duplicate facts before persistent state changes. Format 4 then projects that rich provider output into retained documents, declaration anchors, and high-value navigation edges before storage. Occurrences, statement-level calls and references, and noisy declaration kinds do not become durable managed-index facts.
 
 ## Publish completeness after the graph
 
@@ -2320,14 +2283,16 @@ The bounded publication path came from a real failure, not an estimated future s
 
 Three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs.
 
-The adjacent measured run made the result concrete:
+The adjacent measured run made the first correction concrete:
 
 | Repository | Cold index | Current empty lookup | Graph database |
 | --- | ---: | ---: | ---: |
 | go-modular-monolith | 37.785 s | 0.536–0.610 s | 1.11 GB |
 | arch-lint | 2.610 s | 0.531–0.549 s | 16.8 MB |
 
-The current lookup includes Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. The remaining size is still large enough to guide the next storage work rather than being presented as finished.
+The current lookup included Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. That historical result exposed the next problem rather than finishing the storage work.
+
+The format-4 navigation projection later changed what the managed database retains. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. The projection retains documents, declaration anchors, and navigation relationships while omitting occurrences, statement-level calls and references, fields, constants, locals, and broad body-token postings. Freshness still governs the complete provider inventory even though persistence is now deliberately smaller than provider output.
 
 The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
 
@@ -2349,7 +2314,7 @@ The same rule applies to federation. A catalog query refreshes every selected me
 
 Current evidence can still be impractical if one broad name or highly connected symbol consumes unbounded work. Weave's queries carry result and traversal limits into the graph layer. Symbol lookup has a requested limit. Path and impact traversal bound depth, visited nodes, and examined edges. Canonical ordering makes the same graph and bounds produce the same answer, and a truncation flag tells the caller when a boundary stopped the search.
 
-That behavior matters most for automated consumers. An agent can ask a precise question, receive exact provider and source evidence in `weave.query/v1`, and know whether the result is complete. It does not have to infer completeness from output length or accept an unbounded graph dump into its context.
+That behavior matters most for automated consumers. An agent can ask a precise question, receive exact provider and source evidence in `weave.query/v2`, and know whether the result is complete. Compact discovery also has a 12 KiB encoded ceiling, so a small result count cannot conceal an oversized payload.
 
 The output streams preserve the same separation of concerns:
 
@@ -2370,11 +2335,11 @@ The behavior is easiest to see by letting ordinary development invalidate the gr
 weave index
 weave status
 
-# Read from the current graph.
-weave callers Handle --limit 20
+# Discover compact anchors and source pointers from the current index.
+weave explore how request handling reaches persistence
 
 # After editing, adding, renaming, or deleting source, the query refreshes first.
-weave references Handle --json
+weave context example.com/project/service.Handle --json
 
 # Use Git itself to define a multi-file impact root.
 weave impact --git-diff origin/main --limit 100
@@ -2405,12 +2370,12 @@ Source: [https://thefellow.github.io/articles/making-a-semantic-graph-inspectabl
 
 **Part 3 of [Building Weave](/series/weave.md).**
 
-A semantic graph can be correct and still be difficult to trust. JSON preserves identities and provenance for an agent, but a person reviewing a dependency direction or a documentation relationship has to reconstruct the shape mentally. Exporting the entire database does not solve that problem. It turns hundreds of thousands of symbols, occurrences, and edges into a hairball.
+A semantic graph can be correct and still be difficult to trust. JSON preserves identities and provenance, but a person reviewing a dependency direction or a documentation relationship has to reconstruct the shape mentally. Exporting the entire database does not solve that problem. Even the compact navigation index needs a focused question and explicit bounds.
 
 [Weave](https://github.com/TheFellow/weave) takes the opposite route. [`weave graph`](https://github.com/TheFellow/weave/blob/main/.ai/decisions/0011-focused-dot-graph-export.md) begins with one resolvable entity, walks a bounded semantic neighborhood, and presents that same result as deterministic Graphviz DOT, versioned JSON, or an animated local view. The graph query remains the product boundary. Renderers do not gain a separate store, resolver, or definition of freshness.
 
 ```sh
-weave graph HandleRequest --kind calls --kind implements > handle.dot
+weave graph HandleRequest --kind implements --kind documents > handle.dot
 weave graph README.md --direction outgoing --max-depth 3 --output docs.dot
 weave graph HandleRequest --interactive
 ```
@@ -2426,7 +2391,7 @@ The first design choice is refusing to render everything. `weave graph TARGET` r
 
 Bidirectional traversal keeps independent incoming and outgoing queues and interleaves them. That detail matters when the global node or edge budget is small. Walking every caller first could consume the entire budget before showing a single callee. The result records whether a bound truncated the view rather than letting a small picture imply a complete universe.
 
-The default edge set favors relationships people can reason about at neighborhood scale: calls, imports, containment, inheritance, implementation, dependencies, tests, generation, documentation, exposure, handling, reads, writes, links, embeds, membership, and resolution. Occurrence-level `defines` and `references` remain available through explicit `--kind` filters, but do not drown the first view.
+The default edge set is exactly the relationship vocabulary retained by format 4: dependencies, imports, extension and implementation, tests, generation, documentation, exposure, links, and embeds. Statement-level calls and references, containment duplication, reads, writes, membership, and resolution are not hidden filters; they are absent from the managed navigation index and must be investigated in current source.
 
 The operation works over a local worktree or the bounded repository catalog. Catalog members still refresh before their databases are opened. Graph breadth does not weaken the [freshness contract](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md); it makes the current facts easier to inspect.
 
@@ -2435,17 +2400,17 @@ The operation works over a local worktree or the bounded repository catalog. Cat
 Inspectability starts before DOT. The ordinary relationship commands have to answer a question without making a person decode internal graph IDs or join document records by hand:
 
 ```text
-$ weave callers authorize
-fixture.HandleRequest  calls  fixture.authorize  main.go:8:3
+$ weave path fixture.Handler fixture.RequestHandler --kind implements
+fixture.Handler  implements  fixture.RequestHandler  main.go:8:3
 ```
 
-Weave now hydrates every query response with the materialized symbols and documents referenced by its nodes, edges, and occurrences. The text renderer can therefore show stable names and repository-relative source locations, while `--json` retains the exact IDs and complete records. `callers`, `callees`, `dependencies`, `path`, and `impact` all use the same relationship presentation. A path with no result says so directly instead of printing an ambiguous empty line, and Ctrl-C is a successful end to an interactive graph session rather than a command failure.
+Weave hydrates graph responses with the materialized anchors and documents referenced by retained nodes and edges. The text renderer can therefore show stable names and repository-relative source locations, while `--json` retains exact identities and records. `dependencies`, `path`, and `impact` use the same navigation-relationship presentation. A path with no result says so directly instead of printing an ambiguous empty line, and Ctrl-C is a successful end to an interactive graph session rather than a command failure.
 
 Human input gets the same treatment. Compiler-qualified stable names can encode ownership as segments such as `package`, `type`, and `method`, but `Server.Serve` is the spelling a person naturally reaches for. The resolver keeps exact IDs, exact stable names, and provider search order authoritative, then falls back to the concise qualified suffix when it selects exactly one symbol. An ambiguous query reports stable names, kinds, and graph IDs for several candidates, plus the remaining count, so refinement does not begin with two opaque hashes.
 
 That hydration exposed provider details that matter to the answer. The native Go index now materializes external packages and referenced external objects as readable endpoints, includes implicit declarations such as type-switch variables, and preserves stable ownership through aliases and reconstructed type objects. Explicit open-world endpoints remain valid when another provider has not materialized them.
 
-Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from declarations actually owned by the selected file instead of treating every referenced external occurrence as another root. These are presentation and traversal corrections over the same evidence graph, but they are what turn stored facts into a useful answer.
+Dependency output also collapses repeated `imports` and `depends-on` evidence between the same endpoints, preferring the stronger direct dependency relationship before applying the user's result limit. File impact starts from retained declarations actually owned by the selected file. These are presentation and traversal corrections over the same navigation evidence, but they are what turn stored facts into a useful answer.
 
 The help surface follows the same rule. Required operands are now visible in command usage, including `QUERY`, `FROM TO`, repository identities, adapter names and executables, and the conformance fixture directory. The CLI explains the shape of a valid question before asking the graph to answer it.
 
@@ -2460,7 +2425,7 @@ dot -Tsvg auth.dot -o auth.svg
 
 The DOT is a presentation of exact graph identities, not a replacement for them. Nodes receive compact readable labels and shapes based on kind. Tooltips retain stable names and semantic IDs. Materialized nodes are clustered by provider; unresolved endpoints remain visible rather than disappearing. Edge labels name the relationship, while metadata retains its provider and evidence.
 
-Color explains traversal role. The focus is gold, incoming nodes are green, outgoing nodes are purple, and nodes reached in both directions are rose. Evidence selects line treatment. Equivalent parallel edges can collapse visually with a count, while JSON retains every source fact.
+Color explains traversal role. The focus is gold, incoming nodes are green, outgoing nodes are purple, and nodes reached in both directions are rose. Evidence selects line treatment. Equivalent parallel edges can collapse visually with a count, while JSON retains every selected navigation fact.
 
 Generated node names, clusters, attributes, and edges are sorted. Every dynamic DOT string is quoted and escaped, including quotes, backslashes, newlines, and control characters. Determinism makes a graph useful in review and CI artifacts; defensive encoding keeps a hostile symbol name from becoming DOT syntax.
 
@@ -2484,7 +2449,7 @@ weave links remove guide-documents-handler
 
 Add and update require each query to resolve uniquely. The stored `.weave/bridges.json` declaration uses `entity:<exact-id>` endpoints, so a later display-name collision cannot silently retarget it. `id:<exact-id>` deliberately creates an open endpoint for an immutable commit or resource that is not materialized yet; it is not a fuzzy-resolution escape hatch.
 
-Endpoints are graph entities rather than only compiler symbols. A relationship can connect packages, files, Markdown sections, routes, assets, URLs, or code declarations. Catalog scope can resolve endpoints across registered worktrees. All normalized edge kinds are available, but authored evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
+Endpoints are graph entities rather than only compiler symbols. A relationship can connect packages, files, Markdown sections, routes, assets, URLs, or code declarations. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
 
 Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes concurrent read-modify-write operations, while the reviewed declaration remains in the worktree. After publication, Weave refreshes the current repository so the new relationship immediately participates in graph, path, impact, export, architecture, and federation queries.
 
@@ -2492,7 +2457,7 @@ Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes
 
 Authored links do not enter a side annotation database. The built-in Go, SCIP, workspace, and relationship providers construct the same normalized `graph.Edge` shape through one relationship builder. Provider ownership and evidence defaults are validated in one place.
 
-That common shape is what makes mixed neighborhoods useful. A compiler-owned `calls` edge can lead to a route supplied by a generated bridge, then to a Markdown section supplied by the workspace provider. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
+That common shape is what makes mixed neighborhoods useful. A compiler-owned `implements` edge can meet an exposed route and a reviewed `documents` link to a Markdown section. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
 
 An exact endpoint can become unmaterialized after a rename. Weave leaves that reviewed relationship explicit and inspectable instead of guessing a new target. The missing node in DOT is evidence of drift that a person can repair.
 
@@ -2518,7 +2483,7 @@ This is deliberately narrower than a graph editor or IDE. The browser cannot mut
 
 A practical walkthrough now has one sequence:
 
-1. Use `weave symbols` or `weave workspace find` to identify a useful starting entity.
+1. Use `weave explore` or `weave symbols` to identify a useful starting entity.
 2. Add a reviewed relationship with `weave links add` when the graph lacks context no provider can prove.
 3. Run `weave graph TARGET --json` to inspect exact nodes, edges, evidence, provenance, and truncation.
 4. Emit DOT to create a stable review or documentation artifact.
@@ -3128,6 +3093,8 @@ run.end
 
 `run.begin` repeats the negotiated provider and fact encoding. Each `unit.begin` declares one atomically replaceable semantic unit. `facts` frames carry documents, symbols, occurrences, and edges in bounded batches. `unit.end` supplies exact counts, and `run.end` supplies the complete duplicate-free unit inventory.
 
+That protocol inventory is richer than the current managed database. Format 4 validates complete adapter output, then retains declaration anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, fields, constants, and locals. The adapter remains responsible for semantic truth; the storage projection remains responsible for what is practical to keep.
+
 This lifecycle gives the core more than a collection of objects. It gives it a proof of completeness that can be checked mechanically. A unit that began must end. Counts must match. Every fact must name the unit and provider that owns it. The terminal inventory must name exactly the units that completed.
 
 Diagnostics remain part of that structure. An adapter can attach an informational, warning, or error message to a run or unit without putting log text in the fact stream. A process failure and a repository semantic diagnostic are therefore different outcomes.
@@ -3154,7 +3121,7 @@ An explicit `--adapter` run uses the same validation and atomic unit publication
 
 A shared wire shape does not make every language equally static. It gives each adapter one vocabulary for saying how it knows a fact.
 
-The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, and calls, plus compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# definitions and references, while F# call edges remain absent until the compiler-backed implementation can support them. Omitting an edge is more accurate than filling the shape with a guess.
+The .NET adapter uses Roslyn and MSBuild for exact C# declarations, references, and calls, plus compiler-evaluated project relationships. FSharp.Compiler.Service supplies typed F# definitions and references. Those richer facts remain useful during normalization, but the format-4 worktree index persists declaration anchors and project, import, implementation, and other navigation relationships rather than statement-level events. Omitting unsupported evidence is still more accurate than filling the provider stream with a guess.
 
 Rust and C++ take a second route through the same contract. `weave-rust` supervises `rust-analyzer scip`, while `weave-cpp` supervises `scip-clang` and passes its output through Weave's bounded SCIP normalizer. Rust-analyzer currently distinguishes resolved definitions and references but not calls, so an occurrence that looks like a call remains a reference. C++ facts are exact for one selected compilation database and Clang version; the adapter refuses zero or multiple discovered databases rather than blending incompatible build variants.
 
@@ -3179,7 +3146,7 @@ The Universal Ctags adapter makes the lower boundary equally explicit. It emits 
 
 Python also exposed an assumption that the original graph could not keep. A single Python lexical slot may be assigned, imported, or defined several times. Modeling every statement as a different symbol would lose the compiler's binding decision; storing only one definition would lose real source locations.
 
-Weave now treats `Symbol.Definition` as the canonical display anchor and retains every binding site as a `definition` occurrence. The `definition` query prefers those complete occurrences, with the singular anchor as a fallback for older providers. A capability discovered through the Python adapter improved the language-neutral query model rather than becoming a Python-only output special case.
+Weave treats `Symbol.Definition` as the canonical retained declaration anchor. Providers may emit repeated binding occurrences, but format 4 omits occurrence rows and `definition` points to the retained anchor. The Python experiment still improved the language-neutral fact model; the practical projection now makes the narrower query contract explicit.
 
 C++ exposed a different interchange assumption. SCIP permits a producer to repeat the same global `SymbolInformation` in every document that uses it. Weave's C++ import path now retains every occurrence while selecting one canonical symbol fact deterministically, preferring a definition and then stable path and unit order. Equivalent repetitions collapse; conflicting semantic descriptions reject the complete index.
 
@@ -3263,97 +3230,58 @@ That leaves Weave with a narrow center. The core knows how to supervise evidence
 
 <!-- Generated from https://thefellow.github.io/articles/making-source-bodies-discoverable-without-copying-them/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Making Source Bodies Discoverable Without Copying Them
+# Finding Source Bodies Without Indexing Them
 
 Source: [https://thefellow.github.io/articles/making-source-bodies-discoverable-without-copying-them/](https://thefellow.github.io/articles/making-source-bodies-discoverable-without-copying-them/)
 
 ## Pyramid summary
 
-- **~2 words:** Body concept discovery
-- **~8 words:** Bounded lexical hints find exact content entities without copying source text.
-- **Expanded:** How Weave attaches bounded provider-owned lexical terms to exact content entities, retrieves prose and unsupported files through the existing graph, and still reads current source only at query time.
+- **~2 words:** Current-source discovery
+- **~8 words:** Semantic anchors and bounded ripgrep replace broad body postings.
+- **Expanded:** How Weave replaced broad body-token postings with bounded ripgrep discovery over current source while keeping structured document anchors in its navigation index.
 
 ## Full content
 
 **Part 13 of [Building Weave](/series/weave.md).**
 
-A structured-content index can know that a Markdown heading exists and still fail the question written below it. Weave already gave every document, section, code block, link, route, and asset an exact graph identity. Symbol search posted the display name of each entity. An agent asking about a concept stated only in prose could therefore miss the right section unless the author happened to repeat that concept in its heading.
+A structured-content index can know that a heading exists and still miss a concept written only in the paragraph below it. Weave first addressed that gap by attaching body-derived search terms to graph entities and publishing them through token postings. The source text stayed outside the database, but its vocabulary still multiplied index and response cost.
 
-Copying every source file into a second full-text database would solve a different problem by creating a second authority. [Weave](https://github.com/TheFellow/weave) instead extends the normalized entity with a bounded provider-owned lexical projection. A body concept discovers the same section, file, or code block that already carries provenance and an exact stable identity. Structured entities retain their source coordinates. A generic file keeps its exact path, and exploration finds the strongest matching line in the current file at query time. The graph never becomes the source-text authority.
+The format-4 navigation index removes those broad content postings. [Weave](https://github.com/TheFellow/weave) now combines retained document and section anchors with one bounded ripgrep pass over current source. The index answers which semantic entities exist; source search answers which current lines contain the research terms.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/source-body-discovery.svg" alt="A workspace provider reads bounded Git-visible content and attaches normalized lexical terms to exact document, section, code-block, and generic-file entities. The existing bstore token postings retrieve those identities without storing source text or inventing semantic edges. Explore ranks and diversifies the candidates. Structured entities then use the ordinary context path to return bounded definitions, while a generic file is reopened and scanned for the current line with the strongest query-term overlap.">
-  <figcaption>Lexical terms make an exact entity discoverable. They do not become source, relationships, positions, or semantic evidence. The current worktree still supplies every returned line.</figcaption>
+  <img src="/assets/images/articles/weave/source-body-discovery.svg" alt="A research phrase is normalized into a small set of useful fixed-string terms. Compact semantic lookup returns structured document and declaration anchors. In parallel, bounded ignore-aware ripgrep reads current Git-visible files and returns scored path, line, column, and preview hits. Results are diversified by file and combined under one item and byte budget. A selected semantic anchor can then open exact current context.">
+  <figcaption>Body discovery stays in current source. The database keeps navigation anchors instead of a second full-text vocabulary.</figcaption>
 </figure>
 
-## Put discovery hints on exact entities
+## Remove the duplicate vocabulary
 
-Normalized graph schema 2 adds optional `search_terms` to a symbol. Each term is one lowercase normalized identifier token, sorted and unique. A term can be at most 128 bytes, and one entity can carry at most 2,048 terms. Providers must derive the set deterministically from input they own.
+The previous design allowed providers to attach thousands of normalized terms to one symbol. That made a Markdown section or unsupported source file discoverable through the same inverted index as a declaration name. It also retained a second representation of words already available in the worktree and copied those postings into machine-wide aggregate state.
 
-Those constraints make the field a compact query projection rather than an invitation to hide a document store inside every symbol. The workspace provider can say that the exact `README.md#controlled-paired-arm-proof-run` section discusses `rubric`, `tokens`, and `artifacts`. It cannot use those words to claim a call, dependency, contract, or stronger evidence class.
+The storage audit found that this was the wrong default for a disposable local tool. Name and stable-name lookup are valuable because they map human concepts onto compiler and content identities. Broad body vocabulary is different: ripgrep already searches those bytes efficiently, respects repository ignore rules, and returns the exact current line an agent needs.
 
-The public distinction matters for language adapters too. A compiler or SCIP producer remains responsible for declarations and references it can prove. An adapter may supply deterministic lexical terms for one of its own entities, but those terms never upgrade syntax into compiler truth. The protocol validates the same normalized, bounded shape before facts enter the graph.
+Format 4 therefore clears search terms from ordinary code anchors and does not persist broad content-token postings. Structured document, section, and code-block entities remain available as anchors, with a small bounded lexical allowance where the provider needs it for their identity. Whole-body discovery no longer depends on storing every term.
 
-## Extract terms at the provider boundary
+## Bound the source search
 
-Markdown has useful structure, so its extraction follows that structure:
+`weave explore RESEARCH PHRASE` extracts normalized identifier terms, removes ordinary question words and terms shorter than four characters, and caps the search set at eight. It then invokes ripgrep with fixed-string matching, smart case, line and column output, repository ignore handling, a 1 MiB per-file ceiling, and explicit exclusions for `.git`, `vendor`, and `node_modules`.
 
-- the document entity receives terms from front matter, title, series, topics, tags, categories, and the prelude before the first heading;
-- a heading receives terms from its direct body through the next heading;
-- a fenced code block receives terms from its own bounded content; and
-- identical section names are diversified during exploration so generated copies do not consume the complete result bound.
+The subprocess output is capped at 1 MiB. Lines are deduplicated, previews are trimmed and limited to 240 bytes, and results receive a simple deterministic score from term overlap in the path and line. The selection first takes the strongest hit from different files, then fills remaining positions by score. This prevents one verbose file from consuming the complete discovery bound.
 
-The section boundary is deliberate. A parent heading does not absorb the complete nested document and become a giant duplicate candidate. Each entity remains discoverable through the text it directly owns, while ordinary containment edges preserve the hierarchy.
+If ripgrep is unavailable or finds nothing, source discovery returns an empty set rather than breaking semantic lookup. A process or parse failure other than an ordinary no-match remains visible.
 
-Evidence follows the content's origin. A document with an explicit generated-from marker, plus the conventional `llms.txt` and `llms-full.txt` aggregations, gives its document, section, occurrence, containment, and code-block facts `generated` evidence. Authored Markdown remains `syntactic`. Retrieval can therefore distinguish a canonical authored explanation from a generated copy without guessing from its path later.
+## Combine pointers, not dossiers
 
-The safe fallback also covers Git-visible regular UTF-8 files that are not Markdown or known assets. Files up to 2 MiB contribute bounded terms regardless of extension, making comments, configuration, scripts, and unsupported language files discoverable by exact path identity. This fallback does not invent a parsed definition or persist source coordinates. Files with NUL bytes, invalid UTF-8, asset profiles, excessive size, or content beyond the aggregate 512 MiB lexical budget retain their topology without guessed text.
+Semantic and lexical results share a small discovery shape. A symbol result names its kind, stable identity, definition coordinate, provider, evidence, and exact next command. A source result names its path, coordinate, and preview. Neither shape includes a complete graph neighborhood or a copied file body.
 
-## Reuse the existing inverted projection
+The combined array is capped by item count and a 12 KiB encoded budget. An agent can choose a semantic follow-up with `weave context STABLE_NAME` or open the reported source line directly. That choice happens before Weave spends response bytes on a complete declaration.
 
-Storage format 3 persists the term set beside the compact symbol record and emits the same bstore token postings used for display-name lookup. `symbols` and `explore` therefore retrieve an ordinary entity ID. Logical export and the disposable [machine-wide aggregate](/articles/caching-a-federated-graph-without-weakening-freshness.md) preserve the terms so local and catalog discovery have the same meaning.
+## Keep the earlier benchmark in context
 
-`workspace find` reuses those postings without pretending a phrase containing spaces is one token. A multiword value extracts its bounded terms, intersects the posting results, and ranks entities that contain the complete concept. Single-token and exact workspace lookup retain their direct path.
+The provider-owned body-term experiment was still useful. In its paired content-research sample, both agents scored 8/8. The Weave arm used 21.3% fewer input tokens, 8.6% fewer output tokens, no filesystem searches, and the same command count, but finished 1.90 seconds slower. That result showed the value of content discovery without proving that body postings were the right implementation.
 
-There is no phrase index, stemming service, BM25 corpus, embedding store, or separate query language. Search terms widen how an entity can be found; the normalized graph still defines what was found. Exploration scores how many query terms a candidate covers and how discriminating each posting is. A term found in four entities contributes more than a truncated posting shared across hundreds. Complete coverage earns a bounded bonus only when at least three terms match and the candidate vocabulary is narrow enough to make that coverage meaningful.
+The later storage and payload audit supplied the missing cost evidence. Removing broad postings and making discovery progressive reduced the representative database from 1,034,616,832 bytes to 16,777,216 bytes and the representative first-stage response from 171,537 bytes to 3,157 bytes. The current design keeps the successful behavior, finding prose concepts, while using the worktree's existing text-search surface instead of maintaining another one.
 
-Broad content pays a specificity cost proportional to the number of indexed terms, and generated content receives an additional penalty. That keeps an `llms-full.txt` aggregation containing nearly every word from defeating the smaller authored section that actually explains the question. When three or more strong content candidates belong to the same document, a modest document-scope boost keeps those related sections together instead of interleaving nearby noise from unrelated files. Normal query responses strip the potentially large internal term set because repeating hundreds of discovery tokens adds no evidence after the entity and source are known. Deterministic diagnostic export retains it.
-
-Advancing the private and normalized schema markers makes the change explicit. An older derived index is rejected with the normal remove-and-reindex guidance. Stable entity identities and authored declarations do not migrate because they did not change. The disposable projection is rebuilt from source.
-
-## Find the current lines without storing positions
-
-Discovery is useful when the first result contains enough evidence to continue. [`weave explore`](/articles/composing-source-rich-context-without-a-second-index.md) already expands a Go function or method definition to its complete parsed declaration when the shared source budget permits. It now gives Markdown the same treatment. A document result returns its front matter and prelude through the first heading. A section begins at the matched heading and continues through its descendants until the next heading at the same or higher level. Front matter is masked only while the current document is parsed for heading positions, preserving line coordinates while preventing YAML from becoming accidental Markdown structure.
-
-That expansion remains a query-time source operation. The loader rejects unsafe paths, symlinks, ignored files, changed hashes, invalid encodings, invalid ranges, and exhausted budgets exactly as it does for every other context result. If the expanded section does not fit, the response falls back to the indexed range rather than returning partial source that looks complete.
-
-A generic file has no provider-parsed definition and the graph stores no term positions. Exploration therefore passes its normalized query terms into the context composition. The source loader reopens the current file, tokenizes each current line, scores term and mechanical suffix overlap, and anchors the excerpt at the strongest line. Normal context-line and byte budgets apply around that anchor. A stale posting can at worst lead to a current file whose concepts have moved or disappeared; it cannot make Weave return cached text or old coordinates as current evidence.
-
-Multi-focus exploration keeps that complete focus source while avoiding another source expansion for every neighboring relationship. Each typed edge retains its exact endpoints, range, provider, and evidence, plus compact adjacent identity coordinates for follow-up. A direct `context` query returns the richer neighboring entity, provenance, and source representation when the investigation narrows to one focus.
-
-## Keep long research questions lexical
-
-A long natural-language question should not spend its first lookup pretending the complete sentence might be a symbol name. Short inputs still take the exact resolver path, preserving the convenient one-entity result. Questions over twelve whitespace-delimited words or 512 bytes move directly to lexical retrieval.
-
-Exploration now retains up to 32 useful terms, removes research-language stop words, and avoids giving the first surviving term the same dominant weight it receives in a short symbol-shaped query. A few mechanical variants cover common `s`, `es`, `ies`, `ed`, and `ing` endings, but variants of one term contribute only the best match instead of multiplying its score. Stable-name and path matches provide durable scope evidence for every term. Rarity, coverage, content specificity, document scope, and evidence origin refine the lexical score. Candidate kind weights keep functions, methods, types, sections, and code blocks ahead of low-value asset and URL entities; method-container, GUI/TUI, and repeated-content diversification then protect the bounded result from one prolific family.
-
-The algorithm remains intentionally plain. It is inspectable enough to change when a real research task exposes a ranking failure, and deterministic enough for the same indexed facts and question to produce the same candidate order.
-
-## Carry unchanged lexical units forward
-
-Reading every generic file after every small edit would turn a useful fallback into a permanent tax. On the first index or a forced refresh, the provider builds the bounded lexical projection from the complete eligible inventory. On later refreshes it asks Git for paths changed since the previous commit and rereads only changed or new generic files. Unchanged file units carry their prior fingerprints and terms into the new manifest.
-
-Markdown remains parsed through its structured-content path because headings, links, routes, and other surfaces can change independently. Generic files retain one unit per path. Deleted paths disappear through the same unit-replacement contract used by the rest of freshness.
-
-## Test body discovery against complete research
-
-The implementation returned to the paired benchmark that exposed the gap. Both agents had to explain the existing measurement argument from concepts buried in the GitHub Pages prose. Both answers scored 8/8. The Weave arm needed one `explore` call and one targeted source read; the control needed two filesystem searches and one source read. Weave used 21.3% fewer input tokens and 8.6% fewer output tokens, removed filesystem search, and finished 1.90 seconds slower. Command and source-read counts were equal.
-
-That mixed result is more useful than a retrieval-only win. It shows that body terms can replace broad discovery without claiming that one content workload became universally faster. The final candidate returned eight coherent authored guide entities covering the paired result, benchmark question, product corrections, document premise, recorded losses, consolidation caveat, experimental controls, and supporting flow. Broad generated copies no longer displaced the focused authored sections.
-
-A separate Mixology probe tested the generic-file path. The question about “publication lifetime independently from background work” ranked `pkg/toolkits/gui/dispatcher.go` first and anchored the dossier at the exact matching comment on lines 25–26. The file entity retained its compiler-derived `defines` relationships. Lexical fallback found the line; it did not replace the semantic facts surrounding the file.
-
-This is the useful middle ground between filename-only navigation and a second source database. A concept in prose or an unsupported file can lead an agent to an exact graph entity, path, and current bounded excerpt. Provider ownership, bounded terms, explicit evidence, disposable storage, and query-time source verification keep that convenience inside Weave's existing truth model.
+The practical principle is that an index does not have to answer every question internally. It has to get the caller to trustworthy evidence with less work than direct rediscovery. For source-body terms, a compact semantic outline plus bounded ripgrep is the smaller and clearer composition.
 
 
 ---
@@ -3379,6 +3307,8 @@ The [adapter process contract](/articles/making-language-support-a-process-contr
 Automatic execution needs durable answers to harder questions. Which local artifact did the user trust? What repository inputs may it claim? What evidence can it produce? Did its bytes or public contract change? What happens when two adapters both claim the same file? A filename convention or a scan of `PATH` cannot answer any of them safely.
 
 [Weave](https://github.com/TheFellow/weave) adds a deliberately local adapter lifecycle instead. The user selects one existing executable. Weave copies it into private platform state, records normalized capabilities and two content digests, and routes Git-visible inputs only through non-overlapping claims. A metadata-only list, bounded doctor, and language-neutral conformance runner make each layer observable. There is no download command, remote catalog, archive extraction, package-manager invocation, or repository-local executable discovery hiding inside the convenience.
+
+The current format-4 database also separates adapter authority from retention. An adapter may emit rich compiler facts through the protocol, while the host validates that complete output and persists only declaration anchors and supported navigation relationships. Installing a more precise compiler does not silently opt the worktree into storing every occurrence, call, reference, field, or local it can report.
 
 <figure class="article-figure">
   <img src="/assets/images/articles/weave/managed-adapter-lifecycle.svg" alt="An explicitly selected regular local adapter executable is copied into Weave's private platform state and asked for its side-effect-free capability document. Weave normalizes input and evidence claims, then atomically records artifact and capability SHA-256 digests in a locked manifest. For automatic indexing, registry, environment, and managed policy merge with fixed precedence, conflicting claims fail closed, concrete Git-visible paths route to one precise or fallback owner, and both artifact and capability identity are checked before the existing bounded index protocol runs. Separate list, doctor, and conformance commands expose metadata, integrity and negotiation, and black-box fixture behavior without creating a remote package registry.">
@@ -3484,140 +3414,75 @@ Source: [https://thefellow.github.io/articles/measuring-agent-research-beyond-qu
 
 ## Pyramid summary
 
-- **~2 words:** Agent research dogfood
-- **~8 words:** A real repository investigation measures useful evidence, fallbacks, friction, and the product corrections that follow.
-- **Expanded:** Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations.
+- **~2 words:** Practical agent research
+- **~8 words:** Outcome and payload measurements drive smaller progressive discovery.
+- **Expanded:** How paired agent research and a storage-payload audit moved Weave from large graph dossiers to compact progressive discovery without losing answer quality.
 
 ## Full content
 
 **Part 12 of [Building Weave](/series/weave.md).**
 
-A semantic query completing in a second is not yet a useful product result. An agent can receive a fast list of opaque IDs, fail to understand it, and spend the rest of the investigation rediscovering the repository with text search and whole-file reads. Query latency looks excellent while the actual research task changes very little.
+A semantic query completing in a second is not yet a useful product result. An agent can receive a fast list of opaque identities or an enormous graph response, fail to select useful source, and spend the rest of the investigation rediscovering the repository. Latency, index size, response bytes, tool calls, source reads, model tokens, and answer completeness all describe different parts of the experience.
 
-[Weave](https://github.com/TheFellow/weave) now measures the larger outcome. Its first agent-research dogfood record gave an unfamiliar agent a concrete question about [Mixology](/projects/go-modular-monolith.md), required it to begin with Weave, and recorded every fallback. The run found the right architecture quickly. More importantly, it exposed exactly where the graph still made the agent work around the tool.
-
-## Ask a repository question, not a synthetic lookup
-
-The question crossed domain computation, shared application contracts, two presentation surfaces, publication enforcement, and tests:
-
-> Explain how menu readiness and blocker state flow from domain computation into the GUI and TUI. Identify the central composition function, its direct callers and callees, and the tests most relevant to a behavior change.
-
-This is a useful benchmark because no single symbol answers it. A successful investigation has to connect `AvailabilityCalculator.Readiness` to `queries.Readiness` and `Module.Readiness`, understand the shared `ReadinessReport`, `HasBlockers`, and `RequireReady` contract, then follow `ApplyReadiness` into GUI and TUI presentation. It also has to notice that `Commands.Publish` independently enforces readiness at publication time.
-
-The agent received only the question, the repository path, and an instruction to use the installed `weave` CLI before filesystem tools. It inherited no implementation context from the parent session. It recorded every Weave command, source read, fallback search, and criticism of the tool.
+[Weave](https://github.com/TheFellow/weave) used paired agent research to test the outcome, then used a storage and payload audit to test whether the successful behavior was practical. The combination changed the design more than either benchmark could have done alone.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/agent-research-dogfood.svg" alt="An unfamiliar agent begins with a menu-readiness question and bounded Weave evidence. Exact semantic evidence traces domain readiness through a central ApplyReadiness composition into GUI, TUI, publication enforcement, and tests. Recorded friction drives retrieval changes, then an isolated paired benchmark gives both arms the same publication question and scores both 8 out of 8 while measuring fewer tokens, commands, searches, reads, and seconds with Weave.">
-  <figcaption>The first trace turns friction into retrieval changes. The paired run then holds the question and correctness rubric constant while measuring the investigation around the answer.</figcaption>
+  <img src="/assets/images/articles/weave/agent-research-dogfood.svg" alt="A fixed repository question and evidence rubric feed paired agents with and without Weave. Their answers, tool events, searches, reads, commands, tokens, and elapsed time are retained. A second audit measures database amplification and encoded discovery bytes. The evidence leads to a compact navigation index, semantic anchors plus ripgrep hits, and exact context only after selection.">
+  <figcaption>Outcome evidence says whether discovery helps; storage and payload evidence says whether its implementation is practical.</figcaption>
 </figure>
 
-## Follow the evidence into both surfaces
+## Score repository understanding
 
-The central topology came from ordinary relationship queries:
+The first controlled question asked an unfamiliar agent to trace Mixology's menu publication flow through readiness, authorization, persistence, GUI and TUI surfaces, and tests. The harness fixed the repository revision, prompt, rubric, tool availability, and evidence standard. It retained the raw agent event stream, stderr, final answer, process measurements, and post-run worktree status.
 
-```sh
-weave callers ApplyReadiness
-weave callees ApplyReadiness
-weave references HasBlockers
-weave symbols RequireReady
-```
+Both arms scored 8/8. In that single paired code-flow sample, the Weave arm used 51.1% fewer input tokens, 37.5% fewer commands, 75% fewer filesystem searches, 33.3% fewer source reads, and 16.3% less wall time. The result showed that semantic discovery could reduce navigation work without reducing answer completeness.
 
-`callers` and `callees` found the exact `ApplyReadiness` neighborhood with source locations. Symbol and reference queries then located the domain, GUI, TUI, and test seams. The agent reconstructed the readiness flow correctly:
+A second paired question targeted concepts found in benchmark prose rather than headings. Both arms again scored 8/8. The Weave arm used 21.3% fewer input tokens, 8.6% fewer output tokens, no filesystem searches, and the same two-command count, but finished 1.90 seconds slower. Content discovery helped the evidence path without winning every metric.
 
-1. `AvailabilityCalculator.Readiness` computes the domain result exposed through `queries.Readiness` and `Module.Readiness`.
-2. `ReadinessReport` carries readiness and blocker state through the shared application boundary; `HasBlockers` and `RequireReady` express the two important decisions over it.
-3. `ApplyReadiness` turns that shared result into presentation state used by `Presenter.loadReadiness`, `Presenter.permissionsFor`, and `ListViewModel.Update`.
-4. `Commands.Publish` checks the same readiness independently, so a presentation decision cannot become the publication authority.
-5. Unit, GUI, TUI, and stale-result tests provide the evidence set for a behavior change.
+These are two auditable samples, not a population estimate. They justify preserving the behavior, not freezing its first implementation.
 
-Most Weave queries completed in under 1.5 seconds. The remaining filesystem work was targeted: `sed` read ranges discovered through graph output, one `rg` pass validated references and tests, and `git status` confirmed worktree state. The agent reported that the graph materially reduced broad discovery.
+## Record what the agent had to work around
 
-That is a useful qualitative result, but it is not a numeric savings claim. This run had no comparable without-Weave arm. It cannot establish a percentage reduction in time, tool calls, bytes, or tokens.
+Early dogfood exposed several forms of friction:
 
-## Record where the tool lost the agent
+- ambiguous short names produced opaque choices;
+- definition, reference, call, and context results repeated overlapping facts;
+- variables and generic references consumed bounded relationship slots;
+- one broad exploration could place roughly 16,000 tokens into context; and
+- a correct second trace still used 32 Weave commands.
 
-The critical part of dogfooding was preserving the friction:
+The first response was to rank and compact graph dossiers more carefully. That improved the original model but retained its basic assumption: discovery should serialize several complete semantic neighborhoods before the agent chose one.
 
-- Ambiguous methods pushed the agent toward opaque graph IDs because natural names such as `AvailabilityCalculator.Readiness` did not resolve.
-- A context dossier repeated a specific call and its underlying reference edge for the same endpoint.
-- Variable and builtin references crowded flow relationships out of bounded context and caused truncation.
-- A batch of broad context queries produced roughly 16,000 tokens. Discovery improved substantially, but context ingestion improved only moderately.
-- Default impact traversal escaped through generic methods such as `Update` and `Select`, producing a noisy, truncated blast radius.
+## Audit the physical and encoded cost
 
-None of those problems appears in a query-latency percentile. They appear only when someone uses the output to finish a research task and counts the work the output creates downstream.
+The later audit measured a 3,019,968-byte Go repository whose format-3 database occupied 1,034,616,832 bytes. It contained 25,678 symbols, 184,826 occurrences, and 247,013 edges. The representative ordinary `explore --json` response occupied 171,537 bytes.
 
-## Turn benchmark friction into product behavior
+Only a small fraction of that response was current source. Repeated stable and opaque identities, unit and document IDs, ranges, provenance, evidence, hashes, and full edges dominated the payload. Persisting every compiler event also multiplied source bytes into storage records and indexes that agents rarely needed during first-stage discovery.
 
-The first four findings produced direct changes to Weave. The shared resolver now accepts concise qualified names such as `AvailabilityCalculator.Readiness`, `Presenter.loadReadiness`, and `ReadinessReport.HasBlockers` as deterministic fallbacks over compiler-qualified stable names. Exact graph IDs, exact stable names, and normal provider ranking still take precedence. Ambiguity errors show candidate stable names and kinds before their internal IDs.
+This evidence reframed the problem. The product did not need a better-compressed exhaustive dossier. It needed a smaller contract between semantic navigation and source inspection.
 
-Context relationships now read a bounded surplus, collapse repeated edges by adjacent endpoint, and keep the most useful relationship for each one. Calls rank ahead of contracts, dependencies, authored navigation, state access, containment, and raw references. Local-variable, parameter, and language-builtin references are omitted from the bounded dossier while remaining available in exhaustive graph data. The limit applies after compaction and filtering, which stops low-value evidence from consuming the small response an agent requested.
+## Make discovery progressive
 
-Text output prefers stable semantic names and source paths. Inside a context dossier it also removes repeated repository and compiler-category prefixes, while JSON preserves full names and opaque IDs for exact follow-up.
+Format 4 retains semantic anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, noisy declaration kinds, containment duplication, and broad content-token postings. `weave explore` now returns at most a few semantic anchors plus diversified ripgrep hits. Each semantic anchor includes an exact `weave context` follow-up. The discovery array has a 12 KiB encoded ceiling.
 
-`weave explore` turns a research phrase into a bounded ranked set of those same [source-rich context dossiers](/articles/composing-source-rich-context-without-a-second-index.md):
+The selected `context` call then reads current source for one exact anchor. It does not expand eight candidates speculatively or pretend that the graph should replace text search for statement-level investigation.
 
-```sh
-weave explore how menu readiness reaches GUI and TUI
-weave explore AvailabilityCalculator.Readiness --limit 6 --relationship-limit 6 --json
-```
+On the same repository and commit, the format-4 database occupied 16,777,216 bytes, a 98.38% reduction and 5.56 times source size. The representative first-stage response occupied 3,157 bytes, 98.16% smaller than the old response. Its selected context response occupied 3,195 bytes and included 337 bytes of source.
 
-An exact short entity naturally produces one dossier. A longer research question skips exact-symbol resolution and becomes at most 32 useful terms plus a few mechanical suffix variants. Ordinary question words disappear, while generic scope terms refine ranking instead of becoming broad searches when more specific terms exist. Candidate ranking combines symbol-search position, posting rarity, term coverage, display-name matches, stable-name and path scope, explicit domain scope, presentation scope, kind, content specificity, and evidence origin. It also diversifies methods across containers, preserves explicitly requested GUI and TUI surfaces, and defers repeated content names. The default returns at most eight entities, independently caps each dossier's occurrence, incoming, and outgoing sections at six, and divides one 64 KiB source budget across all results. Go functions, methods, and Markdown sections expand to their complete parsed definitions when the budget permits. Relationship ranking uses semantic-unit and stable-path proximity after evidence kind, keeping relevant local flow ahead of distant same-named endpoints. Natural-language reasoning stays in the consuming agent. Weave supplies bounded compiler, SCIP, content, and authored evidence from its existing graph without adding an embedded model or a second persisted search database.
+## Keep the benchmark honest after the redesign
 
-The noisy default impact policy remains open. `weave impact TARGET --kind calls` already supplies a narrow alternative, but changing the default requires evidence across more languages and repositories. One dogfood trace is enough to expose a problem, not enough to declare a universal traversal policy.
+The paired 8/8 results belong to the earlier retrieval implementation. They demonstrate that graph-guided discovery can preserve evidence quality while reducing navigation work. They do not yet prove that the new compact semantic-plus-ripgrep shape preserves the same token and command improvements.
 
-## Repeat the task before claiming consolidation
+That distinction creates the next useful benchmark. Re-run the fixed questions and rubrics against progressive discovery, then compare:
 
-A second fresh agent followed menu-publishing authorization from GUI and TUI action availability through the public module, command middleware, readiness enforcement, and persistence. Its architectural account was correct and it kept the repository clean, but the route required 32 Weave commands, two filesystem searches, one source-file read, and one cleanliness check. The graph again avoided broad discovery; it did not yet provide the intended one-to-four-call research experience.
+1. rubric completeness and cited evidence;
+2. actual input and output tokens;
+3. Weave commands, filesystem searches, and source reads;
+4. elapsed time and startup mode;
+5. first-stage and cumulative encoded response bytes; and
+6. database size and refresh cost for the tested repository.
 
-The initial phrase command failed because `explore` was still only an exact-context alias during that run. That evidence caused the command to become the phrase-to-dossier composition described above. A representative menu-publish question now returns the GUI publish boundary, `Module.Publish`, and `Commands.Publish` in one roughly two-second call on Mixology.
-
-That post-change call was a functional check, not a post-change agent benchmark. A new implementation can show that the intended entities rank together without proving that a fresh agent now finishes the research in fewer calls. The distinction kept a promising correction from quietly becoming an unsupported savings claim while the paired harness was built.
-
-## Hold the question and evidence standard constant
-
-The checked-in harness creates an isolated local clone for each arm and gives both fresh agents the same read-only question: follow menu-publish authorization and enforcement from GUI and TUI action availability through `Module.Publish`, `Commands.Publish`, `RunCommand`, readiness validation, persistence, and relevant tests. A deterministic eight-item rubric checks those seams in each final answer.
-
-The Weave arm receives a current index and an instruction to start with one `weave explore` call. The control arm places a same-named blocking executable on `PATH` and tells the agent to use ordinary repository search and source-reading tools. That prevents accidental contamination without giving one arm a different architectural question. Both clones must remain unchanged.
-
-Every run retains its prompt, raw Codex event stream, standard error, final answer, process measurement, worktree status, and machine-readable summary. The summary counts tokens, elapsed time, command executions, successful Weave calls, filesystem searches, source reads, blocked Weave attempts, and rubric matches. A number in the report can therefore be traced back to the tool events and answer that produced it.
-
-## Read the first paired result
-
-The first valid paired run used Weave commit `9c756c7`, Mixology commit `7b01054`, Codex CLI 0.147.0, and one isolated clone per arm. The indexed agent made one successful `weave explore` call. Both agents produced complete answers and scored 8/8, so the efficiency comparison does not trade away the architectural result.
-
-| Measure | With Weave | Without Weave | Reduction |
-| --- | ---: | ---: | ---: |
-| Correctness rubric | 8/8 | 8/8 | n/a |
-| Input tokens | 167,344 | 342,080 | 51.1% |
-| Output tokens | 2,816 | 3,621 | 22.2% |
-| Wall time | 27.8s | 33.2s | 16.3% |
-| Command executions | 5 | 8 | 37.5% |
-| Filesystem searches | 1 | 4 | 75.0% |
-| Source-read commands | 4 | 6 | 33.3% |
-
-The important result is not simply that one query ran quickly. Its initial dossier supplied the GUI, TUI, module, command, readiness, persistence, and test seams while the final answer preserved the same rubric completeness as ordinary exploration. That reduced rediscovery across every recorded measure in this sample.
-
-This is one paired sample, not a population estimate. It proves that the harness can isolate the tool, preserve correctness, retain auditable artifacts, and capture a concrete successful workload. Repeated cases across repositories and languages are still needed before treating these percentages as general expectations. That is a much stronger next position than either query latency alone or an uncontrolled success story: the measurement boundary now surrounds the agent's complete research task.
-
-## Aim the second case at prose, not declarations
-
-The second retained case turns the benchmark back on its own research record. Its question asks why query latency is insufficient, where the uncontrolled dogfood lost the agent, how friction became product behavior, how the paired arms isolate Weave, which artifacts and measurements survive, and how the first paired result should be interpreted. Most of that evidence lives in paragraphs rather than declaration names or section headings.
-
-An eight-item rubric makes the expected account explicit: latency must be separated from task completion; the uncontrolled run cannot support attribution; product changes must be tied to recorded friction; both arms must share the question inside isolated clones; the control must block the Weave executable; retained token, command, search, and read measurements must be named; correctness must remain 8/8; and one pair must not become a population claim.
-
-The case first exposed a retrieval gap: an exact Markdown section graph was still searchable mainly by its heading. That pressure produced the [bounded source-body discovery layer](/articles/making-source-bodies-discoverable-without-copying-them.md) rather than a special benchmark shortcut. Both completed arms then scored 8/8. The Weave arm made one `explore` call and one targeted source read; the control made two filesystem searches and one source read.
-
-| Measure | With Weave | Without Weave | Difference |
-| --- | ---: | ---: | ---: |
-| Correctness rubric | 8/8 | 8/8 | n/a |
-| Input tokens | 50,461 | 64,117 | 21.3% fewer |
-| Output tokens | 1,322 | 1,447 | 8.6% fewer |
-| Wall time | 16.17s | 14.27s | 1.90s slower |
-| Command executions | 2 | 2 | equal |
-| Filesystem searches | 0 | 2 | 2 fewer |
-| Source-read commands | 1 | 1 | equal |
-
-The result is useful because it is mixed. Body discovery removed filesystem search and reduced tokens while preserving the complete answer, but it did not win wall time and it did not reduce the command count. The retained run then drove ranking corrections for broad generated pages, rare terms, entity length, related-section coherence, Markdown preludes, and generic-file source anchoring. This remains one content-repository pair, not a general estimate. The benchmark can now describe exactly which part improved without flattening every measurement into a victory.
+A smaller payload is not automatically better if it makes the agent issue many blind follow-ups. A rich graph is not automatically better if most of its bytes are repeated coordinates. The acceptance boundary is practical research: preserve correct answers while reducing total discovery work and keeping the local index proportional to the source it helps navigate.
 
 
 ---
@@ -3781,200 +3646,138 @@ That collection of small, explicit states creates a more realistic application. 
 
 <!-- Generated from https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Serving Persistent Agent Queries Without a Daemon
+# Reusing Local Query State Without Installing a Daemon
 
 Source: [https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon/](https://thefellow.github.io/articles/serving-persistent-agent-queries-without-a-daemon/)
 
 ## Pyramid summary
 
-- **~2 words:** Resident agent queries
-- **~8 words:** One foreground owner keeps bounded graph queries warm and fresh.
-- **Expanded:** How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+- **~2 words:** Reusable local queries
+- **~8 words:** Foreground sessions and an idle broker reuse bounded read state.
+- **Expanded:** How Weave serves bounded reads through an explicit NDJSON session or an idle-reaping per-worktree broker while preserving one-shot freshness and maintenance paths.
 
 ## Full content
 
 **Part 14 of [Building Weave](/series/weave.md).**
 
-A correct one-shot CLI can still be the wrong shape for a long agent session. Every invocation starts a process, observes Git, opens bstore, validates its schema, and hydrates hot dictionaries before answering one bounded query. An IDE keeps its project services alive because navigation is a conversation, not a sequence of unrelated cold starts.
+A correct one-shot CLI still repeats process startup, freshness inspection, schema validation, database open, and dictionary work during a research conversation. The first Weave optimization made that ownership explicit with `weave session`, a foreground NDJSON subprocess controlled by one agent host.
 
-Weave cannot improve that path by pretending its embedded database supports concurrent owners. bstore opens the worktree index read/write and permits one owning process. [Weave](https://github.com/TheFellow/weave) makes that constraint the center of `weave session`: one foreground child owns one database, serializes bounded read requests, observes source state in the background, and releases everything when its client closes the stream.
+The current implementation keeps that protocol and adds a smaller default optimization on supported Unix platforms: ordinary bounded local reads can reuse an ephemeral per-worktree broker. The broker is started on demand, is never installed or supervised, and exits after one minute without an accepted client or active request.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/resident-query-session.svg" alt="An agent host starts a foreground weave session and exchanges versioned NDJSON requests and responses over standard input and output. The first valid request runs authoritative freshness and opens one bstore handle. Warm requests reuse the handle and dictionaries. A background exact Git observer marks a pending change; the next request closes the database, uses the ordinary provider refresh pipeline, reopens the published generation, and answers. EOF or cancellation closes the owner, while maintenance, mutation, and catalog operations stay outside the session.">
-  <figcaption>One client-owned process is the explicit database owner. Warm queries reuse it; a detected source change crosses the same close, authoritative refresh, and reopen boundary as ordinary commands.</figcaption>
+  <img src="/assets/images/articles/weave/resident-query-session.svg" alt="Bounded local read commands either enter an explicit foreground NDJSON session or connect to an on-demand per-worktree Unix-socket broker. Both reuse the same resident application service and query normalization. The broker accepts only matching worktree identity and protocol frames, drains before maintenance or mutation, and exits after one idle minute. The ordinary freshness manager and one-shot fallback remain authoritative.">
+  <figcaption>Persistence is a local latency optimization around the existing application boundary, not another indexing authority.</figcaption>
 </figure>
 
-## Make the long-lived owner explicit
+## Keep the explicit session
 
-`weave session` is a foreground subprocess, not an installed daemon. The client starts it in the repository it wants to query, writes one UTF-8 JSON object per line to stdin, reads one response per line from stdout, and closes stdin when finished. There is no socket discovery, PID file, hook, durable session record, or second index authority.
+`weave session` remains useful for an agent host that already owns a child process. It accepts newline-delimited `weave.query-session/v1` requests on stdin and writes one response frame per request on stdout.
 
-```console
+```sh
 printf '%s\n' \
-  '{"protocol":"weave.query-session/v1","id":"research","command":"explore","arguments":["where is publish authorization enforced"],"limit":6}' \
-  '{"protocol":"weave.query-session/v1","id":"callers","command":"callers","arguments":["Module.Publish"],"limit":25}' \
+  '{"protocol":"weave.query-session/v1","id":"discover","command":"explore","arguments":["menu publication persistence"]}' \
+  '{"protocol":"weave.query-session/v1","id":"context","command":"context","arguments":["example.com/project/menu.Service.Publish"]}' \
   | weave session
 ```
 
-Stdout is protocol-only. The request ID correlates each frame, and the protocol name makes incompatible semantics visible. A successful frame contains the ordinary `weave.query/v1` application response. An invalid request or failed query returns a typed error frame without ending the stream, allowing the client to correct one call while retaining the warm process.
+Requests map to the same application invocations as the CLI. The session accepts bounded local research operations such as symbols, compact explore, context, definition anchors, dependencies, paths, impact, and graphs. It rejects maintenance, mutation, catalog, adapter, index, full-export, and the removed posting-dependent workspace operations.
 
-## Bound the wire before executing a query
+Every frame has a fixed maximum size, one request ID, validated command arity, bounded limits, traversal depth, edge counts, source lines, and source bytes. Removed statement-level commands such as `references`, `callers`, and `callees` are not part of the session surface because the format-4 navigation index does not retain their facts.
 
-The session accepts the local read operations agents use for research: symbols, context, explore, definitions, references, callers, callees, dependencies, paths, impact, graphs, and workspace navigation. Every request maps to the existing application invocation and its limits for results, traversal depth, edges, relationship sections, source lines, and source bytes.
+## Add an ephemeral broker for ordinary commands
 
-One line is limited to 1 MiB, an ID to 128 bytes, source output to at most 4 MiB, and graph traversal to explicit ceilings. Unknown fields, unsupported protocols and commands, unknown edge kinds, incorrect argument counts, and invalid bounds fail before application execution. An oversized frame terminates the process because its next record boundary cannot be recovered safely. Error messages are converted to valid UTF-8 and capped at 8 KiB before they enter a frame.
+An explicit session requires its caller to manage a stream. The local broker lets normal commands reuse the resident path without changing their text or JSON interface. A client discovers a user-private per-worktree endpoint and sends one `weave.local-broker/v1` request containing the exact repository identity and a normalized bounded invocation.
 
-The agent-oriented `explore` default keeps eight focus entities under one 32 KiB focus-source budget and four relationships per direction. A caller can raise either bound. The frame preserves complete focus evidence and source plus every exact relationship edge, but replaces repeated neighbor entity, repository, and source blocks with compact `adjacent` coordinates containing the exact ID, stable and display names, kind, provider, and evidence. Direct `context` retains the complete rich relationship representation.
+The first client starts the current Weave executable. A cross-process startup lock prevents duplicate brokers. The broker accepts only bounded local read queries, validates protocol and worktree identity before execution, limits frames to 16 MiB, and serves each request through the same resident application service. Catalog queries stay outside it.
 
-Maintenance, mutation, indexing, verification, compaction, full export, authored-link changes, adapter management, and catalog queries are deliberately absent. Those operations may open storage independently, replace derived state, or require a different ownership model. The client closes the session and uses the one-shot command instead.
+`WEAVE_NO_BROKER=1` disables the optimization and asks an existing broker to shut down. Windows currently keeps the one-shot path. If a safe broker endpoint cannot be established, the client falls back to ordinary local execution instead of making the optimization a prerequisite.
 
-## Pay the cold path once
+## Preserve maintenance boundaries
 
-The process does not open bstore merely because it started. Its first valid database-backed request performs the ordinary authoritative freshness check, opens the current worktree database, and records the resulting observation and freshness status. Later local requests reuse that handle, its storage pages, and its in-memory intern dictionary.
+Index refresh, initialization, status, garbage collection, architecture mutation, link edits, adapter work, `watch`, and an explicit `session` require a different ownership boundary. Before those operations begin, the application asks an existing broker to stop accepting work, drains active requests, closes its database, and removes its endpoint. It does not start a broker merely to shut one down.
 
-Requests are serialized under one owner. This is not a claim that bstore became a multi-reader server. Another Weave process targeting the same worktree cannot open the file while the session owns it; it waits for the existing bounded timeout and then fails. The correct client behavior is to route its supported research queries through the resident stream and close it before launching maintenance or another owner.
+This keeps ambiguous retries away from mutation. Once a request reached a broker, a transport failure is not replayed as a possibly mutating one-shot action. Remote application errors remain authoritative. Only failure to reach or safely start the read broker falls back before the request is accepted.
 
-EOF, cancellation, or process termination closes the database. Closing is idempotent, stops the observer, waits for it to finish, and releases the file before returning. Tests prove that a second bstore open fails during ownership and succeeds after the resident closes.
+## Keep freshness authoritative
 
-## Move observation off the warm request path
+Neither persistent shape decides what is current. The resident service uses the same query-driven freshness manager as one-shot execution. A background exact Git observation can mark a generation stale; the next request crosses the ordinary close, refresh, publish, and reopen boundary before answering. Current-source reads keep their own path, encoding, hash, range, race, and byte checks.
 
-[Query-driven freshness](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md) remains authoritative, but running a complete exact Git observation synchronously before every warm query would preserve much of the cold overhead. After the first request, the resident starts a background observer at the same bounded interval used by optional watch warming.
+Per-worktree and aggregate queries now use bstore's shared read-only mode after freshness is established, while writers remain exclusive. The broker amortizes process, schema, and dictionary startup; it does not make the database writable by many clients or create a second publication path.
 
-An unchanged observation leaves the open handle alone. A changed or non-current observation becomes pending state. Before answering the next request, the resident closes the database, invokes the ordinary freshness manager, observes the published state, and opens the new generation. There is no resident-only provider pipeline and no refresh against an open file.
+## Separate latency work from payload work
 
-Detection is asynchronous, so a graph-only request can briefly see the preceding generation before the observer notices an edit. Source-rich responses retain a stronger immediate guard: they reopen the current Git-visible file and compare its identity and hash on every request. A changed file is reported as changed rather than paired with stale graph coordinates.
+The original session experiment measured a 0.379 ms warm median after a 1,453.892 ms first request in one 20-request local sample, compared with 751.974 ms for one one-shot call. That sample justified reusing startup state, not treating a resident process as the product.
 
-Observation failures also remain visible. The resident records the failure and returns it through the next valid query instead of silently continuing forever on a generation it can no longer prove current.
+It also exposed a different problem: the old eight-focus exploration response still occupied tens of kilobytes because it repeated graph dossiers. The later format-4 work solved that at the query boundary. Progressive discovery now returns a representative 3,157-byte first-stage response and fetches exact context only for a selected anchor.
 
-## Measure the resident shape directly
-
-One local macOS run against a rebuilt Mixology storage-v3 index compared `symbols Readiness --limit 5` as an ordinary CLI command with 20 identical requests sent through one foreground session:
-
-| Path | Latency |
-| --- | ---: |
-| One-shot CLI | 751.974 ms |
-| Session first request | 1,453.892 ms |
-| Session warm median | 0.379 ms |
-| Session warm range | 0.275–2.193 ms |
-
-This is one latency sample, not a throughput distribution. It demonstrates the intended lifecycle rather than a universal speed ratio: the first session request pays freshness and open costs, while serialized warm requests reuse one handle and its dictionaries.
-
-The same run tested the less glamorous half of the contract. An ordinary CLI process failed with the bounded `inspect database schema: timeout` error while the resident owned bstore. After EOF closed the session, the identical command succeeded. The single-owner constraint is therefore observable at the process boundary and the file is released at the client-owned lifetime boundary.
-
-The installed endpoint matrix also caught response overhead that latency alone would hide. An eight-focus Mixology exploration initially returned 229,134 bytes in 1.19 seconds because every relationship repeated complete source, repository, and symbol records. The compact projection returned 84,036 bytes in 0.74 seconds, a 63.3% byte reduction, while retaining all eight focuses and 60 typed edges. That is another single local regression sample. Its value is the preserved evidence boundary: `explore` stays compact enough for discovery, while `context` remains available when an agent chooses one relationship for full expansion.
-
-## Keep the application boundary shared
-
-The resident service did not duplicate every query. The ordinary local application path was split so one-shot commands can open and close a database around `executeDatabase`, while the resident supplies its already-owned handle to the same function. Human text, CLI JSON, NDJSON session frames, and a future adapter therefore consume the same application semantics.
-
-The wire is language-neutral for the same reason. A query can return facts produced by Go, Roslyn, FSharp.Compiler.Service, rust-analyzer, SCIP, structured content, or an authored declaration without encoding those producers into the session lifecycle. Provider and evidence metadata remain in the normal response.
-
-MCP remains a possible thin facade over this boundary, not a second implementation. A future local broker could multiplex clients through one owner, and a resident catalog service could hold an aggregate with a different lifecycle. Neither is implied by this foreground contract. The useful increment is smaller and more honest: one client can keep its existing local graph hot across a research conversation without installing a daemon or weakening freshness.
+These optimizations compose cleanly because they solve different costs. The broker makes repeated commands cheaper to start. The navigation projection makes the database smaller. Progressive discovery makes agent responses smaller. Freshness and current source remain shared correctness boundaries underneath all three.
 
 
 ---
 
 <!-- Generated from https://thefellow.github.io/articles/shrinking-a-semantic-graph-without-changing-its-meaning/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Shrinking a Semantic Graph Without Changing Its Meaning
+# Shrinking a Semantic Graph into a Navigation Index
 
 Source: [https://thefellow.github.io/articles/shrinking-a-semantic-graph-without-changing-its-meaning/](https://thefellow.github.io/articles/shrinking-a-semantic-graph-without-changing-its-meaning/)
 
 ## Pyramid summary
 
-- **~2 words:** Compact graph storage
-- **~8 words:** Numeric identities and hot/cold records preserve one stable public graph.
-- **Expanded:** How Weave separates its stable graph model from a compact private schema with numeric identities, interned strings, hot and cold records, exact ordering, and rebuild-only evolution.
+- **~2 words:** Navigation projection
+- **~8 words:** Retaining useful anchors and relationships cuts index cost drastically.
+- **Expanded:** How Weave cut a repository index by 98.38% by retaining navigation anchors and high-value relationships instead of treating every compiler event as durable product data.
 
 ## Full content
 
 **Part 6 of [Building Weave](/series/weave.md).**
 
-The first repository-scale Weave measurement made an uncomfortable fact visible. Compact semantic identities reduced a 7.54 GB graph to 1.11 GB, but the remaining database was still much larger than the source it described. A normalized graph repeats exactly the strings that tend to be longest: stable symbol IDs, unit IDs, document IDs, providers, versions, languages, roles, evidence classes, and relationship endpoints.
+The first storage correction in Weave changed representation while preserving an exhaustive graph. Numeric identities, interned strings, and narrower records reduced one large index from 7.54 GB to 1.11 GB. That was useful engineering, but it did not answer the more important product question: why should a local navigation tool store hundreds of compiler events for every byte of source?
 
-Changing those public identities would make the storage problem look smaller by weakening the product. [Weave](https://github.com/TheFellow/weave) instead gives its private storage schema an independent version. [`graph.SchemaVersion`](https://github.com/TheFellow/weave/blob/main/internal/graph/model.go) continues to describe stable normalized facts and exports. Storage v2 changes how those same facts are encoded, indexed, verified, and rebuilt.
+The later audit answered by changing the retained contract. [Weave](https://github.com/TheFellow/weave) format 4 is a navigation index, not a compiler-event archive. Compilers and adapters may still produce rich facts during analysis, but persistence keeps only the anchors and relationships that reliably move a person or agent toward the right source.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/compact-storage.svg" alt="Stable public graph facts enter a private storage codec. Long repeated strings become reference-counted intern and entity records. Narrow hot records hold numeric lookup keys and canonical ordering fields, while cold detail records hold ranges, providers, evidence, and document references. Batched hydration reconstructs the unchanged public graph, and verification checks every indirection and reference count.">
-  <figcaption>Storage v2 changes representation, not meaning. Compact hot indexes answer bounded queries; cold details and shared dictionaries reconstruct the same public facts.</figcaption>
+  <img src="/assets/images/articles/weave/compact-storage.svg" alt="Language and content providers emit normalized facts. A format-4 navigation projection retains documents, package and declaration anchors, and high-value dependency, implementation, test, generation, documentation, link, and embed edges. It drops occurrences, calls, references, containment duplication, fields, constants, locals, and token postings. The compact database points discovery back to current source.">
+  <figcaption>The decisive reduction came from narrowing the durable product contract, then compacting the representation that remained.</figcaption>
 </figure>
 
-## Version representation separately from meaning
+## Measure amplification, not fact counts
 
-A graph schema and a database schema answer different compatibility questions. The graph schema defines units, documents, symbols, occurrences, relationships, evidence, and canonical order. Agents, exports, adapters, and query responses depend on it. The storage schema describes bstore records inside disposable per-worktree state.
+The representative repository contained 3,019,968 bytes outside `.git`. Its format-3 database occupied 1,034,616,832 bytes, or 342.6 times the source size. The database held 25,678 symbols, 184,826 occurrences, and 247,013 edges. A deterministic JSON export alone was 247,371,432 bytes.
 
-Keeping those versions separate lets the internal representation change without creating a new semantic format. Tests build the same rich facts in legacy v1 and v2 databases, export both through the public model, and require deep equality. Unicode identities, long paths, long display names, large ranges, providers, evidence, and relationships all have to survive the round trip.
+Those numbers showed that the index was duplicating statement-level evidence more expensively than the source itself. A call or reference row still needed identities, ranges, ownership, evidence, indexes, and storage overhead. Most of that data was then serialized again when an agent asked a broad discovery question.
 
-The same rule applies to bounded reads. Storage v2 returns forward and reverse adjacency in the same canonical order as v1 and reports truncation at the same boundary. A smaller index is not an excuse to make `--limit 3` select a different three edges.
+## Retain the navigation layer
 
-## Replace repeated strings with internal identities
+Format 4 keeps:
 
-Stable graph IDs remain strings at the application boundary, but v2 maps them to compact unsigned integers inside the database. An entity table assigns one numeric identity to each stable symbol or relationship endpoint. It represents both materialized symbols and open external endpoints, so an edge can retain a target that has no local symbol record.
+- units and documents needed for source identity and freshness;
+- repository, content, package, type, function, method, test, and unknown provider-defined anchors;
+- imports, dependencies, extension and implementation relationships, tests, generation, documentation, exposure, links, and embeds; and
+- the compound name indexes used by exact and prefix navigation.
 
-Provider names, provider versions, languages, symbol kinds, occurrence roles, and other repeated values use a smaller intern table. Evidence and relationship kinds have checked numeric codes. Edge-kind codes deliberately follow lexical public order so a compound index can return canonical results before applying a bound.
+It drops occurrences, statement-level calls and references, definition and containment edges, variables, fields, constants, builtins, locals, and broad content-token postings. Declaration ranges on retained symbols remain enough for `definition` and exact `context` follow-ups. Current source and bounded ripgrep recover the lower-level detail after discovery has selected a useful area.
 
-Both shared tables carry reference counts. Replacing or deleting a unit releases exactly the strings and entities its documents, symbols, occurrences, details, and edges used. A cross-unit edge can keep an entity alive after the unit that materialized its symbol disappears. Once the final reference is gone, the dictionary row can disappear too.
+This is a change in meaning, and naming it matters. The earlier storage-v2 work proved that a private encoding could become smaller without changing public facts. Format 4 makes a different trade: exhaustive compiler events are no longer part of the managed query contract. Commands and edge filters now advertise only relationships the navigation projection actually retains.
 
-That lifecycle is more involved than copying strings into every row, so it is tested as a first-class invariant. Two units share providers and identities, one unit is removed, the remaining external edge retains its endpoint, and deleting the second unit must leave no intern, entity, or detail records behind.
+## Project before publishing
 
-## Keep hot rows narrow
+Each provider still owns its analysis boundary. The storage projection runs after normalization, filters noisy symbol kinds and relationship families, clears unnecessary search terms, and publishes only the retained facts. A clean refresh compacts the closed database before installing its manifest.
 
-Most graph queries do not need every field. Symbol search needs internal identity, names, kind, unit, and document lookup. Adjacency needs numeric endpoints, relationship kind, and fields required for deterministic order. Provider, evidence, source range, and optional document provenance are important when returning a complete fact but make every hot index wider if stored inline.
+This keeps adapter protocols independent from one storage experiment. A precise provider can expose richer facts to validation or future consumers without forcing every worktree database to retain them indefinitely. The local index pays for the product surface that current queries use.
 
-Storage v2 splits those shapes. A narrow symbol record carries searchable names and numeric references; a symbol-detail record carries definition range, provider, and evidence. Occurrences and edges receive the same hot/cold pairing. Queries fetch details only for the bounded rows they will return.
+## Follow the evidence back to source
 
-Edges preserve stable endpoint strings beside their numeric `From` and `To` lookup keys. Those strings are not redundant by accident. They are ordering keys that keep the result byte-for-byte equivalent to `graph.CompareEdges` before truncation. Numeric identity accelerates lookup; stable identity preserves public determinism.
+The smaller index works with progressive discovery. `weave explore` returns a few semantic anchors plus diversified ripgrep hits, each with a path and source coordinate. A semantic result includes the exact `weave context` command for opening the selected declaration. The first response is bounded by both item count and encoded bytes.
 
-Token postings also use numeric symbol and unit IDs. A prefix search can find a bounded candidate set without repeating full stable identities throughout the index, then hydrate only the selected symbols.
+This division uses each mechanism where it is strongest. Compiler-backed identities select packages, types, functions, and relationships that plain text cannot resolve reliably. Ripgrep finds statement-level words in current files cheaply. `context` reads source only for the selected anchor. The graph stops trying to be a compressed copy of the repository.
 
-## Hydrate in batches, fail on broken indirection
+## Verify the practical result
 
-Compact rows become useful only if reconstruction stays bounded. Hydration collects the internal unit, document, entity, detail, and intern IDs needed for a result, sorts and compacts them, loads each record family in batches, then rebuilds public graph values.
+On the same repository and commit, format 4 produced a 16,777,216-byte database with 6,269 symbols, no occurrences, and 9,535 retained edges. That is 5.56 index bytes per source byte and a 98.38% reduction from format 3. A forced refresh completed in 10.2 seconds.
 
-Missing dictionary entries, missing entities, absent cold details, or invalid enum codes are logical corruption. The codec does not return a partly populated fact or replace an unknown provider with an empty string. It classifies the index as corrupt and tells the caller to rebuild disposable state.
+The response boundary improved with it. The representative `explore --json` result fell from 171,537 bytes to 3,157 bytes. Selecting its first anchor produced a 3,195-byte `context --json` response containing 337 bytes of current source. These are controlled measurements from one repository, but they test the actual product constraints: disk amplification and useful evidence placed into an agent's context.
 
-Full export performs the same reconstruction across every record family and sorts the public snapshot canonically. The machine-wide [aggregate cache](/articles/caching-a-federated-graph-without-weakening-freshness.md) receives its hot symbol and edge stream through this codec too. Compact local storage does not create an alternative fact type for acceleration.
-
-## Replace one unit atomically
-
-Incremental indexing still owns facts by compilation unit. Before a replacement, Weave validates every incoming batch. Inside the write transaction it loads the old unit's owned rows and cold details, counts the intern and entity references they hold, removes tokens and dependent records in safe order, releases shared references, and inserts the replacement in canonical stable-ID order.
-
-That transaction either installs the complete new unit or retains the complete old one. A conflicting symbol identity after the unit and document have begun staging must roll everything back. Multi-unit incremental publication still prevalidates all batches before its bounded transaction sequence begins, while the freshness-generation marker makes an interrupted larger refresh observably stale.
-
-## Verify the representation as well as the graph
-
-Public graph verification can catch a dangling edge after facts are hydrated. It cannot explain why hydration itself failed. Storage v2 adds a lower-level verification pass over its private invariants.
-
-The verifier checks unit ownership, document references, numeric symbol identities, occurrence identities, edge endpoints, matching hot and cold rows, orphaned detail records, intern reference counts, and entity reference counts. Issues retain stable record and document context when it can be recovered. A missing edge-detail row, for example, becomes a fatal `missing-edge-detail` issue rather than an opaque export failure.
-
-Physical compaction remains separate. It copies a closed database through bbolt's compactor into a temporary file and replaces the original only after the compacted database is complete. Logical verification proves relationships among records; compaction reclaims pages. Neither changes public facts.
-
-## Reject legacy state before touching it
-
-Per-worktree indexes are derived state, so storage v2 does not carry a migration that rewrites a large v1 database in place. It rejects the old schema with a direct instruction to remove that exact index and run `weave index` again.
-
-There is a subtle safety problem: registering new bstore record definitions against an old file can begin automatic structural conversion before Weave decides the version is unsupported. The open path therefore reads the frozen metadata record through bbolt's read-only API first. Only a supported v2 marker allows the process to reopen the file and register v2 records. A regression test compares every legacy byte before and after rejection.
-
-This is one of the advantages of disposable state. Source, configuration, and reviewed relationships remain authoritative. A schema change can prefer a clean rebuild over a risky compatibility layer, while a stable graph export preserves the meaning users and tools depend on.
-
-## Borrow storage mechanics without borrowing a new product
-
-The design review kept the boundary deliberately narrow: retain bstore and bbolt, preserve Weave's normalized graph, and improve the representation with measured changes. bstore already provides packed records, integer sequences, compound indexes, and transactions. Its constraint is equally important. Every index repeats its indexed fields and primary key, so long string identities become expensive quickly. It also has no join or projection API, which leaves interning, hot/cold splits, and lifecycle accounting to Weave.
-
-bbolt remains a good match for single-file local derived state, one writer with many readers, and explicit physical compaction. Its files are not portable release artifacts, and deleted pages do not shrink the file until a rewrite. Those properties reinforce Weave's existing contract: back up source, not the index.
-
-[Source Code Intelligence Protocol](https://github.com/sourcegraph/scip) provides the most important counterweight. SCIP keeps human-readable stable symbol strings at its interchange boundary because opaque global IDs make debugging and incremental index production harder. Weave adopts the same public stance while using numeric identities only as private join keys. Graph databases such as MillenniumDB support the internal choice by showing how fixed-width identities reduce repetition in adjacency indexes, but Weave does not adopt a second graph engine, a whole-graph memory mirror, or a columnar snapshot. Atomic per-unit replacement matters more here than analytical scan throughput.
-
-## Measure the representation, not the aspiration
-
-The retained comparison builds representative v1 and v2 databases from exactly the same facts: one unit, 200 documents, 5,000 long SCIP-like symbol IDs, 5,000 definition occurrences, 4,999 call edges, full ranges, long fingerprints, and repeated categorical strings. V1 occupies 96,784,384 bytes. V2 occupies 63,553,536 bytes, a 34.3% reduction.
-
-That win is intentionally smaller than an early spike. Letting numeric row IDs break ties in candidate indexes saved more space but changed which bounded results survived after unit replacement. The final schema spends bytes on stable-ID ordering keys because exact query and truncation behavior outrank a prettier size ratio.
-
-The performance results are mixed in useful ways. A full prefix search limited to 50 symbols has overlapping latency and roughly 22% fewer allocations. One-edge adjacency is slower because returning full evidence now fetches a separate cold detail. Complete export is 34% slower, and replacing the roughly 15,200-fact unit is 17% slower. Those paths pay for joining more record families. Opening the fixture is effectively equivalent, while physical compaction is about 24% faster and allocates 42% fewer bytes.
-
-This is the result I want from a storage benchmark: a decision boundary, not a victory lap. Storage v2 materially reduces the representative file, keeps prefix lookup interactive, and preserves stable identities, deterministic export, bounded ordering, provenance, and generation semantics. It also records the cost of full materialization instead of hiding it by dropping evidence or moving verbose fields back into every hot index.
-
-The important contract is already testable: public snapshots, bounded ordering, truncation, and hot-fact scans remain equivalent; invalid indirection is visible; legacy bytes are not mutated; incremental deletion releases shared state correctly. Storage can become denser without asking the rest of Weave to learn a new meaning for its graph.
+The lesson is simpler than another record-layout optimization. A derived local index should retain what makes navigation faster, point precisely back to source, and stay cheap enough to rebuild. Everything else has to earn its persistent cost.
 
 
 ---
@@ -4467,7 +4270,7 @@ Those are not benchmark inconveniences. They are pressure on the indexing contra
 
 ## Make the corpus part of the test
 
-The retained soak covers twelve repositories at pinned commits: this website, a profile repository, C# value types and Cedar authorization, two Go analyzers, F# agent workflows, a Go fluid simulation, a large Go modular monolith, a Go set-reconciliation library, Weave itself, and a Rust rigid-body project. That mix is intentionally uneven. It includes tiny and large graphs, source and documentation, nested build roots, multi-project solutions, standalone fixtures, library and executable targets, and several compiler runtimes.
+The recorded soak covers twelve repositories at pinned commits: this website, a profile repository, C# value types and Cedar authorization, two Go analyzers, F# agent workflows, a Go fluid simulation, a large Go modular monolith, a Go set-reconciliation library, Weave itself, and a Rust rigid-body project. That mix is intentionally uneven. It includes tiny and large provider inventories, source and documentation, nested build roots, multi-project solutions, standalone fixtures, library and executable targets, and several compiler runtimes.
 
 The harness builds the candidate core and adapters once, then creates a detached local clone for each repository without hard links. Every clone gets its own Git-private index. The source checkout remains the authority being tested, not a scratch directory that the benchmark may quietly repair.
 
@@ -4530,7 +4333,9 @@ The strict final invocation exited zero. All twelve graphs verified and exported
 | weave | 81.763 s | 770 MiB | 0.918–0.966 s | 655,515,648 bytes |
 | ai-rigidbody | 82.406 s | 1,978 MiB | 0.708–0.768 s | 197,996,544 bytes |
 
-These are development-machine observations, not service-level objectives. The full [retained benchmark record](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-08-indexing-soak.md) pins the commits and environment and includes units, documents, symbols, occurrences, and edges for every graph.
+These are development-machine observations, not service-level objectives. The full [benchmark record](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-08-indexing-soak.md) pins the commits and environment and includes units, documents, symbols, occurrences, and edges emitted under the earlier exhaustive storage contract.
+
+Format 4 does not preserve those occurrence and statement-edge counts in the managed database. The soak remains evidence about adapter discovery, compiler preparation, normalization cost, source immutability, and complete provider output; its database sizes and retained fact counts are historical baselines, not current navigation-index targets.
 
 The matrix closes two earlier unknowns. Cedar previously exceeded a four-minute adapter bound; it now produces 287 units, 7,629 symbols, 69,794 occurrences, and 88,135 edges in 51.338 seconds. FKYeah now produces a complete 915-unit graph, including standalone fixture projects, in 132.146 seconds without restoring inside the timed adapter request.
 
@@ -4550,7 +4355,7 @@ All green does not mean all small. The Rust rigid-body repository peaked at 1,97
 
 The matrix also does not prove every repository shape, operating system, compiler version, or warm-cache state. It proves something narrower and more useful: these pinned repositories can be prepared without mutating their sources, indexed offline by this candidate, queried through current manifests, verified structurally, and exported completely under recorded bounds.
 
-That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare graph counts, storage, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, omits repeated Rust occurrences, skips verification, or silently restores packages is a failed run.
+That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare provider inventories, retained navigation counts, storage amplification, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, skips validation, or silently restores packages is a failed run. A smaller format-4 database that deliberately omits occurrences is expected.
 
 ## Let failures improve the shared boundary
 
@@ -4931,7 +4736,7 @@ Source: [https://thefellow.github.io/articles/warming-a-semantic-index-without-m
 
 [Query-driven freshness](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md) gives Weave a simple authority rule: every database-backed question proves the current Git and provider state before reading the graph. That rule remains correct when no background process exists. Its tradeoff is latency. The first question after an edit can inherit provider startup, compilation, normalization, and publication work.
 
-An optional watch mode can move that work earlier, but it can also quietly damage the architecture. If filesystem events decide what is current, if the watcher owns a second incremental indexer, or if queries trust a resident process instead of checking for themselves, the latency optimization has become a new correctness boundary.
+An optional watch mode can move that work earlier, but it can also quietly damage the architecture. If filesystem events decide what is current, if the watcher owns a second incremental indexer, or if queries trust the transient broker instead of checking for themselves, the latency optimization has become a new correctness boundary.
 
 [`weave watch`](https://github.com/TheFellow/weave) stays smaller than that. It is an optional foreground polling warmer over the same freshness manager queries already use. It owns no graph, installs no hook, starts no daemon, and publishes nothing directly.
 
@@ -6251,7 +6056,7 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), beginning with the repositories pinned on my profile and expanding to smaller tools worth explaining. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
-- [Weave](/projects/weave.md): A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries.
+- [Weave](/projects/weave.md): A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph.
 - [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [cedar-dotnet](/projects/cedar-dotnet.md): A C# implementation of the Cedar policy language and authorization model.
 - [go-riblt](/projects/go-riblt.md): A generic Go implementation of rateless set reconciliation with keyed codecs, streaming cells, and explicit resource limits.
@@ -6596,9 +6401,9 @@ Source: [https://thefellow.github.io/projects/weave/](https://thefellow.github.i
 
 ## Pyramid summary
 
-- **~2 words:** Semantic indexing
-- **~8 words:** A Git-aware semantic index joining compiler facts and workspace knowledge.
-- **Expanded:** A local-first semantic index that connects compiler facts, repository structure, and documents through bounded deterministic queries.
+- **~2 words:** Practical navigation
+- **~8 words:** A compact Git-aware index guiding agents to current source.
+- **Expanded:** A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph.
 
 ## Full content
 
@@ -6610,71 +6415,46 @@ Source: [https://thefellow.github.io/projects/weave/](https://thefellow.github.i
 
 Weave is a local-first, Git-aware semantic index for the knowledge encoded in a workspace. It combines language-native compiler facts with files, structured documents, sections, links, assets, routes, and metadata in one evidence-carrying graph, then exposes bounded CLI queries for people and coding agents. The index is disposable derived state. It stays beside Git instead of entering commits, requires no hosted service, and refreshes its automatic provider inventories before a query can observe stale answers.
 
-The problem is familiar when working in a large repository. Finding a name is easy; establishing which declaration it resolves to, who calls it, which interface it implements, what package owns it, and what a change can affect requires semantic context. Coding agents repeatedly reconstruct that context with filename search, text search, and whole-file reads. Weave preserves the relationships the compiler already established and gives them a deterministic command-line interface.
+The problem is familiar when working in a large repository. A coding agent can inspect source well once it reaches the right package, type, function, document, or file. Reaching that point repeatedly is the expensive part. Weave keeps a compact set of semantic anchors and high-value navigation relationships, then hands statement-level investigation back to current source instead of persisting a second, much larger copy of what compilers and text search can recover.
 
 ```sh
 weave symbols Handle --limit 20
 weave definition Handle
-weave callers Handle
-weave explore how Type.Method reaches its callers
-weave path SymbolA SymbolB --kind calls --max-depth 8
+weave explore how menu publication reaches persistence
+weave context example.com/project/menu.Service.Publish
+weave path PackageA PackageB --kind imports --max-depth 8
 weave impact --git-diff origin/main --json
-weave graph Handle --kind calls --kind implements --output handle.dot
+weave graph Handle --kind implements --output handle.dot
 weave graph README.md --interactive
 weave links add guide-documents-handler --from 'docs/guide.md#flow' --to Handle --kind documents
-weave workspace outline README.md
-weave workspace backlinks docs/design.md --scope catalog
+weave explore presentation surfaces
+weave graph docs/design.md --kind links-to --kind embeds
 ```
 
-Every result retains its provider and evidence class. A compiler-resolved call is `exact`; a checked-in relationship may be `declared` or `generated`; a future syntax fallback must say that it is `syntactic`. Source locations, stable symbol identities, and bounded traversal make the graph useful as evidence rather than as an opaque relevance score.
+`weave explore` is deliberately small. It returns a few semantic anchors plus diversified, ignore-aware ripgrep hits with paths, coordinates, previews, and exact `weave context` follow-ups. `context` then opens current Git-visible source for the selected declaration. The first stage has both an item limit and a 12 KiB encoded ceiling, so discovery cannot quietly turn into a graph dump.
 
-The native Go provider uses `go/packages` and `go/types` for declarations, references, imports, implementations, and direct calls. Isolated adapters now carry .NET, Python, Rust, C-family, TypeScript/JavaScript, and Java/Kotlin semantics across the same process contract. Roslyn, FSharp.Compiler.Service, CPython's compiler symbol table, rust-analyzer, and maintained SCIP producers remain the authorities for their own languages. Each adapter preserves what its producer can prove and omits stronger relationships it cannot: Python calls remain syntactic, rust-analyzer references do not become invented call edges, C++ facts remain scoped to one selected compilation database, and JVM builds require explicit authority to execute their build systems. Universal Ctags adds broad definition outlines as visibly `syntactic` evidence without pretending to replace those compilers.
+The stored format is a navigation projection, not a compiler-event archive. It retains repository documents; package, type, function, method, test, and provider-defined anchors; and relationships such as imports, dependencies, implementations, tests, generation, documentation, exposure, links, and embeds. It omits occurrences, statement-level calls and references, containment duplication, fields, constants, locals, and broad content-token postings. Providers may emit richer facts during indexing, but the projection decides what is worth paying to retain.
 
-An always-on workspace provider covers what does not compile. It inventories exact Git-visible paths and parses Markdown/GFM, YAML front matter, inert HTML, headings, links, images, fences, routes, topics, series, and explicit generated-from declarations. It never executes Jekyll, Liquid, Mermaid, plugins, network requests, or embedded examples. The resulting `workspace find`, `outline`, `links`, and `backlinks` queries can navigate a repository with no buildable artifact and join documentation to compiler-owned path anchors.
+That boundary changed the physical and agent-facing shape substantially. On the recorded 3,019,968-byte Go repository, format 4 reduced the database from 1,034,616,832 bytes to 16,777,216 bytes, a 98.38% reduction and 5.56 times the non-Git source size. The representative `explore --json` response fell from 171,537 bytes to 3,157 bytes, and its selected `context --json` response was 3,195 bytes. These are one reproducible audit, not universal performance claims, but they establish the practical acceptance boundary the implementation now tests.
 
-A second source-only provider covers declarations that sit between compiler facts and repository content. It feeds bounded Git-visible regular-file bytes to maintained parsers for Protobuf, OpenAPI 3, GraphQL, PostgreSQL migrations, Terraform HCL, and a declarative Go, Cargo, npm, Maven, and MSBuild manifest subset. One atomic unit per category reuses an unchanged fingerprint or completely relinks a changed corpus. A malformed cross-file schema category is omitted with a diagnostic; one malformed independent build manifest is omitted without hiding valid projects. Contained path-proven references may resolve locally, while remote, name-only, and otherwise unproven targets remain stable open endpoints. Declarations remain `declared`, migration filename order is `inferred`, explicit MSBuild generation is `generated`, and executable GraphQL navigation is `syntactic`. The provider runs no compiler, package manager, build, generator, Terraform runtime, database, template, or network loader, and never promotes parser success to compiler-exact evidence.
+The native Go provider and optional .NET, Python, Rust, C/C++, TypeScript/JavaScript, JVM, and Universal Ctags adapters still use their language-native tools to establish identities and navigation facts. The open process protocol keeps those runtimes outside the Go core. Explicit permissions, capability claims, input routing, validation, and atomic publication prevent an adapter from silently broadening its authority. The compact projection is shared across providers, so adding a precise compiler does not imply retaining all of its event exhaust forever.
 
-Language support uses an open, protoc-style process extension point. Any executable can implement the experimental [`weave.adapter/v0`](https://github.com/TheFellow/weave/blob/main/protocol/adapter/v0/README.md) request and frame contract without importing Weave's Go packages. The core owns capability negotiation, permissions, deadlines, bounds, validation, and atomic publication; the adapter owns its compiler and semantic units. Every fact must match that provider ownership, while an owned edge may point at entities supplied by another provider. Capability documents now declare normalized input and evidence claims so routing does not depend on provider names. `weave adapters install` can copy an explicitly selected local executable into private platform state, pin its artifact and capability digests, and make it automatic without a core change. Same-name precedence is selected registry, explicit companion environment path, then managed state. Overlapping precise owners, changed bytes, changed claims, or invalid configuration fail closed. A syntactic fallback receives only unclaimed `input_paths`, and the host rejects output outside that routed allowlist. Weave neither discovers registry files inside repositories nor scans `PATH` for arbitrary adapters, and its black-box conformance corpus tests the public executable contract without requiring a Go SDK or inventing a remote package registry. Direct SCIP import remains a bounded snapshot path whose producer output must currently be reimported when it changes.
+The workspace provider gives the same treatment to repositories that do not compile. It indexes Git-visible paths and structured Markdown, front matter, headings, links, assets, routes, and metadata without executing the site. Documents and sections are found through `explore` or `symbols`, opened through `context`, and connected through retained graph kinds such as `documents`, `links-to`, and `embeds`. The older posting- and containment-dependent `workspace` command family is intentionally gone. A source-only provider adds bounded facts from Protobuf, OpenAPI, GraphQL, PostgreSQL migrations, Terraform, and declarative project manifests without running builds, generators, package managers, databases, or network loaders.
 
-The automatic workspace, Go, .NET, Python, Rust, C++, TypeScript, relationship, and explicitly registered producers own disjoint inventories of semantic units. A refresh validates complete batches, replaces each changed unit atomically, and publishes a new freshness manifest only after the graph update succeeds. The manifest includes the repository, worktree, commit, tree, branch, dirty overlay, provider and runtime identities, configuration, and unit fingerprints. Branch switches, untracked files, route or heading-surface changes, build-context changes, an interpreter or toolchain upgrade, or a new adapter policy therefore cannot leave an old automatic inventory looking current.
+Freshness remains query-authoritative. A query compares the current Git and provider observation with the published manifest and refreshes changed semantic units before reading. `weave watch` can warm that same path, and a transient local broker can amortize process, schema, and dictionary startup, but neither becomes a second authority. The broker uses shared read-only handles and reaps itself after inactivity; `WEAVE_NO_BROKER=1` keeps the one-shot path available.
 
-The same normalized graph supports local and cross-repository questions. Explicitly registered worktrees can participate in catalog queries, but each member refreshes before its database is opened. A member that cannot refresh is excluded with a diagnostic instead of silently contributing stale facts. Conventional GitHub deep links can resolve to the same repository and path identities a catalog member exposes, while the authored URL and ref remain visible. File and Git-diff impact include incoming links and embeds, so an article or README that explains changed code can appear beside compiler-derived callers. `weave links` resolves human-facing endpoints once and stores their exact IDs as reviewed relationships, while `weave graph` exports a deterministic, bounded DOT neighborhood across the same code, content, and catalog entities. Its interactive mode serves that same current DOT from a tokenized loopback session, with embedded Graphviz, pan and zoom, animated refocus, history, and evidence filters. Architecture rules evaluate those ordinary edges with deterministic text, JSON, and SARIF output for local use and CI.
+Explicitly registered worktrees can participate in catalog queries, but each member proves freshness before contributing facts. Machine-wide aggregation remains a disposable acceleration layer rather than an authority. Bounded graph, path, dependency, impact, architecture, contextual-link, and semantic-diff operations work over the retained navigation relationships; statement-level investigation continues in source.
 
-Repeated catalog graph queries can use an immutable machine-wide hot projection without making it a freshness authority. Every selected worktree still refreshes first; the complete sorted set of manifest generations selects a cache containing only symbols, search tokens, edges, and fact provenance. Exact hits avoid query fan-out across every worktree graph, generation changes build a different file, and cache failures fall back to authoritative federation. Definitions, occurrences, documents, and source-rich context remain in their owning indexes.
-
-The current implementation is an early alpha with a usable Go indexing and query lifecycle, compiler-native C#, F#, Python, Rust, C, C++, CUDA, TypeScript, JavaScript, Java, and Kotlin coverage, a broad syntactic fallback, structured workspace navigation, source-only schema and build graphs, authored contextual relationships, focused DOT export and an animated local explorer, bounded source-rich context dossiers, provider-owned body-concept discovery, a persistent foreground agent-query session, an open process protocol with managed local adapters and executable conformance, graph storage and verification, Git-diff impact analysis, catalog federation, and architecture policy. `weave context` composes one exact entity, its definition and reference excerpts, direct relationships, adjacent entities, repository provenance, freshness, and independent truncation without adding a source cache or embedding index. `weave explore` applies bounded deterministic lexical ranking to a research phrase, then returns a small set of focus dossiers under one shared source budget. It preserves exact typed edges while omitting repeated neighbor source; direct `context` remains the rich follow-up. `weave session` keeps one bstore handle hot across serialized local queries, observes Git in the background, and closes before the ordinary authoritative refresh. The first repository-scale baseline has already changed the implementation: bounded per-unit storage transactions, candidate pruning for interface analysis, and fixed-size domain-separated Go fact identities brought a 433,523-fact Mixology index from beyond the five-minute measurement bound to 37.8 seconds. Compact identities reduced the graph from 7.54 GB to 1.11 GB, which is a substantial correction and still an explicit target for further reduction.
-
-The first agent-research dogfood asked an unfamiliar agent to trace Mixology's menu readiness from domain computation into its GUI, TUI, publication guard, and tests. Weave found the correct central topology quickly, but it also exposed opaque ambiguity, duplicate context endpoints, low-value references consuming bounds, a roughly 16,000-token batch, and noisy impact through generic methods. A second correct menu-publishing trace still needed 32 Weave commands. Those runs produced qualified `Type.Method` lookup, proximity-ranked context, container and surface diversification, complete Go function definitions, concise stable-name output, and phrase-to-dossier exploration. The first isolated paired run then gave both agents the same publication question and scored both answers 8/8. The agent using one successful `weave explore` call used 51.1% fewer input tokens, 37.5% fewer commands, 75% fewer filesystem searches, 33.3% fewer source reads, and 16.3% less wall time. This is one auditable paired sample, not a general performance estimate. Default impact policy also remains open for broader evidence.
-
-The second paired agent-research case asks about concepts that live inside the benchmark prose rather than its headings. That pressure extends the same graph instead of introducing another search service. Graph schema 2 lets a provider attach bounded normalized lexical hints to one exact entity; storage format 3 and the machine aggregate emit them through the existing token postings. Markdown preludes, section bodies, and code blocks contribute structured terms, while bounded Git-visible UTF-8 files provide a safe fallback for comments, configuration, scripts, and unsupported languages. Query responses omit the internal term set and reopen current source when evidence is requested. Both arms scored 8/8. The Weave arm used 21.3% fewer input tokens, 8.6% fewer output tokens, and no filesystem searches, but finished 1.90 seconds slower with the same two-command count. This remains one paired content sample.
-
-The agent access path is now IDE-shaped without becoming a daemon. `weave.query-session/v1` carries bounded local read requests over foreground NDJSON. The first valid request proves freshness and opens bstore; later requests reuse that serialized handle and its dictionaries. An exact Git observer runs in the background. Once it detects a new state, the next request closes storage, invokes the existing provider pipeline, reopens the published generation, and answers. EOF or cancellation releases the single owner. Mutation, maintenance, catalog, and full-export operations remain one-shot commands. In one local 20-request Mixology sample, the resident warm median was 0.379 ms after a 1,453.892 ms first request, compared with 751.974 ms for one one-shot call. A concurrent CLI timed out while the session owned bstore and succeeded after EOF, proving both reuse and release without implying a throughput distribution. Compact adjacent coordinates then reduced one eight-focus response from 229,134 to 84,036 bytes while retaining all 60 typed edges; direct context retains the expanded representation.
-
-Storage v2 pursues that remaining size explicitly without changing the public graph model. Stable string identities map to compact numeric entities, repeated categorical values are reference-counted interns, and search/adjacency rows separate from colder provider, evidence, range, and document details. Batched hydration reconstructs the same deterministic export, while private verification checks ownership, matching details, indirection, and reference counts. On a retained 5,000-symbol, 4,999-edge fixture, v2 reduced the database from 96.8 MB to 63.6 MB, or 34.3%, while recording slower cold-detail and whole-export paths rather than weakening graph evidence. Legacy indexes are rejected without modification and rebuilt from source rather than migrated in place.
-
-Git-aware semantic diffs extend the same evidence model across time. `weave diff graph`, `api`, `impact`, and `tests` index exact baseline and optional head revisions through the configured providers in isolated detached worktrees, or compare a baseline with the current dirty overlay. Git source changes remain separate from stable-ID graph changes, snapshot digests identify normalized facts independently of temporary worktree state, provider surface changes keep compatibility `unknown`, and affected tests retain their selection reason and evidence. A bounded explorer endpoint returns the same graph diff and stable transition identities for keyed browser animation.
-
-An optional `weave watch` foreground process can warm that same query-authoritative index after changes without installing a daemon, hook, native watcher, or second provider pipeline. It polls an exact opaque Git/provider observation, coalesces edits through one loop, refreshes only through the existing worktree lock and non-forced freshness operation, and retries unchanged failures with bounded backoff. Queries still prove freshness independently; the watcher changes latency, not authority.
-
-The local explorer is also growing into a source-evidence inspector and contextual-link editor without becoming a graph database editor. Stable node and collapsed-edge identities retrieve bounded current source through the existing context use case. Browser mutations carry an order-independent declaration revision into the normal link application boundary; the latest `.weave/bridges.json` is reloaded under a Git-private lock, stale forms receive a conflict, successful writes are atomic, and the bridge provider refreshes the canonical graph.
-
-The first repository measurement kept the .NET boundary honest. A large Cedar solution exceeded the adapter's four-minute full-refresh limit, and the original .NET 9 adapter host could not evaluate FKYeah's .NET 10 F# targets. Both runs stopped without publishing a partial inventory. The follow-up moved the adapter to .NET 10, preserved the prebuilt reference outputs FSharp.Compiler.Service needs, and ordered the F# project graph.
-
-A later [strict twelve-repository soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md) closed those two open results while finding broader repository-shape assumptions. Isolated clones prepared dependencies before a timed offline, restore-free index, then ran five current queries, graph verification, a complete export, and a source-status comparison. Every repository completed. Cedar produced a verified 287-unit graph in 51.338 seconds; FKYeah produced 915 units, including standalone fixture projects, in 132.146 seconds. The same pass bounded recursive Go dependency syntax retention, nested .NET solution and Rust crate discovery, repeated Rust SCIP symbols, generated C# documents, adapter environment handling, and harness continuation. All no-change queries completed in 0.706–1.001 seconds. An installed-binary smoke then refreshed one dirty go-riblt path in 2.990 seconds at 142 MiB and verified the new generation. The 1,978 MiB rust-analyzer peak on ai-rigidbody remains an explicit resource target rather than disappearing behind the green matrix.
-
-The first tagged release is still ahead; its workflow is already shaped around checksummed core archives, a portable bundle for the pure-Go C++, TypeScript, JVM, and Universal Ctags bridges, same-version .NET adapter artifacts, and an independently installable Python wheel. Commit-derived timestamps, per-archive SPDX SBOMs, an archive allowlist validator, and one SHA-256 inventory make the candidate reproducible and inspectable before publication. A tag first creates a private draft, then publishes it only after the exact artifacts pass validation and receive GitHub build provenance. The bridge bundle does not hide its external compiler or runtime requirements, Rust remains separate until its native target matrix is reproducible, and the prerelease executables remain explicitly unsigned by Apple or Windows.
-
-That validation matrix now conserves runners without relaxing its boundaries. Path filters avoid unrelated adapter jobs, and workflow-plus-PR-or-ref concurrency cancels superseded runs without coupling independent changes. Ecosystem caches follow lockfiles and checksum-pinned installer scripts; .NET restores are locked, and Rust and Gradle cache writes are restricted to `main`. The semantic index cache remains derived and content-keyed, then passes through `weave ci index` and `weave ci check` before use. SARIF and deterministic graph exports are produced under runner-temporary state rather than the worktree. Credentials, mutable adapter state, and authoritative source declarations are never cache payloads.
-
-The repository recorded its approved nine-increment completion pass as complete at its documented scope: release readiness, source-rich context, machine-wide aggregation, compact storage, semantic diffs, optional watch warming, the human explorer and editor, managed adapters, and source-only schema/build facts all have durable implementation and test evidence. The next usability pass then made indexed graph queries live up to that evidence. Relationship text now carries stable names and source paths, duplicate dependency evidence collapses by endpoint, Go references materialize readable external identities, file impact avoids unmaterialized reference roots, required operands appear in help, and an intentionally closed interactive explorer exits cleanly. The checkpoint does not declare the broader vision or useful-first-release definition complete. The first public prerelease remains a separate product milestone, and the project page keeps the measured and deliberately deferred gaps visible.
+The project remains early alpha. Its current direction is intentionally less ambitious than preserving every compiler observation: keep enough exact structure to navigate, keep answers bounded, reopen current source at the point of use, and make the local index cheap enough to discard and rebuild.
 
 ### Why it is worth exploring
 
 - It makes freshness part of every read instead of depending on a daemon or a remembered indexing step.
-- It keeps compiler truth, explicit declarations, and weaker evidence visibly distinct inside one graph.
+- It measures index and response amplification instead of treating more graph data as automatically better.
+- It keeps compiler truth, explicit declarations, and weaker evidence visibly distinct in the retained navigation facts.
 - It turns local adapter installation into pinned, claim-routed policy without pretending to operate a remote package registry.
 - It treats repository topology and documentation as first-class knowledge without executing their renderers.
-- It joins exact graph coordinates to current Git-visible source without caching a second copy of the repository.
+- It combines semantic anchors with bounded ripgrep discovery instead of storing statement-level source evidence twice.
 - It turns the same bounded neighborhood into deterministic DOT for people and JSON for agents.
 - It treats human output and versioned JSON as two presentations of the same bounded application behavior.
 - It turns impact analysis and architecture checks into queries over the same facts used for code navigation.
@@ -6837,7 +6617,7 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Weave](/series/weave.md): An ordered path through Weave's fresh compiler-backed graph, exact storage, managed adapters, agent measurement, resident query sessions, and cross-repository validation.
+- [Building Weave](/series/weave.md): An ordered path through Weave's move from an exhaustive semantic graph to a compact, fresh navigation index built for practical source discovery.
 - [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 
@@ -6887,12 +6667,14 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 ## Pyramid summary
 
 - **~2 words:** Weave series
-- **~8 words:** An ordered path through Weave's fresh compiler-backed semantic graph.
-- **Expanded:** An ordered path through Weave's fresh compiler-backed graph, exact storage, managed adapters, agent measurement, resident query sessions, and cross-repository validation.
+- **~8 words:** From exhaustive semantic graphs to compact progressive source discovery.
+- **Expanded:** An ordered path through Weave's move from an exhaustive semantic graph to a compact, fresh navigation index built for practical source discovery.
 
 ## Full content
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only declarations, paired agent-research measurement, body-concept discovery, a resident query session that keeps the graph hot without installing a daemon, and a strict cross-repository soak that makes real compiler and repository behavior part of the indexing contract.
+Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation keeps a compact navigation projection, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
+
+This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the format-4 navigation index retained, replaced, or removed. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
@@ -6900,17 +6682,17 @@ Weave turns language-native compiler facts and live Git state into a local seman
 1. **Article:** [Keeping a Semantic Index Fresh Without a Daemon](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md): How Weave combines Git state, provider-owned semantic units, bounded graph replacement, and manifest publication so every query observes current evidence.
 2. **Article:** [Making Language Support a Process Contract](/articles/making-language-support-a-process-contract.md): How Weave keeps compiler runtimes outside its Go process while the core owns capability negotiation, bounds, validation, freshness, and atomic publication.
 3. **Article:** [Making a Semantic Graph Inspectable](/articles/making-a-semantic-graph-inspectable.md): How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model.
-4. **Article:** [Composing Source-Rich Context Without a Second Index](/articles/composing-source-rich-context-without-a-second-index.md): How Weave composes exact graph facts, complete function definitions, current source excerpts, direct relationships, and repository provenance into bounded dossiers without adding embeddings or another store.
+4. **Article:** [Opening Source Context Only When It Is Useful](/articles/composing-source-rich-context-without-a-second-index.md): How Weave separates compact discovery from exact current-source context instead of serializing complete graph dossiers for every candidate.
 5. **Article:** [Caching a Federated Graph Without Weakening Freshness](/articles/caching-a-federated-graph-without-weakening-freshness.md): How Weave accelerates machine-wide symbol and graph queries with an immutable hot projection keyed by exact worktree generations while keeping every repository authoritative.
-6. **Article:** [Shrinking a Semantic Graph Without Changing Its Meaning](/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): How Weave separates its stable graph model from a compact private schema with numeric identities, interned strings, hot and cold records, exact ordering, and rebuild-only evolution.
+6. **Article:** [Shrinking a Semantic Graph into a Navigation Index](/articles/shrinking-a-semantic-graph-without-changing-its-meaning.md): How Weave cut a repository index by 98.38% by retaining navigation anchors and high-value relationships instead of treating every compiler event as durable product data.
 7. **Article:** [Comparing Semantic Graphs Without Mutating the Worktree](/articles/comparing-semantic-graphs-without-mutating-the-worktree.md): How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence.
 8. **Article:** [Warming a Semantic Index Without Making the Watcher Authoritative](/articles/warming-a-semantic-index-without-making-the-watcher-authoritative.md): How Weave uses an optional foreground polling loop to coalesce edits and warm the same query-authoritative freshness pipeline without installing a daemon, hook, or second indexer.
 9. **Article:** [Editing Contextual Graph Links Without Losing Source Truth](/articles/editing-contextual-graph-links-without-losing-source-truth.md): How Weave turns its local graph explorer into a source-evidence inspector and revision-guarded editor while keeping checked-in declarations, application use cases, and query-driven refresh authoritative.
 10. **Article:** [Managing Compiler Adapters Without Inventing a Package Registry](/articles/managing-compiler-adapters-without-inventing-a-package-registry.md): How Weave turns an explicitly selected local adapter executable into pinned, routable automatic language support with no remote registry, ambient discovery, or hidden trust expansion.
 11. **Article:** [Indexing Schemas and Build Declarations Without Executing the Repository](/articles/indexing-schemas-and-build-declarations-without-executing-the-repository.md): How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools.
-12. **Article:** [Measuring Agent Research Beyond Query Latency](/articles/measuring-agent-research-beyond-query-latency.md): Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations.
-13. **Article:** [Making Source Bodies Discoverable Without Copying Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave attaches bounded provider-owned lexical terms to exact content entities, retrieves prose and unsupported files through the existing graph, and still reads current source only at query time.
-14. **Article:** [Serving Persistent Agent Queries Without a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon.
+12. **Article:** [Measuring Agent Research Beyond Query Latency](/articles/measuring-agent-research-beyond-query-latency.md): How paired agent research and a storage-payload audit moved Weave from large graph dossiers to compact progressive discovery without losing answer quality.
+13. **Article:** [Finding Source Bodies Without Indexing Them](/articles/making-source-bodies-discoverable-without-copying-them.md): How Weave replaced broad body-token postings with bounded ripgrep discovery over current source while keeping structured document anchors in its navigation index.
+14. **Article:** [Reusing Local Query State Without Installing a Daemon](/articles/serving-persistent-agent-queries-without-a-daemon.md): How Weave serves bounded reads through an explicit NDJSON session or an idle-reaping per-worktree broker while preserving one-shot freshness and maintenance paths.
 15. **Article:** [Turning Cross-Repository Soaks into Indexing Contracts](/articles/turning-cross-repository-soaks-into-indexing-contracts.md): How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability.
 
 
