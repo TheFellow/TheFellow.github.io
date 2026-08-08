@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Discover source bodies through exact graph entities</title>
+  <desc id="desc">Bounded Markdown and generic UTF-8 file bodies produce normalized provider-owned terms. Existing bstore postings find exact document, section, code-block, and file entities without copying source or creating relationships. Explore ranks those identities, then context reads and verifies current Git-visible source.</desc>
+  <defs>
+    <marker id="arrow-yellow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#fab005"/></marker>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 23px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.yellow{stroke:#fab005;stroke-width:5;fill:none;marker-end:url(#arrow-yellow)}.cyan{stroke:#22b8cf;stroke-width:5;fill:none;marker-end:url(#arrow-cyan)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}
+    </style>
+  </defs>
+  <rect width="1440" height="900" class="bg"/>
+  <text x="720" y="66" text-anchor="middle" class="title">Find the entity by its body, read source only when asked</text>
+
+  <text x="44" y="126" class="lane">PROVIDER-OWNED INPUT</text>
+  <rect x="44" y="150" width="418" height="214" class="box" stroke="#fab005"/>
+  <text x="253" y="198" text-anchor="middle" class="label">Structured content</text>
+  <text x="253" y="238" text-anchor="middle" class="small">front matter + prelude</text>
+  <text x="253" y="270" text-anchor="middle" class="small">direct section body</text>
+  <text x="253" y="302" text-anchor="middle" class="small">fenced code block</text>
+  <text x="253" y="340" text-anchor="middle" class="tiny">Markdown structure preserves identity</text>
+
+  <rect x="44" y="410" width="418" height="214" class="box" stroke="#ff922b"/>
+  <text x="253" y="458" text-anchor="middle" class="label">Generic Git-visible file</text>
+  <text x="253" y="498" text-anchor="middle" class="small">regular · UTF-8 · non-asset</text>
+  <text x="253" y="530" text-anchor="middle" class="small">≤ 2 MiB per file</text>
+  <text x="253" y="562" text-anchor="middle" class="small">≤ 512 MiB per refresh</text>
+  <text x="253" y="600" text-anchor="middle" class="tiny">unchanged units carry forward</text>
+
+  <path d="M462 257 H530" class="yellow"/>
+  <path d="M462 517 H496 V315 H530" class="yellow"/>
+
+  <text x="530" y="126" class="lane">ONE GRAPH PROJECTION</text>
+  <rect x="530" y="150" width="430" height="474" class="box" stroke="#22b8cf"/>
+  <text x="745" y="198" text-anchor="middle" class="label">Exact entity + search_terms</text>
+  <text x="745" y="244" text-anchor="middle" class="small">document · section · code block · file</text>
+  <rect x="574" y="278" width="342" height="116" class="box" stroke="#fab005"/>
+  <text x="745" y="320" text-anchor="middle" class="small">lowercase · sorted · unique</text>
+  <text x="745" y="352" text-anchor="middle" class="small">≤ 128 bytes · ≤ 2,048 terms</text>
+  <text x="745" y="382" text-anchor="middle" class="tiny">discovery hint, not evidence</text>
+  <path d="M745 394 V440" class="cyan"/>
+  <rect x="574" y="440" width="342" height="126" class="box" stroke="#4dabf7"/>
+  <text x="745" y="484" text-anchor="middle" class="label">Existing token postings</text>
+  <text x="745" y="522" text-anchor="middle" class="small">same bstore · same entity ID</text>
+  <text x="745" y="552" text-anchor="middle" class="tiny">no source-text copy · no new edge</text>
+  <text x="745" y="604" text-anchor="middle" class="tiny">graph v2 · storage v3 · aggregate-safe</text>
+
+  <path d="M960 387 H1028" class="cyan"/>
+
+  <text x="1028" y="126" class="lane">BOUNDED RETRIEVAL</text>
+  <rect x="1028" y="150" width="368" height="214" class="box" stroke="#b197fc"/>
+  <text x="1212" y="198" text-anchor="middle" class="label">weave explore</text>
+  <text x="1212" y="238" text-anchor="middle" class="small">up to 32 useful terms</text>
+  <text x="1212" y="270" text-anchor="middle" class="small">rarity + coverage + specificity</text>
+  <text x="1212" y="302" text-anchor="middle" class="small">content-name diversification</text>
+  <text x="1212" y="340" text-anchor="middle" class="tiny">exact identity survives ranking</text>
+
+  <path d="M1212 364 V410" class="green"/>
+  <rect x="1028" y="410" width="368" height="214" class="box" stroke="#51cf66"/>
+  <text x="1212" y="458" text-anchor="middle" class="label">Current source dossier</text>
+  <text x="1212" y="498" text-anchor="middle" class="small">reopen Git-visible path</text>
+  <text x="1212" y="530" text-anchor="middle" class="small">verify identity + hash + UTF-8</text>
+  <text x="1212" y="562" text-anchor="middle" class="small">expand prelude/section or rank lines</text>
+  <text x="1212" y="600" text-anchor="middle" class="tiny">no stored term positions or source bytes</text>
+
+  <text x="44" y="700" class="lane">BOUNDARIES THAT STAY TRUE</text>
+  <rect x="44" y="726" width="1352" height="112" class="box" stroke="#495057"/>
+  <text x="720" y="772" text-anchor="middle" class="small">no phrase engine · no stemming · no embeddings · no arbitrary binary search · no semantic upgrade</text>
+  <text x="720" y="812" text-anchor="middle" class="small">provider provenance + exact identity + disposable projection + query-time source authority</text>
+</svg>

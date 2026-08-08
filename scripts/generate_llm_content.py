@@ -54,6 +54,8 @@ SUMMARIES = {
     "/articles/managing-compiler-adapters-without-inventing-a-package-registry/": ("Managed local adapters", "Pinned artifacts, capability claims, deterministic routing, and black-box conformance make local adapters safely automatic."),
     "/articles/indexing-schemas-and-build-declarations-without-executing-the-repository/": ("Source-only declarations", "Bounded parsers turn schemas, infrastructure, migrations, and manifests into category-atomic graph evidence."),
     "/articles/measuring-agent-research-beyond-query-latency/": ("Agent research dogfood", "A real repository investigation measures useful evidence, fallbacks, friction, and the product corrections that follow."),
+    "/articles/making-source-bodies-discoverable-without-copying-them/": ("Body concept discovery", "Bounded lexical hints find exact content entities without copying source text."),
+    "/articles/serving-persistent-agent-queries-without-a-daemon/": ("Resident agent queries", "One foreground owner keeps bounded graph queries warm and fresh."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),

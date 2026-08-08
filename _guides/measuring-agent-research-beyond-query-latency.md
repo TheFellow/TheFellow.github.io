@@ -1,8 +1,8 @@
 ---
 title: "Measuring Agent Research Beyond Query Latency"
 date: 2026-08-07 17:54:48 -0700
-last_modified_at: 2026-08-08 00:58:17 -0700
-excerpt: "A paired Weave benchmark traces menu publication through Mixology, preserves every command and answer, scores both arms 8/8, and measures how one source-rich dossier changes the investigation."
+last_modified_at: 2026-08-08 02:00:00 -0700
+excerpt: "Two paired Weave benchmarks preserve 8/8 answers while measuring how source-rich code and prose discovery change complete investigations."
 permalink: /articles/measuring-agent-research-beyond-query-latency/
 series: weave
 series_order: 12
@@ -85,7 +85,7 @@ weave explore how menu readiness reaches GUI and TUI
 weave explore AvailabilityCalculator.Readiness --limit 6 --relationship-limit 6 --json
 ```
 
-An exact entity naturally produces one dossier. A phrase becomes at most 24 useful terms plus a few mechanical suffix variants. Ordinary question words disappear, while generic scope terms refine ranking instead of becoming broad searches when more specific terms exist. Candidate ranking combines symbol-search position, display and stable-name matches, explicit domain scope, presentation scope, and kind weights. It also diversifies methods across containers and preserves explicitly requested GUI and TUI surfaces. The default returns at most six entities, independently caps each dossier's occurrence, incoming, and outgoing sections at six, and divides one 64 KiB source budget across all results. Go function and method definitions expand to their complete parsed declarations when the budget permits. Relationship ranking uses semantic-unit and stable-path proximity after evidence kind, keeping relevant local flow ahead of distant same-named endpoints. Natural-language reasoning stays in the consuming agent. Weave supplies bounded compiler, SCIP, content, and authored evidence from its existing graph without adding an embedded model or a second persisted search database.
+An exact short entity naturally produces one dossier. A longer research question skips exact-symbol resolution and becomes at most 32 useful terms plus a few mechanical suffix variants. Ordinary question words disappear, while generic scope terms refine ranking instead of becoming broad searches when more specific terms exist. Candidate ranking combines symbol-search position, posting rarity, term coverage, display-name matches, stable-name and path scope, explicit domain scope, presentation scope, kind, content specificity, and evidence origin. It also diversifies methods across containers, preserves explicitly requested GUI and TUI surfaces, and defers repeated content names. The default returns at most eight entities, independently caps each dossier's occurrence, incoming, and outgoing sections at six, and divides one 64 KiB source budget across all results. Go functions, methods, and Markdown sections expand to their complete parsed definitions when the budget permits. Relationship ranking uses semantic-unit and stable-path proximity after evidence kind, keeping relevant local flow ahead of distant same-named endpoints. Natural-language reasoning stays in the consuming agent. Weave supplies bounded compiler, SCIP, content, and authored evidence from its existing graph without adding an embedded model or a second persisted search database.
 
 The noisy default impact policy remains open. `weave impact TARGET --kind calls` already supplies a narrow alternative, but changing the default requires evidence across more languages and repositories. One dogfood trace is enough to expose a problem, not enough to declare a universal traversal policy.
 
@@ -122,3 +122,23 @@ The first valid paired run used Weave commit `9c756c7`, Mixology commit `7b01054
 The important result is not simply that one query ran quickly. Its initial dossier supplied the GUI, TUI, module, command, readiness, persistence, and test seams while the final answer preserved the same rubric completeness as ordinary exploration. That reduced rediscovery across every recorded measure in this sample.
 
 This is one paired sample, not a population estimate. It proves that the harness can isolate the tool, preserve correctness, retain auditable artifacts, and capture a concrete successful workload. Repeated cases across repositories and languages are still needed before treating these percentages as general expectations. That is a much stronger next position than either query latency alone or an uncontrolled success story: the measurement boundary now surrounds the agent's complete research task.
+
+## Aim the second case at prose, not declarations
+
+The second retained case turns the benchmark back on its own research record. Its question asks why query latency is insufficient, where the uncontrolled dogfood lost the agent, how friction became product behavior, how the paired arms isolate Weave, which artifacts and measurements survive, and how the first paired result should be interpreted. Most of that evidence lives in paragraphs rather than declaration names or section headings.
+
+An eight-item rubric makes the expected account explicit: latency must be separated from task completion; the uncontrolled run cannot support attribution; product changes must be tied to recorded friction; both arms must share the question inside isolated clones; the control must block the Weave executable; retained token, command, search, and read measurements must be named; correctness must remain 8/8; and one pair must not become a population claim.
+
+The case first exposed a retrieval gap: an exact Markdown section graph was still searchable mainly by its heading. That pressure produced the [bounded source-body discovery layer](/articles/making-source-bodies-discoverable-without-copying-them/) rather than a special benchmark shortcut. Both completed arms then scored 8/8. The Weave arm made one `explore` call and one targeted source read; the control made two filesystem searches and one source read.
+
+| Measure | With Weave | Without Weave | Difference |
+| --- | ---: | ---: | ---: |
+| Correctness rubric | 8/8 | 8/8 | n/a |
+| Input tokens | 50,461 | 64,117 | 21.3% fewer |
+| Output tokens | 1,322 | 1,447 | 8.6% fewer |
+| Wall time | 16.17s | 14.27s | 1.90s slower |
+| Command executions | 2 | 2 | equal |
+| Filesystem searches | 0 | 2 | 2 fewer |
+| Source-read commands | 1 | 1 | equal |
+
+The result is useful because it is mixed. Body discovery removed filesystem search and reduced tokens while preserving the complete answer, but it did not win wall time and it did not reduce the command count. The retained run then drove ranking corrections for broad generated pages, rare terms, entity length, related-section coherence, Markdown preludes, and generic-file source anchoring. This remains one content-repository pair, not a general estimate. The benchmark can now describe exactly which part improved without flattening every measurement into a victory.
