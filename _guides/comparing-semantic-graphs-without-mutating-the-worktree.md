@@ -1,7 +1,7 @@
 ---
 title: "Comparing Semantic Graphs Without Mutating the Worktree"
 date: 2026-08-07 13:15:28 -0700
-last_modified_at: 2026-08-08 14:20:00 -0700
+last_modified_at: 2026-08-08 14:27:00 -0700
 excerpt: "How Weave compares exact Git revisions and dirty worktrees through the same provider pipeline, separates source changes from graph changes, and makes bounded impact and test claims with evidence."
 permalink: /articles/comparing-semantic-graphs-without-mutating-the-worktree/
 series: weave
@@ -18,10 +18,10 @@ topics: ["Semantic diffs", "Git", "Impact analysis"]
 
 `git diff` can tell me that a file moved, a line changed, or an untracked path appeared. It cannot tell me whether a normalized symbol changed, an edge disappeared, a provider-owned public surface moved, or a test became semantically downstream of the edit. A semantic index can answer those questions about its current graph, but comparing only the current database with Git history would mix two different moments and call the result a diff.
 
-[Weave](https://github.com/TheFellow/weave) closes that gap by building an exact graph snapshot for each side through the same configured provider pipeline. It resolves the baseline and optional head to immutable Git objects, materializes historical revisions away from the user's working tree, compares normalized facts by stable identity, and exposes four bounded views: graph, API surface, reverse impact, and affected tests.
+[Weave](https://github.com/TheFellow/weave) closes that gap by building an exact graph snapshot for each side through the same configured provider pipeline. It resolves the baseline and optional head to immutable Git objects, materializes historical revisions away from the user's working tree, compares normalized facts by stable identity, and exposes four bounded views: graph, API surface, reverse impact, and tests connected by explicit retained `tests` edges. The lean Go provider does not infer affected tests from test-only compilation variants.
 
 <figure class="article-figure">
-  <img src="{{ '/assets/images/articles/weave/semantic-snapshot-diff.svg' | relative_url }}" alt="A Git baseline resolves to exact commit and tree objects, enters a temporary detached worktree, and runs through the configured freshness providers to produce a normalized graph snapshot. The other side is either another isolated revision or the current dirty worktree followed by a freshness recheck. Git separately provides the authoritative source-change inventory. Stable graph identities produce added, removed, and changed facts, which feed graph, API surface, reverse-impact, and evidence-backed affected-test views.">
+  <img src="{{ '/assets/images/articles/weave/semantic-snapshot-diff.svg' | relative_url }}" alt="A Git baseline resolves to exact commit and tree objects, enters a temporary detached worktree, and runs through the configured freshness providers to produce a normalized graph snapshot. The other side is either another isolated revision or the current dirty worktree followed by a freshness recheck. Git separately provides the authoritative source-change inventory. Stable graph identities produce added, removed, and changed facts, which feed graph, API surface, reverse-impact, and explicit retained test-edge views.">
   <figcaption>Two exact semantic snapshots and one Git-authoritative source inventory meet at a bounded diff contract. Historical indexing never checks out the user's branch.</figcaption>
 </figure>
 

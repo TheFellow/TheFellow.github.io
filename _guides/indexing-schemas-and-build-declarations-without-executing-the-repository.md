@@ -1,7 +1,7 @@
 ---
 title: "Indexing Schemas and Build Declarations Without Executing the Repository"
 date: 2026-08-07 16:26:04 -0700
-last_modified_at: 2026-08-08 14:20:00 -0700
+last_modified_at: 2026-08-08 14:27:00 -0700
 excerpt: "How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools."
 permalink: /articles/indexing-schemas-and-build-declarations-without-executing-the-repository/
 series: weave
@@ -16,7 +16,7 @@ topics: ["Schema indexing", "Build manifests", "Evidence"]
 
 {% include series-notice.html %}
 
-Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable/) explains structured documents, headings, routes, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
+Compiler providers explain what executable source means. The [workspace provider](/articles/making-a-semantic-graph-inspectable/) explains structured documents, headings, and links. A large repository still carries another layer of knowledge between them: API operations, schema types, migration resources, infrastructure addresses, project identities, dependencies, and explicit generation mappings.
 
 Those declarations are too useful to leave as plain text. They are also not permission to run every tool that understands them. Evaluating a build can execute plugins and targets. Terraform can load providers and state. An OpenAPI loader can follow files or URLs. A migration framework can apply templates or connect to a database. Automatic indexing should not acquire any of those powers merely because a matching file exists.
 

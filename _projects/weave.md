@@ -1,7 +1,7 @@
 ---
 title: "Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-08 14:20:00 -0700
+last_modified_at: 2026-08-08 14:27:00 -0700
 excerpt: "A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph."
 language: "Go"
 license: "MIT"
@@ -23,7 +23,7 @@ topics: ["Code intelligence", "Developer tools", "Git"]
 [Read the agent dogfood](/articles/measuring-agent-research-beyond-query-latency/){: .btn }
 [Inspect the indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts/){: .btn }
 
-Weave is a local-first, Git-aware navigation index for the knowledge encoded in a workspace. It combines language-native declaration anchors with structured documents, sections, routes, and high-value relationships, then exposes bounded CLI queries for people and coding agents. The index is disposable derived state. It stays beside Git instead of entering commits, requires no hosted service, and refreshes its automatic provider inventories before a query can observe stale answers.
+Weave is a local-first, Git-aware navigation index for the knowledge encoded in a workspace. It combines language-native declaration anchors and package topology with structured documents, sections, and high-value relationships, then exposes bounded CLI queries for people and coding agents. The index is disposable derived state. It stays beside Git instead of entering commits, requires no hosted service, and refreshes its automatic provider inventories before a query can observe stale answers.
 
 The problem is familiar when working in a large repository. A coding agent can inspect source well once it reaches the right package, type, function, document, or file. Reaching that point repeatedly is the expensive part. Weave keeps a compact set of semantic anchors and high-value navigation relationships, then hands statement-level investigation back to current source instead of persisting a second, much larger copy of what compilers and text search can recover.
 
@@ -49,7 +49,7 @@ The measured format-4 transition established the practical boundary. On a record
 
 The native Go provider and optional .NET, Python, Rust, C/C++, TypeScript/JavaScript, JVM, and Universal Ctags adapters use their language-native tools to establish identities and navigation facts. The open process protocol keeps those runtimes outside the Go core. Every index request now requires `profile: navigation-v1`; explicit permissions, capability claims, input routing, validation, and atomic publication prevent an adapter from silently broadening its authority. Adding a precise compiler does not imply producing or retaining all of its event exhaust.
 
-The workspace provider gives the same treatment to repositories that do not compile. It inventories Git-visible paths only to resolve links, while persisting structured Markdown documents, headings, routes, and retained relationships without executing the site. Generic files, directories, assets, code blocks, topics, and body terms are not separate stored entities. Documents and sections are found through `explore` or `symbols`, opened through `context`, and connected through graph kinds such as `documents`, `links-to`, and `embeds`. A source-only provider adds bounded facts from Protobuf, OpenAPI, GraphQL, PostgreSQL migrations, Terraform, and declarative project manifests without running builds, generators, package managers, databases, or network loaders.
+The workspace provider gives the same treatment to repositories that do not compile. It inventories Git-visible paths only to resolve links, while persisting structured Markdown documents, headings, links, embeds, and generated-from relationships without executing the site. Generic files, directories, assets, routes, code blocks, topics, and body terms are not separate stored entities. Documents and sections are found through `explore` or `symbols`, opened through `context`, and connected through graph kinds such as `documents`, `links-to`, and `embeds`. A source-only provider adds bounded facts from Protobuf, OpenAPI, GraphQL, PostgreSQL migrations, Terraform, and declarative project manifests without running builds, generators, package managers, databases, or network loaders.
 
 Freshness remains query-authoritative. A query compares the current Git and provider observation with the published manifest and refreshes changed semantic units before reading. `weave watch` can warm that same path, and a transient local broker can amortize process, schema, and dictionary startup, but neither becomes a second authority. The broker uses shared read-only handles and reaps itself after inactivity; `WEAVE_NO_BROKER=1` keeps the one-shot path available.
 

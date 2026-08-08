@@ -75,7 +75,7 @@ Generated node names, clusters, attributes, and edges are sorted. Every dynamic 
 
 ## Author the context compilers cannot see
 
-Visualization exposed a second problem: some of the most useful paths do not belong to any compiler. An article documents a handler. A schema generates a client. A route exposes a service in another repository. Those facts should be reviewed source truth, but requiring a person to export opaque graph IDs and hand-edit JSON is a poor authoring interface.
+Visualization exposed a second problem: some of the most useful paths do not belong to any compiler. An article documents a handler. A schema generates a client. One repository depends on an intentional resource in another. Those facts should be reviewed source truth, but requiring a person to export opaque graph IDs and hand-edit JSON is a poor authoring interface.
 
 [`weave links`](https://github.com/TheFellow/weave/blob/main/docs/declared-bridges.md) resolves human-facing endpoints once, then stores their exact identities:
 
@@ -93,7 +93,7 @@ weave links remove guide-documents-handler
 
 Add and update require each query to resolve uniquely. The stored `.weave/bridges.json` declaration uses `entity:<exact-id>` endpoints, so a later display-name collision cannot silently retarget it. `id:<exact-id>` deliberately creates an open endpoint for an immutable commit or resource that is not materialized yet; it is not a fuzzy-resolution escape hatch.
 
-Endpoints are graph identities rather than only stored compiler symbols. A relationship can connect packages, Markdown documents and sections, routes, URLs, code declarations, or open provider-neutral path identities. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
+Endpoints are graph identities rather than only stored compiler symbols. A relationship can connect packages, Markdown documents and sections, URLs, code declarations, or intentional open resources and provider-neutral path identities. Catalog scope can resolve endpoints across registered worktrees. Authored relationships are limited to edge kinds retained by the navigation index, and their evidence remains `declared`, except generation relationships, which remain `generated`. A CLI flag cannot promote a human assertion to compiler-exact evidence.
 
 Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes concurrent read-modify-write operations, while the reviewed declaration remains in the worktree. After publication, Weave refreshes the current repository so the new relationship immediately participates in graph, path, impact, export, architecture, and federation queries.
 
@@ -101,7 +101,7 @@ Writes are strict, canonical, bounded, and atomic. A Git-private lock serializes
 
 Authored links do not enter a side annotation database. The built-in Go, adapter, workspace, schema/build, and relationship providers construct the same normalized `graph.Edge` shape. Provider ownership, the retained edge vocabulary, and evidence defaults are validated at shared boundaries.
 
-That common shape is what makes mixed neighborhoods useful. A compiler-owned `implements` edge can meet an exposed route and a reviewed `documents` link to a Markdown section. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
+That common shape is what makes mixed neighborhoods useful. A compiler-owned `implements` edge can meet a generated schema relationship and a reviewed `documents` link to a Markdown section. Each edge keeps the source of its claim. The graph view can combine them without flattening `exact`, `generated`, `declared`, and `syntactic` into one confidence score.
 
 An exact endpoint can become unmaterialized after a rename. Weave leaves that reviewed relationship explicit and inspectable instead of guessing a new target. The missing node in DOT is evidence of drift that a person can repair.
 
