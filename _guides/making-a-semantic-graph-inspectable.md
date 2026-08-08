@@ -1,7 +1,7 @@
 ---
 title: "Making a Semantic Graph Inspectable"
 date: 2026-08-07 10:28:00 -0700
-last_modified_at: 2026-08-07 17:28:08 -0700
+last_modified_at: 2026-08-07 17:54:48 -0700
 excerpt: "How Weave turns one bounded semantic neighborhood into deterministic DOT, reviewed contextual links, and an animated local explorer without creating a second graph model."
 permalink: /articles/making-a-semantic-graph-inspectable/
 series: weave
@@ -51,6 +51,8 @@ fixture.HandleRequest  calls  fixture.authorize  main.go:8:3
 ```
 
 Weave now hydrates every query response with the materialized symbols and documents referenced by its nodes, edges, and occurrences. The text renderer can therefore show stable names and repository-relative source locations, while `--json` retains the exact IDs and complete records. `callers`, `callees`, `dependencies`, `path`, and `impact` all use the same relationship presentation. A path with no result says so directly instead of printing an ambiguous empty line, and Ctrl-C is a successful end to an interactive graph session rather than a command failure.
+
+Human input gets the same treatment. Compiler-qualified stable names can encode ownership as segments such as `package`, `type`, and `method`, but `Server.Serve` is the spelling a person naturally reaches for. The resolver keeps exact IDs, exact stable names, and provider search order authoritative, then falls back to the concise qualified suffix when it selects exactly one symbol. An ambiguous query reports stable names, kinds, and graph IDs for several candidates, plus the remaining count, so refinement does not begin with two opaque hashes.
 
 That hydration exposed provider details that matter to the answer. The native Go index now materializes external packages and referenced external objects as readable endpoints, includes implicit declarations such as type-switch variables, and preserves stable ownership through aliases and reconstructed type objects. Explicit open-world endpoints remain valid when another provider has not materialized them.
 

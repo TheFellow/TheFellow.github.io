@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">A real agent investigation turns Weave evidence and friction into product changes</title>
+  <desc id="desc">An unfamiliar agent starts with a menu-readiness question. Weave supplies a bounded semantic path through domain readiness, shared application state, GUI and TUI presentation, publication enforcement, and tests. Targeted source reads confirm the trace, while recorded fallback searches, response size, ambiguity, and truncation lead to qualified lookup, ranked context, readable output, and a future controlled benchmark.</desc>
+  <defs>
+    <marker id="arrow-cyan" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#22b8cf"/></marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#ff922b"/></marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#51cf66"/></marker>
+    <style>
+      .bg{fill:#151217}.box{fill:#242021;stroke-width:4;rx:16}.title{fill:#f8f9fa;font:700 34px ui-monospace,SFMono-Regular,Menlo,monospace}.label{fill:#f8f9fa;font:700 23px ui-monospace,SFMono-Regular,Menlo,monospace}.small{fill:#d8dee9;font:18px ui-monospace,SFMono-Regular,Menlo,monospace}.tiny{fill:#adb5bd;font:16px ui-monospace,SFMono-Regular,Menlo,monospace}.lane{fill:#ced4da;font:700 17px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:2px}.cyan{stroke:#22b8cf;stroke-width:5;fill:none;marker-end:url(#arrow-cyan)}.orange{stroke:#ff922b;stroke-width:5;fill:none;marker-end:url(#arrow-orange)}.green{stroke:#51cf66;stroke-width:5;fill:none;marker-end:url(#arrow-green)}
+    </style>
+  </defs>
+  <rect width="1440" height="900" class="bg"/>
+  <text x="720" y="66" text-anchor="middle" class="title">Measure the investigation, not only the query</text>
+
+  <text x="44" y="126" class="lane">QUESTION</text>
+  <rect x="44" y="150" width="330" height="184" class="box" stroke="#22b8cf"/>
+  <text x="209" y="198" text-anchor="middle" class="label">Unfamiliar agent</text>
+  <text x="209" y="238" text-anchor="middle" class="small">How does menu readiness</text>
+  <text x="209" y="268" text-anchor="middle" class="small">reach GUI + TUI?</text>
+  <text x="209" y="310" text-anchor="middle" class="tiny">record every fallback</text>
+
+  <path d="M374 242 H452" class="cyan"/>
+
+  <text x="452" y="126" class="lane">BOUNDED EVIDENCE</text>
+  <rect x="452" y="150" width="536" height="184" class="box" stroke="#22b8cf"/>
+  <text x="720" y="198" text-anchor="middle" class="label">weave explore RESEARCH PHRASE</text>
+  <text x="720" y="238" text-anchor="middle" class="small">lexical rank · bounded dossiers</text>
+  <text x="720" y="272" text-anchor="middle" class="small">source · callers · callees · references</text>
+  <text x="720" y="310" text-anchor="middle" class="tiny">most queries &lt; 1.5 s</text>
+
+  <path d="M988 242 H1066" class="cyan"/>
+
+  <text x="1066" y="126" class="lane">CONFIRMATION</text>
+  <rect x="1066" y="150" width="330" height="184" class="box" stroke="#51cf66"/>
+  <text x="1231" y="198" text-anchor="middle" class="label">Targeted source</text>
+  <text x="1231" y="238" text-anchor="middle" class="small">range reads from evidence</text>
+  <text x="1231" y="272" text-anchor="middle" class="small">one reference validation</text>
+  <text x="1231" y="310" text-anchor="middle" class="tiny">correct final trace</text>
+
+  <text x="44" y="400" class="lane">ARCHITECTURAL TRACE</text>
+  <rect x="44" y="426" width="252" height="126" class="box" stroke="#4dabf7"/>
+  <text x="170" y="470" text-anchor="middle" class="label">Domain</text>
+  <text x="170" y="508" text-anchor="middle" class="small">Readiness</text>
+  <text x="170" y="536" text-anchor="middle" class="tiny">report + blockers</text>
+
+  <path d="M296 489 H354" class="cyan"/>
+  <rect x="354" y="426" width="252" height="126" class="box" stroke="#22b8cf"/>
+  <text x="480" y="470" text-anchor="middle" class="label">Composition</text>
+  <text x="480" y="508" text-anchor="middle" class="small">ApplyReadiness</text>
+  <text x="480" y="536" text-anchor="middle" class="tiny">shared projection</text>
+
+  <path d="M606 489 H664" class="cyan"/>
+  <rect x="664" y="426" width="252" height="126" class="box" stroke="#b197fc"/>
+  <text x="790" y="470" text-anchor="middle" class="label">Surfaces</text>
+  <text x="790" y="508" text-anchor="middle" class="small">GUI + TUI</text>
+  <text x="790" y="536" text-anchor="middle" class="tiny">presenters + view model</text>
+
+  <path d="M916 489 H974" class="cyan"/>
+  <rect x="974" y="426" width="198" height="126" class="box" stroke="#ff922b"/>
+  <text x="1073" y="470" text-anchor="middle" class="label">Publish</text>
+  <text x="1073" y="508" text-anchor="middle" class="small">enforcement</text>
+  <text x="1073" y="536" text-anchor="middle" class="tiny">independent guard</text>
+
+  <path d="M1172 489 H1230" class="cyan"/>
+  <rect x="1230" y="426" width="166" height="126" class="box" stroke="#51cf66"/>
+  <text x="1313" y="470" text-anchor="middle" class="label">Tests</text>
+  <text x="1313" y="508" text-anchor="middle" class="small">unit + UI</text>
+  <text x="1313" y="536" text-anchor="middle" class="tiny">stale result</text>
+
+  <text x="44" y="622" class="lane">RECORDED FRICTION</text>
+  <rect x="44" y="648" width="540" height="158" class="box" stroke="#ff922b"/>
+  <text x="314" y="692" text-anchor="middle" class="label">What latency misses</text>
+  <text x="314" y="732" text-anchor="middle" class="small">ambiguous methods · duplicate edges</text>
+  <text x="314" y="764" text-anchor="middle" class="small">16k-token batch · 32-command follow-up</text>
+  <text x="314" y="792" text-anchor="middle" class="tiny">no control arm · noisy impact defaults</text>
+
+  <path d="M584 727 H660" class="orange"/>
+
+  <text x="660" y="622" class="lane">PRODUCT RESPONSE</text>
+  <rect x="660" y="648" width="736" height="158" class="box" stroke="#51cf66"/>
+  <text x="1028" y="692" text-anchor="middle" class="label">Make the next investigation smaller</text>
+  <text x="1028" y="732" text-anchor="middle" class="small">Type.Method lookup · ranked context · stable labels</text>
+  <text x="1028" y="764" text-anchor="middle" class="small">phrase retrieval · controlled comparison next</text>
+  <text x="1028" y="792" text-anchor="middle" class="tiny">impact defaults remain an open measured question</text>
+
+  <path d="M1028 806 V842 H20 V242 H44" class="green"/>
+  <text x="650" y="866" text-anchor="middle" class="tiny">repeat with the same question and a comparable without-Weave arm</text>
+</svg>

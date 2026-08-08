@@ -16,6 +16,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
+[Follow the Weave research trace](/articles/measuring-agent-research-beyond-query-latency.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -24,6 +25,8 @@ The repository's central argument is that important rules should be executable. 
 Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or it may admit that no replacement is known. Independent event handlers prepare their work before any of them mutate state, then update inventory, recipes, and historical orders inside the originating transaction. Menu readiness reflects the resulting state without destructively changing menu membership. A replacement rewrites future recipes. An unresolved required ingredient moves its drinks to `review_required`, blocks affected orders, and leaves published menus visible in a degraded state. If one handler fails, the complete operation rolls back. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
 
 That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI all expose the same retirement choices and readiness decision, while their interaction and asynchronous loading remain native to each surface.
+
+That cross-surface readiness path now serves as Weave's first agent-research dogfood question. An unfamiliar agent used semantic callers, callees, references, and source locations to trace the domain calculation through `ReadinessReport`, `ApplyReadiness`, GUI and TUI presenters, independent publication enforcement, and relevant tests. A second trace followed publish authorization through surface action state, the public module, middleware, readiness enforcement, and persistence. The [recorded investigation](/articles/measuring-agent-research-beyond-query-latency.md) makes Mixology both the subject of the answer and the repository-scale test of whether semantic indexing actually reduces discovery work.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
