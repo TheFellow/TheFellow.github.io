@@ -23,6 +23,7 @@ weave context HandleRequest
 weave context README.md --context-lines 4
 weave context docs/design.md#storage --json
 weave context SharedType --scope catalog --repo github.com/example/service
+weave context Server.Serve
 ```
 
 <figure class="article-figure">
@@ -32,9 +33,9 @@ weave context SharedType --scope catalog --repo github.com/example/service
 
 ## Compose the graph that already exists
 
-The context operation starts with the same heterogeneous resolver used by the other query surfaces. A target may identify a compiler symbol, package, file, document section, route, asset, or another materialized entity. Resolution must produce exactly one entity. If a fuzzy name matches more than one, the command fails with the exact graph IDs instead of guessing which result looks most relevant.
+The context operation starts with the same heterogeneous resolver used by the other query surfaces. A target may identify a compiler symbol, package, file, document section, route, asset, or another materialized entity. Resolution must produce exactly one entity. Concise qualified names such as `Server.Serve` can match compiler stable names whose ownership is encoded as longer package, type, and method segments. Exact IDs and stable names retain precedence. If a query still matches more than one entity, the command reports candidate stable names, kinds, and graph IDs instead of guessing which result looks most relevant.
 
-Once resolved, the operation asks the existing store for definition and reference occurrences, direct incoming edges, direct outgoing edges, and materialized entities at the other ends of those edges. It does not infer a relationship from nearby text or ask a model to summarize the graph. Every returned fact retains its provider and evidence class.
+Once resolved, the operation asks the existing store for definition and reference occurrences, direct incoming edges, direct outgoing edges, and materialized entities at the other ends of those edges. Human output begins with stable names, then removes a repeated repository identity and compiler category segments such as `type` and `method` inside the dossier. JSON retains the full names and exact graph IDs. The query does not infer a relationship from nearby text or ask a model to summarize the graph. Every returned fact retains its provider and evidence class.
 
 The result is deliberately one hop. A context dossier should help choose the next exact query, not quietly become an unbounded neighborhood walk. [`weave graph`](/articles/making-a-semantic-graph-inspectable.md) remains the right surface for exploring topology; `weave path` remains the right surface for a bounded route; `weave impact` remains the right surface for reverse reachability.
 
@@ -60,6 +61,8 @@ These are data conditions, not excuses to guess. `unsafe-path`, `not-git-visible
 
 A single global limit makes a composite response unpredictable. A symbol with many references could consume the allowance before one incoming relationship appears. Weave instead applies `--limit` independently to occurrences, incoming edges, and outgoing edges. Each section reports its own truncation.
 
+The relationship sections read a bounded surplus before applying that limit, collapse edges that reach the same adjacent entity, and retain the most useful evidence for that endpoint. Calls come before contracts and inheritance, dependencies come before authored navigation, and raw references come last. A reference remains when it is the only useful known connection, but local variables, parameters, and language builtins are omitted from this bounded dossier because their evidence already appears in the source excerpt. They remain available through exhaustive graph data. Repeated reference facts cannot crowd a compiler-resolved call out of a small context response. Stable rank, endpoint, and edge ordering keep the selection deterministic.
+
 Source has a separate byte budget. The default response allows 64 KiB of excerpt text. If adding surrounding lines would exceed the remaining budget, the loader first tries the exact evidence range. If even that does not fit, the excerpt reports budget exhaustion and returns no partial line. `--context-lines` and `--max-source-bytes` make both choices explicit.
 
 ```sh
@@ -71,6 +74,19 @@ weave context HandleRequest \
 ```
 
 The structured result uses `weave.context/v1` inside the ordinary `weave.query/v1` response. Its metadata records scope, bytes returned, freshness, partial federation, and truncation for occurrences, incoming relationships, outgoing relationships, and source. Deterministic ordering makes two equivalent dossiers compare cleanly.
+
+## Reuse the dossier for a research phrase
+
+An agent does not always begin with one entity. `weave explore RESEARCH PHRASE` adds bounded deterministic lexical retrieval in front of the same context composition. It first gives an exact or uniquely resolvable entity the usual single result. Otherwise it extracts up to twelve useful terms, removes ordinary question words, derives a small set of mechanical suffix variants, and treats generic scope words such as `domain`, `GUI`, and `TUI` as ranking context when more specific terms exist. Candidates accumulate explicit scores from symbol-search position, exact or partial display-name matches, stable-name matches, scope matches, and kind weights. Score, stable name, and graph ID define the complete order.
+
+```sh
+weave explore how menu readiness reaches GUI and TUI \
+  --limit 6 \
+  --relationship-limit 6 \
+  --context-lines 1
+```
+
+The default returns at most six entities and independently caps each dossier's occurrences, incoming relationships, and outgoing relationships at six. One 64 KiB source allowance is divided across the selected entities rather than silently multiplying with the result count. Each result is still an ordinary `weave.context/v1` dossier with exact identities, current source checks, provenance, freshness, and truncation. The command adds no model, embedding store, or second persisted query engine; natural-language reasoning remains with the consuming agent.
 
 ## Carry provenance across repositories
 

@@ -30,7 +30,7 @@
   <text x="705" y="225" text-anchor="middle" class="label">weave context TARGET</text>
   <text x="705" y="272" text-anchor="middle" class="small">resolve exactly one entity</text>
   <text x="705" y="312" text-anchor="middle" class="small">definitions · references</text>
-  <text x="705" y="352" text-anchor="middle" class="small">incoming · outgoing · adjacent</text>
+  <text x="705" y="352" text-anchor="middle" class="small">rank + collapse by endpoint</text>
   <text x="705" y="392" text-anchor="middle" class="small">line windows · source budget</text>
   <text x="705" y="444" text-anchor="middle" class="tiny">freshness before graph and source</text>
   <text x="705" y="476" text-anchor="middle" class="tiny">one hop · deterministic order</text>
@@ -48,8 +48,8 @@
 
   <rect x="1022" y="342" width="366" height="142" class="box" stroke="#b197fc"/>
   <text x="1205" y="388" text-anchor="middle" class="label">Direct relationships</text>
-  <text x="1205" y="424" text-anchor="middle" class="small">typed edges · adjacent entities</text>
-  <text x="1205" y="454" text-anchor="middle" class="tiny">provider and evidence retained</text>
+  <text x="1205" y="424" text-anchor="middle" class="small">flow edges · omit local noise</text>
+  <text x="1205" y="454" text-anchor="middle" class="tiny">stable names · provider · evidence</text>
 
   <rect x="1022" y="510" width="366" height="142" class="box" stroke="#4dabf7"/>
   <text x="1205" y="556" text-anchor="middle" class="label">Honest metadata</text>

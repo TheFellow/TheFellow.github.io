@@ -1,10 +1,10 @@
 ---
 title: "Building Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-07 16:33:25 -0700
-excerpt: "An ordered path through Weave's fresh compiler-backed graph, source-only declarations, exact storage, semantic comparison, guarded authoring, and managed adapters."
+last_modified_at: 2026-08-07 17:54:48 -0700
+excerpt: "An ordered path through Weave's fresh compiler-backed graph, source-only declarations, exact storage, guarded authoring, managed adapters, and agent-research dogfood."
 order: 5
-entries_label: "11 articles"
+entries_label: "12 articles"
 icon: "route"
 accent: "#4dabf7"
 topics: ["Go", "Code intelligence", "Developer tools"]
@@ -12,7 +12,7 @@ project_url: "/projects/weave/"
 repository_url: "https://github.com/TheFellow/weave"
 ---
 
-Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only schema and build declarations, and architecture rules.
+Weave turns language-native compiler facts and live Git state into a local semantic graph for people and coding agents. This series follows the tool from its query-driven freshness contract through cross-language bridges, graph inspection, current source context, exact machine-wide aggregation, compact private storage, Git-aware semantic comparison, optional watch-mode warming, revision-guarded contextual authoring, managed adapter trust and conformance, source-only schema and build declarations, and an agent-research dogfood run that turns real investigation friction into product behavior.
 
 [Explore the project](/projects/weave/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/weave){: .btn }

@@ -53,6 +53,7 @@ SUMMARIES = {
     "/articles/editing-contextual-graph-links-without-losing-source-truth/": ("Revision-guarded graph links", "The explorer inspects current evidence and edits checked-in intent without writing graph storage."),
     "/articles/managing-compiler-adapters-without-inventing-a-package-registry/": ("Managed local adapters", "Pinned artifacts, capability claims, deterministic routing, and black-box conformance make local adapters safely automatic."),
     "/articles/indexing-schemas-and-build-declarations-without-executing-the-repository/": ("Source-only declarations", "Bounded parsers turn schemas, infrastructure, migrations, and manifests into category-atomic graph evidence."),
+    "/articles/measuring-agent-research-beyond-query-latency/": ("Agent research dogfood", "A real repository investigation measures useful evidence, fallbacks, friction, and the product corrections that follow."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
