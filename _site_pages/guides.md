@@ -1,7 +1,7 @@
 ---
 title: "Articles"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-07 10:31:00 -0700
+last_modified_at: 2026-08-08 12:06:34 -0700
 permalink: /articles/
 redirect_from: /guides/
 layout: single
@@ -11,11 +11,10 @@ classes: wide
 
 Long-form tutorials, essays, case studies, and development journals connect design principles to running code. Related articles are collected into [ordered series](/series/) without requiring each article to use the same format.
 
-<div class="feature-tiles">
+<div class="feature-tiles feature-tiles--single-column">
   {% assign sorted_guides = site.guides | sort: "order" %}
   {% for article in sorted_guides %}
-    {% assign tile_position = forloop.index0 | modulo: 5 %}
-    <a class="feature-tile{% if tile_position == 0 %} feature-tile--featured{% endif %}" href="{{ article.url | relative_url }}" style="--feature-accent: {{ article.accent }};">
+    <a class="feature-tile" href="{{ article.url | relative_url }}" style="--feature-accent: {{ article.accent }};">
       <header class="feature-tile__header">
         <span class="feature-tile__icon">{% include feature-icon.html name=article.icon %}</span>
         <span>
