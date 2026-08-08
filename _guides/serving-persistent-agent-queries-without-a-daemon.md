@@ -1,7 +1,7 @@
 ---
 title: "Serving Persistent Agent Queries Without a Daemon"
 date: 2026-08-08 01:46:00 -0700
-last_modified_at: 2026-08-08 02:00:00 -0700
+last_modified_at: 2026-08-08 02:10:21 -0700
 excerpt: "How Weave keeps one local graph handle hot behind a bounded NDJSON session, moves exact Git observation off the request path, and preserves its authoritative refresh and source checks without installing a daemon."
 permalink: /articles/serving-persistent-agent-queries-without-a-daemon/
 series: weave
@@ -44,6 +44,8 @@ The session accepts the local read operations agents use for research: symbols, 
 
 One line is limited to 1 MiB, an ID to 128 bytes, source output to at most 4 MiB, and graph traversal to explicit ceilings. Unknown fields, unsupported protocols and commands, unknown edge kinds, incorrect argument counts, and invalid bounds fail before application execution. An oversized frame terminates the process because its next record boundary cannot be recovered safely. Error messages are converted to valid UTF-8 and capped at 8 KiB before they enter a frame.
 
+The agent-oriented `explore` default keeps eight focus entities under one 32 KiB focus-source budget and four relationships per direction. A caller can raise either bound. The frame preserves complete focus evidence and source plus every exact relationship edge, but replaces repeated neighbor entity, repository, and source blocks with compact `adjacent` coordinates containing the exact ID, stable and display names, kind, provider, and evidence. Direct `context` retains the complete rich relationship representation.
+
 Maintenance, mutation, indexing, verification, compaction, full export, authored-link changes, adapter management, and catalog queries are deliberately absent. Those operations may open storage independently, replace derived state, or require a different ownership model. The client closes the session and uses the one-shot command instead.
 
 ## Pay the cold path once
@@ -78,6 +80,8 @@ One local macOS run against a rebuilt Mixology storage-v3 index compared `symbol
 This is one latency sample, not a throughput distribution. It demonstrates the intended lifecycle rather than a universal speed ratio: the first session request pays freshness and open costs, while serialized warm requests reuse one handle and its dictionaries.
 
 The same run tested the less glamorous half of the contract. An ordinary CLI process failed with the bounded `inspect database schema: timeout` error while the resident owned bstore. After EOF closed the session, the identical command succeeded. The single-owner constraint is therefore observable at the process boundary and the file is released at the client-owned lifetime boundary.
+
+The installed endpoint matrix also caught response overhead that latency alone would hide. An eight-focus Mixology exploration initially returned 229,134 bytes in 1.19 seconds because every relationship repeated complete source, repository, and symbol records. The compact projection returned 84,036 bytes in 0.74 seconds, a 63.3% byte reduction, while retaining all eight focuses and 60 typed edges. That is another single local regression sample. Its value is the preserved evidence boundary: `explore` stays compact enough for discovery, while `context` remains available when an agent chooses one relationship for full expansion.
 
 ## Keep the application boundary shared
 

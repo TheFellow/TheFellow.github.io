@@ -50,6 +50,8 @@ The safe fallback also covers Git-visible regular UTF-8 files that are not Markd
 
 Storage format 3 persists the term set beside the compact symbol record and emits the same bstore token postings used for display-name lookup. `symbols` and `explore` therefore retrieve an ordinary entity ID. Logical export and the disposable [machine-wide aggregate](/articles/caching-a-federated-graph-without-weakening-freshness.md) preserve the terms so local and catalog discovery have the same meaning.
 
+`workspace find` reuses those postings without pretending a phrase containing spaces is one token. A multiword value extracts its bounded terms, intersects the posting results, and ranks entities that contain the complete concept. Single-token and exact workspace lookup retain their direct path.
+
 There is no phrase index, stemming service, BM25 corpus, embedding store, or separate query language. Search terms widen how an entity can be found; the normalized graph still defines what was found. Exploration scores how many query terms a candidate covers and how discriminating each posting is. A term found in four entities contributes more than a truncated posting shared across hundreds. Complete coverage earns a bounded bonus only when at least three terms match and the candidate vocabulary is narrow enough to make that coverage meaningful.
 
 Broad content pays a specificity cost proportional to the number of indexed terms, and generated content receives an additional penalty. That keeps an `llms-full.txt` aggregation containing nearly every word from defeating the smaller authored section that actually explains the question. When three or more strong content candidates belong to the same document, a modest document-scope boost keeps those related sections together instead of interleaving nearby noise from unrelated files. Normal query responses strip the potentially large internal term set because repeating hundreds of discovery tokens adds no evidence after the entity and source are known. Deterministic diagnostic export retains it.
@@ -63,6 +65,8 @@ Discovery is useful when the first result contains enough evidence to continue. 
 That expansion remains a query-time source operation. The loader rejects unsafe paths, symlinks, ignored files, changed hashes, invalid encodings, invalid ranges, and exhausted budgets exactly as it does for every other context result. If the expanded section does not fit, the response falls back to the indexed range rather than returning partial source that looks complete.
 
 A generic file has no provider-parsed definition and the graph stores no term positions. Exploration therefore passes its normalized query terms into the context composition. The source loader reopens the current file, tokenizes each current line, scores term and mechanical suffix overlap, and anchors the excerpt at the strongest line. Normal context-line and byte budgets apply around that anchor. A stale posting can at worst lead to a current file whose concepts have moved or disappeared; it cannot make Weave return cached text or old coordinates as current evidence.
+
+Multi-focus exploration keeps that complete focus source while avoiding another source expansion for every neighboring relationship. Each typed edge retains its exact endpoints, range, provider, and evidence, plus compact adjacent identity coordinates for follow-up. A direct `context` query returns the richer neighboring entity, provenance, and source representation when the investigation narrows to one focus.
 
 ## Keep long research questions lexical
 
