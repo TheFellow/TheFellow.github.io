@@ -65,7 +65,7 @@ After a conflict, reloading the canonical list does not silently rebase the open
 
 One-shot CLI callers may omit a revision and retain the existing serialized edit behavior. The guard is an application option for clients that hold state across time, not an incompatible requirement imposed on every command.
 
-Format 4 also narrows what can be authored. Link add and update accept only dependency, import, extension, implementation, test, generation, documentation, exposure, link, and embed relationships retained by the navigation index. A declaration cannot promise a statement-level edge that storage will discard.
+The navigation profile also narrows what can be authored. Link add and update accept only dependency, import, extension, implementation, test, generation, documentation, exposure, link, and embed relationships retained by the index. A declaration cannot promise a statement-level edge that storage will discard.
 
 ## Write one validated declaration atomically
 

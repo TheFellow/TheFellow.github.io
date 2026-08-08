@@ -1,7 +1,7 @@
 ---
 title: "Measuring Agent Research Beyond Query Latency"
 date: 2026-08-07 17:54:48 -0700
-last_modified_at: 2026-08-08 13:10:00 -0700
+last_modified_at: 2026-08-08 14:20:00 -0700
 excerpt: "How paired agent research and a storage-payload audit moved Weave from large graph dossiers to compact progressive discovery without losing answer quality."
 permalink: /articles/measuring-agent-research-beyond-query-latency/
 series: weave
@@ -57,11 +57,11 @@ This evidence reframed the problem. The product did not need a better-compressed
 
 ## Make discovery progressive
 
-Format 4 retains semantic anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, noisy declaration kinds, containment duplication, and broad content-token postings. `weave explore` now returns at most a few semantic anchors plus diversified ripgrep hits. Each semantic anchor includes an exact `weave context` follow-up. The discovery array has a 12 KiB encoded ceiling.
+The measured format-4 implementation retained semantic anchors and high-value navigation relationships while dropping occurrences, statement-level calls and references, noisy declaration kinds, containment duplication, and broad content-token postings. Format 5 makes the same narrow shape the producer and adapter contract. `weave explore` returns at most a few semantic anchors plus diversified ripgrep hits. Each semantic anchor includes an exact `weave context` follow-up. The discovery array has a 12 KiB encoded ceiling.
 
 The selected `context` call then reads current source for one exact anchor. It does not expand eight candidates speculatively or pretend that the graph should replace text search for statement-level investigation.
 
-On the same repository and commit, the format-4 database occupied 16,777,216 bytes, a 98.38% reduction and 5.56 times source size. The representative first-stage response occupied 3,157 bytes, 98.16% smaller than the old response. Its selected context response occupied 3,195 bytes and included 337 bytes of source.
+On the same repository and commit, that format-4 database occupied 16,777,216 bytes, a 98.38% reduction and 5.56 times source size. The representative first-stage response occupied 3,157 bytes, 98.16% smaller than the old response. Its selected context response occupied 3,195 bytes and included 337 bytes of source. Those measurements remain a historical baseline until format 5 is rerun on the same fixture.
 
 ## Keep the benchmark honest after the redesign
 

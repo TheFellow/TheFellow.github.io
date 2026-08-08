@@ -16,7 +16,7 @@ Source: [https://thefellow.github.io/articles/making-source-bodies-discoverable-
 
 A structured-content index can know that a heading exists and still miss a concept written only in the paragraph below it. Weave first addressed that gap by attaching body-derived search terms to graph entities and publishing them through token postings. The source text stayed outside the database, but its vocabulary still multiplied index and response cost.
 
-The format-4 navigation index removes those broad content postings. [Weave](https://github.com/TheFellow/weave) now combines retained document and section anchors with one bounded ripgrep pass over current source. The index answers which semantic entities exist; source search answers which current lines contain the research terms.
+The navigation index removes those broad content postings. [Weave](https://github.com/TheFellow/weave) now combines retained document and section anchors with one bounded ripgrep pass over current source. The index answers which semantic entities exist; source search answers which current lines contain the research terms.
 
 <figure class="article-figure">
   <img src="/assets/images/articles/weave/source-body-discovery.svg" alt="A research phrase is normalized into a small set of useful fixed-string terms. Compact semantic lookup returns structured document and declaration anchors. In parallel, bounded ignore-aware ripgrep reads current Git-visible files and returns scored path, line, column, and preview hits. Results are diversified by file and combined under one item and byte budget. A selected semantic anchor can then open exact current context.">
@@ -29,7 +29,7 @@ The previous design allowed providers to attach thousands of normalized terms to
 
 The storage audit found that this was the wrong default for a disposable local tool. Name and stable-name lookup are valuable because they map human concepts onto compiler and content identities. Broad body vocabulary is different: ripgrep already searches those bytes efficiently, respects repository ignore rules, and returns the exact current line an agent needs.
 
-Format 4 therefore clears search terms from ordinary code anchors and does not persist broad content-token postings. Structured document, section, and code-block entities remain available as anchors, with a small bounded lexical allowance where the provider needs it for their identity. Whole-body discovery no longer depends on storing every term.
+Format 5 removes search terms at the navigation-profile boundary and does not persist code-block entities or generic source-file anchors. Structured Markdown documents and sections remain available by their names and stable identities. Concepts that appear only in body text are discovered directly in current source.
 
 ## Bound the source search
 

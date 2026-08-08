@@ -1,7 +1,7 @@
 ---
 title: "Turning Cross-Repository Soaks into Indexing Contracts"
 date: 2026-08-08 04:04:08 -0700
-last_modified_at: 2026-08-08 13:10:00 -0700
+last_modified_at: 2026-08-08 14:20:00 -0700
 excerpt: "How a strict twelve-repository soak turns compiler adapter failures into bounded contracts for preparation, discovery, normalization, memory, verification, and source immutability."
 permalink: /articles/turning-cross-repository-soaks-into-indexing-contracts/
 series: weave
@@ -67,7 +67,9 @@ The first diagnostic passes found failures that isolated fixtures did not contai
 
 None of those corrections weaken graph validation. The C# adapter still rejects two equally near solutions because choosing one lexically would invent build intent. Rust still rejects conflicting descriptions of one global symbol; it collapses only equivalent producer repetition. Generated C# source remains visible as a diagnostic rather than being assigned a false repository path.
 
-The normalization work also removed accidental scale costs. C# edge de-duplication now uses a per-project identity set instead of scanning every prior edge for every insertion. Rust builds one line index per document instead of rescanning its source from byte zero for every occurrence, and it memoizes symbol validation and stable IDs. The Go provider no longer keeps the full dependency graph's syntax resident when it emits facts only for repository packages.
+The normalization work also removed accidental scale costs. C# edge de-duplication used a per-project identity set instead of scanning every prior edge for every insertion. Rust built one line index per document instead of rescanning its source from byte zero for every occurrence, and memoized symbol validation and stable IDs. The Go provider stopped retaining the full dependency graph's syntax when it emitted facts only for repository packages.
+
+Format 5 makes those observations historical implementation steps rather than the current endpoint. The built-in Go provider no longer requests type checking, identifier maps, dependency syntax, or test variants; it walks build-selected declarations and direct imports. External adapters project compiler output to declaration anchors and retained navigation edges before transmission, so occurrence-normalization costs are outside the managed profile.
 
 ## Measure publication, not only compiler startup
 
@@ -112,7 +114,7 @@ All green does not mean all small. The Rust rigid-body repository peaked at 1,97
 
 The matrix also does not prove every repository shape, operating system, compiler version, or warm-cache state. It proves something narrower and more useful: these pinned repositories can be prepared without mutating their sources, indexed offline by this candidate, queried through current manifests, verified structurally, and exported completely under recorded bounds.
 
-That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare provider inventories, retained navigation counts, storage amplification, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, skips validation, or silently restores packages is a failed run. A smaller format-4 database that deliberately omits occurrences is expected.
+That is enough to turn a collection of examples into a regression contract. Future provider work can rerun the same matrix and compare provider inventories, retained navigation counts, storage amplification, time, and memory without making one number the product. A faster index that drops a standalone project, mutates `go.sum`, skips validation, or silently restores packages is a failed run. A smaller navigation-profile database that deliberately omits occurrences is expected.
 
 ## Let failures improve the shared boundary
 

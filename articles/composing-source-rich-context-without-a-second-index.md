@@ -39,7 +39,7 @@ This is intentionally less than a dossier. Discovery does not load occurrences, 
 
 ## Let source search do statement-level work
 
-The format-4 database no longer stores occurrences, call or reference edges, fields, locals, or broad content-token postings. Once a package or declaration is known, current source is a cheaper and more useful place to recover that detail.
+The navigation profile does not produce or store occurrences, call or reference edges, fields, locals, or content-token postings. Once a package or declaration is known, current source is a cheaper and more useful place to recover that detail.
 
 The lexical half of `explore` extracts a bounded set of useful terms from the research phrase and runs one fixed-string ripgrep operation. It respects ignore files, excludes `.git`, `vendor`, and `node_modules`, rejects files larger than 1 MiB, limits captured output, scores term overlap, and diversifies results across files before filling remaining slots. Missing ripgrep or no matches is a soft miss; semantic anchors remain available.
 
@@ -60,7 +60,7 @@ The split also makes the CLI easier to reason about:
 3. Use `dependencies`, `path`, `impact`, `graph`, or an architecture check for retained navigation relationships.
 4. Use current source search for statement-level callers, references, and local data flow.
 
-The last step is a deliberate contract change. `references`, `callers`, and `callees` are no longer managed-index commands because format 4 does not retain the facts needed to answer them exhaustively. Providers may still use those facts while deriving higher-level navigation, but the database does not advertise what it discards.
+The last step is a deliberate contract change. `references`, `callers`, and `callees` are no longer managed-index commands because the navigation profile does not contain the facts needed to answer them exhaustively. Providers may use compiler analysis to derive higher-level navigation, but they do not transmit the discarded statement events.
 
 ## Measure the complete handoff
 

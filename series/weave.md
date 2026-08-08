@@ -12,9 +12,9 @@ Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/
 
 ## Full content
 
-Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation keeps a compact navigation projection, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
+Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation produces a compact navigation profile, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
 
-This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the format-4 navigation index retained, replaced, or removed. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
+This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the navigation profile retained, replaced, or removed. Format 4 first narrowed persistence, and format 5 moved that boundary into fact production and the adapter contract. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
 
 [Explore the project](/projects/weave.md)
 [View the repository](https://github.com/TheFellow/weave)
