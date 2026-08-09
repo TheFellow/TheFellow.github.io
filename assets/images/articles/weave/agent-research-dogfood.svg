@@ -81,7 +81,7 @@
   <text x="665" y="692" text-anchor="middle" class="label">Amplification exposed</text>
   <text x="665" y="732" text-anchor="middle" class="small">1.03 GB index · 171.5 KB response</text>
   <text x="665" y="764" text-anchor="middle" class="small">repeated IDs outweigh source</text>
-  <text x="665" y="792" text-anchor="middle" class="tiny">exhaustive graph is not the product</text>
+  <text x="665" y="792" text-anchor="middle" class="tiny">navigation stays bounded and source-directed</text>
 
   <path d="M880 727 H916" class="green"/>
 

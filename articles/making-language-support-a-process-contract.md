@@ -191,13 +191,9 @@ Python makes the distinction sharper. CPython's `symtable` can establish that a 
 
 The Universal Ctags adapter makes the lower boundary equally explicit. It emits document and declaration anchors as `syntactic` evidence for a broad collection of languages and formats. References, calls, inheritance, and other relationships are absent. It is an explicit enrichment provider, not an automatic replacement for a compiler-backed adapter.
 
-## Let a new language improve the common graph
+## Keep declaration anchors canonical
 
-Python also exposed an assumption that the original graph could not keep. A single Python lexical slot may be assigned, imported, or defined several times. Modeling every statement as a different symbol would lose the compiler's binding decision; storing only one definition would lose real source locations.
-
-Weave treats `Symbol.Definition` as the canonical retained declaration anchor. The navigation profile does not emit repeated binding occurrences; `definition` points directly to the retained anchor. The Python experiment still improved the language-neutral fact model, and the practical profile now makes the narrower query contract explicit.
-
-C++ exposed a different interchange assumption. SCIP permits a producer to repeat the same global `SymbolInformation` in every document that uses it. Weave's C++ import path selects one canonical declaration fact deterministically, preferring a definition and then stable path and unit order. Occurrences are discarded, equivalent symbol repetitions collapse, and conflicting semantic descriptions reject the complete index.
+`Symbol.Definition` is the canonical retained declaration anchor. Python repeated bindings do not become occurrence rows. SCIP adapters select one deterministic declaration fact when a producer repeats equivalent symbol information across documents. Conflicting descriptions reject the complete index.
 
 `scip-clang` can also omit a symbol's presentation name or kind even when its canonical SCIP descriptor contains both. The normalizer derives only that presentation from the parsed descriptor instead of leaking a long encoded identity into query output or inventing a semantic relationship. A language adapter should be allowed to expose pressure in the shared representation, then fix that representation at the narrowest truthful boundary.
 

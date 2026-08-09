@@ -7,48 +7,40 @@ Source: [https://thefellow.github.io/articles/making-source-bodies-discoverable-
 ## Pyramid summary
 
 - **~2 words:** Current-source discovery
-- **~8 words:** Semantic anchors and bounded ripgrep replace broad body postings.
-- **Expanded:** How Weave replaced broad body-token postings with bounded ripgrep discovery over current source while keeping structured document anchors in its navigation index.
+- **~8 words:** Format-5 anchors combine with bounded ripgrep.
+- **Expanded:** How Weave format 5 combines semantic anchors with bounded ripgrep over current source.
 
 ## Full content
 
 **Part 13 of [Building Weave](/series/weave.md).**
 
-A structured-content index can know that a heading exists and still miss a concept written only in the paragraph below it. Weave first addressed that gap by attaching body-derived search terms to graph entities and publishing them through token postings. The source text stayed outside the database, but its vocabulary still multiplied index and response cost.
-
-The navigation index removes those broad content postings. [Weave](https://github.com/TheFellow/weave) now combines retained document and section anchors with one bounded ripgrep pass over current source. The index answers which semantic entities exist; source search answers which current lines contain the research terms.
+A declaration index cannot find a concept mentioned only in a comment or paragraph. Format 5 solves that gap without storing a second vocabulary: semantic lookup finds known entities, while ripgrep searches current source.
 
 <figure class="article-figure">
-  <img src="/assets/images/articles/weave/source-body-discovery.svg" alt="A research phrase is normalized into a small set of useful fixed-string terms. Compact semantic lookup returns structured document and declaration anchors. In parallel, bounded ignore-aware ripgrep reads current Git-visible files and returns scored path, line, column, and preview hits. Results are diversified by file and combined under one item and byte budget. A selected semantic anchor can then open exact current context.">
-  <figcaption>Body discovery stays in current source. The database keeps navigation anchors instead of a second full-text vocabulary.</figcaption>
+  <img src="/assets/images/articles/weave/source-body-discovery.svg" alt="A research phrase becomes a small fixed-string term set. The format-5 navigation index supplies declaration and document anchors while one bounded ignore-aware ripgrep pass supplies current path, line, column, and preview hits. Results are diversified and bounded before exact context is opened.">
+  <figcaption>Keep identities indexed and search body text where it already lives.</figcaption>
 </figure>
 
-## Remove the duplicate vocabulary
+## Keep the index semantic
 
-The previous design allowed providers to attach thousands of normalized terms to one symbol. That made a Markdown section or unsupported source file discoverable through the same inverted index as a declaration name. It also retained a second representation of words already available in the worktree and copied those postings into machine-wide aggregate state.
+Format 5 stores declaration and document names, stable identities, source ranges, and retained navigation relationships. It stores no body terms, code-block entities, generic file anchors, embeddings, or source text.
 
-The storage audit found that this was the wrong default for a disposable local tool. Name and stable-name lookup are valuable because they map human concepts onto compiler and content identities. Broad body vocabulary is different: ripgrep already searches those bytes efficiently, respects repository ignore rules, and returns the exact current line an agent needs.
+## Bound source search
 
-Format 5 removes search terms at the navigation-profile boundary and does not persist code-block entities or generic source-file anchors. Structured Markdown documents and sections remain available by their names and stable identities. Concepts that appear only in body text are discovered directly in current source.
+`weave explore RESEARCH PHRASE`:
 
-## Bound the source search
+- removes stop words and terms shorter than four characters;
+- uses at most eight fixed-string terms;
+- respects repository ignore rules;
+- excludes `.git`, `vendor`, and `node_modules`;
+- rejects files larger than 1 MiB;
+- caps ripgrep output at 1 MiB; and
+- ranks and diversifies matching lines across files.
 
-`weave explore RESEARCH PHRASE` extracts normalized identifier terms, removes ordinary question words and terms shorter than four characters, and caps the search set at eight. It then invokes ripgrep with fixed-string matching, smart case, line and column output, repository ignore handling, a 1 MiB per-file ceiling, and explicit exclusions for `.git`, `vendor`, and `node_modules`.
+Missing ripgrep or no matches is a soft miss. Semantic lookup still works.
 
-The subprocess output is capped at 1 MiB. Lines are deduplicated, previews are trimmed and limited to 240 bytes, and results receive a simple deterministic score from term overlap in the path and line. The selection first takes the strongest hit from different files, then fills remaining positions by score. This prevents one verbose file from consuming the complete discovery bound.
+## Return pointers, then context
 
-If ripgrep is unavailable or finds nothing, source discovery returns an empty set rather than breaking semantic lookup. A process or parse failure other than an ordinary no-match remains visible.
+Semantic results carry an exact `weave context` follow-up. Source results carry a path, line, column, and short preview. The combined discovery array has both an item limit and a 12 KiB encoded ceiling.
 
-## Combine pointers, not dossiers
-
-Semantic and lexical results share a small discovery shape. A symbol result names its kind, stable identity, definition coordinate, provider, evidence, and exact next command. A source result names its path, coordinate, and preview. Neither shape includes a complete graph neighborhood or a copied file body.
-
-The combined array is capped by item count and a 12 KiB encoded budget. An agent can choose a semantic follow-up with `weave context STABLE_NAME` or open the reported source line directly. That choice happens before Weave spends response bytes on a complete declaration.
-
-## Keep the earlier benchmark in context
-
-The provider-owned body-term experiment was still useful. In its paired content-research sample, both agents scored 8/8. The Weave arm used 21.3% fewer input tokens, 8.6% fewer output tokens, no filesystem searches, and the same command count, but finished 1.90 seconds slower. That result showed the value of content discovery without proving that body postings were the right implementation.
-
-The later storage and payload audit supplied the missing cost evidence. Removing broad postings and making discovery progressive reduced the representative database from 1,034,616,832 bytes to 16,777,216 bytes and the representative first-stage response from 171,537 bytes to 3,157 bytes. The current design keeps the successful behavior, finding prose concepts, while using the worktree's existing text-search surface instead of maintaining another one.
-
-The practical principle is that an index does not have to answer every question internally. It has to get the caller to trustworthy evidence with less work than direct rediscovery. For source-body terms, a compact semantic outline plus bounded ripgrep is the smaller and clearer composition.
+The caller chooses a target before Weave opens more source. This keeps the database, search, and agent payload focused on navigation.

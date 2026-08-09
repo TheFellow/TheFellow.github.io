@@ -53,5 +53,5 @@
   <text x="1204" y="466" text-anchor="middle" class="tiny">statement detail stays in source</text>
 
   <rect x="232" y="716" width="976" height="48" fill="#242021" stroke="#ff922b" stroke-width="3" rx="16"/>
-  <text x="720" y="747" text-anchor="middle" class="small">measured format 4: 1.03 GB → 16.8 MB · 171.5 KB explore → 3.2 KB</text>
+  <text x="720" y="747" text-anchor="middle" class="small">format 5: navigation facts in the index · statement detail in current source</text>
 </svg>

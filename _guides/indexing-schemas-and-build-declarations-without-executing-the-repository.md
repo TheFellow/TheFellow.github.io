@@ -1,7 +1,7 @@
 ---
 title: "Indexing Schemas and Build Declarations Without Executing the Repository"
 date: 2026-08-07 16:26:04 -0700
-last_modified_at: 2026-08-08 14:27:00 -0700
+last_modified_at: 2026-08-09 10:00:00 -0700
 excerpt: "How Weave turns bounded source-only schemas, infrastructure, migrations, and build manifests into category-atomic graph evidence without running their tools."
 permalink: /articles/indexing-schemas-and-build-declarations-without-executing-the-repository/
 series: weave
@@ -58,7 +58,7 @@ Writing one convenient grammar for six formats would repeat the mistake the adap
 | Terraform | module directories, resources, data sources, variables, outputs, locals, module calls, providers, and traversals | HashiCorp HCL parses native `.tf` syntax without evaluation, provider schemas, plugins, state, plans, or registry access |
 | Build manifests | project identities, explicit dependencies, selected targets, and one proven generation mapping | x/mod, TOML, JSON, and XML parsers read `go.mod`, `Cargo.toml`, `package.json`, Maven POMs, and MSBuild C#/F#/VB project files without invoking their build systems |
 
-The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it. Format 4 further retains only declaration anchors and navigation relationships from this parsed inventory; fields, local references, and other statement-level detail are available from current source rather than the database.
+The table is also a list of limits. OpenAPI 2 is not silently converted. SQL is not treated as a portable dialect. Terraform JSON and runtime semantics are absent. Imported SDK targets and registry packages remain external. A parser accepting a file is not evidence that Weave understands every construct inside it. Format 5 retains only declaration anchors and navigation relationships from this parsed inventory; fields, local references, and statement detail remain in current source.
 
 This honesty is visible in diagnostics. A PostgreSQL statement the upstream parser recognizes but the first semantic slice does not model remains in the source and produces a bounded warning. It does not disappear silently, and it does not become a guessed edge.
 

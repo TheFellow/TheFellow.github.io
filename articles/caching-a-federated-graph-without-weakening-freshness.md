@@ -69,7 +69,7 @@ The first checked-in benchmark uses eight worktrees and 5,000 total symbols. It 
 
 Reverse edge adjacency is 3.3 to 3.9 times faster through the aggregate and allocates about 74 percent fewer bytes. Opening the query surface and then searching improves by only about 6 percent because the required Git and freshness checks dominate the fixture. An aggregate hit still avoids holding eight database handles and locks through query execution.
 
-The original hot-projection fixture was half the physical size of a deliberately verbose format-3 worktree fixture containing documents, occurrences, long paths, and symbols. That historical result justified generation-keyed aggregation, but the later navigation formats changed the source databases underneath it. Current claims are narrower: the aggregate avoids repeated catalog fan-out for retained navigation queries, and its own projection remains a future reduction target.
+The aggregate is worthwhile only where it beats already-open authoritative worktrees. Current benchmarks show the strongest benefit in reverse-edge traversal and reduced open database state; symbol search can be slower. Format-5 measurements should decide whether further projection or sharding earns its complexity.
 
 ## Fall back toward authority
 
