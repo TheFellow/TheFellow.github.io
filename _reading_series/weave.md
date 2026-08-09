@@ -1,8 +1,8 @@
 ---
 title: "Building Weave"
 date: 2026-08-06 22:55:00 -0700
-last_modified_at: 2026-08-08 14:20:00 -0700
-excerpt: "An ordered path through Weave's move from an exhaustive semantic graph to a compact, fresh navigation index built for practical source discovery."
+last_modified_at: 2026-08-09 10:00:00 -0700
+excerpt: "How Weave builds a compact, fresh navigation index for practical source discovery."
 order: 5
 entries_label: "15 articles"
 icon: "route"
@@ -12,9 +12,7 @@ project_url: "/projects/weave/"
 repository_url: "https://github.com/TheFellow/weave"
 ---
 
-Weave began by retaining a broad compiler and content graph. Repository and agent measurements showed that this made both the database and discovery responses much larger than the source evidence they were meant to reveal. The current implementation produces a compact navigation profile, returns a few semantic anchors and ripgrep hits, and opens current source only after a caller selects a useful anchor.
-
-This series preserves the engineering path that exposed that correction. Earlier articles describe the broad graph at the point it was built; each affected article now identifies what the navigation profile retained, replaced, or removed. Format 4 first narrowed persistence, and format 5 moved that boundary into fact production and the adapter contract. The stable ideas are freshness at read time, language-native adapters, explicit evidence, bounded queries, disposable local state, and measured agent outcomes. Exhaustive occurrences, statement-level call and reference storage, large multi-focus dossiers, and body-token postings are no longer the product direction.
+Weave format 5 is a compact navigation index. Providers emit declaration and document anchors plus high-value relationships, discovery combines those anchors with bounded source search, and context opens authoritative source only after selection. The series covers freshness, adapters, storage, content, federation, and agent-facing queries within that practical contract.
 
 [Explore the project](/projects/weave/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/weave){: .btn }

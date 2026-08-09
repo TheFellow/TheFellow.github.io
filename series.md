@@ -14,5 +14,5 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Weave](/series/weave.md): An ordered path through Weave's move from an exhaustive semantic graph to a compact, fresh navigation index built for practical source discovery.
+- [Building Weave](/series/weave.md): How Weave builds a compact, fresh navigation index for practical source discovery.
 - [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.

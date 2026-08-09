@@ -104,28 +104,9 @@ Publishing the manifest first would invert that guarantee. A crash could leave a
 
 ## Measure the complete path
 
-The bounded publication path came from a real failure, not an estimated future scale. Weave's first [repository-scale baseline](https://github.com/TheFellow/weave/blob/main/.ai/benchmarks/2026-08-06-repositories.md) indexed Mixology, arch-lint, cedar-dotnet, and FKYeah in isolated local clones. The original Mixology cold index exceeded the harness's 300-second bound. Its Go graph contained 165 compilation units and 433,523 document, symbol, occurrence, and edge facts, enough for a single storage transaction to consume multiple gigabytes of memory and miss the same bound.
+Format 5 measures the complete operation: Git observation, provider comparison, navigation-fact production, database publication, verification, and the bounded query. The [cross-repository soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md) records time, memory, database bytes, retained facts, and source immutability across supported providers.
 
-At that stage, three corrections addressed different sources of work. A required-method index pruned concrete type and interface pairs that could not possibly match while retaining `go/types.Implements` as the final authority. Bounded transactions kept graph publication proportional to complete semantic units. Fixed-size, domain-separated SHA-256 identities replaced recursively encoded Go fact IDs. Format 5 later removed the type-checking and implementation-analysis path from the built-in Go provider entirely; this older sequence remains useful evidence of why reducing representation alone was not enough.
-
-The adjacent measured run made the first correction concrete:
-
-| Repository | Cold index | Current empty lookup | Graph database |
-| --- | ---: | ---: | ---: |
-| go-modular-monolith | 37.785 s | 0.536–0.610 s | 1.11 GB |
-| arch-lint | 2.610 s | 0.531–0.549 s | 16.8 MB |
-
-The current lookup included Git inspection, manifest and provider comparison, database open, and a bounded symbol search with no match. Compact identities reduced the Mixology database from 7.54 GB to 1.11 GB, an 85.3 percent reduction. That historical result exposed the next problem rather than finishing the storage work.
-
-The measured format-4 projection changed what the managed database retained. On a 3,019,968-byte Go repository, it reduced a 1,034,616,832-byte format-3 database to 16,777,216 bytes, or 5.56 times source size. A forced refresh completed in 10.2 seconds. Format 5 moves that navigation boundary earlier so providers avoid producing occurrences, statement-level calls and references, fields, constants, locals, and body terms in the first place. Freshness still governs the complete inventory promised by that narrower profile.
-
-The unsuccessful repositories exercised the other half of the contract. Cedar's large C# solution exceeded the native adapter's four-minute full-refresh limit. FKYeah selected .NET 10 F# targets that the adapter's original .NET 9 host could not evaluate. Neither run published a manifest or a partial semantic inventory. Success became faster, while failure stayed observable and replayable.
-
-The FKYeah result also gave the next change a precise target. The adapter now runs on .NET 10, keeps the prebuilt reference outputs FSharp.Compiler.Service requires, and indexes dependents before referenced F# projects so design-time cleanup cannot remove a dependency output before its consumers have used it. A genuine FKYeah graph now completes. The Cedar timeout remains an honest limit of the current full-refresh adapter rather than being hidden behind partial facts.
-
-A later [twelve-repository indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md) closed that Cedar result and broadened the measurement contract. Every candidate ran in an isolated prepared clone, indexed offline, answered five current no-change queries, verified, exported, and left its source status unchanged. Cedar completed in 51.338 seconds and FKYeah in 132.146 seconds. The same matrix exposed recursive Go dependency syntax retention, nested .NET and Rust project roots, repeated Rust SCIP symbols, and divergent adapter environments. Those findings belong to freshness because a provider inventory is complete only when it identifies the correct build boundary and can reproduce it under the same bounded process inputs.
-
-An installed-binary smoke covered the incremental half of that lifecycle. One comment added inside an isolated go-riblt clone produced a dirty generation with one changed path, refreshed in 2.990 seconds at 142 MiB peak RSS, and passed `weave verify`. The original source repository remained clean. Cold completeness and ordinary edit-driven replacement therefore use the same observable publication boundary.
+The built-in Go provider keeps this path small by loading build-selected syntax, declarations, and direct imports without type checking or test variants. External adapters emit the same `navigation-v1` profile. A timeout or incomplete provider result publishes neither a manifest nor a partial inventory.
 
 ## Derived state follows the worktree
 
