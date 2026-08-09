@@ -14,9 +14,9 @@ Source: [https://thefellow.github.io/projects/weave/](https://thefellow.github.i
 
 [View the repository](https://github.com/TheFellow/weave)
 [Read the Weave series](/series/weave.md)
-[Start with fresh queries](/articles/keeping-a-semantic-index-fresh-without-a-daemon.md)
-[Read the agent dogfood](/articles/measuring-agent-research-beyond-query-latency.md)
-[Inspect the indexing soak](/articles/turning-cross-repository-soaks-into-indexing-contracts.md)
+[Understand format 5](/articles/weave-format-5-navigation-index.md)
+[Follow source discovery](/articles/weave-progressive-discovery.md)
+[Review language adapters](/articles/weave-language-adapters.md)
 
 Weave is a local-first, Git-aware navigation index for people and coding agents. It stores just enough structure to find the right package, declaration, or document, then sends detailed investigation back to current source. The index is disposable, stays outside Git, needs no hosted service, and refreshes before serving a query.
 
