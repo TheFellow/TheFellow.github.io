@@ -1,7 +1,7 @@
 ---
 title: "Typed Filtering over bstore"
 date: 2026-08-02
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-10 07:06:11 -0700
 excerpt: "How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable."
 permalink: /articles/typed-filtering-over-bstore/
 redirect_from: /guides/typed-filtering-over-bstore/
@@ -142,6 +142,16 @@ Filtering is part of a public list operation, not a CLI post-processing step. Th
 That placement also keeps authorization intact. The middleware still applies the domain's list action and result-aware policy around the query. A filter can narrow the resources a principal asks for, but it cannot widen what that principal may read.
 
 Tests cover the boundaries where the design could lose meaning: aliases round-trip to one canonical spelling, unknown constructs fail, invalid runtime literals fail during parsing, `or` expressions are not pushed unsafely, date comparisons reach native bstore filters, tag predicates run after hydration, every domain field is exercised, and filtered paging continues across enough stored rows to reveal post-page filtering mistakes.
+
+## Carry the boundary into the .NET port
+
+The completed [.NET semantic port](/projects/modular-monolith/) now applies the same division with [Expr for .NET](/projects/expr-dotnet/) and EF Core. [`Mixology.Filtering`](https://github.com/TheFellow/modular-monolith/tree/master/src/Mixology.Filtering) originally owned a lexer, parser, checker, formatter, and evaluator while the Expr package was being built. The 0.1.0 integration removes that duplicate language machinery. Expr now supplies the checked public AST, canonical printer, optimizer, and exact virtual-machine evaluation.
+
+The adapter still owns the useful application contract. Typed domain schemas build strict Expr environments. An AST rewriter preserves established Mixology spellings and maps dotted public field names onto environment members. Constant validation and error translation keep invalid filters inside the application's error model. The EF planner inspects the checked Expr tree and emits an `Expression<Func<TRow, bool>>` only for constraints implied by the complete predicate.
+
+EF applies that expression to select candidates, the repository hydrates fields such as tags, and the compiled Expr program evaluates the complete public view before paging and authorization. This is the same correctness rule as the bstore path even though the mechanisms differ. A pushdown narrows work; it never defines the answer.
+
+The comparison also sharpens what it means for an application to own its filtering language. The Go adapter converts accepted Expr syntax into a small application tree. The .NET adapter can plan directly over Expr for .NET's deliberately public immutable AST. Ownership does not require maintaining a private parser or node hierarchy. It requires controlling the exposed schema, accepted compatibility, public errors, safe translations, and final evaluation boundary.
 
 ## General where callers benefit, concrete where execution benefits
 

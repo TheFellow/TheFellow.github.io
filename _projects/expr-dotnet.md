@@ -1,7 +1,7 @@
 ---
 title: "Expr for .NET"
 date: 2026-08-10 06:50:00 -0700
-last_modified_at: 2026-08-10 06:50:00 -0700
+last_modified_at: 2026-08-10 07:06:11 -0700
 excerpt: "A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution."
 language: "C#"
 license: "MIT"
@@ -21,6 +21,8 @@ toc_sticky: true
 [Install from NuGet](https://www.nuget.org/packages/Expr){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/expr-dotnet){: .btn }
 [Read the security model](https://github.com/TheFellow/expr-dotnet/blob/main/docs/security-model.md){: .btn }
+[See it in Mixology](/projects/modular-monolith/){: .btn }
+[Read the filtering case study](/articles/typed-filtering-over-bstore/){: .btn }
 
 I wanted a way for a .NET application to accept useful logic without accepting arbitrary C#. A pricing rule, feature condition, authorization predicate, or filter should be able to mention the values the application deliberately exposes, use a compact collection-oriented language, and fail early when its names or types are wrong. It should not acquire the rest of the process as an accidental API.
 
@@ -137,6 +139,14 @@ sealed class RenamePrice : SyntaxRewriter
 ```
 
 Because the nodes are sealed records with strongly typed children, consumers can use C# pattern matching and non-mutating `with` expressions. A rule management UI can retain source positions for diagnostics, an analyzer can reject project-specific constructs, and a data adapter can conservatively translate the subset it understands. Those tools operate on the same tree the compiler checks.
+
+## Use it as a language foundation
+
+The first package consumer is [modular-monolith's `Mixology.Filtering`](https://github.com/TheFellow/modular-monolith/tree/master/src/Mixology.Filtering). It previously carried a private filter lexer, parser, type checker, formatter, and evaluator. With Expr 0.1.0, the adapter delegates those general language mechanics to this package while retaining the decisions that belong to Mixology.
+
+Each domain still declares the stable names and types visible to its filters. A compatibility rewriter uses the public AST to preserve existing spellings such as `name.contains("gin")`, dotted field names, and collection membership before compiling against that strict schema. The application then reads the checked tree to extract only comparisons that are safe to push into EF Core. It hydrates the complete public filter view and runs the full compiled Expr program afterward, so query narrowing cannot change which values actually match.
+
+This is the boundary I wanted the public pipeline to support. Expr owns a general expression language and its exact execution. The consuming application owns what names mean, which compatibility it promises, how errors enter its public model, and which fragments another execution system may safely approximate. The same AST supports both sides without making database planning part of the expression runtime.
 
 ## Make execution bounded and reusable
 

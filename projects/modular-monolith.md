@@ -15,10 +15,13 @@ Source: [https://thefellow.github.io/projects/modular-monolith/](https://thefell
 [View the repository](https://github.com/TheFellow/modular-monolith)
 [Explore the Go reference](/projects/go-modular-monolith.md)
 [Read the Mixology series](/series/mixology.md)
+[Explore Expr for .NET](/projects/expr-dotnet.md)
 
 modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar application with seven bounded contexts, one embedded SQLite database, Cedar authorization, and independent CLI, TUI, and desktop clients. It preserves the Go application's observable behavior while rebuilding its architecture around C# and the .NET ecosystem.
 
 That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and Avalonia for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
+
+The shared filtering foundation now adapts [Expr for .NET](/projects/expr-dotnet.md) instead of maintaining a private expression compiler. Expr supplies parsing, static checking, the public immutable AST, optimization, canonical printing, and exact VM evaluation. `Mixology.Filtering` keeps the application-specific boundary: typed domain schemas, compatibility rewrites for existing filter spellings, application errors, help examples, and conservative EF Core pushdowns. Every narrowed query still evaluates the complete compiled expression after hydrating the public filter view, so the planner can improve candidate selection without becoming the authority for filter meaning.
 
 ### Semantics before syntax
 
@@ -40,4 +43,4 @@ The desktop client adds its own concurrency obligations. UI-thread publication, 
 - It makes module direction, transactions, authorization, event reactions, and presentation isolation executable through project references, architecture tests, generated routing, and end-to-end behavior.
 - It provides parallel Go and C# implementations of the same application, making language and framework tradeoffs concrete rather than hypothetical.
 
-The quickest route through the repository is the root README, followed by the architecture guide and semantic parity ledger. The source map then traces the kernel, bounded contexts, toolkits, and independent composition roots.
+The quickest route through the repository is the root README, followed by the architecture guide and semantic parity ledger. The [`Mixology.Filtering` guide](https://github.com/TheFellow/modular-monolith/blob/master/src/Mixology.Filtering/README.md) is a compact example of adapting a general language into an application-owned contract, while the source map traces the kernel, bounded contexts, toolkits, and independent composition roots.
