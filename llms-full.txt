@@ -2917,6 +2917,16 @@ That placement also keeps authorization intact. The middleware still applies the
 
 Tests cover the boundaries where the design could lose meaning: aliases round-trip to one canonical spelling, unknown constructs fail, invalid runtime literals fail during parsing, `or` expressions are not pushed unsafely, date comparisons reach native bstore filters, tag predicates run after hydration, every domain field is exercised, and filtered paging continues across enough stored rows to reveal post-page filtering mistakes.
 
+## Carry the boundary into the .NET port
+
+The completed [.NET semantic port](/projects/modular-monolith.md) now applies the same division with [Expr for .NET](/projects/expr-dotnet.md) and EF Core. [`Mixology.Filtering`](https://github.com/TheFellow/modular-monolith/tree/master/src/Mixology.Filtering) originally owned a lexer, parser, checker, formatter, and evaluator while the Expr package was being built. The 0.1.0 integration removes that duplicate language machinery. Expr now supplies the checked public AST, canonical printer, optimizer, and exact virtual-machine evaluation.
+
+The adapter still owns the useful application contract. Typed domain schemas build strict Expr environments. An AST rewriter preserves established Mixology spellings and maps dotted public field names onto environment members. Constant validation and error translation keep invalid filters inside the application's error model. The EF planner inspects the checked Expr tree and emits an `Expression<Func<TRow, bool>>` only for constraints implied by the complete predicate.
+
+EF applies that expression to select candidates, the repository hydrates fields such as tags, and the compiled Expr program evaluates the complete public view before paging and authorization. This is the same correctness rule as the bstore path even though the mechanisms differ. A pushdown narrows work; it never defines the answer.
+
+The comparison also sharpens what it means for an application to own its filtering language. The Go adapter converts accepted Expr syntax into a small application tree. The .NET adapter can plan directly over Expr for .NET's deliberately public immutable AST. Ownership does not require maintaining a private parser or node hierarchy. It requires controlling the exposed schema, accepted compatibility, public errors, safe translations, and final evaluation boundary.
+
 ## General where callers benefit, concrete where execution benefits
 
 The filtering implementation is reusable because its public concepts are stable: a domain schema, a checked expression, a small tree, canonical text, and exact evaluation against a typed view. None of those concepts requires a CLI or bstore to make sense.
@@ -4784,6 +4794,8 @@ Source: [https://thefellow.github.io/projects/expr-dotnet/](https://thefellow.gi
 [Install from NuGet](https://www.nuget.org/packages/Expr)
 [View the repository](https://github.com/TheFellow/expr-dotnet)
 [Read the security model](https://github.com/TheFellow/expr-dotnet/blob/main/docs/security-model.md)
+[See it in Mixology](/projects/modular-monolith.md)
+[Read the filtering case study](/articles/typed-filtering-over-bstore.md)
 
 I wanted a way for a .NET application to accept useful logic without accepting arbitrary C#. A pricing rule, feature condition, authorization predicate, or filter should be able to mention the values the application deliberately exposes, use a compact collection-oriented language, and fail early when its names or types are wrong. It should not acquire the rest of the process as an accidental API.
 
@@ -4900,6 +4912,14 @@ sealed class RenamePrice : SyntaxRewriter
 ```
 
 Because the nodes are sealed records with strongly typed children, consumers can use C# pattern matching and non-mutating `with` expressions. A rule management UI can retain source positions for diagnostics, an analyzer can reject project-specific constructs, and a data adapter can conservatively translate the subset it understands. Those tools operate on the same tree the compiler checks.
+
+## Use it as a language foundation
+
+The first package consumer is [modular-monolith's `Mixology.Filtering`](https://github.com/TheFellow/modular-monolith/tree/master/src/Mixology.Filtering). It previously carried a private filter lexer, parser, type checker, formatter, and evaluator. With Expr 0.1.0, the adapter delegates those general language mechanics to this package while retaining the decisions that belong to Mixology.
+
+Each domain still declares the stable names and types visible to its filters. A compatibility rewriter uses the public AST to preserve existing spellings such as `name.contains("gin")`, dotted field names, and collection membership before compiling against that strict schema. The application then reads the checked tree to extract only comparisons that are safe to push into EF Core. It hydrates the complete public filter view and runs the full compiled Expr program afterward, so query narrowing cannot change which values actually match.
+
+This is the boundary I wanted the public pipeline to support. Expr owns a general expression language and its exact execution. The consuming application owns what names mean, which compatibility it promises, how errors enter its public model, and which fragments another execution system may safely approximate. The same AST supports both sides without making database planning part of the expression runtime.
 
 ## Make execution bounded and reusable
 
@@ -5179,10 +5199,13 @@ Source: [https://thefellow.github.io/projects/modular-monolith/](https://thefell
 [View the repository](https://github.com/TheFellow/modular-monolith)
 [Explore the Go reference](/projects/go-modular-monolith.md)
 [Read the Mixology series](/series/mixology.md)
+[Explore Expr for .NET](/projects/expr-dotnet.md)
 
 modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar application with seven bounded contexts, one embedded SQLite database, Cedar authorization, and independent CLI, TUI, and desktop clients. It preserves the Go application's observable behavior while rebuilding its architecture around C# and the .NET ecosystem.
 
 That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and Avalonia for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
+
+The shared filtering foundation now adapts [Expr for .NET](/projects/expr-dotnet.md) instead of maintaining a private expression compiler. Expr supplies parsing, static checking, the public immutable AST, optimization, canonical printing, and exact VM evaluation. `Mixology.Filtering` keeps the application-specific boundary: typed domain schemas, compatibility rewrites for existing filter spellings, application errors, help examples, and conservative EF Core pushdowns. Every narrowed query still evaluates the complete compiled expression after hydrating the public filter view, so the planner can improve candidate selection without becoming the authority for filter meaning.
 
 ### Semantics before syntax
 
@@ -5204,7 +5227,7 @@ The desktop client adds its own concurrency obligations. UI-thread publication, 
 - It makes module direction, transactions, authorization, event reactions, and presentation isolation executable through project references, architecture tests, generated routing, and end-to-end behavior.
 - It provides parallel Go and C# implementations of the same application, making language and framework tradeoffs concrete rather than hypothetical.
 
-The quickest route through the repository is the root README, followed by the architecture guide and semantic parity ledger. The source map then traces the kernel, bounded contexts, toolkits, and independent composition roots.
+The quickest route through the repository is the root README, followed by the architecture guide and semantic parity ledger. The [`Mixology.Filtering` guide](https://github.com/TheFellow/modular-monolith/blob/master/src/Mixology.Filtering/README.md) is a compact example of adapting a general language into an application-owned contract, while the source map traces the kernel, bounded contexts, toolkits, and independent composition roots.
 
 
 ---
