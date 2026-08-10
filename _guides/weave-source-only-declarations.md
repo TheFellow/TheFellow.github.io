@@ -1,13 +1,17 @@
 ---
 title: "Index Declarations Without Executing the Repository"
 date: 2026-08-09 10:35:00 -0700
-last_modified_at: 2026-08-09 10:35:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Markdown, schemas, and build files contribute navigation facts through source-only parsing."
 permalink: /articles/weave-source-only-declarations/
 series: weave
 series_order: 6
+order: 6
 status: "Weave, part 6"
 featured: true
+icon: "braces"
+accent: "#20c997"
+topics: ["Schema indexing", "Build manifests", "Source evidence"]
 image: /assets/images/articles/weave/source-only-schema-build.svg
 ---
 

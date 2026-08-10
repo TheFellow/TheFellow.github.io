@@ -1,13 +1,17 @@
 ---
 title: "Progressive Discovery Returns to Source"
 date: 2026-08-09 10:33:00 -0700
-last_modified_at: 2026-08-09 10:33:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Weave selects small semantic and text clues before opening exact source context."
 permalink: /articles/weave-progressive-discovery/
 series: weave
 series_order: 4
+order: 4
 status: "Weave, part 4"
 featured: true
+icon: "route"
+accent: "#ff922b"
+topics: ["Code navigation", "Source context", "Developer tools"]
 image: /assets/images/articles/weave/source-rich-context.svg
 ---
 

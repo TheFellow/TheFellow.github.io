@@ -1,13 +1,17 @@
 ---
 title: "Inspect the Graph and Author Missing Links"
 date: 2026-08-09 10:34:00 -0700
-last_modified_at: 2026-08-09 10:34:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Bounded graph views and checked-in links make navigation facts visible and reviewable."
 permalink: /articles/weave-graph-inspection-and-links/
 series: weave
 series_order: 5
+order: 5
 status: "Weave, part 5"
 featured: true
+icon: "sitemap"
+accent: "#51cf66"
+topics: ["Graph inspection", "Contextual links", "Source evidence"]
 image: /assets/images/articles/weave/inspectable-graph.svg
 ---
 

@@ -1,13 +1,17 @@
 ---
 title: "Compare Navigation Facts Across Git States"
 date: 2026-08-09 10:36:00 -0700
-last_modified_at: 2026-08-09 10:36:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Semantic diff and impact compare bounded navigation evidence without mutating the worktree."
 permalink: /articles/weave-semantic-diffs-and-impact/
 series: weave
 series_order: 7
+order: 7
 status: "Weave, part 7"
 featured: true
+icon: "compare"
+accent: "#ffd43b"
+topics: ["Semantic diffs", "Git", "Impact analysis"]
 image: /assets/images/articles/weave/semantic-snapshot-diff.svg
 ---
 

@@ -1,13 +1,17 @@
 ---
 title: "Federate Fresh Worktrees"
 date: 2026-08-09 10:37:00 -0700
-last_modified_at: 2026-08-09 10:37:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Cross-repository queries refresh selected worktrees before using a disposable aggregate."
 permalink: /articles/weave-federated-queries/
 series: weave
 series_order: 8
+order: 8
 status: "Weave, part 8"
 featured: true
+icon: "modules"
+accent: "#f06595"
+topics: ["Federated queries", "Fresh worktrees", "Machine aggregates"]
 image: /assets/images/articles/weave/machine-aggregate.svg
 ---
 
