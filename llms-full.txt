@@ -41,15 +41,6 @@ Source: [https://thefellow.github.io/articles/](https://thefellow.github.io/arti
 
 Long-form tutorials, essays, case studies, and development journals connect design principles to running code. Related articles are collected into [ordered series](/series.md) without requiring each article to use the same format.
 
-- [Weave Format 5 Is a Navigation Index](/articles/weave-format-5-navigation-index.md): Format 5 keeps the few semantic facts needed to reach current source quickly.
-- [Freshness Belongs on Every Weave Read](/articles/weave-query-driven-freshness.md): Every query proves that its navigation facts match the current worktree and providers.
-- [Language Adapters Share One Navigation Contract](/articles/weave-language-adapters.md): Compiler-backed adapters project bounded facts into the same format-5 profile.
-- [Progressive Discovery Returns to Source](/articles/weave-progressive-discovery.md): Weave selects small semantic and text clues before opening exact source context.
-- [Inspect the Graph and Author Missing Links](/articles/weave-graph-inspection-and-links.md): Bounded graph views and checked-in links make navigation facts visible and reviewable.
-- [Index Declarations Without Executing the Repository](/articles/weave-source-only-declarations.md): Markdown, schemas, and build files contribute navigation facts through source-only parsing.
-- [Compare Navigation Facts Across Git States](/articles/weave-semantic-diffs-and-impact.md): Semantic diff and impact compare bounded navigation evidence without mutating the worktree.
-- [Federate Fresh Worktrees](/articles/weave-federated-queries.md): Cross-repository queries refresh selected worktrees before using a disposable aggregate.
-- [Keep Acceleration Optional](/articles/weave-local-acceleration.md): Watch, sessions, and the transient broker reuse state without weakening freshness.
 - [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 - [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
 - [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
@@ -3130,286 +3121,6 @@ A third surface is therefore most useful when it remains genuinely third: native
 
 ---
 
-<!-- Generated from https://thefellow.github.io/articles/weave-federated-queries/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Federate Fresh Worktrees
-
-Source: [https://thefellow.github.io/articles/weave-federated-queries/](https://thefellow.github.io/articles/weave-federated-queries/)
-
-## Pyramid summary
-
-- **~2 words:** Federated navigation
-- **~8 words:** Fresh worktrees select one disposable aggregate generation.
-- **Expanded:** Cross-repository queries refresh selected worktrees before using a disposable aggregate.
-
-## Full content
-
-**Part 8 of [Building Weave](/series/weave.md).**
-
-Weave can query a bounded set of cataloged repositories without making a hosted graph authoritative. Each selected worktree passes its normal freshness gate first.
-
-![Fresh worktree generations forming a machine aggregate](/assets/images/articles/weave/machine-aggregate.svg)
-
-The generation identities form a deterministic aggregate key. A matching immutable aggregate can answer the query quickly; otherwise Weave builds one or falls back to authoritative federation over the refreshed member databases.
-
-Aggregates live outside Git and are safe to delete. Missing or unhealthy members are reported as partial results rather than hidden.
-
-Source context remains repository-local. Federation helps choose the repository and target, then `weave context` reopens source under that repository's own bounds and freshness rules.
-
-[Continue to local acceleration](/articles/weave-local-acceleration.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-format-5-navigation-index/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Weave Format 5 Is a Navigation Index
-
-Source: [https://thefellow.github.io/articles/weave-format-5-navigation-index/](https://thefellow.github.io/articles/weave-format-5-navigation-index/)
-
-## Pyramid summary
-
-- **~2 words:** Format-5 navigation
-- **~8 words:** A small navigation profile points back to source.
-- **Expanded:** Format 5 keeps the few semantic facts needed to reach current source quickly.
-
-## Full content
-
-**Part 1 of [Building Weave](/series/weave.md).**
-
-Weave format 5 is deliberately small. It stores documents, declaration anchors, and relationships that help a person or coding agent choose where to look next.
-
-![A compact index pointing back to source](/assets/images/articles/weave/compact-storage.svg)
-
-Providers emit one `navigation-v1` profile. The profile retains dependencies, imports, implementations, tests, generation, documentation, authored links, and embeds. It does not retain occurrences, calls, references, locals, fields, containment, or body terms.
-
-That boundary keeps indexing and queries practical. A result identifies a useful package, declaration, document, or relationship. Detailed investigation then returns to current source through `weave explore` and `weave context`.
-
-The database is disposable and stays outside Git. Its job is navigation, not a second copy of the repository.
-
-[Explore the Weave project](/projects/weave.md)
-[Continue to freshness](/articles/weave-query-driven-freshness.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-graph-inspection-and-links/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Inspect the Graph and Author Missing Links
-
-Source: [https://thefellow.github.io/articles/weave-graph-inspection-and-links/](https://thefellow.github.io/articles/weave-graph-inspection-and-links/)
-
-## Pyramid summary
-
-- **~2 words:** Inspectable navigation
-- **~8 words:** Bounded graphs and checked-in links share one contract.
-- **Expanded:** Bounded graph views and checked-in links make navigation facts visible and reviewable.
-
-## Full content
-
-**Part 5 of [Building Weave](/series/weave.md).**
-
-Navigation facts must be easy to inspect. `weave graph` resolves a target and renders a bounded neighborhood as DOT, JSON, or an interactive local explorer.
-
-![A bounded graph with visible evidence](/assets/images/articles/weave/inspectable-graph.svg)
-
-Each edge carries its kind and evidence. Filters, direction, depth, and result limits keep the answer focused instead of turning the command into an unbounded graph dump.
-
-Some useful relationships cannot be derived from source alone. `weave links` edits reviewed relationships in `.weave/bridges.json`, such as a design section documenting a handler or a schema generating a client. Writes are validated, canonical, atomic, and guarded against stale interactive editors.
-
-Derived and authored edges then flow through the same path, graph, impact, export, and architecture queries.
-
-[Continue to source-only declarations](/articles/weave-source-only-declarations.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-language-adapters/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Language Adapters Share One Navigation Contract
-
-Source: [https://thefellow.github.io/articles/weave-language-adapters/](https://thefellow.github.io/articles/weave-language-adapters/)
-
-## Pyramid summary
-
-- **~2 words:** Language adapters
-- **~8 words:** Bounded processes emit one validated navigation profile.
-- **Expanded:** Compiler-backed adapters project bounded facts into the same format-5 profile.
-
-## Full content
-
-**Part 3 of [Building Weave](/series/weave.md).**
-
-Weave treats language support as a process contract. An adapter reads a bounded request and emits validated `navigation-v1` facts over framed standard input and output.
-
-![Language tools converging on one adapter contract](/assets/images/articles/weave/adapter-contract.svg)
-
-The boundary lets a language tool use its own compiler without moving that compiler into Weave. Weave validates framing, limits, identities, paths, source ranges, edge kinds, and the advertised capability digest before publication.
-
-The adapter registry records explicit commands and input routing. Managed adapters add pinned artifacts and lifecycle commands, but do not invent a package registry. Cross-repository soak fixtures check the contract against real repository shapes before support is advertised.
-
-The built-in Go provider and external adapters therefore produce the same small navigation model. Query behavior does not depend on which compiler produced the facts.
-
-[Continue to progressive discovery](/articles/weave-progressive-discovery.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-local-acceleration/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Keep Acceleration Optional
-
-Source: [https://thefellow.github.io/articles/weave-local-acceleration/](https://thefellow.github.io/articles/weave-local-acceleration/)
-
-## Pyramid summary
-
-- **~2 words:** Local acceleration
-- **~8 words:** Watch, sessions, and brokers reuse authoritative state.
-- **Expanded:** Watch, sessions, and the transient broker reuse state without weakening freshness.
-
-## Full content
-
-**Part 9 of [Building Weave](/series/weave.md).**
-
-Weave's fast paths reuse authoritative local state. They do not create a second consistency model.
-
-![Several queries sharing one bounded local session](/assets/images/articles/weave/resident-query-session.svg)
-
-`weave watch` is an optional foreground warmer. `weave session` gives a host an explicit framed query process. On Unix, a transient per-worktree broker can amortize startup for ordinary bounded reads and reaps itself when idle.
-
-Every path still applies the freshness contract before answering. Maintenance and mutation commands drain resident readers before taking ownership, and callers can disable the broker when one process per command is preferable.
-
-This is the final shape of format 5: a small disposable index, authoritative source, and optional acceleration that can always be removed without changing meaning.
-
-[Return to the Weave project](/projects/weave.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-progressive-discovery/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Progressive Discovery Returns to Source
-
-Source: [https://thefellow.github.io/articles/weave-progressive-discovery/](https://thefellow.github.io/articles/weave-progressive-discovery/)
-
-## Pyramid summary
-
-- **~2 words:** Progressive discovery
-- **~8 words:** Small semantic and source pointers precede exact context.
-- **Expanded:** Weave selects small semantic and text clues before opening exact source context.
-
-## Full content
-
-**Part 4 of [Building Weave](/series/weave.md).**
-
-Format 5 separates finding a promising target from reading it. This keeps initial answers small while preserving direct access to authoritative source.
-
-![Small discovery results leading to selected source](/assets/images/articles/weave/source-rich-context.svg)
-
-`weave explore QUERY` combines declaration and document anchors with bounded, ignore-aware ripgrep results. The encoded discovery set has a hard 12 KiB budget and includes commands for the next step.
-
-`weave context TARGET` then resolves one target and returns a bounded source excerpt. Markdown sections expand naturally, while code stays anchored to its current file and range.
-
-Graph questions remain graph questions. Dependencies, paths, impact, and architecture use retained relationships; source wording and implementation details come from the worktree. This division is the practical center of format 5.
-
-[Continue to graph inspection](/articles/weave-graph-inspection-and-links.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-query-driven-freshness/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Freshness Belongs on Every Weave Read
-
-Source: [https://thefellow.github.io/articles/weave-query-driven-freshness/](https://thefellow.github.io/articles/weave-query-driven-freshness/)
-
-## Pyramid summary
-
-- **~2 words:** Fresh navigation
-- **~8 words:** Every read proves current Git and provider state.
-- **Expanded:** Every query proves that its navigation facts match the current worktree and providers.
-
-## Full content
-
-**Part 2 of [Building Weave](/series/weave.md).**
-
-Weave checks freshness when a read begins. Users do not need to remember a separate indexing step, and a background process is never the authority.
-
-![A query passing through a freshness gate](/assets/images/articles/weave/fresh-query.svg)
-
-The gate compares current Git state, provider capabilities, configuration, and source observations with the published manifest. Changed provider units rebuild atomically before the query opens the database.
-
-Publication matters as much as detection. A new unit and its manifest become visible together, so readers see either the previous complete generation or the next complete generation.
-
-Caches and warm processes may reduce the cost of this check. They cannot skip it. The simple promise is that every answer describes the worktree the caller is actually using.
-
-[Continue to language adapters](/articles/weave-language-adapters.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-semantic-diffs-and-impact/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Compare Navigation Facts Across Git States
-
-Source: [https://thefellow.github.io/articles/weave-semantic-diffs-and-impact/](https://thefellow.github.io/articles/weave-semantic-diffs-and-impact/)
-
-## Pyramid summary
-
-- **~2 words:** Semantic changes
-- **~8 words:** Exact Git sides produce bounded diff and impact evidence.
-- **Expanded:** Semantic diff and impact compare bounded navigation evidence without mutating the worktree.
-
-## Full content
-
-**Part 7 of [Building Weave](/series/weave.md).**
-
-Git changes are easier to review when file edits and navigation changes remain distinct. Weave builds exact semantic sides and reports added, removed, or changed declarations and retained relationships.
-
-![Two Git snapshots producing a semantic diff](/assets/images/articles/weave/semantic-snapshot-diff.svg)
-
-Historical sides use isolated immutable worktrees. The current side can include local edits, and the caller's worktree is never checked out or rewritten.
-
-`weave impact` starts from changed files, packages, declarations, or a Git diff and traverses only relationships format 5 actually retains. Test impact therefore relies on explicit test relationships, not inferred calls or references.
-
-Source inventory changes are reported separately from semantic changes. That keeps the evidence honest when a file moves or changes without altering the navigation profile.
-
-[Continue to federation](/articles/weave-federated-queries.md)
-
-
----
-
-<!-- Generated from https://thefellow.github.io/articles/weave-source-only-declarations/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Index Declarations Without Executing the Repository
-
-Source: [https://thefellow.github.io/articles/weave-source-only-declarations/](https://thefellow.github.io/articles/weave-source-only-declarations/)
-
-## Pyramid summary
-
-- **~2 words:** Source-only declarations
-- **~8 words:** Documents and schemas add facts without executing tools.
-- **Expanded:** Markdown, schemas, and build files contribute navigation facts through source-only parsing.
-
-## Full content
-
-**Part 6 of [Building Weave](/series/weave.md).**
-
-Not every important declaration lives in compiler source. Weave also indexes structured Markdown and common schema and build families through source-only providers.
-
-![Documents and schemas entering the navigation profile](/assets/images/articles/weave/source-only-schema-build.svg)
-
-These providers parse files without running renderers, builds, package managers, databases, plugins, or network loaders. They emit document and declaration anchors plus retained relationships such as dependencies, generation, documentation, and embeds.
-
-Linked schema categories publish atomically. If one changed file makes a category invalid, the previous complete facts remain available instead of exposing a partial model.
-
-The result is still the same format-5 navigation profile. A schema operation, Markdown heading, Go declaration, and build target can all lead a query back to exact source.
-
-[Continue to semantic changes](/articles/weave-semantic-diffs-and-impact.md)
-
-
----
-
 <!-- Generated from https://thefellow.github.io/notes/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Notes
@@ -3433,6 +3144,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Linux for Windows Brains](/notes/linux-for-windows-brains.md): A practical translation from familiar Windows concepts to Linux filesystems, permissions, shells, services, SSH, and containers.
 - [Building a Generic RIBLT in Go](/notes/riblt-in-go.md): A step-by-step implementation of generic, rateless set reconciliation in Go, from XOR-coded cells through peeling and measured communication.
 - [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
+- [Retiring Weave](/notes/retiring-weave.md): What I learned from building and benchmarking a compact local code index for coding agents.
 
 
 ---
@@ -4187,6 +3899,43 @@ The resulting abstraction is narrower than a shared view model and more useful t
 
 ---
 
+<!-- Generated from https://thefellow.github.io/notes/retiring-weave/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Retiring Weave
+
+Source: [https://thefellow.github.io/notes/retiring-weave/](https://thefellow.github.io/notes/retiring-weave/)
+
+## Pyramid summary
+
+- **~2 words:** Retired experiment
+- **~8 words:** A local code-index experiment yielded a useful benchmark.
+- **Expanded:** What I learned from building and benchmarking a compact local code index for coding agents.
+
+## Full content
+
+Weave was an experiment in making codebase research cheaper for coding agents. I wanted a compact, local code graph and navigation index that could point an LLM toward the right declarations, relationships, and source excerpts without storing an entire abstract syntax tree or making the agent search every file. The measure that mattered was simple: fewer tokens spent finding trustworthy evidence.
+
+The implementation grew beyond that small idea. It accumulated indexing formats, language adapters, freshness rules, graph operations, discovery dossiers, a broker, query sessions, federation, semantic diffs, and several overlapping CLI surfaces. Each capability was defensible in isolation, but together they increased the tool's conceptual and operational cost. The experiment needed evidence that this complexity bought agents a better research workflow.
+
+## Benchmark the outcome, not the architecture
+
+I compared Weave, CodeGraph, and ordinary source search on clean clones of Weave and a reasonably complex Go modular monolith, then checked language coverage against an F# workflow repository. Claude Sonnet answered identical repository questions under isolated tool configurations. I measured correctness, processed tokens, cost, turns, and tool calls rather than treating a successful index build as proof of usefulness.
+
+CodeGraph materially reduced processed tokens and tool calls on broad architectural traces. Across the completed runs it processed about 3.29 million tokens with 104 tool calls, compared with Weave's 6.45 million tokens and 204 tool calls. Weave also failed one budgeted run.
+
+The focused correctness case supplied the more important counterweight. Ordinary source search found the decisive existing test. Weave missed an archived-menu soft-delete exception and produced the wrong conclusion. CodeGraph reached the right behavior but did not surface all of the strongest evidence. Neither index covered the F# source in the third repository.
+
+The result was not that graphs are useless or that native search always wins. It was that a graph is an optimization, not authority. Broad tracing benefits from good graph retrieval, while precise claims still need direct source and test verification.
+
+## Stop when the experiment answers the question
+
+I retired Weave because its surface area and maintenance cost no longer justified continuing. An existing tool performed the broad-navigation job better, and ordinary search remained stronger for the correctness boundary where confidence mattered most. More features or another index format would not change that decision without first proving a substantially smaller and more effective agent workflow.
+
+Building Weave was still worthwhile. It clarified how aggressively retrieval output must be bounded, how dangerous confident but incomplete evidence can be, and why tool evaluations must include questions with surprising answers. Retiring it is part of the engineering result: test the premise, keep the evidence, and stop investing when the evidence points elsewhere.
+
+
+---
+
 <!-- Generated from https://thefellow.github.io/notes/riblt-in-go/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Building a Generic RIBLT in Go
@@ -4664,7 +4413,6 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), beginning with the repositories pinned on my profile and expanding to smaller tools worth explaining. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
-- [Weave](/projects/weave.md): A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph.
 - [Expr for .NET](/projects/expr-dotnet.md): A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution.
 - [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [modular-monolith](/projects/modular-monolith.md): An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#.
@@ -5085,7 +4833,6 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 [Explore the .NET port](/projects/modular-monolith.md)
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
-[See Weave progressive discovery](/articles/weave-progressive-discovery.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
@@ -5094,8 +4841,6 @@ The repository's central argument is that important rules should be executable. 
 Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or it may admit that no replacement is known. Independent event handlers prepare their work before any of them mutate state, then update inventory, recipes, and historical orders inside the originating transaction. Menu readiness reflects the resulting state without destructively changing menu membership. A replacement rewrites future recipes. An unresolved required ingredient moves its drinks to `review_required`, blocks affected orders, and leaves published menus visible in a degraded state. If one handler fails, the complete operation rolls back. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
 
 That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI all expose the same retirement choices and readiness decision, while their interaction and asynchronous loading remain native to each surface.
-
-That cross-surface readiness path is also a useful Weave research question. Format-5 discovery selects a few declaration and document anchors, combines them with bounded source search, and opens current source for the final trace through readiness, presentation, publication, persistence, and tests. [Progressive discovery](/articles/weave-progressive-discovery.md) describes that smaller workflow.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
@@ -5263,48 +5008,6 @@ Start with the repository's `Value` and `ValueBase` types, then follow the tests
 
 ---
 
-<!-- Generated from https://thefellow.github.io/projects/weave/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Weave
-
-Source: [https://thefellow.github.io/projects/weave/](https://thefellow.github.io/projects/weave/)
-
-## Pyramid summary
-
-- **~2 words:** Practical navigation
-- **~8 words:** A compact Git-aware index guiding agents to current source.
-- **Expanded:** A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph.
-
-## Full content
-
-[View the repository](https://github.com/TheFellow/weave)
-[Read the Weave series](/series/weave.md)
-[Understand format 5](/articles/weave-format-5-navigation-index.md)
-[Follow source discovery](/articles/weave-progressive-discovery.md)
-[Review language adapters](/articles/weave-language-adapters.md)
-
-Weave is a local-first, Git-aware navigation index for people and coding agents. It stores just enough structure to find the right package, declaration, or document, then sends detailed investigation back to current source. The index is disposable, stays outside Git, needs no hosted service, and refreshes before serving a query.
-
-```sh
-weave explore how menu publication reaches persistence
-weave context example.com/project/menu.Service.Publish
-weave path PackageA PackageB --kind imports --max-depth 8
-weave impact --git-diff origin/main --json
-weave graph Handle --kind implements --output handle.dot
-weave links add guide-documents-handler --from 'docs/guide.md#flow' --to Handle --kind documents
-```
-
-Format 5 implements one `navigation-v1` profile end to end. Providers emit documents, declaration anchors, and high-value relationships such as dependencies, imports, implementations, tests, generation, documentation, links, and embeds. Occurrences, calls, references, locals, fields, containment, and body terms are not produced or stored.
-
-`weave explore` combines a few semantic anchors with bounded, ignore-aware ripgrep results. `weave context` opens source only after a useful target is selected. Graph, path, impact, architecture, links, and semantic diff operate on the same retained navigation facts.
-
-The built-in Go provider indexes build-selected declarations and package dependencies without type checking or test variants. Optional language adapters project their compiler output into the same profile. Structured Markdown and source-only schema providers add documents and declarative relationships without running renderers, builds, package managers, databases, or network loaders.
-
-Freshness is checked on every read. `weave watch`, the transient local broker, catalog aggregation, and other caches can reduce latency, but none can bypass that check. The project remains early alpha, with a deliberately small goal: navigate quickly, return bounded answers, and reopen authoritative source at the point of use.
-
-
----
-
 <!-- Generated from https://thefellow.github.io/resume/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Resume
@@ -5458,7 +5161,6 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Weave](/series/weave.md): How Weave builds a compact, fresh navigation index for practical source discovery.
 - [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 
@@ -5498,38 +5200,6 @@ The completed [.NET semantic port](/projects/modular-monolith.md) preserves that
 10. **Article:** [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
 11. **Article:** [Typed Filtering over bstore](/articles/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
 12. **Note:** [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
-
-
----
-
-<!-- Generated from https://thefellow.github.io/series/weave/ by scripts/generate_llm_content.py; do not edit. -->
-
-# Building Weave
-
-Source: [https://thefellow.github.io/series/weave/](https://thefellow.github.io/series/weave/)
-
-## Pyramid summary
-
-- **~2 words:** Weave series
-- **~8 words:** A compact format-5 navigation index with progressive source discovery.
-- **Expanded:** How Weave builds a compact, fresh navigation index for practical source discovery.
-
-## Full content
-
-Weave format 5 is a compact navigation index. These nine short articles cover the complete contract: retained facts, freshness, providers, source discovery, graph tools, Git comparisons, federation, and optional acceleration.
-
-[Explore the project](/projects/weave.md)
-[View the repository](https://github.com/TheFellow/weave)
-
-1. **Article:** [Weave Format 5 Is a Navigation Index](/articles/weave-format-5-navigation-index.md): Format 5 keeps the few semantic facts needed to reach current source quickly.
-2. **Article:** [Freshness Belongs on Every Weave Read](/articles/weave-query-driven-freshness.md): Every query proves that its navigation facts match the current worktree and providers.
-3. **Article:** [Language Adapters Share One Navigation Contract](/articles/weave-language-adapters.md): Compiler-backed adapters project bounded facts into the same format-5 profile.
-4. **Article:** [Progressive Discovery Returns to Source](/articles/weave-progressive-discovery.md): Weave selects small semantic and text clues before opening exact source context.
-5. **Article:** [Inspect the Graph and Author Missing Links](/articles/weave-graph-inspection-and-links.md): Bounded graph views and checked-in links make navigation facts visible and reviewable.
-6. **Article:** [Index Declarations Without Executing the Repository](/articles/weave-source-only-declarations.md): Markdown, schemas, and build files contribute navigation facts through source-only parsing.
-7. **Article:** [Compare Navigation Facts Across Git States](/articles/weave-semantic-diffs-and-impact.md): Semantic diff and impact compare bounded navigation evidence without mutating the worktree.
-8. **Article:** [Federate Fresh Worktrees](/articles/weave-federated-queries.md): Cross-repository queries refresh selected worktrees before using a disposable aggregate.
-9. **Article:** [Keep Acceleration Optional](/articles/weave-local-acceleration.md): Watch, sessions, and the transient broker reuse state without weakening freshness.
 
 
 ---
