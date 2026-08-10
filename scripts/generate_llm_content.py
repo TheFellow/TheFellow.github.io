@@ -32,6 +32,7 @@ SUMMARIES = {
     "/resume/": ("Engineering experience", "Staff-level experience in authorization, architecture, delivery, and technical leadership."),
     "/404.html": ("Missing page", "Navigation help when a requested page cannot be found."),
     "/projects/weave/": ("Practical navigation", "A compact Git-aware index guiding agents to current source."),
+    "/projects/expr-dotnet/": ("Typed expressions", "A safe .NET expression language with inspectable compilation and bounded execution."),
     "/projects/go-modular-monolith/": ("Executable architecture", "A Go reference app enforcing modular boundaries and cross-cutting concerns."),
     "/projects/modular-monolith/": ("Semantic architecture port", "An idiomatic .NET port preserving Mixology's observable application behavior."),
     "/projects/cedar-dotnet/": ("Cedar for .NET", "A semantic Cedar implementation with idiomatic C# APIs and conformance tests."),

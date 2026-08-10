@@ -18,6 +18,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [arch-lint](https://thefellow.github.io/projects/arch-lint.md): A Go analyzer that makes architectural dependency rules build-time checks.
 - [cedar-dotnet](https://thefellow.github.io/projects/cedar-dotnet.md): A semantic Cedar implementation with idiomatic C# APIs and conformance tests.
 - [enumstruct](https://thefellow.github.io/projects/enumstruct.md): A Go analyzer that detects missing pointer-union cases as models evolve.
+- [Expr for .NET](https://thefellow.github.io/projects/expr-dotnet.md): A safe .NET expression language with inspectable compilation and bounded execution.
 - [F#kYeah](https://thefellow.github.io/projects/fkyeah.md): An F# engine executing inspectable, resumable AI workflows from DOT graphs.
 - [fluid](https://thefellow.github.io/projects/fluid.md): An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics.
 - [go-modular-monolith](https://thefellow.github.io/projects/go-modular-monolith.md): A Go reference app enforcing modular boundaries and cross-cutting concerns.
