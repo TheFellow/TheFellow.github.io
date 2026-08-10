@@ -14,6 +14,15 @@ Source: [https://thefellow.github.io/articles/](https://thefellow.github.io/arti
 
 Long-form tutorials, essays, case studies, and development journals connect design principles to running code. Related articles are collected into [ordered series](/series.md) without requiring each article to use the same format.
 
+- [Weave Format 5 Is a Navigation Index](/articles/weave-format-5-navigation-index.md): Format 5 keeps the few semantic facts needed to reach current source quickly.
+- [Freshness Belongs on Every Weave Read](/articles/weave-query-driven-freshness.md): Every query proves that its navigation facts match the current worktree and providers.
+- [Language Adapters Share One Navigation Contract](/articles/weave-language-adapters.md): Compiler-backed adapters project bounded facts into the same format-5 profile.
+- [Progressive Discovery Returns to Source](/articles/weave-progressive-discovery.md): Weave selects small semantic and text clues before opening exact source context.
+- [Inspect the Graph and Author Missing Links](/articles/weave-graph-inspection-and-links.md): Bounded graph views and checked-in links make navigation facts visible and reviewable.
+- [Index Declarations Without Executing the Repository](/articles/weave-source-only-declarations.md): Markdown, schemas, and build files contribute navigation facts through source-only parsing.
+- [Compare Navigation Facts Across Git States](/articles/weave-semantic-diffs-and-impact.md): Semantic diff and impact compare bounded navigation evidence without mutating the worktree.
+- [Federate Fresh Worktrees](/articles/weave-federated-queries.md): Cross-repository queries refresh selected worktrees before using a disposable aggregate.
+- [Keep Acceleration Optional](/articles/weave-local-acceleration.md): Watch, sessions, and the transient broker reuse state without weakening freshness.
 - [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 - [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
 - [Growing a Reciprocal Domain Workflow](/articles/growing-a-reciprocal-domain-workflow.md): A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
@@ -27,12 +36,3 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md): What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee.
 - [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
 - [Building a File-Backed Columnar Event Pipeline](/articles/building-a-file-backed-columnar-event-pipeline.md): How immutable Parquet batches, snapshot metadata, DuckDB, Arrow, and Protobuf form a columnar event path from storage to results.
-- [Federate Fresh Worktrees](/articles/weave-federated-queries.md): Cross-repository queries refresh selected worktrees before using a disposable aggregate.
-- [Weave Format 5 Is a Navigation Index](/articles/weave-format-5-navigation-index.md): Format 5 keeps the few semantic facts needed to reach current source quickly.
-- [Inspect the Graph and Author Missing Links](/articles/weave-graph-inspection-and-links.md): Bounded graph views and checked-in links make navigation facts visible and reviewable.
-- [Language Adapters Share One Navigation Contract](/articles/weave-language-adapters.md): Compiler-backed adapters project bounded facts into the same format-5 profile.
-- [Keep Acceleration Optional](/articles/weave-local-acceleration.md): Watch, sessions, and the transient broker reuse state without weakening freshness.
-- [Progressive Discovery Returns to Source](/articles/weave-progressive-discovery.md): Weave selects small semantic and text clues before opening exact source context.
-- [Freshness Belongs on Every Weave Read](/articles/weave-query-driven-freshness.md): Every query proves that its navigation facts match the current worktree and providers.
-- [Compare Navigation Facts Across Git States](/articles/weave-semantic-diffs-and-impact.md): Semantic diff and impact compare bounded navigation evidence without mutating the worktree.
-- [Index Declarations Without Executing the Repository](/articles/weave-source-only-declarations.md): Markdown, schemas, and build files contribute navigation facts through source-only parsing.

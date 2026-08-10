@@ -1,13 +1,17 @@
 ---
 title: "Keep Acceleration Optional"
 date: 2026-08-09 10:38:00 -0700
-last_modified_at: 2026-08-09 10:38:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Watch, sessions, and the transient broker reuse state without weakening freshness."
 permalink: /articles/weave-local-acceleration/
 series: weave
 series_order: 9
+order: 9
 status: "Weave, part 9"
 featured: true
+icon: "watch"
+accent: "#fab005"
+topics: ["Watch mode", "Query sessions", "Local acceleration"]
 image: /assets/images/articles/weave/resident-query-session.svg
 ---
 

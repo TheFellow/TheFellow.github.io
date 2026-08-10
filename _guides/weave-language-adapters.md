@@ -1,13 +1,17 @@
 ---
 title: "Language Adapters Share One Navigation Contract"
 date: 2026-08-09 10:32:00 -0700
-last_modified_at: 2026-08-09 10:32:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Compiler-backed adapters project bounded facts into the same format-5 profile."
 permalink: /articles/weave-language-adapters/
 series: weave
 series_order: 3
+order: 3
 status: "Weave, part 3"
 featured: true
+icon: "terminal"
+accent: "#b197fc"
+topics: ["Compiler adapters", "Process isolation", "Protocols"]
 image: /assets/images/articles/weave/adapter-contract.svg
 ---
 

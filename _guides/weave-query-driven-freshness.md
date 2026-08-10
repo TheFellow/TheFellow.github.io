@@ -1,13 +1,17 @@
 ---
 title: "Freshness Belongs on Every Weave Read"
 date: 2026-08-09 10:31:00 -0700
-last_modified_at: 2026-08-09 10:31:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Every query proves that its navigation facts match the current worktree and providers."
 permalink: /articles/weave-query-driven-freshness/
 series: weave
 series_order: 2
+order: 2
 status: "Weave, part 2"
 featured: true
+icon: "branch"
+accent: "#4dabf7"
+topics: ["Git freshness", "Provider state", "Current evidence"]
 image: /assets/images/articles/weave/fresh-query.svg
 ---
 

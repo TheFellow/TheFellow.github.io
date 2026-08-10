@@ -1,13 +1,17 @@
 ---
 title: "Weave Format 5 Is a Navigation Index"
 date: 2026-08-09 10:30:00 -0700
-last_modified_at: 2026-08-09 10:30:00 -0700
+last_modified_at: 2026-08-10
 excerpt: "Format 5 keeps the few semantic facts needed to reach current source quickly."
 permalink: /articles/weave-format-5-navigation-index/
 series: weave
 series_order: 1
+order: 1
 status: "Weave, part 1"
 featured: true
+icon: "storage"
+accent: "#22b8cf"
+topics: ["Navigation index", "Source discovery", "Compact storage"]
 image: /assets/images/articles/weave/compact-storage.svg
 ---
 
