@@ -14,6 +14,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
+[Explore the .NET port](/projects/modular-monolith.md)
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
 [See Weave progressive discovery](/articles/weave-progressive-discovery.md)
@@ -29,6 +30,8 @@ That lifecycle also separates degradation from promotion. Existing published men
 That cross-surface readiness path is also a useful Weave research question. Format-5 discovery selects a few declaration and document anchors, combines them with bounded source search, and opens current source for the final trace through readiness, presentation, publication, persistence, and tests. [Progressive discovery](/articles/weave-progressive-discovery.md) describes that smaller workflow.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
+
+The completed [.NET semantic port](/projects/modular-monolith.md) provides a second implementation of the same behavioral contract. It rebuilds Mixology around .NET 10, EF Core, Terminal.Gui, and Avalonia while preserving the seven contexts, shared SQLite state, Cedar decisions, transactional reactions, and independent surfaces. Reading the two together makes the boundary between application semantics and language-specific architecture visible.
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 

@@ -1,7 +1,7 @@
 ---
 title: "Resume"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-03 08:23:08 -0700
+last_modified_at: 2026-08-09 19:30:00 -0700
 permalink: /resume/
 excerpt: "Staff software engineer specializing in authorization, platform architecture, API evolution, and durable systems."
 layout: single
@@ -148,8 +148,8 @@ author_profile: false
       <p>An open-source implementation of the public <a href="https://factory.strongdm.ai/products/attractor">Attractor specification</a> with durable graph execution and checkpoint-and-resume support.</p>
     </article>
     <article>
-      <h3><a href="https://github.com/TheFellow/go-modular-monolith">go-modular-monolith</a></h3>
-      <p>A Go reference application that makes modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. A shared pipeline coordinates transactions, events, audit, and Cedar authorization; static analysis and cross-surface tests keep those contracts intact.</p>
+      <h3><a href="https://github.com/TheFellow/go-modular-monolith">Mixology for Go</a> + <a href="https://github.com/TheFellow/modular-monolith">.NET</a></h3>
+      <p>Parallel Go and C# reference applications that make modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. The semantic port preserves observable behavior while rebuilding persistence, hosting, presentation, and concurrency around idiomatic .NET.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>

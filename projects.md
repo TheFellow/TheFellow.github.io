@@ -16,6 +16,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 
 - [Weave](/projects/weave.md): A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph.
 - [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
+- [modular-monolith](/projects/modular-monolith.md): An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#.
 - [cedar-dotnet](/projects/cedar-dotnet.md): A C# implementation of the Cedar policy language and authorization model.
 - [go-riblt](/projects/go-riblt.md): A generic Go implementation of rateless set reconciliation with keyed codecs, streaming cells, and explicit resource limits.
 - [arch-lint](/projects/arch-lint.md): A Go analyzer that turns architectural dependency rules into build-time checks.

@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-09 10:40:00 -0700
+last_modified_at: 2026-08-09 19:30:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -19,6 +19,7 @@ topics: ["Architecture", "Reference app", "Cedar"]
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn .btn--primary }
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start){: .btn }
+[Explore the .NET port](/projects/modular-monolith/){: .btn }
 [Read the Mixology series](/series/mixology/){: .btn }
 [Read the GUI surface article](/articles/growing-mixology-with-fyne/){: .btn }
 [See Weave progressive discovery](/articles/weave-progressive-discovery/){: .btn }
@@ -34,6 +35,8 @@ That lifecycle also separates degradation from promotion. Existing published men
 That cross-surface readiness path is also a useful Weave research question. Format-5 discovery selects a few declaration and document anchors, combines them with bounded source search, and opens current source for the final trace through readiness, presentation, publication, persistence, and tests. [Progressive discovery](/articles/weave-progressive-discovery/) describes that smaller workflow.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
+
+The completed [.NET semantic port](/projects/modular-monolith/) provides a second implementation of the same behavioral contract. It rebuilds Mixology around .NET 10, EF Core, Terminal.Gui, and Avalonia while preserving the seven contexts, shared SQLite state, Cedar decisions, transactional reactions, and independent surfaces. Reading the two together makes the boundary between application semantics and language-specific architecture visible.
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
