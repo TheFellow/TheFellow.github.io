@@ -31,7 +31,6 @@ SUMMARIES = {
     "/series/": ("Reading series", "Ordered paths through related articles, notes, and projects."),
     "/resume/": ("Engineering experience", "Staff-level experience in authorization, architecture, delivery, and technical leadership."),
     "/404.html": ("Missing page", "Navigation help when a requested page cannot be found."),
-    "/projects/weave/": ("Practical navigation", "A compact Git-aware index guiding agents to current source."),
     "/projects/expr-dotnet/": ("Typed expressions", "A safe .NET expression language with inspectable compilation and bounded execution."),
     "/projects/go-modular-monolith/": ("Executable architecture", "A Go reference app enforcing modular boundaries and cross-cutting concerns."),
     "/projects/modular-monolith/": ("Semantic architecture port", "An idiomatic .NET port preserving Mixology's observable application behavior."),
@@ -42,17 +41,7 @@ SUMMARIES = {
     "/projects/enumstruct/": ("Exhaustive unions", "A Go analyzer that detects missing pointer-union cases as models evolve."),
     "/projects/fluid/": ("Fluid simulation", "An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics."),
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
-    "/series/weave/": ("Weave series", "A compact format-5 navigation index with progressive source discovery."),
     "/series/mixology/": ("Mixology series", "An ordered path through Mixology's executable application architecture."),
-    "/articles/weave-format-5-navigation-index/": ("Format-5 navigation", "A small navigation profile points back to source."),
-    "/articles/weave-query-driven-freshness/": ("Fresh navigation", "Every read proves current Git and provider state."),
-    "/articles/weave-language-adapters/": ("Language adapters", "Bounded processes emit one validated navigation profile."),
-    "/articles/weave-progressive-discovery/": ("Progressive discovery", "Small semantic and source pointers precede exact context."),
-    "/articles/weave-graph-inspection-and-links/": ("Inspectable navigation", "Bounded graphs and checked-in links share one contract."),
-    "/articles/weave-source-only-declarations/": ("Source-only declarations", "Documents and schemas add facts without executing tools."),
-    "/articles/weave-semantic-diffs-and-impact/": ("Semantic changes", "Exact Git sides produce bounded diff and impact evidence."),
-    "/articles/weave-federated-queries/": ("Federated navigation", "Fresh worktrees select one disposable aggregate generation."),
-    "/articles/weave-local-acceleration/": ("Local acceleration", "Watch, sessions, and brokers reuse authoritative state."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
@@ -73,6 +62,7 @@ SUMMARIES = {
     "/notes/riblt-in-go/": ("Rateless reconciliation", "A generic Go RIBLT reveals streaming set reconciliation step by step."),
     "/notes/linux-for-windows-brains/": ("Linux models", "Translate Windows concepts into practical Linux mental models."),
     "/notes/projecting-actions-across-user-interfaces/": ("Action projection", "Share action meaning across native interfaces without sharing views."),
+    "/notes/retiring-weave/": ("Retired experiment", "A local code-index experiment yielded a useful benchmark."),
 }
 
 Document = dict[str, Any]

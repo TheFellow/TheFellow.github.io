@@ -25,7 +25,6 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [go-riblt](https://thefellow.github.io/projects/go-riblt.md): A generic Go RIBLT library reconciling sets with difference-sized communication.
 - [modular-monolith](https://thefellow.github.io/projects/modular-monolith.md): An idiomatic .NET port preserving Mixology's observable application behavior.
 - [ValueTypes](https://thefellow.github.io/projects/value-types.md): A compact C# library for modeling value-object equality and composition.
-- [Weave](https://thefellow.github.io/projects/weave.md): A compact Git-aware index guiding agents to current source.
 
 ## Articles
 
@@ -42,15 +41,6 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Turning Cross-Domain Calls into Enforced Boundaries](https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries.md): Transactional events replace cross-domain calls with enforced ownership.
 - [Typed Filtering over bstore](https://thefellow.github.io/articles/typed-filtering-over-bstore.md): How typed expressions become safe, exact bstore query plans.
 - [Using a Third Surface as an Architecture Test](https://thefellow.github.io/articles/using-a-third-surface-as-an-architecture-test.md): A third presentation runtime tests whether application boundaries are real.
-- [Federate Fresh Worktrees](https://thefellow.github.io/articles/weave-federated-queries.md): Fresh worktrees select one disposable aggregate generation.
-- [Weave Format 5 Is a Navigation Index](https://thefellow.github.io/articles/weave-format-5-navigation-index.md): A small navigation profile points back to source.
-- [Inspect the Graph and Author Missing Links](https://thefellow.github.io/articles/weave-graph-inspection-and-links.md): Bounded graphs and checked-in links share one contract.
-- [Language Adapters Share One Navigation Contract](https://thefellow.github.io/articles/weave-language-adapters.md): Bounded processes emit one validated navigation profile.
-- [Keep Acceleration Optional](https://thefellow.github.io/articles/weave-local-acceleration.md): Watch, sessions, and brokers reuse authoritative state.
-- [Progressive Discovery Returns to Source](https://thefellow.github.io/articles/weave-progressive-discovery.md): Small semantic and source pointers precede exact context.
-- [Freshness Belongs on Every Weave Read](https://thefellow.github.io/articles/weave-query-driven-freshness.md): Every read proves current Git and provider state.
-- [Compare Navigation Facts Across Git States](https://thefellow.github.io/articles/weave-semantic-diffs-and-impact.md): Exact Git sides produce bounded diff and impact evidence.
-- [Index Declarations Without Executing the Repository](https://thefellow.github.io/articles/weave-source-only-declarations.md): Documents and schemas add facts without executing tools.
 
 ## Notes
 
@@ -59,10 +49,10 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Octonions and the Standard Model in F#](https://thefellow.github.io/notes/octonions-and-the-standard-model-in-fsharp.md): Non-associative multiplication produces a Furey-inspired eight-state particle pattern.
 - [Porting Cedar from Go to .NET: Semantics Before Syntax](https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet.md): How conformance tests preserve Cedar behavior while C# APIs remain idiomatic.
 - [Projecting Actions Across User Interfaces](https://thefellow.github.io/notes/projecting-actions-across-user-interfaces.md): Share action meaning across native interfaces without sharing views.
+- [Retiring Weave](https://thefellow.github.io/notes/retiring-weave.md): A local code-index experiment yielded a useful benchmark.
 - [Building a Generic RIBLT in Go](https://thefellow.github.io/notes/riblt-in-go.md): A generic Go RIBLT reveals streaming set reconciliation step by step.
 - [Type-Safe Linear Algebra in F#](https://thefellow.github.io/notes/type-safe-linear-algebra-in-fsharp.md): Phantom dimensions make invalid matrix arithmetic fail at compile time.
 
 ## Series
 
 - [Building Mixology](https://thefellow.github.io/series/mixology.md): An ordered path through Mixology's executable application architecture.
-- [Building Weave](https://thefellow.github.io/series/weave.md): A compact format-5 navigation index with progressive source discovery.
