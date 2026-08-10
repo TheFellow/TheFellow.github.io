@@ -4656,6 +4656,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 
 - [Weave](/projects/weave.md): A compact local navigation index that gets people and coding agents from a question to the right source without copying the repository into a graph.
 - [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
+- [modular-monolith](/projects/modular-monolith.md): An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#.
 - [cedar-dotnet](/projects/cedar-dotnet.md): A C# implementation of the Cedar policy language and authorization model.
 - [go-riblt](/projects/go-riblt.md): A generic Go implementation of rateless set reconciliation with keyed codecs, streaming cells, and explicit resource limits.
 - [arch-lint](/projects/arch-lint.md): A Go analyzer that turns architectural dependency rules into build-time checks.
@@ -4863,6 +4864,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
+[Explore the .NET port](/projects/modular-monolith.md)
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
 [See Weave progressive discovery](/articles/weave-progressive-discovery.md)
@@ -4878,6 +4880,8 @@ That lifecycle also separates degradation from promotion. Existing published men
 That cross-surface readiness path is also a useful Weave research question. Format-5 discovery selects a few declaration and document anchors, combines them with bounded source search, and opens current source for the final trace through readiness, presentation, publication, persistence, and tests. [Progressive discovery](/articles/weave-progressive-discovery.md) describes that smaller workflow.
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
+
+The completed [.NET semantic port](/projects/modular-monolith.md) provides a second implementation of the same behavioral contract. It rebuilds Mixology around .NET 10, EF Core, Terminal.Gui, and Avalonia while preserving the seven contexts, shared SQLite state, Cedar decisions, transactional reactions, and independent surfaces. Reading the two together makes the boundary between application semantics and language-specific architecture visible.
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
@@ -4956,6 +4960,53 @@ The library also treats its trust boundaries as contracts rather than convention
 - The scaling experiment makes the central claim observable: a tenfold increase in set size leaves the number of transmitted cells nearly unchanged.
 
 Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. The [companion note](/notes/riblt-in-go.md) follows that same path through the concrete example sets, and `cmd/structs`, `cmd/documents`, and `cmd/chunks` compare how the generic core fits different application data.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/modular-monolith/ by scripts/generate_llm_content.py; do not edit. -->
+
+# modular-monolith
+
+Source: [https://thefellow.github.io/projects/modular-monolith/](https://thefellow.github.io/projects/modular-monolith/)
+
+## Pyramid summary
+
+- **~2 words:** Semantic architecture port
+- **~8 words:** An idiomatic .NET port preserving Mixology's observable application behavior.
+- **Expanded:** An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/modular-monolith)
+[Explore the Go reference](/projects/go-modular-monolith.md)
+[Read the Mixology series](/series/mixology.md)
+
+modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar application with seven bounded contexts, one embedded SQLite database, Cedar authorization, and independent CLI, TUI, and desktop clients. It preserves the Go application's observable behavior while rebuilding its architecture around C# and the .NET ecosystem.
+
+That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and Avalonia for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
+
+### Semantics before syntax
+
+The Go application provides a behavioral specification rather than a source template. A checked parity ledger tracks domain operations, authorization, transaction behavior, event reactions, paging, filtering, telemetry, and all three presentation surfaces. Production-shaped tests then exercise those claims through the real SQLite store and composed application.
+
+Ingredient retirement is one of the most useful examples. A permanent replacement can rewrite compatible future recipes, while an unresolved required ingredient moves affected drinks into review and blocks pending orders. Published menus remain visible but report degraded readiness. Event reactions prepare before mutation, run inside the originating transaction, and finalize derived state only after every handler has applied its work. If any step fails, the domain changes and successful audit entry roll back together.
+
+The application boundary applies the same discipline to ordinary operations. Commands pass through serialization, logging, metrics, activity tracking, a unit of work, Cedar authorization, event dispatch, and audit recording. Reads authorize their results, and paged lists continue through hidden rows until they fill a visible page. Counts and cursors therefore describe what the current actor can actually observe.
+
+### Native surfaces, shared behavior
+
+The CLI, Terminal.Gui TUI, and Avalonia desktop client share application behavior and durable state, not view models. Each surface owns its framework-specific interaction model while consuming the same public module capabilities and authorization-projected actions. Cross-process tests write through one client and observe through another, which makes the embedded database and application contract executable across every adapter.
+
+The desktop client adds its own concurrency obligations. UI-thread publication, latest-request-wins refresh, dirty-navigation decisions, and drained shutdown are explicit MVVM state with headless control tests. CI publishes native desktop applications for Linux, Windows, and macOS, executes their help paths, and runs a dynamic race gate over the desktop concurrency primitives.
+
+### Why it is worth exploring
+
+- It shows how to preserve a nontrivial application's semantics without carrying source-language architecture into the target ecosystem.
+- It makes module direction, transactions, authorization, event reactions, and presentation isolation executable through project references, architecture tests, generated routing, and end-to-end behavior.
+- It provides parallel Go and C# implementations of the same application, making language and framework tradeoffs concrete rather than hypothetical.
+
+The quickest route through the repository is the root README, followed by the architecture guide and semantic parity ledger. The source map then traces the kernel, bounded contexts, toolkits, and independent composition roots.
 
 
 ---
@@ -5134,8 +5185,8 @@ An idiomatic C# implementation of the Cedar policy language and authorization en
 ### [F#kYeah](https://github.com/TheFellow/fkyeah)
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
 
-### [go-modular-monolith](https://github.com/TheFellow/go-modular-monolith)
-A Go reference application that makes modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. A shared pipeline coordinates transactions, events, audit, and Cedar authorization; static analysis and cross-surface tests keep those contracts intact.
+### [Mixology for Go](https://github.com/TheFellow/go-modular-monolith) + [.NET](https://github.com/TheFellow/modular-monolith)
+Parallel Go and C# reference applications that make modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. The semantic port preserves observable behavior while rebuilding persistence, hosting, presentation, and concurrency around idiomatic .NET.
 
 ### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
 Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.
@@ -5208,8 +5259,11 @@ Source: [https://thefellow.github.io/series/mixology/](https://thefellow.github.
 
 Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, and shared action meaning.
 
+The completed [.NET semantic port](/projects/modular-monolith.md) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and Avalonia. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
+
 [Explore the project](/projects/go-modular-monolith.md)
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
+[Explore the .NET port](/projects/modular-monolith.md)
 
 1. **Article:** [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 2. **Article:** [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.

@@ -33,6 +33,7 @@ SUMMARIES = {
     "/404.html": ("Missing page", "Navigation help when a requested page cannot be found."),
     "/projects/weave/": ("Practical navigation", "A compact Git-aware index guiding agents to current source."),
     "/projects/go-modular-monolith/": ("Executable architecture", "A Go reference app enforcing modular boundaries and cross-cutting concerns."),
+    "/projects/modular-monolith/": ("Semantic architecture port", "An idiomatic .NET port preserving Mixology's observable application behavior."),
     "/projects/cedar-dotnet/": ("Cedar for .NET", "A semantic Cedar implementation with idiomatic C# APIs and conformance tests."),
     "/projects/go-riblt/": ("Set reconciliation", "A generic Go RIBLT library reconciling sets with difference-sized communication."),
     "/projects/arch-lint/": ("Enforced boundaries", "A Go analyzer that makes architectural dependency rules build-time checks."),
