@@ -1,7 +1,7 @@
 ---
 title: "Series"
 date: 2026-08-06 08:00:00 -0700
-last_modified_at: 2026-08-07 10:31:00 -0700
+last_modified_at: 2026-08-10 07:09:47 -0700
 permalink: /series/
 layout: single
 author_profile: true
@@ -14,7 +14,7 @@ Series collect related writing into an intentional reading order. Each article o
 <div class="feature-tiles">
   {% assign sorted_series = site.reading_series | sort: "order" %}
   {% for series in sorted_series %}
-    <a class="feature-tile{% if forloop.first %} feature-tile--featured{% endif %}" href="{{ series.url | relative_url }}" style="--feature-accent: {{ series.accent }};">
+    <a class="feature-tile feature-tile--featured" href="{{ series.url | relative_url }}" style="--feature-accent: {{ series.accent }};">
       <header class="feature-tile__header">
         <span class="feature-tile__icon">{% include feature-icon.html name=series.icon %}</span>
         <span>
