@@ -1,7 +1,7 @@
 ---
 title: "modular-monolith"
 date: 2026-08-09 19:30:00 -0700
-last_modified_at: 2026-08-10 19:53:27 -0700
+last_modified_at: 2026-08-10 22:19:30 -0700
 excerpt: "An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#."
 language: "C#"
 license: "MIT"
@@ -25,6 +25,8 @@ modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar applic
 That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and .NET MAUI for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
 
 The shared filtering foundation now adapts [Expr for .NET](/projects/expr-dotnet/) instead of maintaining a private expression compiler. Expr supplies parsing, static checking, the public immutable AST, optimization, canonical printing, and exact VM evaluation. `Mixology.Filtering` keeps the application-specific boundary: typed domain schemas, compatibility rewrites for existing filter spellings, application errors, help examples, and conservative EF Core pushdowns. Every narrowed query still evaluates the complete compiled expression after hydrating the public filter view, so the planner can improve candidate selection without becoming the authority for filter meaning.
+
+The repository references the [published `Expr` 0.1.0 package](https://github.com/TheFellow/modular-monolith/blob/master/Directory.Packages.props#L6) rather than a source copy. Its [filtering tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/FilterExpressionTests.cs) exercise checked evaluation, AST rewriting, compatibility syntax, canonical output, and safe planning through that dependency, while [SQLite integration tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/SqlitePushdownTests.cs) compare pushed and exact results. Mixology therefore supplies a downstream validation of the same package available to other .NET applications.
 
 ### Semantics before syntax
 

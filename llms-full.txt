@@ -3020,7 +3020,9 @@ Tests cover the boundaries where meaning could be lost: aliases round-trip to on
 
 ## Let concrete execution remain concrete
 
-The .NET Mixology port applies the same division with [Expr for .NET](/projects/expr-dotnet.md) and EF Core. Its planner emits an `Expression<Func<TRow, bool>>` for safe constraints, hydrates fields such as tags, then evaluates the complete Expr program against the public view. The mechanisms differ, but the correctness rule is the same.
+The .NET Mixology port consumes the published [Expr for .NET](/projects/expr-dotnet.md) 0.1.0 package and applies the same division with EF Core. Its planner emits an `Expression<Func<TRow, bool>>` for safe constraints, hydrates fields such as tags, then evaluates the complete Expr program against the public view. The mechanisms differ, but the correctness rule is the same.
+
+This is also a downstream validation of the package boundary. `Mixology.Filtering` exercises the public checker, immutable AST, compatibility rewriting, canonical printer, and exact VM evaluation, then its [SQLite tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/SqlitePushdownTests.cs) compare optimized candidate selection with the complete expression result. The application uses the same NuGet artifact that Expr's own upstream traceability, differential corpus, focused tests, fuzz gate, and Native AOT sample validate before release.
 
 The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through SQL predicates, JSON expressions, registered indexes, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
 
@@ -4647,6 +4649,8 @@ I wanted a way for a .NET application to accept useful logic without accepting a
 
 [Expr](https://expr-lang.org/) already has the language I wanted. It combines familiar operators with predicates such as `all`, `filter`, `map`, and `reduce`, then compiles the result to bytecode for a small virtual machine. Expr for .NET is my semantic port of that language. Version 0.1.0 is now available as the dependency-free [`Expr` package on NuGet](https://www.nuget.org/packages/Expr), targeting .NET 10 and C# 14.
 
+Version 0.1.0 [passed its release gate](https://github.com/TheFellow/expr-dotnet/actions/runs/31393985405) against the pinned upstream semantics and is already the filtering engine in [modular-monolith](/projects/modular-monolith.md). That application consumes the published NuGet package through `Mixology.Filtering`, where the public AST, checker, printer, and VM support typed filters and conservative EF Core pushdowns. The package is therefore exercised both by its own conformance evidence and by a separate application boundary.
+
 The port retains Expr's observable language behavior while giving the .NET side its own deliberate shape. Environment schemas are typed, compiled expressions are immutable and reusable, every evaluation gets isolated runtime state, and the syntax tree is a public API rather than a compiler detail. Explicit schemas also keep the complete path available to trimmed and Native AOT applications.
 
 ```text
@@ -5053,6 +5057,8 @@ modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar applic
 That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and .NET MAUI for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
 
 The shared filtering foundation now adapts [Expr for .NET](/projects/expr-dotnet.md) instead of maintaining a private expression compiler. Expr supplies parsing, static checking, the public immutable AST, optimization, canonical printing, and exact VM evaluation. `Mixology.Filtering` keeps the application-specific boundary: typed domain schemas, compatibility rewrites for existing filter spellings, application errors, help examples, and conservative EF Core pushdowns. Every narrowed query still evaluates the complete compiled expression after hydrating the public filter view, so the planner can improve candidate selection without becoming the authority for filter meaning.
+
+The repository references the [published `Expr` 0.1.0 package](https://github.com/TheFellow/modular-monolith/blob/master/Directory.Packages.props#L6) rather than a source copy. Its [filtering tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/FilterExpressionTests.cs) exercise checked evaluation, AST rewriting, compatibility syntax, canonical output, and safe planning through that dependency, while [SQLite integration tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/SqlitePushdownTests.cs) compare pushed and exact results. Mixology therefore supplies a downstream validation of the same package available to other .NET applications.
 
 ### Semantics before syntax
 
