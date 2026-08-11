@@ -8,11 +8,11 @@ Source: [https://thefellow.github.io/series/mixology/](https://thefellow.github.
 
 - **~2 words:** Mixology series
 - **~8 words:** An ordered path through Mixology's executable application architecture.
-- **Expanded:** An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
+- **Expanded:** An ordered path through the architecture, domain modeling, persistence, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 ## Full content
 
-Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, and shared action meaning.
+Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, shared action meaning, and the migration from bstore to SQLite.
 
 The completed [.NET semantic port](/projects/modular-monolith.md) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and Avalonia. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
 
@@ -30,5 +30,6 @@ The completed [.NET semantic port](/projects/modular-monolith.md) preserves that
 8. **Article:** [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
 9. **Article:** [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
 10. **Article:** [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
-11. **Article:** [Typed Filtering over bstore](/articles/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
+11. **Article:** [Typed Filtering over SQLite](/articles/typed-filtering-over-sqlite.md): How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics.
 12. **Note:** [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
+13. **Article:** [Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md): How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.

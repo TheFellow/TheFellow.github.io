@@ -1,12 +1,12 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-10 00:00:00 -0700
+last_modified_at: 2026-08-10 12:00:00 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/go-modular-monolith"
-last_updated: 2026-08-05
+last_updated: 2026-08-10
 series_url: "/series/mixology/"
 order: 10
 featured: true
@@ -23,7 +23,7 @@ topics: ["Architecture", "Reference app", "Cedar"]
 [Read the Mixology series](/series/mixology/){: .btn }
 [Read the GUI surface article](/articles/growing-mixology-with-fyne/){: .btn }
 
-go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
+go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded SQLite database. WAL journaling and a bounded busy timeout let those independent processes share the local file, while SQLite still serializes their writes. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
 
@@ -44,6 +44,10 @@ Action availability now follows the same cross-surface discipline. Every domain 
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
 The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
+
+The shared `pkg/store` boundary now runs on the CGO-free `modernc.org/sqlite` driver. Each domain explicitly registers its private row types during application composition, creating the expression indexes and unique constraints declared by those rows without import-time side effects. Typed queries translate equality, ranges, membership, ordering, and safe filter pushdowns into SQL over JSON records. Commands, event handlers, and audit entries still use one transaction, and storage failures enter the same transport-neutral application error model as the rest of the system.
+
+Mixology began with bstore, and that earlier design shaped its typed query and filtering APIs. The move to SQLite kept those useful application contracts while replacing the execution adapter, database format, concurrency behavior, and schema lifecycle. [The storage migration article](/articles/migrating-mixology-from-bstore-to-sqlite/) follows that change, including the deliberate decision not to disguise an incompatible database format as an in-place upgrade.
 
 The repository now keeps that first code trace explicit. Its compact root guide leads from an executable through one domain surface and into the public module, then links to focused architecture, feature, entrypoint, domain-surface, and presentation-toolkit guides beside the code they describe.
 

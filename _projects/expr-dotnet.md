@@ -1,7 +1,7 @@
 ---
 title: "Expr for .NET"
 date: 2026-08-10 06:50:00 -0700
-last_modified_at: 2026-08-10 07:06:11 -0700
+last_modified_at: 2026-08-10 12:00:00 -0700
 excerpt: "A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution."
 language: "C#"
 license: "MIT"
@@ -22,7 +22,7 @@ toc_sticky: true
 [View the repository](https://github.com/TheFellow/expr-dotnet){: .btn }
 [Read the security model](https://github.com/TheFellow/expr-dotnet/blob/main/docs/security-model.md){: .btn }
 [See it in Mixology](/projects/modular-monolith/){: .btn }
-[Read the filtering case study](/articles/typed-filtering-over-bstore/){: .btn }
+[Read the filtering case study](/articles/typed-filtering-over-sqlite/){: .btn }
 
 I wanted a way for a .NET application to accept useful logic without accepting arbitrary C#. A pricing rule, feature condition, authorization predicate, or filter should be able to mention the values the application deliberately exposes, use a compact collection-oriented language, and fail early when its names or types are wrong. It should not acquire the rest of the process as an accidental API.
 

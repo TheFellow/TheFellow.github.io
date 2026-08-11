@@ -1,7 +1,7 @@
 ---
 title: "Testing Native Go Desktop Applications Headlessly"
 date: 2026-08-01
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-08-10 12:00:00 -0700
 excerpt: "A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence."
 permalink: /articles/testing-native-go-desktop-applications-headlessly/
 redirect_from: /guides/testing-native-go-desktop-applications-headlessly/
@@ -177,7 +177,7 @@ The boundary should preserve meaningful data: title, message, target identity, c
 
 Domain view tests establish individual workflows. Shell tests establish that the desktop application actually composes them.
 
-Mixology opens Fyne's in-memory application with a real application session and temporary bstore database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
+Mixology opens Fyne's in-memory application with a real application session and temporary SQLite database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
 
 - every readable workspace is mounted;
 - denied routes and dashboard cards are absent;

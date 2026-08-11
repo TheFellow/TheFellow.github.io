@@ -36,10 +36,11 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
 - [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go.md): F# techniques make Go domain constraints explicit and enforceable.
+- [Migrating Mixology from bstore to SQLite](https://thefellow.github.io/articles/migrating-mixology-from-bstore-to-sqlite.md): Mixology replaces bstore while preserving its application contracts.
 - [Preserving Truth Through Operational Degradation](https://thefellow.github.io/articles/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.
 - [Testing Native Go Desktop Applications Headlessly](https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly.md): Layered evidence for native GUI behavior without opening windows.
 - [Turning Cross-Domain Calls into Enforced Boundaries](https://thefellow.github.io/articles/turning-cross-domain-calls-into-enforced-boundaries.md): Transactional events replace cross-domain calls with enforced ownership.
-- [Typed Filtering over bstore](https://thefellow.github.io/articles/typed-filtering-over-bstore.md): How typed expressions become safe, exact bstore query plans.
+- [Typed Filtering over SQLite](https://thefellow.github.io/articles/typed-filtering-over-sqlite.md): How typed expressions become safe, exact SQLite query plans.
 - [Using a Third Surface as an Architecture Test](https://thefellow.github.io/articles/using-a-third-surface-as-an-architecture-test.md): A third presentation runtime tests whether application boundaries are real.
 
 ## Notes

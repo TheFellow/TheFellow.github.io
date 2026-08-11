@@ -174,7 +174,7 @@ The boundary should preserve meaningful data: title, message, target identity, c
 
 Domain view tests establish individual workflows. Shell tests establish that the desktop application actually composes them.
 
-Mixology opens Fyne's in-memory application with a real application session and temporary bstore database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
+Mixology opens Fyne's in-memory application with a real application session and temporary SQLite database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
 
 - every readable workspace is mounted;
 - denied routes and dashboard cards are absent;

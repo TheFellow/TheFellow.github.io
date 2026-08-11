@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-06 17:30:00 -0700
+last_modified_at: 2026-08-10 12:00:00 -0700
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /articles/building-high-quality-software/
 redirect_from: /guides/building-high-quality-software/
@@ -144,7 +144,7 @@ separation and testability described in
 while treating its warning about duplicated or oversized presentation logic as an architectural
 constraint.
 
-Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into bstore while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
+Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into SQLite while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
 
 The implementation now exercises the same operations through three surfaces, drives the TUI through
 its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
@@ -205,7 +205,7 @@ This lesson will use the same fixture at three scales: a focused permission chec
 
 ## 11. Spend complexity only once the problem exists
 
-Mixology has bounded contexts, policies, events, multiple surfaces, metrics, and transactional coordination. It also has one process and one embedded bstore database. There is no broker, service mesh, deployment orchestrator, or distributed transaction protocol.
+Mixology has bounded contexts, policies, events, multiple surfaces, metrics, and transactional coordination. Its CLI, TUI, and GUI can run as independent processes over one embedded SQLite database. There is no broker, service mesh, deployment orchestrator, or distributed transaction protocol.
 
 That combination is the point. A modular monolith is not a refusal to draw boundaries. It is a way to make those boundaries useful before paying the cost of putting a network between them. A failed event handler can roll back the originating command because both share a transaction. A test can construct the entire system because the entire system fits in a process.
 
