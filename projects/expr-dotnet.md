@@ -22,6 +22,8 @@ I wanted a way for a .NET application to accept useful logic without accepting a
 
 [Expr](https://expr-lang.org/) already has the language I wanted. It combines familiar operators with predicates such as `all`, `filter`, `map`, and `reduce`, then compiles the result to bytecode for a small virtual machine. Expr for .NET is my semantic port of that language. Version 0.1.0 is now available as the dependency-free [`Expr` package on NuGet](https://www.nuget.org/packages/Expr), targeting .NET 10 and C# 14.
 
+Version 0.1.0 [passed its release gate](https://github.com/TheFellow/expr-dotnet/actions/runs/31393985405) against the pinned upstream semantics and is already the filtering engine in [modular-monolith](/projects/modular-monolith.md). That application consumes the published NuGet package through `Mixology.Filtering`, where the public AST, checker, printer, and VM support typed filters and conservative EF Core pushdowns. The package is therefore exercised both by its own conformance evidence and by a separate application boundary.
+
 The port retains Expr's observable language behavior while giving the .NET side its own deliberate shape. Environment schemas are typed, compiled expressions are immutable and reusable, every evaluation gets isolated runtime state, and the syntax tree is a public API rather than a compiler detail. Explicit schemas also keep the complete path available to trimmed and Native AOT applications.
 
 ```text

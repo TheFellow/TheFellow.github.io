@@ -1,7 +1,7 @@
 ---
 title: "Typed Filtering over SQLite"
 date: 2026-08-02
-last_modified_at: 2026-08-10 12:00:00 -0700
+last_modified_at: 2026-08-10 22:19:30 -0700
 excerpt: "How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics."
 permalink: /articles/typed-filtering-over-sqlite/
 redirect_from:
@@ -126,6 +126,8 @@ Tests cover the boundaries where meaning could be lost: aliases round-trip to on
 
 ## Let concrete execution remain concrete
 
-The .NET Mixology port applies the same division with [Expr for .NET](/projects/expr-dotnet/) and EF Core. Its planner emits an `Expression<Func<TRow, bool>>` for safe constraints, hydrates fields such as tags, then evaluates the complete Expr program against the public view. The mechanisms differ, but the correctness rule is the same.
+The .NET Mixology port consumes the published [Expr for .NET](/projects/expr-dotnet/) 0.1.0 package and applies the same division with EF Core. Its planner emits an `Expression<Func<TRow, bool>>` for safe constraints, hydrates fields such as tags, then evaluates the complete Expr program against the public view. The mechanisms differ, but the correctness rule is the same.
+
+This is also a downstream validation of the package boundary. `Mixology.Filtering` exercises the public checker, immutable AST, compatibility rewriting, canonical printer, and exact VM evaluation, then its [SQLite tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/SqlitePushdownTests.cs) compare optimized candidate selection with the complete expression result. The application uses the same NuGet artifact that Expr's own upstream traceability, differential corpus, focused tests, fuzz gate, and Native AOT sample validate before release.
 
 The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through SQL predicates, JSON expressions, registered indexes, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
