@@ -16,7 +16,7 @@ Source: [https://thefellow.github.io/projects/expr-dotnet/](https://thefellow.gi
 [View the repository](https://github.com/TheFellow/expr-dotnet)
 [Read the security model](https://github.com/TheFellow/expr-dotnet/blob/main/docs/security-model.md)
 [See it in Mixology](/projects/modular-monolith.md)
-[Read the filtering case study](/articles/typed-filtering-over-bstore.md)
+[Read the filtering case study](/articles/typed-filtering-over-sqlite.md)
 
 I wanted a way for a .NET application to accept useful logic without accepting arbitrary C#. A pricing rule, feature condition, authorization predicate, or filter should be able to mention the values the application deliberately exposes, use a compact collection-oriented language, and fail early when its names or types are wrong. It should not acquire the rest of the process as an accidental API.
 

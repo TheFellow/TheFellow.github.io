@@ -49,7 +49,8 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Growing Mixology with a GUI Surface](/articles/growing-mixology-with-fyne.md): A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior.
 - [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
 - [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
-- [Typed Filtering over bstore](/articles/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
+- [Typed Filtering over SQLite](/articles/typed-filtering-over-sqlite.md): How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics.
+- [Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md): How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.
 - [Using a Third Surface as an Architecture Test](/articles/using-a-third-surface-as-an-architecture-test.md): What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
 - [Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md): What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee.
 - [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
@@ -1054,7 +1055,7 @@ separation and testability described in
 while treating its warning about duplicated or oversized presentation logic as an architectural
 constraint.
 
-Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into bstore while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
+Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into SQLite while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
 
 The implementation now exercises the same operations through three surfaces, drives the TUI through
 its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
@@ -1115,7 +1116,7 @@ This lesson will use the same fixture at three scales: a focused permission chec
 
 ## 11. Spend complexity only once the problem exists
 
-Mixology has bounded contexts, policies, events, multiple surfaces, metrics, and transactional coordination. It also has one process and one embedded bstore database. There is no broker, service mesh, deployment orchestrator, or distributed transaction protocol.
+Mixology has bounded contexts, policies, events, multiple surfaces, metrics, and transactional coordination. Its CLI, TUI, and GUI can run as independent processes over one embedded SQLite database. There is no broker, service mesh, deployment orchestrator, or distributed transaction protocol.
 
 That combination is the point. A modular monolith is not a refusal to draw boundaries. It is a way to make those boundaries useful before paying the cost of putting a network between them. A failed event handler can roll back the originating command because both share a transaction. A test can construct the entire system because the entire system fits in a process.
 
@@ -2147,6 +2148,128 @@ The goal is not to reproduce F# syntax in Go. It is to make domain decisions vis
 
 ---
 
+<!-- Generated from https://thefellow.github.io/articles/migrating-mixology-from-bstore-to-sqlite/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Migrating Mixology from bstore to SQLite
+
+Source: [https://thefellow.github.io/articles/migrating-mixology-from-bstore-to-sqlite/](https://thefellow.github.io/articles/migrating-mixology-from-bstore-to-sqlite/)
+
+## Pyramid summary
+
+- **~2 words:** Storage migration
+- **~8 words:** Mixology replaces bstore while preserving its application contracts.
+- **Expanded:** How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.
+
+## Full content
+
+**Part 13 of [Building Mixology](/series/mixology.md).**
+
+Mixology started with [bstore](https://github.com/mjl-/bstore). That was a productive choice. Typed Go rows, transactions, indexes, and typed queries let the application develop its bounded contexts without first building a persistence layer.
+
+The application eventually grew three independent entrypoints over one local database: a CLI, a persistent Bubble Tea TUI, and a Fyne desktop client. Opening one surface should not require closing another. That made process-level database coordination part of the product behavior rather than an implementation detail, and Mixology moved its embedded store to SQLite.
+
+This was a storage replacement, not a claim that the original choice had been a mistake. The interesting test was whether the application had put its boundaries in useful places. A successful migration would change the database mechanics while preserving domain ownership, operation pipelines, transactional event handling, typed filters, and the behavior seen by all three surfaces.
+
+## Preserve the boundary, replace its engine
+
+The old `pkg/store` wrapped bstore and exposed database lifecycle, read and write helpers, transaction context, and application error mapping. Domain DAOs still imported bstore query and transaction types directly, so the adapter was concrete even though database opening was centralized.
+
+The SQLite version makes that boundary fully application-owned:
+
+```go
+type Store struct { /* database/sql pool */ }
+type Tx struct { /* read or immediate-write transaction */ }
+type Query[T any] struct { /* predicates, order, residuals */ }
+```
+
+Commands and handlers still obtain a transaction through `store.Context`. DAOs still build typed queries over private row structs. Middleware still places the command mutation, domain event handlers, and successful audit record in one transaction. The types crossing those seams now belong to Mixology rather than its former storage dependency.
+
+That distinction also made the migration reviewable. Most DAO edits translated like for like: `bstore.QueryTx` became `store.QueryTx`, bstore transactions became `store.Tx`, and bstore tags became application-owned `store` tags. Domain models, commands, queries, policies, events, and surface adapters did not need a persistence vocabulary change.
+
+## Use SQLite without turning every DAO into SQL
+
+Mixology stores each private row as JSON in a shared `records` table, keyed by its Go model identity and row ID. The typed query API translates field comparisons into parameterized `json_extract` predicates:
+
+```sql
+SELECT data
+FROM records
+WHERE model = ?
+  AND json_extract(data, '$.Status') = ?
+ORDER BY julianday(json_extract(data, '$.CreatedAt')) DESC
+```
+
+This retains the row-oriented programming model the domains already used while gaining SQLite's file coordination, constraints, and query execution. It is a concrete tradeoff, not a universal persistence abstraction. JSON records keep the migration bounded; expression indexes make selected fields queryable; residual Go predicates remain available for conditions that cannot be represented safely in SQL.
+
+Each domain registers its own private rows during explicit application composition:
+
+```go
+type DrinkRow struct {
+    ID   string
+    Name string `store:"unique"`
+}
+
+func Register(ctx context.Context, s *store.Store) {
+    s.Register(ctx, DrinkRow{})
+}
+```
+
+Registration creates declared expression indexes and unique constraints idempotently. Competing processes therefore rely on database constraints rather than check-then-insert conventions. Registration happens in constructors, so importing a domain cannot mutate a database schema as a side effect.
+
+## Make process coordination an explicit runtime property
+
+SQLite opens the local database in WAL mode with foreign keys enabled, `synchronous=NORMAL`, and a ten-second busy timeout. The pool permits concurrent readers, while SQLite serializes writers. Write transactions begin immediately, avoiding a deferred read transaction that later fails while trying to upgrade itself.
+
+```mermaid
+flowchart LR
+    CLI[CLI process] --> DB[(mixology.db)]
+    TUI[TUI process] --> DB
+    GUI[GUI process] --> DB
+    DB --> WAL[WAL readers and serialized writers]
+```
+
+The guarantee is deliberately local. Several processes on one machine may open the same file and observe committed changes on their next query. The file is not shared across machines or placed on a network filesystem. Live refresh is also separate from consistency: SQLite makes the next query correct, while a presentation adapter decides when to perform that query.
+
+This is enough for the actual application. A user can leave the GUI open, run a CLI command against the same file, and continue in the TUI without coordinating database ownership by hand.
+
+## Keep transactional domain behavior intact
+
+Mixology's most important persistence property is larger than a row update. A command can mutate its own domain, publish an event to several bounded contexts, and record an audit entry. Those changes either commit together or roll back together.
+
+The unit-of-work middleware still owns that lifecycle. Read operations use ordinary read transactions. Write operations acquire an immediate SQLite transaction and carry its application-owned `*store.Tx` through the command and leaf event handlers. A serializer prevents concurrent goroutines from using the same transaction object, while SQLite coordinates independent transactions and processes.
+
+Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
+
+## Move filtering by preserving semantics
+
+The [typed filtering layer](/articles/typed-filtering-over-sqlite.md) was intentionally concrete about bstore. Its first adapter translated checked Expr trees into bstore filters, hydrated tags, and evaluated the complete expression as a residual authority.
+
+The SQLite migration did not invent a supposedly neutral query language to hide that history. It replaced `ApplyBstore` and `ApplyBstorePushdowns` with `ApplySQL` and `ApplySQLPushdowns`. Safe comparisons now become predicates in the application-owned typed store query, which emits SQL over JSON fields. Hydrated data still joins the candidate row before exact expression evaluation.
+
+That is the portability boundary I want: callers retain one typed expression contract, each database gets an honest execution adapter, and the complete predicate determines the answer. The implementation can use the current database well without exposing its syntax as the application's public language.
+
+## Give storage errors application meaning
+
+bstore exposed sentinel errors for absence, uniqueness, and invalid zero values. The SQLite store now produces the application's typed not-found, conflict, and invalid errors directly. Constraint result codes are recognized at the store boundary, and `MapError` adds operation-specific context while preserving the error kind. Unexpected driver failures become internal errors.
+
+That keeps transports independent of persistence. CLI exit behavior, TUI messages, GUI dialogs, HTTP status mappings, and gRPC status mappings can all respond to the same immutable application kind. A database migration should not teach every surface how to recognize a new driver's errors.
+
+## Treat the file format honestly
+
+A bstore database is a bbolt file, not a SQLite database. Mixology does not attempt to open it as one or silently rewrite it during startup. Disposable sample data can be reseeded. Data that matters must be exported with the previous application version and imported into a fresh SQLite database, with the original retained until verification is complete.
+
+The SQLite schema has its own ordered migration ledger. Startup creates `schema_migrations`, applies missing versions in an immediate transaction, rejects a database newer than the application understands, and keeps domain data backfills explicit and idempotent. Future SQLite releases can evolve this format normally, but crossing from bstore remains an explicit data migration.
+
+That sharp edge is useful documentation. An API boundary can survive while an on-disk representation does not. Calling both “embedded databases” never made their files interchangeable.
+
+## Let a migration test the architecture
+
+The move changed the driver, database format, concurrency model, schema lifecycle, query implementation, index declarations, filter adapter, transaction types, and low-level errors. It did not change Mixology's seven bounded contexts, public command and query contracts, Cedar policies, transactional event semantics, or three presentation surfaces.
+
+That is evidence for the architecture rather than proof of a magical persistence abstraction. Mixology was coupled to bstore where concrete execution benefited from it. It was decoupled where callers needed durable meaning. Replacing the former while preserving the latter is what made the migration both substantial and bounded.
+
+
+---
+
 <!-- Generated from https://thefellow.github.io/articles/preserving-truth-through-operational-degradation/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Preserving Truth Through Operational Degradation
@@ -2480,7 +2603,7 @@ The boundary should preserve meaningful data: title, message, target identity, c
 
 Domain view tests establish individual workflows. Shell tests establish that the desktop application actually composes them.
 
-Mixology opens Fyne's in-memory application with a real application session and temporary bstore database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
+Mixology opens Fyne's in-memory application with a real application session and temporary SQLite database. The tests inspect authorized routes, navigate workspaces, drive concrete content, and close the desktop. They verify that:
 
 - every readable workspace is mounted;
 - denied routes and dashboard cards are absent;
@@ -2765,17 +2888,17 @@ That is how a modular monolith stays modular under ordinary feature work. The ev
 
 ---
 
-<!-- Generated from https://thefellow.github.io/articles/typed-filtering-over-bstore/ by scripts/generate_llm_content.py; do not edit. -->
+<!-- Generated from https://thefellow.github.io/articles/typed-filtering-over-sqlite/ by scripts/generate_llm_content.py; do not edit. -->
 
-# Typed Filtering over bstore
+# Typed Filtering over SQLite
 
-Source: [https://thefellow.github.io/articles/typed-filtering-over-bstore/](https://thefellow.github.io/articles/typed-filtering-over-bstore/)
+Source: [https://thefellow.github.io/articles/typed-filtering-over-sqlite/](https://thefellow.github.io/articles/typed-filtering-over-sqlite/)
 
 ## Pyramid summary
 
 - **~2 words:** Typed filters
-- **~8 words:** How typed expressions become safe, exact bstore query plans.
-- **Expanded:** How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
+- **~8 words:** How typed expressions become safe, exact SQLite query plans.
+- **Expanded:** How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics.
 
 ## Full content
 
@@ -2787,29 +2910,23 @@ Source: [https://thefellow.github.io/articles/typed-filtering-over-bstore/](http
 category == "cocktail" && (name.contains("gin") || tags contains "featured")
 ```
 
-I wanted one filtering model that was natural at a prompt, stable in a script, discoverable without reading Go, and reusable by an SDK or another presentation surface. I also wanted it to use the database Mixology actually has. The result is a typed expression contract built with [Expr](https://expr-lang.org/) and a deliberately bstore-aware execution path.
+I wanted one filtering model that was natural at a prompt, stable in a script, discoverable without reading Go, and reusable by an SDK or another presentation surface. The result is a typed expression contract built with [Expr](https://expr-lang.org/) and a deliberately SQLite-aware execution path.
 
-That combination matters. The public language is broader than bstore's native predicates, while the implementation knows enough about bstore to avoid evaluating every simple comparison as an opaque Go callback. General at the application boundary and concrete at the persistence boundary are complementary choices.
+The first version of this work targeted bstore. Mixology has since [moved its embedded persistence boundary to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md). That migration changed the query adapter and its pushdowns, but it did not change the expression language callers use or the rule that the complete expression remains the semantic authority.
 
-## Start with the product language
+## Keep the public language above persistence
 
 Every filterable domain list request accepts a `Filter` string. The CLI exposes it as `--filter`, the TUI and GUI preserve the same expression in their list state, and callers of the Go modules can construct the same request directly. A single expression travels across these boundaries without turning the public API into a database query builder.
 
-The language supports comparisons, membership, parentheses, Boolean logic, string predicates, regular expressions, and checked time literals. It accepts both programmer-oriented operators and readable words:
-
 ```text
-status == "published" && name.contains("summer")
-status == "published" and name contains "summer"
-started_at >= date("2026-07-01T00:00:00Z") && !success
+status == "pending" && created_at >= date("2026-08-01T00:00:00Z")
+quantity < 5 || tags contains "reorder"
+principal.id == "manager" && success
 ```
-
-This is useful for two different kinds of consumer. A person can type an expression that reads like the question they are asking. A script can pass one string, retain it in configuration, and combine predicates without learning a growing matrix of flags. An SDK can offer a string today or build a typed expression representation later without inheriting bstore vocabulary.
 
 Mixology does not expose all of Expr. Arithmetic, arbitrary function calls, and dynamic constructs are rejected. The accepted language is intentionally small enough to document, validate, format canonically, and translate safely. `date` and `duration` require literal arguments, and regular expressions are compiled during parsing. Misspelled fields, incompatible comparisons, malformed dates, and invalid patterns fail before a query executes.
 
-## Make each domain describe its own filter
-
-The shared package supplies the language mechanics, but each domain owns the fields that make sense for its list. Inventory, for example, defines a view specifically for filtering:
+Each domain owns the fields that make sense for its list. Inventory, for example, defines a typed view specifically for filtering:
 
 ```go
 type ListFilterView struct {
@@ -2822,17 +2939,13 @@ type ListFilterView struct {
 }
 ```
 
-These tags carry three related decisions. `expr` names the public field, `filter` describes it to a user, and `filter-column` explicitly maps a persisted field to bstore. Tags have no column because they are loaded from the shared tagging subsystem after the primary rows are selected.
+The `expr` tag names the public field, `filter` describes it to a user, and `filter-column` explicitly maps a persisted field into SQLite pushdown. Tags have no column mapping because they are loaded from the shared tagging subsystem after the primary rows are selected.
 
-[`NewSchema`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/filter/filter.go) reflects over that concrete type and collects fields, descriptions, types, and examples. The same schema compiles expressions and generates `--filter-help`, so the documentation printed by a command cannot quietly drift away from the fields its application operation accepts. Schema examples are parsed in tests as well as shown to users.
-
-The filtering view is not necessarily the stored row or the returned domain model. Drinks can expose `recipe.garnish`; Audit can present complete Cedar entity UIDs assembled from stored type and ID columns; every taggable domain can expose its hydrated tag strings. The application chooses a useful query vocabulary instead of publishing its storage layout by accident.
+The filtering view is not necessarily the stored row or the returned domain model. Drinks can expose `recipe.garnish`; Audit can present complete Cedar entity UIDs assembled from stored type and ID fields; every taggable domain can expose its hydrated tag strings. The application chooses a useful query vocabulary instead of publishing its storage layout by accident.
 
 ## Borrow a compiler, own the contract
 
-Expr provides a mature parser, type checker, optimizer, and virtual machine. Reusing it avoided inventing precedence rules, field checking, and expression evaluation. Mixology turns off optimization while compiling so the source structure remains available for conservative planning, then patches a few spellings into one semantic form. For example, `name.contains("gin")` and `name contains "gin"` become equivalent, as do `tags.contains("featured")` and `tags contains "featured"`.
-
-Depending on Expr does not make Expr's AST the application contract. After compilation, the filter package converts the accepted expression into its own small tree:
+Expr provides the parser, type checker, optimizer, and virtual machine. Mixology compiles against each domain's concrete view, turns the accepted syntax into an application-owned tree, and retains the original source, canonical text, typed schema, and compiled program.
 
 ```go
 type Node struct {
@@ -2844,9 +2957,7 @@ type Node struct {
 }
 ```
 
-Only fields, literals, lists, checked calls, unary logic, and the supported binary operators can enter this tree. The expression also retains its original source, a canonical string, its typed schema, and the compiled Expr program.
-
-Those representations serve different jobs. The source is what a caller supplied. The canonical form gives logs, saved filters, tests, and future SDKs a stable spelling. The application-owned tree supports planning without coupling persistence code to Expr internals. The compiled program evaluates the complete predicate against a typed view.
+Those representations serve different jobs. The canonical form gives logs, saved filters, tests, and future SDKs a stable spelling. The application-owned tree supports planning without coupling persistence code to Expr internals. The compiled program evaluates the complete predicate against a typed view.
 
 ```mermaid
 flowchart LR
@@ -2854,18 +2965,18 @@ flowchart LR
     Schema --> Expr[Expr parse and type check]
     Expr --> Tree[Application-owned tree]
     Expr --> VM[Compiled full predicate]
-    Tree --> Plan[Safe bstore pushdowns]
+    Tree --> Plan[Safe SQLite pushdowns]
     Plan --> Rows[Candidate rows]
     Rows --> View[Hydrated filter view]
     View --> VM
     VM --> Result[Exact matching results]
 ```
 
-This is a narrow abstraction with a concrete purpose. It gives Mixology ownership of its public language and planner while letting Expr do the compiler work it already does well.
+The filtering contract therefore survived a complete storage replacement. Its ownership sits in the public schema, checked syntax, canonical form, error behavior, and final evaluation, not in the name of a query library.
 
 ## Push down only what remains true
 
-[bstore](https://github.com/mjl-/bstore) provides typed query operations such as `FilterEqual`, `FilterGreaterEqual`, `FilterLess`, and `FilterFn`. Mixology maps top-level required comparisons onto those operations when a schema field explicitly names a `filter-column`.
+The store's typed query API supports equality, inequality, range, membership, ordering, and residual predicates. `ApplySQLPushdowns` walks the checked tree and adds only constraints implied by the complete expression.
 
 For this expression:
 
@@ -2873,58 +2984,36 @@ For this expression:
 category == "spirit" && (name.contains("gin") || tags contains "featured")
 ```
 
-`category == "spirit"` is a safe pushdown. Every row satisfying the whole expression must satisfy that conjunct, and `Category` is a mapped persisted column. The nested `or` is not pushed. Selecting only gin names or only featured tags would discard valid results, and tags are not present on the primary bstore row anyway.
+`category == "spirit"` is a safe pushdown. Every row satisfying the complete expression must satisfy that conjunct, and `Category` is an explicitly mapped persisted field. The nested `or` cannot be narrowed to either branch. Selecting only gin names or only featured tags would discard valid results, and tags are not present on the primary row.
 
-The planner is conservative by construction. It descends through `&&`, translates comparisons with literal values, reverses comparisons when the field appears on the right, converts checked literal values to the concrete column type, and maps `in` or `not in` to bstore's equality operations. It does not attempt Boolean algebra, infer storage mappings, or translate string operations that bstore does not natively express.
+The planner descends through Boolean groups, translates checked comparisons with literal values, reverses comparisons when the field appears on the right, and recognizes safe equality sets across compatible `or` branches. It does not push a constraint merely because one branch mentions a mapped field.
 
-After bstore applies those constraints, Mixology still evaluates the complete compiled expression. This residual check is not merely a fallback for unsupported syntax. It is the semantic authority. Pushdowns may reduce the candidate set, but they never redefine the filter.
+SQLite applies those predicates through `json_extract` expressions over the store's JSON records. Time fields use Julian-day comparisons, and registered `store` tags create matching expression indexes and unique constraints. After candidate selection, Mixology still evaluates the complete compiled expression. Pushdowns reduce work; they never redefine the answer.
 
-## Let bstore shape the execution path
+## Hydrate before exact evaluation
 
-There are two integrations because Mixology has two kinds of filter view.
+Audit fields can be projected completely from one `AuditEntryRow`. `ApplySQL` adds safe native constraints and installs a residual `FilterFn` that projects each candidate row and evaluates the full expression.
 
-Audit fields can be projected completely from one `AuditEntryRow`. [`ApplyBstore`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/filter/bstore.go) adds safe native constraints and installs a `FilterFn` that projects each candidate row and evaluates the full expression inside the bstore query.
-
-Tags require a staged path. Drinks, Ingredients, Inventory, Menus, and Orders first call `ApplyBstorePushdowns`, sort and load the candidate rows, then fetch all corresponding tags within the same read transaction. Each row and its tags become the domain's filter view, and `Expression.Match` applies the complete predicate before the iterator yields it to paging and authorization.
+Tags require a staged path. Drinks, Ingredients, Inventory, Menus, and Orders first call `ApplySQLPushdowns`, sort and load candidate rows, then fetch their tags within the same read transaction. Each row and its tags become the domain's complete filter view before `Expression.Match` decides whether paging can yield it.
 
 ```mermaid
 flowchart TD
-    Q[bstore query] --> P[Native mapped-field predicates]
+    Q[Typed store query] --> P[SQLite JSON predicates]
     P --> C[Sorted candidate rows]
-    C --> T[Batch hydrate tags in the same transaction]
+    C --> T[Batch hydrate tags in one read transaction]
     T --> F[Evaluate complete typed expression]
     F --> Y[Yield matches to paging]
 ```
 
-This is intentionally not a persistence-neutral repository specification. bstore's typed query API, `FilterFn`, transaction model, sorting, and row structs directly shape the adapter. Pretending those capabilities are interchangeable with an unknown future database would add an internal query language and still require a bstore translator underneath it.
+Filtering remains part of the application list operation, not a CLI post-processing step. Cursor paging counts matching authorized items rather than fetching a page and removing rows afterward. Authorization still wraps the query, so a filter can narrow what a principal asks for but cannot widen what that principal may read.
 
-The product semantics are insulated at the useful boundary instead. Domain modules accept typed list requests. Domain schemas define the public fields. The application owns the checked tree and canonical expression. The DAO uses bstore as bstore, including its native comparisons and in-process predicates. If Mixology adopts another store, the new work is an honest execution adapter and planner, not proof that the old adapter was secretly generic.
+Tests cover the boundaries where meaning could be lost: aliases round-trip to one canonical spelling, unknown constructs fail, invalid literals fail during parsing, unsafe `or` expressions do not narrow candidates, date comparisons reach SQLite, tag predicates run after hydration, and filtered paging continues across enough stored rows to reveal post-page filtering mistakes.
 
-## Preserve filtering through paging and authorization
+## Let concrete execution remain concrete
 
-Filtering is part of a public list operation, not a CLI post-processing step. The module parses the expression before entering the query pipeline and passes the compiled result to its DAO filter. The DAO yields only complete matches. Cursor paging therefore counts matching authorized items rather than fetching a page and removing rows afterward.
+The .NET Mixology port applies the same division with [Expr for .NET](/projects/expr-dotnet.md) and EF Core. Its planner emits an `Expression<Func<TRow, bool>>` for safe constraints, hydrates fields such as tags, then evaluates the complete Expr program against the public view. The mechanisms differ, but the correctness rule is the same.
 
-That placement also keeps authorization intact. The middleware still applies the domain's list action and result-aware policy around the query. A filter can narrow the resources a principal asks for, but it cannot widen what that principal may read.
-
-Tests cover the boundaries where the design could lose meaning: aliases round-trip to one canonical spelling, unknown constructs fail, invalid runtime literals fail during parsing, `or` expressions are not pushed unsafely, date comparisons reach native bstore filters, tag predicates run after hydration, every domain field is exercised, and filtered paging continues across enough stored rows to reveal post-page filtering mistakes.
-
-## Carry the boundary into the .NET port
-
-The completed [.NET semantic port](/projects/modular-monolith.md) now applies the same division with [Expr for .NET](/projects/expr-dotnet.md) and EF Core. [`Mixology.Filtering`](https://github.com/TheFellow/modular-monolith/tree/master/src/Mixology.Filtering) originally owned a lexer, parser, checker, formatter, and evaluator while the Expr package was being built. The 0.1.0 integration removes that duplicate language machinery. Expr now supplies the checked public AST, canonical printer, optimizer, and exact virtual-machine evaluation.
-
-The adapter still owns the useful application contract. Typed domain schemas build strict Expr environments. An AST rewriter preserves established Mixology spellings and maps dotted public field names onto environment members. Constant validation and error translation keep invalid filters inside the application's error model. The EF planner inspects the checked Expr tree and emits an `Expression<Func<TRow, bool>>` only for constraints implied by the complete predicate.
-
-EF applies that expression to select candidates, the repository hydrates fields such as tags, and the compiled Expr program evaluates the complete public view before paging and authorization. This is the same correctness rule as the bstore path even though the mechanisms differ. A pushdown narrows work; it never defines the answer.
-
-The comparison also sharpens what it means for an application to own its filtering language. The Go adapter converts accepted Expr syntax into a small application tree. The .NET adapter can plan directly over Expr for .NET's deliberately public immutable AST. Ownership does not require maintaining a private parser or node hierarchy. It requires controlling the exposed schema, accepted compatibility, public errors, safe translations, and final evaluation boundary.
-
-## General where callers benefit, concrete where execution benefits
-
-The filtering implementation is reusable because its public concepts are stable: a domain schema, a checked expression, a small tree, canonical text, and exact evaluation against a typed view. None of those concepts requires a CLI or bstore to make sense.
-
-Its execution is deliberately specific. Explicit field mappings opt into bstore pushdown. Native bstore filters reduce candidates. `FilterFn` handles complete row-local predicates. Staged hydration handles application data that is not on the row. The full expression closes the semantic loop.
-
-This division avoids two weak compromises. Users do not have to speak in bstore columns and query methods, and persistence code does not have to ignore useful features in the name of hypothetical portability. Mixology owns the language people and programs use, then follows through with an implementation designed for the database it actually runs.
+The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through SQL predicates, JSON expressions, registered indexes, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
 
 
 ---
@@ -4543,7 +4632,7 @@ Source: [https://thefellow.github.io/projects/expr-dotnet/](https://thefellow.gi
 [View the repository](https://github.com/TheFellow/expr-dotnet)
 [Read the security model](https://github.com/TheFellow/expr-dotnet/blob/main/docs/security-model.md)
 [See it in Mixology](/projects/modular-monolith.md)
-[Read the filtering case study](/articles/typed-filtering-over-bstore.md)
+[Read the filtering case study](/articles/typed-filtering-over-sqlite.md)
 
 I wanted a way for a .NET application to accept useful logic without accepting arbitrary C#. A pricing rule, feature condition, authorization predicate, or filter should be able to mention the values the application deliberately exposes, use a compact collection-oriented language, and fail early when its names or types are wrong. It should not acquire the rest of the process as an accidental API.
 
@@ -4834,7 +4923,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
 
-go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded database. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
+go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded SQLite database. WAL journaling and a bounded busy timeout let those independent processes share the local file, while SQLite still serializes their writes. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
 
@@ -4855,6 +4944,10 @@ Action availability now follows the same cross-surface discipline. Every domain 
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
 The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
+
+The shared `pkg/store` boundary now runs on the CGO-free `modernc.org/sqlite` driver. Each domain explicitly registers its private row types during application composition, creating the expression indexes and unique constraints declared by those rows without import-time side effects. Typed queries translate equality, ranges, membership, ordering, and safe filter pushdowns into SQL over JSON records. Commands, event handlers, and audit entries still use one transaction, and storage failures enter the same transport-neutral application error model as the rest of the system.
+
+Mixology began with bstore, and that earlier design shaped its typed query and filtering APIs. The move to SQLite kept those useful application contracts while replacing the execution adapter, database format, concurrency behavior, and schema lifecycle. [The storage migration article](/articles/migrating-mixology-from-bstore-to-sqlite.md) follows that change, including the deliberate decision not to disguise an incompatible database format as an in-place upgrade.
 
 The repository now keeps that first code trace explicit. Its compact root guide leads from an executable through one domain surface and into the public module, then links to focused architecture, feature, entrypoint, domain-surface, and presentation-toolkit guides beside the code they describe.
 
@@ -5161,7 +5254,7 @@ Source: [https://thefellow.github.io/series/](https://thefellow.github.io/series
 
 Series collect related writing into an intentional reading order. Each article or note still stands on its own, while the series page shows how the ideas developed across a project.
 
-- [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
+- [Building Mixology](/series/mixology.md): An ordered path through the architecture, domain modeling, persistence, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 
 ---
@@ -5176,11 +5269,11 @@ Source: [https://thefellow.github.io/series/mixology/](https://thefellow.github.
 
 - **~2 words:** Mixology series
 - **~8 words:** An ordered path through Mixology's executable application architecture.
-- **Expanded:** An ordered path through the architecture, domain modeling, authorization, and three user interfaces of the go-modular-monolith reference application.
+- **Expanded:** An ordered path through the architecture, domain modeling, persistence, authorization, and three user interfaces of the go-modular-monolith reference application.
 
 ## Full content
 
-Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, and shared action meaning.
+Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, shared action meaning, and the migration from bstore to SQLite.
 
 The completed [.NET semantic port](/projects/modular-monolith.md) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and Avalonia. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
 
@@ -5198,8 +5291,9 @@ The completed [.NET semantic port](/projects/modular-monolith.md) preserves that
 8. **Article:** [Bespoke Views over a Shared Application Boundary](/articles/bespoke-views-over-a-shared-application-boundary.md): What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model.
 9. **Article:** [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
 10. **Article:** [Authorization Is Part of Navigation](/articles/authorization-is-part-of-navigation.md): How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine.
-11. **Article:** [Typed Filtering over bstore](/articles/typed-filtering-over-bstore.md): How Mixology gives people and programs one typed filter language, then deliberately translates its safe subset into bstore instead of pretending persistence is interchangeable.
+11. **Article:** [Typed Filtering over SQLite](/articles/typed-filtering-over-sqlite.md): How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics.
 12. **Note:** [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
+13. **Article:** [Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md): How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.
 
 
 ---
