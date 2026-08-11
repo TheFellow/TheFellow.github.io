@@ -1,7 +1,7 @@
 ---
 title: "Building Mixology"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-10 12:00:00 -0700
+last_modified_at: 2026-08-10 19:53:27 -0700
 excerpt: "An ordered path through the architecture, domain modeling, persistence, authorization, and three user interfaces of the go-modular-monolith reference application."
 order: 10
 entries_label: "13 articles and notes"
@@ -14,7 +14,7 @@ repository_url: "https://github.com/TheFellow/go-modular-monolith"
 
 Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, shared action meaning, and the migration from bstore to SQLite.
 
-The completed [.NET semantic port](/projects/modular-monolith/) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and Avalonia. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
+The completed [.NET semantic port](/projects/modular-monolith/) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and .NET MAUI. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
 
 [Explore the project](/projects/go-modular-monolith/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn }

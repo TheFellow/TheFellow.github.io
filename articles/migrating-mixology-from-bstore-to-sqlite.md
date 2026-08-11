@@ -54,8 +54,9 @@ Each domain registers its own private rows during explicit application compositi
 
 ```go
 type DrinkRow struct {
-    ID   string
-    Name string `store:"unique"`
+    ID       string
+    Revision uint64 `json:"-" store:"revision"`
+    Name     string `store:"unique"`
 }
 
 func Register(ctx context.Context, s *store.Store) {
@@ -77,9 +78,17 @@ flowchart LR
     DB --> WAL[WAL readers and serialized writers]
 ```
 
-The guarantee is deliberately local. Several processes on one machine may open the same file and observe committed changes on their next query. The file is not shared across machines or placed on a network filesystem. Live refresh is also separate from consistency: SQLite makes the next query correct, while a presentation adapter decides when to perform that query.
+The guarantee is deliberately local. Several processes on one machine may open the same file and observe committed changes on their next query. The file is not shared across machines or placed on a network filesystem.
 
-This is enough for the actual application. A user can leave the GUI open, run a CLI command against the same file, and continue in the TUI without coordinating database ownership by hand.
+Long-lived clients also need to know when that next query is useful. `Store.MonitorChanges` pins a connection and polls `PRAGMA data_version`. A commit made through another connection advances that connection-local value and produces a coalesced invalidation hint. The hint contains no records and is not a durable event stream. The GUI and TUI respond through their normal application queries, so authorization, filtering, paging, and hydration remain on the same path as manual refresh. Rolled-back work does not signal, and reconnecting invalidates once because a commit may have occurred while the monitor was unavailable.
+
+That distinction keeps observation separate from domain messaging. Several commits may collapse into one signal, and the receiving client does not infer which entity changed. It simply knows that cached data may be stale. An active editor retains its unsaved input and reloads after the workflow ends, while asynchronous request tokens prevent an older reload from replacing a newer one.
+
+## Make stale writes fail at the store boundary
+
+Refresh reduces stale windows, but it cannot close the race between reading a row and writing it. Rows opt into optimistic concurrency with a `revision` tag. Insert requires revision zero and establishes revision one. Reads return the current token. Update and delete include the expected revision in their SQL predicate, and update advances the value atomically.
+
+If another process or unit of work has already advanced the row, the predicate matches nothing and the store returns a typed conflict. Public domain models and presentation DTOs round-trip the token, but they do not compare or calculate it. The invariant stays beside the write, where it cannot become a check-then-update race. A stale GUI or TUI form therefore cannot silently replace a newer CLI change even when its refresh signal has not arrived yet.
 
 ## Keep transactional domain behavior intact
 
@@ -87,7 +96,7 @@ Mixology's most important persistence property is larger than a row update. A co
 
 The unit-of-work middleware still owns that lifecycle. Read operations use ordinary read transactions. Write operations acquire an immediate SQLite transaction and carry its application-owned `*store.Tx` through the command and leaf event handlers. A serializer prevents concurrent goroutines from using the same transaction object, while SQLite coordinates independent transactions and processes.
 
-Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
+Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, optimistic conflicts, committed-change signals, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
 
 ## Move filtering by preserving semantics
 
