@@ -4,6 +4,17 @@
 @charset "utf-8";
 
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
+
+{% if site.minimal_mistakes_skin == "neon" %}
+/* Keep the neon skin's Rouge highlighting aligned with its dark palette. */
+$base00: $code-background-color;
+$base04: mix($text-color, $code-background-color, 58%);
+$base05: mix($text-color, $code-background-color, 92%);
+$base06: mix($text-color, $code-background-color, 10%);
+$base0d: #74a2f2;
+$base0e: #e06bd6;
+{% endif %}
+
 @import "minimal-mistakes";
 
 /* Avoid replaying the theme's staggered entrance animation after every navigation. */
