@@ -2204,8 +2204,9 @@ Each domain registers its own private rows during explicit application compositi
 
 ```go
 type DrinkRow struct {
-    ID   string
-    Name string `store:"unique"`
+    ID       string
+    Revision uint64 `json:"-" store:"revision"`
+    Name     string `store:"unique"`
 }
 
 func Register(ctx context.Context, s *store.Store) {
@@ -2227,9 +2228,17 @@ flowchart LR
     DB --> WAL[WAL readers and serialized writers]
 ```
 
-The guarantee is deliberately local. Several processes on one machine may open the same file and observe committed changes on their next query. The file is not shared across machines or placed on a network filesystem. Live refresh is also separate from consistency: SQLite makes the next query correct, while a presentation adapter decides when to perform that query.
+The guarantee is deliberately local. Several processes on one machine may open the same file and observe committed changes on their next query. The file is not shared across machines or placed on a network filesystem.
 
-This is enough for the actual application. A user can leave the GUI open, run a CLI command against the same file, and continue in the TUI without coordinating database ownership by hand.
+Long-lived clients also need to know when that next query is useful. `Store.MonitorChanges` pins a connection and polls `PRAGMA data_version`. A commit made through another connection advances that connection-local value and produces a coalesced invalidation hint. The hint contains no records and is not a durable event stream. The GUI and TUI respond through their normal application queries, so authorization, filtering, paging, and hydration remain on the same path as manual refresh. Rolled-back work does not signal, and reconnecting invalidates once because a commit may have occurred while the monitor was unavailable.
+
+That distinction keeps observation separate from domain messaging. Several commits may collapse into one signal, and the receiving client does not infer which entity changed. It simply knows that cached data may be stale. An active editor retains its unsaved input and reloads after the workflow ends, while asynchronous request tokens prevent an older reload from replacing a newer one.
+
+## Make stale writes fail at the store boundary
+
+Refresh reduces stale windows, but it cannot close the race between reading a row and writing it. Rows opt into optimistic concurrency with a `revision` tag. Insert requires revision zero and establishes revision one. Reads return the current token. Update and delete include the expected revision in their SQL predicate, and update advances the value atomically.
+
+If another process or unit of work has already advanced the row, the predicate matches nothing and the store returns a typed conflict. Public domain models and presentation DTOs round-trip the token, but they do not compare or calculate it. The invariant stays beside the write, where it cannot become a check-then-update race. A stale GUI or TUI form therefore cannot silently replace a newer CLI change even when its refresh signal has not arrived yet.
 
 ## Keep transactional domain behavior intact
 
@@ -2237,7 +2246,7 @@ Mixology's most important persistence property is larger than a row update. A co
 
 The unit-of-work middleware still owns that lifecycle. Read operations use ordinary read transactions. Write operations acquire an immediate SQLite transaction and carry its application-owned `*store.Tx` through the command and leaf event handlers. A serializer prevents concurrent goroutines from using the same transaction object, while SQLite coordinates independent transactions and processes.
 
-Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
+Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, optimistic conflicts, committed-change signals, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
 
 ## Move filtering by preserving semantics
 
@@ -4923,7 +4932,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
 
-go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded SQLite database. WAL journaling and a bounded busy timeout let those independent processes share the local file, while SQLite still serializes their writes. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
+go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded SQLite database. WAL journaling and a bounded busy timeout let those independent processes share the local file, while SQLite still serializes their writes. The persistent clients monitor SQLite's connection-local data version and re-query through the application after another connection commits. Revision tokens make stale edits fail as typed conflicts instead of overwriting newer state. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
 
@@ -4933,7 +4942,7 @@ That lifecycle also separates degradation from promotion. Existing published men
 
 That balance is what makes Mixology useful as a teaching vehicle. It has enough behavior for boundaries and cross-cutting concerns to matter, while the complete application still fits in one process and its tests need no external infrastructure. The code can show the consequence of a design choice without first asking the reader to assemble a distributed system.
 
-The completed [.NET semantic port](/projects/modular-monolith.md) provides a second implementation of the same behavioral contract. It rebuilds Mixology around .NET 10, EF Core, Terminal.Gui, and Avalonia while preserving the seven contexts, shared SQLite state, Cedar decisions, transactional reactions, and independent surfaces. Reading the two together makes the boundary between application semantics and language-specific architecture visible.
+The completed [.NET semantic port](/projects/modular-monolith.md) provides a second implementation of the same behavioral contract. It rebuilds Mixology around .NET 10, EF Core, Terminal.Gui, and .NET MAUI while preserving the seven contexts, shared SQLite state, Cedar decisions, transactional reactions, and independent surfaces. Reading the two together makes the boundary between application semantics and language-specific architecture visible.
 
 Adding the Fyne client also turned surface parity into an executable application contract. The audit did not merely bring the new desktop view up to the existing interfaces. It found missing TUI workflows, CLI fidelity gaps, inconsistent paging and filtering, duplicated dashboard calculations, and mutations whose domain change and complete tag set were not atomic. Shared application services and cross-surface tests now correct those behaviors for every adapter while each presentation remains bespoke.
 
@@ -4945,7 +4954,7 @@ The persistent left navigation opens each authorized workspace through a table a
 
 The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers.
 
-The shared `pkg/store` boundary now runs on the CGO-free `modernc.org/sqlite` driver. Each domain explicitly registers its private row types during application composition, creating the expression indexes and unique constraints declared by those rows without import-time side effects. Typed queries translate equality, ranges, membership, ordering, and safe filter pushdowns into SQL over JSON records. Commands, event handlers, and audit entries still use one transaction, and storage failures enter the same transport-neutral application error model as the rest of the system.
+The shared `pkg/store` boundary now runs on the CGO-free `modernc.org/sqlite` driver. Each domain explicitly registers its private row types during application composition, creating the expression indexes and unique constraints declared by those rows without import-time side effects. Typed queries translate equality, ranges, membership, ordering, and safe filter pushdowns into SQL over JSON records. A `revision` row tag makes the store own optimistic concurrency: inserts establish the first revision, updates advance it atomically, and a stale update or delete returns a typed conflict. A coalesced change monitor turns SQLite data-version changes into invalidation hints, then the TUI and GUI repeat their ordinary authorized queries rather than consuming records from a second data path. Commands, event handlers, and audit entries still use one transaction, and storage failures enter the same transport-neutral application error model as the rest of the system.
 
 Mixology began with bstore, and that earlier design shaped its typed query and filtering APIs. The move to SQLite kept those useful application contracts while replacing the execution adapter, database format, concurrency behavior, and schema lifecycle. [The storage migration article](/articles/migrating-mixology-from-bstore-to-sqlite.md) follows that change, including the deliberate decision not to disguise an incompatible database format as an in-place upgrade.
 
@@ -5041,7 +5050,7 @@ Source: [https://thefellow.github.io/projects/modular-monolith/](https://thefell
 
 modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar application with seven bounded contexts, one embedded SQLite database, Cedar authorization, and independent CLI, TUI, and desktop clients. It preserves the Go application's observable behavior while rebuilding its architecture around C# and the .NET ecosystem.
 
-That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and Avalonia for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
+That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and .NET MAUI for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
 
 The shared filtering foundation now adapts [Expr for .NET](/projects/expr-dotnet.md) instead of maintaining a private expression compiler. Expr supplies parsing, static checking, the public immutable AST, optimization, canonical printing, and exact VM evaluation. `Mixology.Filtering` keeps the application-specific boundary: typed domain schemas, compatibility rewrites for existing filter spellings, application errors, help examples, and conservative EF Core pushdowns. Every narrowed query still evaluates the complete compiled expression after hydrating the public filter view, so the planner can improve candidate selection without becoming the authority for filter meaning.
 
@@ -5051,13 +5060,13 @@ The Go application provides a behavioral specification rather than a source temp
 
 Ingredient retirement is one of the most useful examples. A permanent replacement can rewrite compatible future recipes, while an unresolved required ingredient moves affected drinks into review and blocks pending orders. Published menus remain visible but report degraded readiness. Event reactions prepare before mutation, run inside the originating transaction, and finalize derived state only after every handler has applied its work. If any step fails, the domain changes and successful audit entry roll back together.
 
-The application boundary applies the same discipline to ordinary operations. Commands pass through serialization, logging, metrics, activity tracking, a unit of work, Cedar authorization, event dispatch, and audit recording. Reads authorize their results, and paged lists continue through hidden rows until they fill a visible page. Counts and cursors therefore describe what the current actor can actually observe.
+The application boundary applies the same discipline to ordinary operations. Commands pass through serialization, logging, metrics, activity tracking, a unit of work, Cedar authorization, event dispatch, and audit recording. Reads authorize their results, and paged lists continue through hidden rows until they fill a visible page. Counts and cursors therefore describe what the current actor can actually observe. Revisioned EF Core rows use concurrency tokens that advance during `SaveChanges`; when another unit of work has already changed the row, the persistence boundary translates `DbUpdateConcurrencyException` into the same transport-neutral conflict model used by the rest of the application.
 
 ### Native surfaces, shared behavior
 
-The CLI, Terminal.Gui TUI, and Avalonia desktop client share application behavior and durable state, not view models. Each surface owns its framework-specific interaction model while consuming the same public module capabilities and authorization-projected actions. Cross-process tests write through one client and observe through another, which makes the embedded database and application contract executable across every adapter.
+The CLI, Terminal.Gui TUI, and .NET MAUI desktop client share application behavior and durable state, not view models. Each surface owns its framework-specific interaction model while consuming the same public module capabilities and authorization-projected actions. Cross-process tests write through one client and observe through another, which makes the embedded database and application contract executable across every adapter.
 
-The desktop client adds its own concurrency obligations. UI-thread publication, latest-request-wins refresh, dirty-navigation decisions, and drained shutdown are explicit MVVM state with headless control tests. CI publishes native desktop applications for Linux, Windows, and macOS, executes their help paths, and runs a dynamic race gate over the desktop concurrency primitives.
+The desktop client adds its own concurrency obligations. UI-thread publication, latest-request-wins refresh, dirty-navigation decisions, and drained shutdown are explicit MVVM state with platform-neutral view-model and XAML contract tests. CI publishes native .NET MAUI applications for Windows and macOS, exercises the UI-neutral target on Linux, and runs a dynamic race gate over the desktop concurrency primitives.
 
 ### Why it is worth exploring
 
@@ -5275,7 +5284,7 @@ Source: [https://thefellow.github.io/series/mixology/](https://thefellow.github.
 
 Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, shared action meaning, and the migration from bstore to SQLite.
 
-The completed [.NET semantic port](/projects/modular-monolith.md) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and Avalonia. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
+The completed [.NET semantic port](/projects/modular-monolith.md) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and .NET MAUI. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
 
 [Explore the project](/projects/go-modular-monolith.md)
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
