@@ -70,3 +70,8 @@ mise run serve
 Then open <http://localhost:4000>. Run `mise run build` for the same rendering
 check used on pull requests. GitHub Pages builds and publishes `main`
 automatically.
+
+Run `mise run lint-icons` after assigning a feature icon. The check fails when
+content references an icon without a matching SVG implementation, or when the
+implemented icons and [`ICONS.md`](ICONS.md) catalog drift apart. It also runs
+on every pull request.

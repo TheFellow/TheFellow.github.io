@@ -65,6 +65,7 @@ human-facing Jekyll site and the generated Markdown site for LLM consumption.
 
 ## Required checks
 
+- Run `python3 scripts/check_feature_icons.py` after adding or changing an `icon` field or the shared feature icon include.
 - Run `uv run scripts/generate_llm_content.py` after content or generator
   changes. A second run should leave the worktree unchanged.
 - Run `git diff --check`.

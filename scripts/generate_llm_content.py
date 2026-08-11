@@ -16,6 +16,8 @@ from typing import Any
 
 import yaml
 
+from check_feature_icons import validate_feature_icons
+
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_URL = "https://thefellow.github.io"
@@ -349,6 +351,7 @@ def remove_obsolete_alternates() -> None:
 
 
 def main() -> None:
+    validate_feature_icons()
     remove_obsolete_alternates()
     docs = documents()
     validate_page_dates(docs)

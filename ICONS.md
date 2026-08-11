@@ -24,6 +24,7 @@ The local semantic names map to Lucide icons as follows:
 | `book` | `book-open` |
 | `terminal` | `terminal` |
 | `storage` | `hard-drive` |
+| `database` | `database` |
 | `bird` | `bird` |
 | `desktop` | `monitor` |
 | `lock` | `lock-keyhole` |
