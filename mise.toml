@@ -9,6 +9,10 @@ run = "gem install bundler --version 4.0.17 && bundle install"
 description = "Render the site with Jekyll"
 run = "bundle exec jekyll build"
 
+[tasks.lint-icons]
+description = "Check that content icons have matching SVG implementations"
+run = "python3 scripts/check_feature_icons.py"
+
 [tasks.serve]
 description = "Serve the site with live reload"
 run = "bundle exec jekyll serve --livereload"
