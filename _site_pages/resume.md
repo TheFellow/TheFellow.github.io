@@ -1,7 +1,7 @@
 ---
 title: "Resume"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-09 19:30:00 -0700
+last_modified_at: 2026-08-12 12:00:00 -0700
 permalink: /resume/
 excerpt: "Staff software engineer specializing in authorization, platform architecture, API evolution, and durable systems."
 layout: single
@@ -141,7 +141,7 @@ author_profile: false
   <div class="resume-work-grid">
     <article>
       <h3><a href="https://github.com/TheFellow/cedar-dotnet">cedar-dotnet</a></h3>
-      <p>An idiomatic C# implementation of the Cedar policy language and authorization engine, maintained against the upstream implementation and validated with its 124,000-case official conformance corpus. Benchmark-driven evaluator work made authorization up to 12 times faster while preserving that behavioral contract.</p>
+      <p>A C# semantic port of Cedar, validated against the official 124,000-case conformance corpus and optimized for fast authorization.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/fkyeah">F#kYeah</a></h3>
@@ -149,11 +149,19 @@ author_profile: false
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/go-modular-monolith">Mixology for Go</a> + <a href="https://github.com/TheFellow/modular-monolith">.NET</a></h3>
-      <p>Parallel Go and C# reference applications that make modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. The semantic port preserves observable behavior while rebuilding persistence, hosting, presentation, and concurrency around idiomatic .NET.</p>
+      <p>Parallel Go and C# reference applications that make modular architecture, authorization, and cross-cutting concerns executable across seven bounded contexts.</p>
     </article>
     <article>
       <h3><a href="https://github.com/TheFellow/arch-lint">arch-lint</a> + <a href="https://github.com/TheFellow/enumstruct">enumstruct</a></h3>
-      <p>Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.</p>
+      <p>Go analyzers enforcing architectural boundaries and exhaustive generated unions through standard golangci-lint and go vet workflows.</p>
+    </article>
+    <article>
+      <h3><a href="https://github.com/TheFellow/go-riblt">go-riblt</a></h3>
+      <p>A generic Go library for rateless set reconciliation, with keyed codecs, streaming cells, and explicit resource limits.</p>
+    </article>
+    <article>
+      <h3><a href="https://github.com/TheFellow/expr-dotnet">Expr for .NET</a></h3>
+      <p>A safe, statically checked expression language for .NET, with a public AST, optimizing bytecode compiler, and bounded execution.</p>
     </article>
   </div>
 </section>

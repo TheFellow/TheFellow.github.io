@@ -94,16 +94,22 @@ Designed relational schemas and queries, administered production SQL systems, co
 ## Selected engineering work
 
 ### [cedar-dotnet](https://github.com/TheFellow/cedar-dotnet)
-An idiomatic C# implementation of the Cedar policy language and authorization engine, maintained against the upstream implementation and validated with its 124,000-case official conformance corpus. Benchmark-driven evaluator work made authorization up to 12 times faster while preserving that behavioral contract.
+A C# semantic port of Cedar, validated against the official 124,000-case conformance corpus and optimized for fast authorization.
 
 ### [F#kYeah](https://github.com/TheFellow/fkyeah)
 An open-source implementation of the public [Attractor specification](https://factory.strongdm.ai/products/attractor) with durable graph execution and checkpoint-and-resume support.
 
 ### [Mixology for Go](https://github.com/TheFellow/go-modular-monolith) + [.NET](https://github.com/TheFellow/modular-monolith)
-Parallel Go and C# reference applications that make modular boundaries and cross-cutting concerns executable across seven bounded contexts and independent CLI, TUI, and desktop clients. The semantic port preserves observable behavior while rebuilding persistence, hosting, presentation, and concurrency around idiomatic .NET.
+Parallel Go and C# reference applications that make modular architecture, authorization, and cross-cutting concerns executable across seven bounded contexts.
 
 ### [arch-lint](https://github.com/TheFellow/arch-lint) + [enumstruct](https://github.com/TheFellow/enumstruct)
-Production-ready analyzers for architectural boundaries and exhaustive generated unions. Both use the go/analysis framework and integrate with established golangci-lint and go vet workflows.
+Go analyzers enforcing architectural boundaries and exhaustive generated unions through standard golangci-lint and go vet workflows.
+
+### [go-riblt](https://github.com/TheFellow/go-riblt)
+A generic Go library for rateless set reconciliation, with keyed codecs, streaming cells, and explicit resource limits.
+
+### [Expr for .NET](https://github.com/TheFellow/expr-dotnet)
+A safe, statically checked expression language for .NET, with a public AST, optimizing bytecode compiler, and bounded execution.
 
 ## Teaching and communication
 
