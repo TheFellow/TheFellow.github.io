@@ -1,12 +1,12 @@
 ---
 title: "Expr for .NET"
 date: 2026-08-10 06:50:00 -0700
-last_modified_at: 2026-08-10 22:19:30 -0700
+last_modified_at: 2026-08-17 22:04:55 -0700
 excerpt: "A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution."
 language: "C#"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/expr-dotnet"
-last_updated: 2026-08-10
+last_updated: 2026-08-17
 order: 8
 featured: true
 icon: "braces"
@@ -26,9 +26,9 @@ toc_sticky: true
 
 I wanted a way for a .NET application to accept useful logic without accepting arbitrary C#. A pricing rule, feature condition, authorization predicate, or filter should be able to mention the values the application deliberately exposes, use a compact collection-oriented language, and fail early when its names or types are wrong. It should not acquire the rest of the process as an accidental API.
 
-[Expr](https://expr-lang.org/) already has the language I wanted. It combines familiar operators with predicates such as `all`, `filter`, `map`, and `reduce`, then compiles the result to bytecode for a small virtual machine. Expr for .NET is my semantic port of that language. Version 0.1.0 is now available as the dependency-free [`Expr` package on NuGet](https://www.nuget.org/packages/Expr), targeting .NET 10 and C# 14.
+[Expr](https://expr-lang.org/) already has the language I wanted. It combines familiar operators with predicates such as `all`, `filter`, `map`, and `reduce`, then compiles the result to bytecode for a small virtual machine. Expr for .NET is my semantic port of that language. Version 0.3.0 is now available as the dependency-free [`Expr` package on NuGet](https://www.nuget.org/packages/Expr), targeting .NET 10 and C# 14.
 
-Version 0.1.0 [passed its release gate](https://github.com/TheFellow/expr-dotnet/actions/runs/31393985405) against the pinned upstream semantics and is already the filtering engine in [modular-monolith](/projects/modular-monolith/). That application consumes the published NuGet package through `Mixology.Filtering`, where the public AST, checker, printer, and VM support typed filters and conservative EF Core pushdowns. The package is therefore exercised both by its own conformance evidence and by a separate application boundary.
+Version 0.3.0 [passed its release gate](https://github.com/TheFellow/expr-dotnet/actions/runs/31997689355) against the pinned upstream semantics and preserves package compatibility against the 0.2.0 baseline. Expr is already the filtering engine in [modular-monolith](/projects/modular-monolith/). That application consumes the published NuGet package through `Mixology.Filtering`, where the public AST, checker, printer, and VM support typed filters and conservative EF Core pushdowns. The package is therefore exercised both by its own conformance evidence and by a separate application boundary.
 
 The port retains Expr's observable language behavior while giving the .NET side its own deliberate shape. Environment schemas are typed, compiled expressions are immutable and reusable, every evaluation gets isolated runtime state, and the syntax tree is a public API rather than a compiler detail. Explicit schemas also keep the complete path available to trimmed and Native AOT applications.
 
@@ -141,6 +141,8 @@ sealed class RenamePrice : SyntaxRewriter
 ```
 
 Because the nodes are sealed records with strongly typed children, consumers can use C# pattern matching and non-mutating `with` expressions. A rule management UI can retain source positions for diagnostics, an analyzer can reject project-specific constructs, and a data adapter can conservatively translate the subset it understands. Those tools operate on the same tree the compiler checks.
+
+Version 0.3.0 turns that public surface into a more explicit executable contract. Consumer-authored trees reject structurally invalid nodes at construction, checked semantic models retain the configuration that gave their annotations meaning, and public bytecode construction validates instruction operands and control flow before evaluation. Parser and evaluation options reject impossible limits when they are created. Focused tests now exercise those invariants alongside record copying and deconstruction, checker failure paths, CLR numeric and collection shapes, host delegate adaptation, semantic patcher convergence, and runtime error behavior. NuGet package validation then detects accidental API changes relative to the previous release.
 
 ## Use it as a language foundation
 
