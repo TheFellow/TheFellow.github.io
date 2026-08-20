@@ -3245,6 +3245,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Building a Generic RIBLT in Go](/notes/riblt-in-go.md): A step-by-step implementation of generic, rateless set reconciliation in Go, from XOR-coded cells through peeling and measured communication.
 - [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
 - [Retiring Weave](/notes/retiring-weave.md): What I learned from building and benchmarking a compact local code index for coding agents.
+- [Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): How generic methods let Mixology put typed middleware operations on the pipeline they configure.
 
 
 ---
@@ -3420,6 +3421,47 @@ For the complete specifications and a production API example, see:
 - [NIST FIPS 186-5, Digital Signature Standard](https://csrc.nist.gov/pubs/fips/186-5/final)
 - [SEC 1: Elliptic Curve Cryptography](https://www.secg.org/sec1-v2.pdf)
 - [Go's `crypto/ecdsa` package](https://pkg.go.dev/crypto/ecdsa)
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/notes/go-1-27-generic-methods-and-the-mixology-pipeline/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Go 1.27 Generic Methods and the Mixology Pipeline
+
+Source: [https://thefellow.github.io/notes/go-1-27-generic-methods-and-the-mixology-pipeline/](https://thefellow.github.io/notes/go-1-27-generic-methods-and-the-mixology-pipeline/)
+
+## Pyramid summary
+
+- **~2 words:** Generic pipeline
+- **~8 words:** Go 1.27 generic methods simplify Mixology's typed middleware calls.
+- **Expanded:** How generic methods let Mixology put typed middleware operations on the pipeline they configure.
+
+## Full content
+
+[Mixology](https://github.com/TheFellow/go-modular-monolith) now requires Go 1.27. The practical reason for the migration is small but pervasive: generic methods let the middleware API express operations on the `Pipeline` value that actually owns them.
+
+Before Go 1.27, the typed entry points had to be package-level generic functions. A command also used a specification value to carry the operation's load and handle stages:
+
+```go
+return middleware.RunCommand(m.pipeline, ctx, middleware.CommandSpec[Input, Output]{
+	Action: authz.ActionCreate,
+	Load:   func(*middleware.Context) (Input, error) { return input, nil },
+	Handle: m.commands.Create,
+})
+```
+
+With generic methods, the common case reads as an operation performed by the configured pipeline:
+
+```go
+return m.pipeline.Command(ctx, authz.ActionCreate, input, m.commands.Create)
+```
+
+The same change applies across queries, authorized pages, and commands that load trusted state inside the transaction. `Pipeline.Query`, `Pipeline.QueryResource`, `Pipeline.PageQuery`, `Pipeline.Command`, `Pipeline.LoadCommand`, and `Pipeline.LoadCommandActions` name those cases directly, while Go infers their request and result types from the arguments.
+
+This is an ergonomics improvement, not a different middleware model. Commands still authorize the input and result, run inside the unit of work, dispatch transactional events, and record audit activity. Page queries still omit denied rows without shortening a visible page. The API now makes the pipeline the obvious starting point and removes wrappers that existed largely because the language could not attach fresh type parameters to its methods.
+
+The result is less ceremony at every domain facade and a smaller gap between reading an operation and understanding which pipeline executes it. The [migration commit](https://github.com/TheFellow/go-modular-monolith/commit/507572d8d66109636d2e8aaba99e32c1748aa9d9) shows the change across the complete application, and the [middleware guide](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/README.md#typed-pipeline-operations) documents the resulting API.
 
 
 ---
@@ -4937,10 +4979,13 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 [Explore the .NET port](/projects/modular-monolith.md)
 [Read the Mixology series](/series/mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
+[Read the Go 1.27 migration note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md)
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded SQLite database. WAL journaling and a bounded busy timeout let those independent processes share the local file, while SQLite still serializes their writes. The persistent clients monitor SQLite's connection-local data version and re-query through the application after another connection commits. Revision tokens make stale edits fail as typed conflicts instead of overwriting newer state. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
+
+Go 1.27's generic methods made that shared path easier to enter. Domain facades now call typed operations such as `pipeline.Command`, `pipeline.LoadCommand`, and `pipeline.Query` directly, replacing package-level helpers and specification wrappers while preserving the pipeline's authorization, transaction, event, and audit behavior. [The migration note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md) follows the developer ergonomics behind that change.
 
 Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or it may admit that no replacement is known. Independent event handlers prepare their work before any of them mutate state, then update inventory, recipes, and historical orders inside the originating transaction. Menu readiness reflects the resulting state without destructively changing menu membership. A replacement rewrites future recipes. An unresolved required ingredient moves its drinks to `review_required`, blocks affected orders, and leaves published menus visible in a degraded state. If one handler fails, the complete operation rolls back. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
 

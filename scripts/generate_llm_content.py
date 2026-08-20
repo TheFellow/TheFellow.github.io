@@ -66,6 +66,7 @@ SUMMARIES = {
     "/notes/linux-for-windows-brains/": ("Linux models", "Translate Windows concepts into practical Linux mental models."),
     "/notes/projecting-actions-across-user-interfaces/": ("Action projection", "Share action meaning across native interfaces without sharing views."),
     "/notes/retiring-weave/": ("Retired experiment", "A local code-index experiment yielded a useful benchmark."),
+    "/notes/go-1-27-generic-methods-and-the-mixology-pipeline/": ("Generic pipeline", "Go 1.27 generic methods simplify Mixology's typed middleware calls."),
 }
 
 Document = dict[str, Any]

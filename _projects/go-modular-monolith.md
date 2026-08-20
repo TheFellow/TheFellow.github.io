@@ -1,12 +1,12 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-10 19:53:27 -0700
+last_modified_at: 2026-08-20 08:39:47 -0700
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/go-modular-monolith"
-last_updated: 2026-08-10
+last_updated: 2026-08-20
 series_url: "/series/mixology/"
 order: 10
 featured: true
@@ -22,10 +22,13 @@ topics: ["Architecture", "Reference app", "Cedar"]
 [Explore the .NET port](/projects/modular-monolith/){: .btn }
 [Read the Mixology series](/series/mixology/){: .btn }
 [Read the GUI surface article](/articles/growing-mixology-with-fyne/){: .btn }
+[Read the Go 1.27 migration note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline/){: .btn }
 
 go-modular-monolith, also called Mixology, is an opinionated reference application organized around bounded contexts for a cocktail-bar domain. Its CLI, Bubble Tea TUI, and Fyne desktop client are separate composition roots over the same application and embedded SQLite database. WAL journaling and a bounded busy timeout let those independent processes share the local file, while SQLite still serializes their writes. The persistent clients monitor SQLite's connection-local data version and re-query through the application after another connection commits. Revision tokens make stale edits fail as typed conflicts instead of overwriting newer state. That leaves the complexity budget for boundaries, types, authorization, transactions, events, and tooling that enforce the design.
 
 The repository's central argument is that important rules should be executable. Package boundaries fail the build when they are crossed. The type system withholds capabilities that a caller should not have. Authorization, transactions, events, and audit all surround domain operations through one path, regardless of whether a request began in the CLI, Bubble Tea TUI, or Fyne desktop client.
+
+Go 1.27's generic methods made that shared path easier to enter. Domain facades now call typed operations such as `pipeline.Command`, `pipeline.LoadCommand`, and `pipeline.Query` directly, replacing package-level helpers and specification wrappers while preserving the pipeline's authorization, transaction, event, and audit behavior. [The migration note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline/) follows the developer ergonomics behind that change.
 
 Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or it may admit that no replacement is known. Independent event handlers prepare their work before any of them mutate state, then update inventory, recipes, and historical orders inside the originating transaction. Menu readiness reflects the resulting state without destructively changing menu membership. A replacement rewrites future recipes. An unresolved required ingredient moves its drinks to `review_required`, blocks affected orders, and leaves published menus visible in a degraded state. If one handler fails, the complete operation rolls back. No handler reaches into another domain's internals, and no message broker is required to keep the modules separate.
 
