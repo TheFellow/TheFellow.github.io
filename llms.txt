@@ -46,6 +46,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 ## Notes
 
 - [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles.md): A ground-up route through groups, finite fields, curves, and signatures.
+- [Go 1.27 Generic Methods and the Mixology Pipeline](https://thefellow.github.io/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): Go 1.27 generic methods simplify Mixology's typed middleware calls.
 - [Linux for Windows Brains](https://thefellow.github.io/notes/linux-for-windows-brains.md): Translate Windows concepts into practical Linux mental models.
 - [Octonions and the Standard Model in F#](https://thefellow.github.io/notes/octonions-and-the-standard-model-in-fsharp.md): Non-associative multiplication produces a Furey-inspired eight-state particle pattern.
 - [Porting Cedar from Go to .NET: Semantics Before Syntax](https://thefellow.github.io/notes/porting-cedar-semantics-from-go-to-dotnet.md): How conformance tests preserve Cedar behavior while C# APIs remain idiomatic.
