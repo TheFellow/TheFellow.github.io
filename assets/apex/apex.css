@@ -166,6 +166,10 @@
   gap: 9px;
 }
 
+.apex-field-row > label {
+  color: #000;
+}
+
 .apex-field-row input,
 .apex-field-row select {
   min-width: 0;
