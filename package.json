@@ -1,0 +1,22 @@
+{
+  "name": "thefellow-github-io",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:apex",
+    "build:apex": "esbuild assets/apex/src/app.ts --bundle --format=iife --target=es2020 --outfile=assets/apex/dist/apex.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run assets/apex/tests/conversions.test.ts",
+    "test:dom": "vitest run assets/apex/tests/app.test.ts",
+    "test:icons": "python3 scripts/check_apex_icons.py",
+    "generate:icons": "python3 scripts/generate_apex_icons.py"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.4",
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.25.9",
+    "jsdom": "^26.1.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

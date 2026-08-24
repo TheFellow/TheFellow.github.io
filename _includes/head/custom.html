@@ -6,11 +6,15 @@
 {% if page.url == '/' %}
   {% assign markdown_url = '/index.md' %}
 {% else %}
-  {% assign markdown_base = page.url | reverse | remove_first: '/' | reverse %}
+  {% assign markdown_base = page.url | split: '/' | join: '/' %}
   {% assign markdown_url = markdown_base | append: '.md' %}
 {% endif %}
 <link rel="alternate" type="text/markdown" href="{{ markdown_url | absolute_url }}" title="Markdown version">
 <link rel="alternate" type="text/plain" href="{{ '/llms.txt' | absolute_url }}" title="LLM content index">
+
+{% if page.url == '/apex/' %}
+<link rel="stylesheet" href="{{ '/assets/apex/apex.css' | relative_url }}">
+{% endif %}
 
 {% if page.math %}
 <script>

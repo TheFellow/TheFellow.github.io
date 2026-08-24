@@ -258,6 +258,12 @@ $base0e: #e06bd6;
   width: 1.55rem;
 }
 
+.feature-tile__icon--pixel img {
+  height: 2rem;
+  image-rendering: pixelated;
+  width: 2rem;
+}
+
 .feature-tile__eyebrow {
   color: var(--feature-accent);
   display: block;

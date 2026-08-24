@@ -1,0 +1,25 @@
+name: Apex application
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run generate:icons
+      - run: npm run test:icons
+      - run: npm run build
+      - name: Check committed application assets are current
+        run: git diff --exit-code -- assets/apex/dist/apex.js assets/images/apex
