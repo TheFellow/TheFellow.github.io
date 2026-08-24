@@ -33,6 +33,7 @@ SUMMARIES = {
     "/series/": ("Reading series", "Ordered paths through related articles, notes, and projects."),
     "/resume/": ("Engineering experience", "Staff-level experience in authorization, architecture, delivery, and technical leadership."),
     "/404.html": ("Missing page", "Navigation help when a requested page cannot be found."),
+    "/apex/": ("Retro converter", "A working Windows 3.1-style homage to the original Apex."),
     "/projects/expr-dotnet/": ("Typed expressions", "A safe .NET expression language with inspectable compilation and bounded execution."),
     "/projects/go-modular-monolith/": ("Executable architecture", "A Go reference app enforcing modular boundaries and cross-cutting concerns."),
     "/projects/modular-monolith/": ("Semantic architecture port", "An idiomatic .NET port preserving Mixology's observable application behavior."),
@@ -179,6 +180,9 @@ def clean_body(body: str) -> str:
     replacements = (
         (r"\{\{\s*['\"]([^'\"]+)['\"]\s*\|\s*relative_url\s*\}\}", r"\1", 0),
         (r"\{:\s*[^}]+\}", "", 0),
+        (r"<link\b[^>]*>", "", re.IGNORECASE),
+        (r"<script\b.*?</script>", "", re.IGNORECASE | re.DOTALL),
+        (r"<noscript\b.*?</noscript>", "", re.IGNORECASE | re.DOTALL),
         (r'<div class="project-meta">.*?</div>', "", re.DOTALL),
         (r"<svg\b.*?</svg>", "", re.DOTALL),
         (r"</?(?:section|article|div)(?:\s[^>]*)?>", "", re.IGNORECASE),
@@ -198,6 +202,8 @@ def clean_body(body: str) -> str:
         body = re.sub(pattern, replacement, body, flags=flags)
     if strip_layout_indentation:
         body = "\n".join(line.strip() for line in body.splitlines())
+    else:
+        body = "\n".join(line.rstrip() for line in body.splitlines())
     return html.unescape(re.sub(r"\n{3,}", "\n\n", body).strip())
 
 
@@ -226,7 +232,12 @@ def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
 
     intro = clean_body(doc["body"].split('<div class="feature-tiles', 1)[0])
     selected = sorted(
-        (item for item in all_docs if str(item["source"]).startswith(prefix)),
+        (
+            item
+            for item in all_docs
+            if str(item["source"]).startswith(prefix)
+            or (route == "/projects/" and item.get("project_listing") is True)
+        ),
         key=sort_value,
     )
     links = []
@@ -373,7 +384,12 @@ def main() -> None:
     core_routes = ("/", "/projects/", "/articles/", "/notes/", "/series/", "/resume/")
     sections = {
         "Start Here": core_routes,
-        "Projects": [route for route in routes if re.fullmatch(r"/projects/.+/$", route)],
+        "Projects": [
+            route
+            for route, doc in routes.items()
+            if re.fullmatch(r"/projects/.+/$", route)
+            or doc.get("project_listing") is True
+        ],
         "Articles": [route for route in routes if re.fullmatch(r"/articles/.+/$", route)],
         "Notes": [route for route in routes if re.fullmatch(r"/notes/.+/$", route)],
         "Series": [route for route in routes if re.fullmatch(r"/series/.+/$", route)],

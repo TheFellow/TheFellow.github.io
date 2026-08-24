@@ -14,6 +14,7 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), beginning with the repositories pinned on my profile and expanding to smaller tools worth explaining. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
+- [Apex](/apex.md): A working recreation of the Windows 3.1 unit converter my dad built and released as shareware in the 1990s.
 - [Expr for .NET](/projects/expr-dotnet.md): A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution.
 - [go-modular-monolith](/projects/go-modular-monolith.md): A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [modular-monolith](/projects/modular-monolith.md): An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#.
