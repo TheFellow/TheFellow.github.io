@@ -12,7 +12,7 @@ Source: [https://thefellow.github.io/apex/](https://thefellow.github.io/apex/)
 
 ## Full content
 
-My dad built Apex in the 1990s and released it as Windows 3.1 shareware. It put everyday conversions into one compact window, with a category rail, two editable values, and vivid 256-color icons drawn in CorelDRAW.
+My dad built Apex in the 1990s and released it as Windows 3.1 shareware. It put everyday conversions into one compact window, with vivid and lifelike 256-color icons. Way ahead of its time!
 
 Choose a category, select two units, and type into either field. Apex immediately recomputes the other value.
 
