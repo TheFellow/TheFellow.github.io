@@ -33,7 +33,7 @@ Choose a category, select two units, and type into either field. Apex immediatel
 
 ## About the recreation
 
-The interface follows the original single-window design, with conversion categories on the left and direct entry in either direction on the right. The calculations are data-driven TypeScript, and each category has recreated indexed 256-color pixel art.
+The calculations are data-driven TypeScript, and each category has recreated indexed 256-color pixel art.
 
 The lightning bolt still belongs in that blue title bar.
 
