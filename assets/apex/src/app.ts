@@ -11,7 +11,12 @@ import {
 type Side = "left" | "right";
 
 interface AppElements {
+  aboutDialog: HTMLDialogElement;
+  aboutMenuItem: HTMLButtonElement;
+  closeAbout: HTMLButtonElement;
   categoryName: HTMLElement;
+  helpButton: HTMLButtonElement;
+  helpMenu: HTMLElement;
   leftInput: HTMLInputElement;
   leftUnit: HTMLSelectElement;
   rightInput: HTMLInputElement;
@@ -49,7 +54,13 @@ function appMarkup(): string {
         </span>
       </header>
       <div class="apex-menubar" aria-label="Application menu">
-        <span><u>F</u>ile</span><span><u>H</u>elp</span>
+        <span><u>F</u>ile</span>
+        <div class="apex-menu-wrap">
+          <button id="apex-help-button" type="button" aria-haspopup="menu" aria-expanded="false"><u>H</u>elp</button>
+          <div id="apex-help-menu" class="apex-menu" role="menu" hidden>
+            <button id="apex-about-menu-item" type="button" role="menuitem">About Apex...</button>
+          </div>
+        </div>
       </div>
       <div class="apex-workspace">
         <nav class="apex-categories" aria-label="Conversion categories">
@@ -81,7 +92,23 @@ function appMarkup(): string {
         <span id="apex-status" role="status" aria-live="polite" aria-atomic="true">Ready</span>
         <span aria-hidden="true">NUM</span>
       </footer>
-    </section>`;
+    </section>
+    <dialog id="apex-about" class="apex-about" aria-labelledby="apex-about-title">
+      <header class="apex-titlebar">
+        <img class="apex-titlebar__icon" src="${ICON_ROOT}/app.png" width="32" height="32" alt="">
+        <h2 id="apex-about-title">About Apex</h2>
+      </header>
+      <div class="apex-about__body">
+        <img src="${ICON_ROOT}/app.png" width="32" height="32" alt="" aria-hidden="true">
+        <div>
+          <strong>Apex Unit Conversion Utility</strong>
+          <p>Vivid and lifelike 256-color icons.<br>Way ahead of its time!</p>
+        </div>
+      </div>
+      <form method="dialog">
+        <button id="apex-close-about" type="submit" value="ok">OK</button>
+      </form>
+    </dialog>`;
 }
 
 function getElements(root: HTMLElement): AppElements {
@@ -92,7 +119,12 @@ function getElements(root: HTMLElement): AppElements {
   };
 
   return {
+    aboutDialog: requireElement("#apex-about"),
+    aboutMenuItem: requireElement("#apex-about-menu-item"),
+    closeAbout: requireElement("#apex-close-about"),
     categoryName: requireElement("#apex-category-name"),
+    helpButton: requireElement("#apex-help-button"),
+    helpMenu: requireElement("#apex-help-menu"),
     leftInput: requireElement("#apex-left-value"),
     leftUnit: requireElement("#apex-left-unit"),
     rightInput: requireElement("#apex-right-value"),
@@ -122,6 +154,72 @@ export function mountApex(root: HTMLElement): () => void {
   let lastEdited: Side = "left";
   const abortController = new AbortController();
   const eventOptions = { signal: abortController.signal };
+
+  const setHelpMenuOpen = (open: boolean): void => {
+    elements.helpMenu.hidden = !open;
+    elements.helpButton.setAttribute("aria-expanded", String(open));
+    if (open) elements.aboutMenuItem.focus();
+  };
+
+  const openAbout = (): void => {
+    setHelpMenuOpen(false);
+    if (typeof elements.aboutDialog.showModal === "function") {
+      elements.aboutDialog.showModal();
+    } else {
+      elements.aboutDialog.setAttribute("open", "");
+    }
+    elements.closeAbout.focus();
+  };
+
+  const closeAbout = (): void => {
+    if (typeof elements.aboutDialog.close === "function") {
+      elements.aboutDialog.close();
+    } else {
+      elements.aboutDialog.removeAttribute("open");
+      elements.helpButton.focus();
+    }
+  };
+
+  elements.helpButton.addEventListener(
+    "click",
+    () => setHelpMenuOpen(elements.helpMenu.hidden),
+    eventOptions,
+  );
+  elements.helpButton.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setHelpMenuOpen(true);
+      }
+    },
+    eventOptions,
+  );
+  elements.helpMenu.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setHelpMenuOpen(false);
+        elements.helpButton.focus();
+      }
+    },
+    eventOptions,
+  );
+  elements.aboutMenuItem.addEventListener("click", openAbout, eventOptions);
+  elements.closeAbout.addEventListener(
+    "click",
+    (event) => {
+      event.preventDefault();
+      closeAbout();
+    },
+    eventOptions,
+  );
+  elements.aboutDialog.addEventListener(
+    "close",
+    () => elements.helpButton.focus(),
+    eventOptions,
+  );
 
   const inputFor = (side: Side) =>
     side === "left" ? elements.leftInput : elements.rightInput;

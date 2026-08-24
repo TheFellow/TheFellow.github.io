@@ -80,6 +80,61 @@
   border-bottom: 1px solid var(--apex-mid);
 }
 
+.apex-menu-wrap {
+  position: relative;
+}
+
+.apex-menubar button,
+.apex-menu button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #000;
+  background: transparent;
+  box-shadow: none;
+  font: inherit;
+  text-shadow: none;
+}
+
+.apex-menubar > span,
+.apex-menubar > .apex-menu-wrap > button {
+  padding: 4px 2px;
+}
+
+.apex-menubar > .apex-menu-wrap > button:focus-visible,
+.apex-menubar > .apex-menu-wrap > button[aria-expanded="true"] {
+  outline: 1px dotted #000;
+  outline-offset: -2px;
+}
+
+.apex-menu {
+  position: absolute;
+  z-index: 5;
+  top: 100%;
+  left: -5px;
+  min-width: 150px;
+  padding: 3px;
+  border: 2px solid;
+  border-color: var(--apex-light) var(--apex-dark) var(--apex-dark) var(--apex-light);
+  background: var(--apex-silver);
+  box-shadow: 2px 2px 0 rgb(0 0 0 / 35%);
+}
+
+.apex-menu button {
+  display: block;
+  width: 100%;
+  padding: 5px 22px;
+  text-align: left;
+}
+
+.apex-menu button:hover,
+.apex-menu button:focus-visible {
+  color: #fff;
+  background: var(--apex-blue);
+  outline: none;
+}
+
 .apex-workspace {
   display: grid;
   grid-template-columns: minmax(150px, 210px) 1fr;
@@ -220,6 +275,65 @@
   border-color: var(--apex-mid) var(--apex-light) var(--apex-light) var(--apex-mid);
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.apex-about {
+  width: min(390px, calc(100vw - 32px));
+  padding: 3px;
+  border: 2px solid;
+  border-color: #fff #000 #000 #fff;
+  border-radius: 0;
+  color: #000;
+  background: #c0c0c0;
+  box-shadow: 4px 4px 0 rgb(0 0 0 / 45%);
+  font-family: "MS Sans Serif", Tahoma, Geneva, sans-serif;
+  font-size: 15px;
+}
+
+.apex-about::backdrop {
+  background: rgb(0 0 0 / 35%);
+}
+
+.apex-about__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 28px 24px 18px;
+}
+
+.apex-about__body > img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+}
+
+.apex-about__body p {
+  margin: 12px 0 0;
+  color: #000;
+  line-height: 1.45;
+}
+
+.apex-about form {
+  margin: 0;
+  padding: 0 24px 18px;
+  text-align: center;
+}
+
+.apex-about form button {
+  min-width: 86px;
+  padding: 5px 18px;
+  border: 2px solid;
+  border-color: #fff #000 #000 #fff;
+  border-radius: 0;
+  color: #000;
+  background: #c0c0c0;
+  box-shadow: none;
+  font: inherit;
+  text-shadow: none;
+}
+
+.apex-about form button:active {
+  border-color: #000 #fff #fff #000;
 }
 
 .apex-sr-only {

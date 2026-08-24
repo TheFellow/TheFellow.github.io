@@ -126,4 +126,25 @@ describe("Apex application", () => {
     expect(root.querySelector("#apex-status")?.getAttribute("aria-live")).toBe("polite");
     expect(root.querySelectorAll(".apex-category img[alt='']")).toHaveLength(10);
   });
+
+  it("opens the About box from the Help menu", () => {
+    const help = root.querySelector<HTMLButtonElement>("#apex-help-button")!;
+    const menu = root.querySelector<HTMLElement>("#apex-help-menu")!;
+    const about = root.querySelector<HTMLDialogElement>("#apex-about")!;
+
+    help.click();
+    expect(help.getAttribute("aria-expanded")).toBe("true");
+    expect(menu.hidden).toBe(false);
+
+    root.querySelector<HTMLButtonElement>("#apex-about-menu-item")!.click();
+    expect(help.getAttribute("aria-expanded")).toBe("false");
+    expect(about.hasAttribute("open")).toBe(true);
+    expect(about.textContent).toContain("Vivid and lifelike 256-color icons.");
+    expect(about.textContent).toContain("Way ahead of its time!");
+    expect(document.activeElement?.id).toBe("apex-close-about");
+
+    root.querySelector<HTMLButtonElement>("#apex-close-about")!.click();
+    expect(about.hasAttribute("open")).toBe(false);
+    expect(document.activeElement).toBe(help);
+  });
 });
