@@ -56,7 +56,7 @@ SUMMARIES = {
     "/articles/migrating-mixology-from-bstore-to-sqlite/": ("Storage migration", "Mixology replaces bstore while preserving its application contracts."),
     "/articles/using-a-third-surface-as-an-architecture-test/": ("Architecture audit", "A third presentation runtime tests whether application boundaries are real."),
     "/articles/testing-native-go-desktop-applications-headlessly/": ("Headless desktop", "Layered evidence for native GUI behavior without opening windows."),
-    "/articles/making-illegal-states-unrepresentable-in-go/": ("Modeled states", "F# techniques make Go domain constraints explicit and enforceable."),
+    "/articles/making-illegal-states-unrepresentable-in-go/": ("Modeled states", "F# techniques and generic methods make Go constraints composable."),
     "/articles/building-a-file-backed-columnar-event-pipeline/": ("Columnar events", "Immutable Parquet snapshots support direct analytical queries and typed results."),
     "/notes/elliptic-curve-cryptography-from-first-principles/": ("ECDSA foundations", "A ground-up route through groups, finite fields, curves, and signatures."),
     "/notes/porting-cedar-semantics-from-go-to-dotnet/": ("Semantic porting", "How conformance tests preserve Cedar behavior while C# APIs remain idiomatic."),
