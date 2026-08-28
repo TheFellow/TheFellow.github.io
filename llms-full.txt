@@ -79,7 +79,7 @@ Long-form tutorials, essays, case studies, and development journals connect desi
 - [Typed Filtering over SQLite](/articles/typed-filtering-over-sqlite.md): How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics.
 - [Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md): How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.
 - [Using a Third Surface as an Architecture Test](/articles/using-a-third-surface-as-an-architecture-test.md): What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI.
-- [Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md): What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee.
+- [Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md): What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and typed workflows in Go, including how generic methods make Result pipelines practical.
 - [Testing Native Go Desktop Applications Headlessly](/articles/testing-native-go-desktop-applications-headlessly.md): A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence.
 - [Building a File-Backed Columnar Event Pipeline](/articles/building-a-file-backed-columnar-event-pipeline.md): How immutable Parquet batches, snapshot metadata, DuckDB, Arrow, and Protobuf form a columnar event path from storage to results.
 
@@ -1729,8 +1729,8 @@ Source: [https://thefellow.github.io/articles/making-illegal-states-unrepresenta
 ## Pyramid summary
 
 - **~2 words:** Modeled states
-- **~8 words:** F# techniques make Go domain constraints explicit and enforceable.
-- **Expanded:** What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and workflow stages in Go, including the places where constructors and linters must complete the guarantee.
+- **~8 words:** F# techniques and generic methods make Go constraints composable.
+- **Expanded:** What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and typed workflows in Go, including how generic methods make Result pipelines practical.
 
 ## Full content
 
@@ -1895,7 +1895,7 @@ module Email =
     let value (Address value) = value
 ```
 
-Outside the module, `Email.Address "bad"` does not compile because the case is private. Callers receive either `Ok address` or `Error message`. Pattern matching exposes both outcomes, and an incomplete match produces a compiler warning that a project can promote to an error.
+Outside the module, `Email.Address "bad"` does not compile because the case is private. Callers receive either `Ok address` or `Error message`. Obtaining the address requires choosing how to handle both cases, and an incomplete match produces a compiler warning that a project can promote to an error. The whole result can still be deliberately discarded; the important property is that its value and failure cannot separate accidentally.
 
 Go can enforce the same constructor path at a package boundary by using an unexported field:
 
@@ -2045,20 +2045,20 @@ State-specific types are useful even when a domain has a linear path rather than
 
 ```fsharp
 type ValidateOrder =
-    UnvalidatedOrder -> Result<ValidatedOrder, ValidationError>
+    UnvalidatedOrder -> Result<ValidatedOrder, OrderError>
 
 type PriceOrder =
-    ValidatedOrder -> Result<PricedOrder, PricingError>
+    ValidatedOrder -> PricedOrder
 
 type PlaceOrder =
-    PricedOrder -> Result<OrderPlaced, PlacementError>
+    PricedOrder -> Result<OrderPlaced, OrderError>
 ```
 
 The same boundaries are ordinary Go function signatures:
 
 ```go
 func validateOrder(UnvalidatedOrder) (ValidatedOrder, error)
-func priceOrder(ValidatedOrder) (PricedOrder, error)
+func priceOrder(ValidatedOrder) PricedOrder
 func placeOrder(PricedOrder) (OrderPlaced, error)
 ```
 
@@ -2097,43 +2097,77 @@ The raw strings enter at the boundary. The validated stage contains domain types
 
 The [`exhaustruct`](https://github.com/GaijinEntertainment/go-exhaustruct) analyzer can additionally require every field in selected struct literals to be initialized. When a field is added to `ValidatedOrder`, required lint checks then identify each transition that needs to supply it. This is not a compiler feature, but it can be a useful repository rule for domain-state construction.
 
-## Keep Go's error flow visible
+## Compose results inside typed workflows
 
-F# can compose functions returning `Result` by binding only successful values and propagating errors:
+F# uses `Result.map` to transform a successful value and `Result.bind` to run the next fallible step. Either operation propagates an existing error without calling its function:
 
 ```fsharp
-let placeOrderWorkflow input =
-    input
-    |> validateOrder
-    |> Result.bind priceOrder
-    |> Result.bind placeOrder
+let placeOrderWorkflow =
+    validateOrder
+    >> Result.map priceOrder
+    >> Result.bind placeOrder
 ```
 
-A generic `Result[T]` and `Bind` can reproduce this in Go, but the call usually becomes nested or introduces intermediate wrappers:
+Before Go 1.27, a method on `Result[T]` could not introduce the next contained type `U`. Type-changing `Map` and `Bind` operations therefore had to be package functions, which made a pipeline nested or required intermediate wrappers:
 
 ```go
-result := Bind(Bind(validateOrder(input), priceOrder), placeOrder)
+result := Bind(Map(validateOrder(input), priceOrder), placeOrder)
 ```
 
-The conventional Go version is longer and keeps the control flow local:
+Go 1.27 allows a concrete method to declare its own type parameters. `T` belongs to the receiver, while `U` belongs to one method invocation and is inferred from the function argument:
 
 ```go
-func placeOrderWorkflow(input UnvalidatedOrder) (OrderPlaced, error) {
-	validated, err := validateOrder(input)
-	if err != nil {
-		return OrderPlaced{}, err
-	}
+type Result[T any] struct {
+	value T
+	err   error
+	ok    bool
+}
 
-	priced, err := priceOrder(validated)
-	if err != nil {
-		return OrderPlaced{}, err
-	}
+func Ok[T any](value T) Result[T]       { return Result[T]{value: value, ok: true} }
+func Err[T any](err error) Result[T]    { return Result[T]{err: err} }
 
-	return placeOrder(priced)
+func (r Result[T]) Map[U any](f func(T) U) Result[U] {
+	if !r.ok {
+		return Err[U](r.err)
+	}
+	return Ok(f(r.value))
+}
+
+func (r Result[T]) Bind[U any](f func(T) Result[U]) Result[U] {
+	if !r.ok {
+		return Err[U](r.err)
+	}
+	return f(r.value)
 }
 ```
 
-The valuable part of the functional model is not the operator. It is the sequence of precise input and output types. Go's explicit error handling can remain idiomatic while those types prevent steps from being skipped or reordered accidentally.
+The workflow can now read from left to right. The function signatures determine the operation: pricing is an infallible transformation, so it uses `Map`; placement can fail, so it uses `Bind`.
+
+```go
+func validateOrder(UnvalidatedOrder) Result[ValidatedOrder]
+func priceOrder(ValidatedOrder) PricedOrder
+func placeOrder(PricedOrder) Result[OrderPlaced]
+
+result := validateOrder(input).
+	Map(priceOrder).
+	Bind(placeOrder)
+```
+
+Generic methods remove the main ergonomic objection to using `Result` inside a multi-stage domain workflow. They do not require the rest of a Go program to adopt a new error convention. Small adapters preserve native pairs at repository, transport, SDK, and public API boundaries:
+
+```go
+func FromPair[T any](value T, err error) Result[T] { /* ... */ }
+func (r Result[T]) Pair() (T, error)               { /* ... */ }
+
+func placeOrderWorkflow(input UnvalidatedOrder) (OrderPlaced, error) {
+	return validateOrder(input).
+		Map(priceOrder).
+		Bind(placeOrder).
+		Pair()
+}
+```
+
+`(T, error)` remains the convention understood by Go's ecosystem. `Result` is useful where several typed transformations benefit from keeping success and failure coupled, while `FromPair` and `Pair` keep that choice inside the workflow that benefits from it.
 
 ## Know where each guarantee lives
 
@@ -2147,10 +2181,11 @@ F# and Go can express many of the same domain decisions, but they enforce them a
 | Exhaustive handling   | Compiler warning, optionally an error | Static analyzer in required checks            |
 | Distinct primitives   | Single-case union                     | Defined type                                  |
 | Fallible construction | `Result`                              | `(T, error)`                                  |
+| Fallible composition  | `Result.map` and `Result.bind`        | Go 1.27 generic `Map` and `Bind` methods      |
 | Missing values        | `option`                              | Pointers, `nil`, or an explicit optional type |
 | Zero-value validity   | Constructed union cases               | Must be designed or checked explicitly        |
 
-This difference affects how strongly a model can support its claims. In F#, a private union case plus immutable data can make construction through the smart constructor the only path. In Go, package-local code and zero values remain part of the design. Constructors, unexported representation, validation at serialization boundaries, and required analyzers narrow those gaps without pretending they disappeared.
+This difference affects how strongly a model can support its claims. In F#, a private union case plus immutable data can make construction through the smart constructor the only path. In Go, package-local code and zero values remain part of the design. Constructors, unexported representation, validation at serialization boundaries, and required analyzers narrow those gaps without pretending they disappeared. Generic methods improve how typed workflows compose, but they do not change where these broader guarantees live.
 
 ## Start with the state space
 
@@ -2169,6 +2204,7 @@ The goal is not to reproduce F# syntax in Go. It is to make domain decisions vis
 
 - Scott Wlaschin's [Domain Modeling Made Functional](https://pragprog.com/titles/swdddf/domain-modeling-made-functional/) develops this approach in F#.
 - Wlaschin's free [Designing with Types](https://fsharpforfunandprofit.com/series/designing-with-types/) series introduces the core techniques.
+- The [Go 1.27 release notes](https://go.dev/doc/go1.27) describe generic methods and their limits.
 - My [type-safe linear algebra in F#](/notes/type-safe-linear-algebra-in-fsharp.md) note shows the same idea applied to matrix dimensions.
 - My [enumstruct project](/projects/enumstruct.md) explores exhaustive pointer-union handling in Go.
 
