@@ -36,7 +36,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Building High-Quality Software](https://thefellow.github.io/articles/building-high-quality-software.md): Eleven lessons that turn architectural intent into executable software constraints.
 - [Growing a Reciprocal Domain Workflow](https://thefellow.github.io/articles/growing-a-reciprocal-domain-workflow.md): Procurement and Inventory expose the boundary between reactions and workflows.
 - [Growing Mixology with a GUI Surface](https://thefellow.github.io/articles/growing-mixology-with-fyne.md): Tracking Mixology's testable growth from two surfaces to three.
-- [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go.md): F# techniques and generic methods make Go constraints composable.
+- [Making Illegal States Unrepresentable in Go](https://thefellow.github.io/articles/making-illegal-states-unrepresentable-in-go.md): F# modeling techniques clarify Go guarantees and tradeoffs.
 - [Migrating Mixology from bstore to SQLite](https://thefellow.github.io/articles/migrating-mixology-from-bstore-to-sqlite.md): Mixology replaces bstore while preserving its application contracts.
 - [Preserving Truth Through Operational Degradation](https://thefellow.github.io/articles/preserving-truth-through-operational-degradation.md): Preserve history while blocking knowingly degraded state promotion.
 - [Testing Native Go Desktop Applications Headlessly](https://thefellow.github.io/articles/testing-native-go-desktop-applications-headlessly.md): Layered evidence for native GUI behavior without opening windows.

@@ -7,8 +7,8 @@ Source: [https://thefellow.github.io/articles/making-illegal-states-unrepresenta
 ## Pyramid summary
 
 - **~2 words:** Modeled states
-- **~8 words:** F# techniques and generic methods make Go constraints composable.
-- **Expanded:** What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and typed workflows in Go, including how generic methods make Result pipelines practical.
+- **~8 words:** F# modeling techniques clarify Go guarantees and tradeoffs.
+- **Expanded:** What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and typed workflows in Go, including where Result pipelines fit.
 
 ## Full content
 
@@ -375,7 +375,7 @@ The raw strings enter at the boundary. The validated stage contains domain types
 
 The [`exhaustruct`](https://github.com/GaijinEntertainment/go-exhaustruct) analyzer can additionally require every field in selected struct literals to be initialized. When a field is added to `ValidatedOrder`, required lint checks then identify each transition that needs to supply it. This is not a compiler feature, but it can be a useful repository rule for domain-state construction.
 
-## Compose results inside typed workflows
+## Compose results where signatures align
 
 F# uses `Result.map` to transform a successful value and `Result.bind` to run the next fallible step. Either operation propagates an existing error without calling its function:
 
@@ -431,7 +431,33 @@ result := validateOrder(input).
 	Bind(placeOrder)
 ```
 
-Generic methods remove the main ergonomic objection to using `Result` inside a multi-stage domain workflow. They do not require the rest of a Go program to adopt a new error convention. Small adapters preserve native pairs at repository, transport, SDK, and public API boundaries:
+This expression is compact because every stage is unary and context-free. `Map` expects `func(T) U`, and `Bind` expects `func(T) Result[U]`; the order functions have exactly those shapes. Generic methods remove the old type-changing limitation, but they do not make functions with additional dependencies compose automatically.
+
+Real Go commands often accept a context and call repositories or services:
+
+```go
+func validateOrder(context.Context, UnvalidatedOrder) Result[ValidatedOrder]
+func priceOrder(context.Context, ValidatedOrder) Result[PricedOrder]
+func placeOrder(context.Context, PricedOrder) Result[OrderPlaced]
+```
+
+Those signatures require an adapter at every step:
+
+```go
+result := validateOrder(ctx, input).
+	Bind(func(order ValidatedOrder) Result[PricedOrder] {
+		return priceOrder(ctx, order)
+	}).
+	Bind(func(order PricedOrder) Result[OrderPlaced] {
+		return placeOrder(ctx, order)
+	})
+```
+
+Capturing the context in a workflow value can remove the anonymous functions, and a type such as `func(context.Context) Result[T]` can represent deferred cancellable work. Both choices introduce an effect abstraction whose main purpose is adapting ordinary Go signatures. In a context-heavy command, explicit `(T, error)` checks usually leave I/O, cancellation, and control flow easier to see.
+
+I therefore start with ordinary pairs. A package-local, unexported `result[T]` earns a place when several context-free transformations already share the unary shape and the pipeline is visibly clearer than repeated error checks. Repetition across real package-specific uses is evidence for promoting it into shared infrastructure; the generic type alone is not.
+
+Small adapters can still preserve native pairs at repository, transport, SDK, and public API boundaries when a local pipeline does earn that abstraction:
 
 ```go
 func FromPair[T any](value T, err error) Result[T] { /* ... */ }
@@ -445,7 +471,7 @@ func placeOrderWorkflow(input UnvalidatedOrder) (OrderPlaced, error) {
 }
 ```
 
-`(T, error)` remains the convention understood by Go's ecosystem. `Result` is useful where several typed transformations benefit from keeping success and failure coupled, while `FromPair` and `Pair` keep that choice inside the workflow that benefits from it.
+`(T, error)` remains the convention understood by Go's ecosystem. `Result` is useful where several unary transformations benefit from keeping success and failure coupled, while `FromPair` and `Pair` keep that choice inside the package that benefits from it.
 
 ## Know where each guarantee lives
 
@@ -459,11 +485,11 @@ F# and Go can express many of the same domain decisions, but they enforce them a
 | Exhaustive handling   | Compiler warning, optionally an error | Static analyzer in required checks            |
 | Distinct primitives   | Single-case union                     | Defined type                                  |
 | Fallible construction | `Result`                              | `(T, error)`                                  |
-| Fallible composition  | `Result.map` and `Result.bind`        | Go 1.27 generic `Map` and `Bind` methods      |
+| Fallible composition  | `Result.map` and `Result.bind`        | `(T, error)` by default; local `Result` for unary pipelines |
 | Missing values        | `option`                              | Pointers, `nil`, or an explicit optional type |
 | Zero-value validity   | Constructed union cases               | Must be designed or checked explicitly        |
 
-This difference affects how strongly a model can support its claims. In F#, a private union case plus immutable data can make construction through the smart constructor the only path. In Go, package-local code and zero values remain part of the design. Constructors, unexported representation, validation at serialization boundaries, and required analyzers narrow those gaps without pretending they disappeared. Generic methods improve how typed workflows compose, but they do not change where these broader guarantees live.
+This difference affects how strongly a model can support its claims. In F#, a private union case plus immutable data can make construction through the smart constructor the only path. In Go, package-local code and zero values remain part of the design. Constructors, unexported representation, validation at serialization boundaries, and required analyzers narrow those gaps without pretending they disappeared. Generic methods improve unary typed pipelines, but they do not remove the context and dependencies carried by ordinary Go application workflows or change where these broader guarantees live.
 
 ## Start with the state space
 
