@@ -20,6 +20,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 - [modular-monolith](/projects/modular-monolith.md): An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#.
 - [cedar-dotnet](/projects/cedar-dotnet.md): A C# implementation of the Cedar policy language and authorization model.
 - [go-riblt](/projects/go-riblt.md): A generic Go implementation of rateless set reconciliation with keyed codecs, streaming cells, and explicit resource limits.
+- [go-merkletrie](/projects/go-merkletrie.md): An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
 - [arch-lint](/projects/arch-lint.md): A Go analyzer that turns architectural dependency rules into build-time checks.
 - [F#kYeah](/projects/fkyeah.md): An F# pipeline engine for multi-stage AI workflows described as executable graphs.
 - [enumstruct](/projects/enumstruct.md): A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.

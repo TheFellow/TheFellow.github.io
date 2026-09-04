@@ -22,6 +22,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 - [Expr for .NET](https://thefellow.github.io/projects/expr-dotnet.md): A safe .NET expression language with inspectable compilation and bounded execution.
 - [F#kYeah](https://thefellow.github.io/projects/fkyeah.md): An F# engine executing inspectable, resumable AI workflows from DOT graphs.
 - [fluid](https://thefellow.github.io/projects/fluid.md): An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics.
+- [go-merkletrie](https://thefellow.github.io/projects/go-merkletrie.md): A generic immutable trie with content-addressed storage and lazy snapshots.
 - [go-modular-monolith](https://thefellow.github.io/projects/go-modular-monolith.md): A Go reference app enforcing modular boundaries and cross-cutting concerns.
 - [go-riblt](https://thefellow.github.io/projects/go-riblt.md): A generic Go RIBLT library reconciling sets with difference-sized communication.
 - [modular-monolith](https://thefellow.github.io/projects/modular-monolith.md): An idiomatic .NET port preserving Mixology's observable application behavior.
@@ -46,6 +47,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 
 ## Notes
 
+- [Building a Persistent Merkle Trie in Go](https://thefellow.github.io/notes/building-a-persistent-merkle-trie-in-go.md): Canonical codecs and lazy snapshots build a persistent content-addressed trie.
 - [From Groups to ECDSA: Elliptic-Curve Cryptography from First Principles](https://thefellow.github.io/notes/elliptic-curve-cryptography-from-first-principles.md): A ground-up route through groups, finite fields, curves, and signatures.
 - [Go 1.27 Generic Methods and the Mixology Pipeline](https://thefellow.github.io/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): Go 1.27 generic methods simplify Mixology's typed middleware calls.
 - [Linux for Windows Brains](https://thefellow.github.io/notes/linux-for-windows-brains.md): Translate Windows concepts into practical Linux mental models.
