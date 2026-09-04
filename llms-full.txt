@@ -3495,11 +3495,12 @@ The result is a deliberately small boundary. The trie owns deterministic encodin
 
 ## Follow the executable path
 
-The repository includes three examples that build on one another:
+The repository includes four examples that build on one another:
 
 - `examples/basic` keeps historical in-memory versions alive.
 - `examples/custom-codec` defines a canonical application encoding and namespace.
 - `examples/lazy-storage` persists a generation, opens it lazily, stages changes, and publishes the resulting objects before its root.
+- `examples/content-addressed-files` uses the trie as a versioned index from logical paths to blob metadata. Identical file contents share one SHA-256-addressed blob, file bytes stay outside the trie's bounded values, and both the old and updated generations reopen lazily from disk.
 
 That progression captures the main idea behind the package. An immutable map becomes a persistent Merkle trie when canonical application bytes determine radix paths, copied paths become content-addressed objects, and one validated root names the resulting generation.
 
