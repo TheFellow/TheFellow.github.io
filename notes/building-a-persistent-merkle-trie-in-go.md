@@ -64,16 +64,13 @@ This prevents a subtle class of persistence error. Two stores may both contain `
 
 The trie hashes each canonical key together with the format ID. Each nibble of that SHA-256 digest selects one of 16 child slots, so an internal node is a 16-way radix branch. Leaves keep canonical key/value pairs sorted by digest and encoded key. Once a leaf would exceed either its entry-count or encoded-size bound, the builder groups its entries by the next nibble and recursively creates the required children.
 
-```text
-key bytes
-   |
-   v
-SHA-256(format, key)
-   |
-   +-- nibble 0 --> root slot
-   +-- nibble 1 --> child slot
-   +-- nibble 2 --> next child slot
-   `-- ...        --> bounded leaf
+```mermaid
+flowchart LR
+    K[Canonical key bytes] --> H["SHA-256<br/>(format ID, key)"]
+    H --> D[256-bit routing digest]
+    D -->|nibble 0| R[Root slot 0–15]
+    R -->|nibble 1| C[Child slot 0–15]
+    C -->|nibbles 2–63| L[Bounded leaf]
 ```
 
 Using the digest keeps routing independent of the key type and gives every path a fixed maximum of 64 four-bit steps. A leaf still stores and compares the canonical key bytes. If two distinct keys ever have the same complete routing digest, the operation returns `ErrCollision` instead of treating them as one entry.
@@ -84,13 +81,13 @@ The hard bounds are part of the format: keys are at most 4 KiB, values at most 2
 
 Immutability comes from path copying. A `Put` walks to one leaf, rebuilds that leaf, then rebuilds each ancestor on the path to the root. Every untouched child remains shared with the previous tree. `Delete` follows the same pattern and removes empty branches as it returns.
 
-```text
-generation A             generation B
-    root A                   root B
-    /   \                    /   \
-shared   old path  <--------+   new path
-subtree                         |
-                            new leaf
+```mermaid
+flowchart TB
+    RA[Generation A root] -->|reuses| S[Shared subtree]
+    RA --> O[Old path]
+    RB[Generation B root] -->|reuses| S
+    RB --> N[Copied path]
+    N --> L[New leaf]
 ```
 
 No published object is edited in place. That is why old `Tree` values remain safe to read and why persisting another generation only requires newly reachable objects. It also makes a root a natural generation handle.
