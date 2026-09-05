@@ -46,6 +46,7 @@ SUMMARIES = {
     "/projects/fluid/": ("Fluid simulation", "An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics."),
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
     "/series/mixology/": ("Mixology series", "An ordered path through Mixology's executable application architecture."),
+    "/talks/building-mixology/": ("Mixology deck", "A visual walkthrough of Mixology's executable modular architecture."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
     "/articles/preserving-truth-through-operational-degradation/": ("Honest degradation", "Preserve history while blocking knowingly degraded state promotion."),
