@@ -1,7 +1,7 @@
 ---
 title: "Bespoke Views over a Shared Application Boundary"
 date: 2026-08-01
-last_modified_at: 2026-09-05 12:00:00 -0700
+last_modified_at: 2026-09-05 12:05:00 -0700
 excerpt: "What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model."
 permalink: /articles/bespoke-views-over-a-shared-application-boundary/
 redirect_from: /guides/bespoke-views-over-a-shared-application-boundary/
@@ -78,7 +78,7 @@ Mixology avoids both outcomes. Its TUI view models live below each domain's `sur
 
 Rejecting a universal view model does not mean duplicating every screen. Mixology has two narrower kinds of presentation reuse.
 
-The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/readme.md) owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/gui/readme.md) owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. The smaller [`pkg/toolkits/cli`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/cli/readme.md) standardizes JSON input and output plus human-readable rendering. These packages know their presentation technology but not Drinks, Menus, or Orders.
+The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/readme.md) owns searchable list/detail composition, forms, dialogs, spinners, and layout in Bubble Tea terms. The deterministic Bubble Tea driver lives separately in [`pkg/testutil/tuitest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/tuitest), where it drains commands, sends keys and messages, and asserts rendered behavior without making test support part of the production toolkit. [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/gui/readme.md) owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, and dispatchers; [`pkg/testutil/fynetest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/fynetest) provides its deterministic presentation driver. The smaller [`pkg/toolkits/cli`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/cli/readme.md) standardizes JSON input and output plus human-readable rendering. These packages know their presentation technology but not Drinks, Menus, or Orders.
 
 The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
 
