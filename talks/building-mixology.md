@@ -68,12 +68,58 @@ The shortest wrong path fails.
 
     If a neighboring domain can import the command that “just does the thing,” ownership is only a suggestion.
 
+    ## Let types carry the distinctions they can
+
+      ### Generated entity IDs<code>DrinkID</code> and <code>IngredientID</code> share the same generated Cedar method shape without becoming interchangeable parameters.
+
+      ### Closed amount variantsAn unexported <code>isAmount</code> method limits <code>Amount</code> to volume and discrete quantities owned by the kernel.
+
+      ### Validated valuesCurrency, price, quantity, and tag parsers turn accepted external text into domain-shaped values.
+
+    Go still permits zero values and package-local construction. Constructors, decoding validation, and boundary checks carry the guarantees the type system cannot.
+    [Adjacent article: Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md)
+
     ## One path through the application
 
       SerializeTransactionLogging + MetricsTrackActivityUnitOfWork beginsload → authorize → handle → authorize resultdispatch events → record successcommit everything, or nothing
 
     Commands do not opt into transactions, authorization, events, or audit independently. The shared path owns the ordering.
     <aside class="notes">This is runtime and unwind order. NewChain lists nested middleware outside-in, so the source declaration reads differently around dispatch and successful activity.</aside>
+
+    ## Go 1.27 puts the operation on its owner
+
+      Before<code class="language-go">spec := middleware.CommandSpec[
+    Input, Output,
+]{
+    Action: authz.ActionCreate,
+    Load:   load,
+    Handle: m.commands.Create,
+}
+return middleware.RunCommand(
+    m.pipeline, ctx, spec,
+)</code></pre>
+      →
+      Go 1.27<pre><code class="language-go">m.pipeline.Command(
+    ctx,
+    authz.ActionCreate,
+    input,
+    m.commands.Create,
+)</code></pre><p class="accent">The configured pipeline is the obvious starting point.
+
+    The completed migration removed <code>RunCommand</code> and <code>CommandSpec</code>. Domain facades now enter through the pipeline methods directly.
+
+    ## Six typed entries, one middleware model
+
+      ### <code>Query</code>Load a Cedar entity, then authorize the result.
+### <code>QueryResource</code>Authorize a known resource around a non-entity result.
+### <code>PageQuery</code>Fill a page with authorized rows without leaking denied ones.
+
+      ### <code>Command</code>Authorize caller input and resulting state.
+### <code>LoadCommand</code>Load trusted state inside the transaction.
+### <code>LoadCommandActions</code>Derive transition-specific action requirements from loaded state.
+
+    This removed wrappers and specification ceremony. Transactions, authorization, events, audit, paging, and failure behavior did not change.
+    [Adjacent note: Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md)
 
     ## Compiler, generator, analyzer, test
     <table class="matrix"><thead><tr><th>Rule</th><th>Best carrier</th><th>Example</th></tr></thead><tbody>
@@ -84,6 +130,30 @@ The shortest wrong path fails.
       <tr><td>Composition completeness</td><td>Architecture test</td><td>Every domain is initialized by <code>app.New</code></td></tr>
       <tr><td>Business behavior</td><td>Integration test</td><td>Retirement rolls back as one operation</td></tr>
     </tbody></table>
+
+    ## Capture ownership instead of naming every module
+
+      ### Capture the imported target<code class="language-yaml"># imported target
+forbid:
+  - app/domains/{module}/internal/**
+
+# permitted importers reuse {module}
+except:
+  - app/domains/{module}
+  - app/domains/{module}/queries/**
+  - app/domains/{module}/handlers/**
+  - app/domains/{module}/internal/**</code></pre>
+      ∧
+      ### Importer must share ownership<p>The forbidden import captures <code>{module}</code>. Importer exceptions reuse that value, so Drinks cannot claim Ingredients’ private implementation.
+One rule covers every current and future domain.
+
+    ## Future adapters inherit the rule
+    **capture**<code>{module}</code> + <code>{surface}</code>→**forbid**concrete surface imports→**except**same module + surface→**fixture**CLI, TUI, GUI, and Web
+    ### Allowed fixture<code>drinks/surfaces/web/valid</code> imports its own <code>drinks/surfaces/web</code> implementation.
+### Rejected fixture<code>drinks/surfaces/web/invalid-gui</code> imports the GUI surface and domain-internal storage.
+
+    The same adversarial fixture separately rejects cross-domain surfaces, mismatched toolkits, and <code>main</code> imports across the current adapters. It proves the configuration, not merely a clean tree.
+    [Adjacent project: arch-lint](/projects/arch-lint.md) · <code>architecture/arch_lint_test.go</code>
 
     ## Spend complexity when the pressure appears
 
@@ -278,6 +348,16 @@ type Interaction struct {
 
     ## Reuse mechanics within a surface
     **CLI toolkit**JSON input and output, reflection-based tables**TUI toolkit**view contracts, list/detail, forms, dialogs, layout**GUI toolkit**shell, tables, semantic controls, executors, dispatchers**Domain surfaces**compose only the matching toolkit with domain workflows
+
+    ## Cross-cutting does not mean ownerless
+    **surface**desired tags→**RunTaggedMutation**validate + compose→**domain mutation**owned behavior+**Tags.Replace**owned association
+    domain result + complete tag set = one transaction
+    ### Application seamParticipates in a caller transaction or opens one shared unit of work.
+### Narrow contract<code>TaggableEntity</code> exposes only <code>EntityUID</code> and <code>SetTags</code>.
+### Bespoke interactionEach surface keeps parsing, confirmation, form state, and feedback native.
+
+    Invalid tags never start the mutation. A replacement failure rolls the domain change back with it.
+    [Adjacent project commentary: atomic tagged mutations](/projects/go-modular-monolith.md)
 
     ## Triangulation finds the durable seam
     ### If all three need itIt may belong in the application: dashboard aggregation, atomic tagged mutation, action projection.
