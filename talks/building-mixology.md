@@ -8,7 +8,7 @@ Source: [https://thefellow.github.io/talks/building-mixology/](https://thefellow
 
 - **~2 words:** Mixology deck
 - **~8 words:** A visual walkthrough of Mixology's executable modular architecture.
-- **Expanded:** A visual, chapter-by-chapter walkthrough of the architecture, domain workflows, presentation surfaces, authorization, filtering, and SQLite persistence in go-modular-monolith.
+- **Expanded:** A visual walkthrough of the foundational domain, module, middleware, event, audit, tagging, filtering, persistence, and presentation choices behind go-modular-monolith.
 
 ## Full content
 
@@ -40,7 +40,7 @@ The shortest wrong path fails.
 
       Ingredients<small>catalog + retirement</small>Drinks<small>recipes</small>Inventory<small>stock</small>Menus<small>curation + publication</small>Orders<small>lifecycle</small>Audit<small>append-only activity</small>Tagging<small>associations</small>
 
-    <i></i> public query<i class="event"></i> public event
+    <i></i> caller → public query owner<i class="event"></i> event owner ⇢ reacting owner
 
     ## The current trace
 
@@ -55,9 +55,9 @@ The shortest wrong path fails.
 
     All three enter the same application behavior and local SQLite database. Views are adapters, not alternate applications.
 
-    Chapter one<h1>Make architectural intent executable</h1>
-    Eleven lessons for turning design claims into properties the repository can defend.
-01
+    Foundation 1.1<h1>Shape modules around business ownership</h1>
+    A modular monolith begins with decisions, language, and collaboration contracts, not a folder template.
+1.1
 
     ## A boundary should resist the shortest path
 
@@ -67,6 +67,31 @@ The shortest wrong path fails.
       **Private work**<code>internal/commands</code> and <code>internal/dao</code> remain implementation details.
 
     If a neighboring domain can import the command that “just does the thing,” ownership is only a suggestion.
+
+    ## Start with seven different kinds of ownership
+    <table class="matrix"><thead><tr><th>Profile</th><th>Contexts</th><th>Why it exists</th></tr></thead><tbody><tr><td>Operational</td><td>Ingredients, Drinks, Inventory, Menus, Orders</td><td>business state, commands, queries, events, persistence, policy</td></tr><tr><td>Activity</td><td>Audit</td><td>append-only evidence written by the operation pipeline</td></tr><tr><td>Cross-cutting domain</td><td>Tagging</td><td>owned associations over registered operational targets</td></tr></tbody></table>
+    Consistency does not require identical package trees. Audit and Tagging use smaller profiles because their responsibilities differ.
+
+    ## A module has a public edge and a private center
+    **<code>module.go</code>**application-facing facade chooses a typed operation path**<code>models / queries / events</code>**deliberate vocabulary for callers and neighboring domains**<code>handlers</code>**consume public peer facts and mutate only owned state**<code>internal/commands + internal/dao</code>**business decisions and persistence stay private
+    Queries answer another domain's question. Events announce a fact. Neither exposes the command that owns the decision.
+
+    ## Composition is ordinary, visible Go
+    **Foundation**Audit + Tagging schemas**Ports**tag repository + empty registry**Evidence**separate audit writer**Pipeline**dispatcher + writer callback**Operational modules**rows + tag targets**Public facades**Tagging + Audit
+    ### No import side effectsPrivate SQLite rows register during construction. Invalid or missing registration fails at startup or in architecture tests.
+### No second manifest<code>TestEveryDomainIsComposed</code> treats domain directories as the source of truth and verifies <code>app.New</code>.
+
+    The private Audit writer exists before the public Audit facade, breaking the construction cycle between pipeline activity and authorized audit reads.
+
+    ## Application state is not request state
+    ### <code>App</code>Store and public modules whose private composition retains the configured pipeline. No actor identity.
++### <code>Session</code>Binds a persistent TUI or GUI to an authenticated base context, then creates a fresh operation context every time.
+
+    **base context**actor + logger + metrics→**<code>Session.Context()</code>**fresh mutable state→**operation**events + activity + attributes→**discard**nothing leaks forward
+    The CLI starts fresh per invocation. Persistent clients reuse authentication, never accumulated operation state.
+
+  Foundation 1.2<h1>Let types carry cheap invariants</h1>Use the compiler for distinctions it can defend, and domain behavior for transitions it cannot.
+1.2
 
     ## Let types carry the distinctions they can
 
@@ -78,6 +103,61 @@ The shortest wrong path fails.
 
     Go still permits zero values and package-local construction. Constructors, decoding validation, and boundary checks carry the guarantees the type system cannot.
     [Adjacent article: Making Illegal States Unrepresentable in Go](/articles/making-illegal-states-unrepresentable-in-go.md)
+
+    ## Identity should reveal the entity
+    ### Raw string<code class="language-go">func Load(id string)
+
+Load(orderID) // compiles</code></pre><p class="muted">Meaning survives only in names and review.
+→### Generated ID<code class="language-go">func Load(id DrinkID)
+
+Load(orderID) // compiler error</code></pre><p class="accent">Parsing, prefixes, Cedar identity, and JSON behavior stay consistent.
+
+    Six entity ID types share generated mechanics without becoming interchangeable values.
+
+    ## Model absence, variants, and concurrency explicitly
+    ### Closed variants<code>Amount</code> accepts only kernel-owned volume or discrete quantity implementations.
+### Intentional absence<code>optional.Value[T]</code> distinguishes absent from present, including a deliberately present zero value.
+### Opaque revisionMutable public models round-trip the store token. Surfaces never compare or increment it.
+
+    Make invalid combinations expensive to express, then validate every decoding boundary.
+
+    ## Capability types remove forbidden moves
+    ### <code>middleware.Context</code>Transaction, principal, activity, <code>AddEvent</code>, and <code>TouchEntity</code>.
+Commands may originate owned facts.
+⊃### <code>HandlerContext</code>Transaction, principal, and <code>TouchEntity</code>. No event accumulator.
+Reactions cannot cascade.
+
+    The most reliable prohibition is an API that cannot express the forbidden operation.
+
+  Foundation 1.3<h1>Make errors part of the application protocol</h1>Domains choose meaning once. Every present and future edge chooses only how to render it.
+1.3
+
+    ## Failure kind is not presentation
+    **Domain / store**typed failure→**<code>pkg/errors</code>**semantic kind→**CLI / TUI / GUI**native feedback→**HTTP / gRPC**future mapping
+    Lower layers never choose exit codes, colors, dialogs, HTTP status, or gRPC codes.
+
+    ## Six meanings cover the application boundary
+    <table class="matrix"><thead><tr><th>Kind</th><th>Meaning</th><th>Typical response</th></tr></thead><tbody><tr><td>Invalid</td><td>the request is malformed</td><td>fix input</td></tr><tr><td>NotFound</td><td>the resource does not exist</td><td>choose another</td></tr><tr><td>Permission</td><td>the actor is not allowed</td><td>hide or deny</td></tr><tr><td>Conflict</td><td>state collides or revision is stale</td><td>reload or rename</td></tr><tr><td>FailedPrecondition</td><td>valid request, invalid current state</td><td>resolve prerequisite</td></tr><tr><td>Internal</td><td>invariant or dependency failed</td><td>safe message + diagnostics</td></tr></tbody></table>
+
+    ## Diagnostics and safe text are different data
+    ### For operators<code class="language-go">errors.Internalf(
+  "load inventory: %w", err,
+)</code></pre><p><code>Error()</code> retains the cause for logs and wrapping.
+∥### For people<code class="language-go">err.WithUserMessage(
+  "Inventory is temporarily unavailable",
+)</code></pre><p>Internal detail is generic unless explicitly made safe.
+
+    Unknown errors do not inherit this safety guarantee. Classify unexpected failures before a presentation boundary.
+
+    ## Generate the repetitive family, enforce one vocabulary
+    ### GeneratedTyped constructors, classifiers, metadata, and matching test assertions.
+### Wrapped<code>%w</code>, <code>Is</code>, and <code>As</code> preserve semantic inspection through context.
+### Enforced<code>arch-lint</code> rejects direct standard-library <code>errors</code> imports outside <code>pkg/errors</code>.
+
+    One immutable kind survives every layer without turning the core into a transport library.
+
+  Foundation 1.4<h1>Give every operation one trustworthy path</h1>Commands and queries should state intent while the pipeline owns the guarantees around them.
+1.4
 
     ## One path through the application
 
@@ -121,6 +201,29 @@ return middleware.RunCommand(
     This removed wrappers and specification ceremony. Transactions, authorization, events, audit, paging, and failure behavior did not change.
     [Adjacent note: Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md)
 
+    ## The chain runs inward, then proves the result outward
+    ### EnterSerialize, enrich logs, start metrics and activity, open the unit of work, load trusted state, authorize, handle.
+↩### UnwindAuthorize result, dispatch facts, record successful activity, commit, observe final duration and error.
+
+    Declaration order and completion order differ. Moving one middleware can move work outside the transaction or hide an unwind failure from telemetry.
+
+    ## The unit of work is the consistency membrane
+    domain mutation + prepared event reactions + touched entities + successful audit
+    ### SuccessEvery write and the durable activity record commit together.
+One business operation.
+or### Any failureResult authorization, handler, audit, or storage error rolls the complete write graph back.
+No partial truth.
+
+    A caller-supplied transaction retains commit and rollback ownership. Ordinary domain calls use the middleware-managed SQLite transaction.
+
+    ## Load trusted state inside the transaction
+    **ID + intent**small request→**<code>LoadCommand</code>**current persisted value→**authorize**before + after→**commit**revision still current
+    ### Why not trust a UI model?It may be stale, incomplete, or shaped for display rather than authority.
+### Why authorize twice?A policy may allow editing a draft without allowing the transition to produce a published resource.
+
+  Foundation 1.5<h1>Make the architecture executable</h1>The compiler provides privacy. Generators, analyzers, and adversarial tests defend the dependency graph.
+1.5
+
     ## Compiler, generator, analyzer, test
     <table class="matrix"><thead><tr><th>Rule</th><th>Best carrier</th><th>Example</th></tr></thead><tbody>
       <tr><td>Coarse package privacy</td><td>Go compiler</td><td><code>internal</code> blocks callers outside the owning tree</td></tr>
@@ -161,9 +264,94 @@ One rule covers every current and future domain.
 
     The sequence matters. Each mechanism pays rent by solving a problem the working application has already made concrete.
 
-    Chapter two<h1>Turn calls into boundaries</h1>
+  Foundation 1.6<h1>Make authorization part of the domain</h1>Policy belongs beside the resource language, and enforcement belongs on every trustworthy operation path.
+1.6
+
+    ## Each domain owns its policy vocabulary
+    **Domain model**complete business state→**Generated authz model**Cedar shape→**Principal + action**operation intent→**Cedar evaluator**permit or deny
+    The shared evaluator knows Cedar. Ingredients, Menus, and Orders decide what their resources and actions mean.
+
+    ## One decision appears at four scales
+    ### WorkspaceCan this actor discover and enter the domain?
+### CollectionWhich rows and counts may become visible?
+### EntityMay this exact resource be read or selected?
+### ActionMay this exact resource transition now?
+
+    Navigation, summaries, lists, and mutations are all application reads. None gets a policy exemption for being convenient UI.
+
+    ## Fill the visible page, not the storage page
+    **stable candidates**filter + hydrate→**authorize each**deny disappears→**continue scanning**until N visible→**look ahead**safe cursor
+    ### Permission denialExpected list behavior. Omit the entity and keep scanning.
+### Evaluation or storage failureNot a denial. Fail the query instead of returning a believable partial result.
+
+    ## Counts can leak what lists conceal
+    ### Unsafe<code>SELECT COUNT(*)</code> reports hidden entities even when the list omits them.
+→### Current contractCount the same authorized page stream the actor is allowed to observe.
+
+    Authorization changes information architecture, not just button state.
+
+    ## Projection guides. Commands enforce.
+    ### Presentation projectionCombines permission with durable prerequisites so a view can hide denied actions and explain unavailable ones.
+≠### Authoritative commandReloads current state, repeats authorization, and checks invariants inside the write transaction.
+
+    A stale screen may offer an action that just became invalid. That is a normal race, not authority granted by the UI.
+
+  Foundation 1.7<h1>Observe the operation, not random functions</h1>Logs diagnose one execution. Metrics describe the population. Neither replaces durable business activity.
+1.7
+
+    ## Three lenses answer three questions
+    ### Structured logsWhat happened during this execution, with actor, action, resource, duration, and diagnostic error?
+### Bounded metricsHow often, how slowly, and how unsuccessfully do operation classes behave?
+### Audit activityWho attempted which business action, against what, and what else changed?
+
+    One middleware boundary provides consistent meaning without scattering instrumentation through domain code.
+
+    ## Context accumulates useful log meaning
+    **Entrypoint**logger + actor→**Pipeline**Cedar action→**Command**primary resource→**Unwind**duration + final error
+    ### Deliberate levelsPermission denial is informational; query failures warn; command failures error.
+### Fresh scopeEnriched attributes live only for one operation and cannot bleed into the next session call.
+
+    ## Metric labels must stay boring
+    ### Current instrumentsCommand/query totals use action + result. Error counters and durations use action. Store read/write durations have no labels.
+Small, stable cardinality.
+≠### Never labelsEntity IDs, user filter text, error messages, tag values, or arbitrary resource names.
+Unbounded and operationally expensive.
+
+    Authorization and event metric names are reserved but not currently emitted. The deck distinguishes available vocabulary from actual instrumentation.
+
+    ## Libraries expose a contract; executables own lifecycle
+    **Domain + store**record through a tiny <code>Metrics</code> interface**<code>pkg/telemetry</code>**no-op, memory, OTEL, and Prometheus-backed implementations**<code>main/<surface></code>**address, HTTP server, startup, and shutdown**Runtime constraint**concurrent local surfaces need distinct metrics ports
+
+  Foundation 1.8<h1>Treat auditing as a domain</h1>An audit trail is durable business evidence with transaction semantics, policy, filtering, and its own read model.
+1.8
+
+    ## An activity is more than a log line
+    ### Who + whatPrincipal, Cedar action, and primary resource identify the attempted operation.
+### When + outcomeStart, completion, success, and diagnostic error preserve what happened.
+### Blast radiusDeduplicated touched entity IDs reveal every indirect resource changed by handlers.
+
+    Audit is append-only evidence. It is not diagnostic logging and it is not a replayable domain event stream.
+
+    ## Success and failure take different transaction paths
+    ### Successful commandmutation + handlers + success auditIf recording fails, the business operation rolls back.
+∥### Failed managed commandrollback firstThen persist the failed attempt in a separate managed write.
+
+    <code>recordSuccessfulActivity</code> runs inside the unit of work. <code>TrackActivity</code> records a managed failure only after rollback. Caller-owned transactions keep failure activity under the caller's decision.
+
+    ## Touches turn fan-out into explainable history
+    **Ingredients**retire catalog item→**Drinks**touch recipes→**Inventory**touch stock→**Menus + Orders**touch dependents
+    One originating activity can answer “what changed because of this decision?” without pretending every reaction was a separate user command.
+
+    ## Failure to record has an explicit policy
+    <table class="matrix"><thead><tr><th>Situation</th><th>Audit behavior</th><th>Returned result</th></tr></thead><tbody><tr><td>successful command, success audit fails</td><td>inside UoW</td><td>internal error; command rolls back</td></tr><tr><td>failed command, failure audit succeeds</td><td>after managed rollback</td><td>original command error</td></tr><tr><td>failed command, failure audit also fails</td><td>recording failure is logged</td><td>original command error remains authoritative</td></tr></tbody></table>
+
+    ## The read side is still an application boundary
+    **Audit module**list, count, entity history, and actor activity**Query contract**action, principal, entity, time window, typed expression, cursor**Pipeline**Cedar authorization and permission-safe paging**Surfaces**CLI, TUI, and GUI adapt the same append-only evidence
+    The system that records activity automatically does not grant everyone permission to inspect it.
+
+    Foundation 2.1<h1>Turn calls into bounded event fan-out</h1>
     Ingredient retirement changes four domains without giving Ingredients four collaborators.
-02
+2.1
 
     ## The tempting implementation
     <code class="language-go">func (m *Ingredients) Retire(ctx Context, id ID) error {
@@ -200,12 +388,125 @@ func (h *IngredientDeleted) Handle(
 ) error // apply the owned reaction</code></pre>
     <code>HandlerContext</code> has transaction, principal, and <code>TouchEntity</code>. It deliberately has no <code>AddEvent</code>.
 
+    ## Prepare every reader before mutating anything
+    **fresh handlers**one event-local receiver each→**optional <code>Handling</code>**all snapshots finish┃**every <code>Handle</code>**apply owned reactions→**commit**one outcome
+    <code>Handling</code> is a generator-recognized method convention, not a shared Go interface. Correctness never depends on generated handler order.
+
+    ## No cascades is defended twice
+    ### Capability boundary<p><code>HandlerContext</code> omits <code>AddEvent</code>, so ordinary handlers cannot enqueue another fact.
++### Runtime boundary<code>DispatchEvents</code> clones the original event slice before delivery, so accidental later additions are not dispatched.
+
+    Every event has a bounded, reviewable leaf fan-out. Multi-step time-spanning work deserves an explicit workflow.
+
     ## Package rules preserve the dependency direction
     <b>×</b><code>commands-emit-own-domain-events</code><b>×</b><code>handlers-no-commands</code><b>×</b><code>handlers-no-modules</code><b>×</b><code>queries-no-commands</code>
     The event changes the dependency direction. The analyzer keeps it changed.
 
-  Chapter three<h1>Preserve truth through degradation</h1><p class="lede">A system can remain operational without pretending its state is healthy.
-03
+  Foundation 2.2<h1>Give cross-cutting tags an owner</h1>Shared vocabulary does not require ownerless persistence, global meaning, or private-domain reach-through.
+2.2
+
+    ## Tagging is a bounded context
+    ### Kernel value<code>tag.Tag</code> owns canonical key/value parsing, validation, ordering, and formatting.
+→### Tagging domainOwns polymorphic associations, authorized mutations, discovery, summary, and target registration.
+
+    A tag may influence filtering, presentation, or Cedar ABAC. Its business meaning remains with the policy and domain that interpret it.
+
+    ## The registry reverses the dependency
+    **Tagging**target registry⇄**Operational domain provides**load complete Cedar state**Operational domain provides**bulk active-target check**Operational domain provides**get, tag, and untag action IDs**Tagging provides**one narrow association repository port
+    Tagging never imports Ingredients, Drinks, Inventory, Menus, or Orders models and private DAOs.
+
+    ## Hydration stays with the entity owner
+    **Domain DAO**load owned rows→**tag repository**batch associations→**Domain model**complete tags→**Cedar + filter**evaluate full state
+    The association store is shared infrastructure. The complete Ingredient or Drink is still assembled by its owner before authorization and exact filtering.
+
+    ## Replace is one intent with dynamic authority
+    <table class="matrix"><thead><tr><th>Difference</th><th>Required action</th><th>Recorded activity</th></tr></thead><tbody><tr><td>add or change values</td><td>tag</td><td rowspan="3">one stable tag operation</td></tr><tr><td>remove keys</td><td>untag</td></tr><tr><td>mixed replacement</td><td>tag + untag</td></tr></tbody></table>
+    <code>LoadCommandActions</code> derives the complete Cedar action set from current tags and the desired complete set.
+
+    ## Compose domain change and tag change atomically
+    non-nil tag intent: <code>RunTaggedMutation</code> owns or joins one shared transaction
+    **validate tags**before write→**domain command**normal pipeline+**<code>Tags.Replace</code>**normal pipeline→**commit**both or neither
+    ### <code>nil</code> desired setPreserve existing tags and run only the domain mutation.
+### Non-nil empty setExplicitly clear every tag as part of the same application operation.
+
+    The domain command and <code>Tags.Replace</code> remain two normal pipeline commands with two audit activities, committed atomically together.
+
+    ## Discovery is its own authorized workflow
+    ### ShowFind active entity references for an exact tag or every value of a key.
+### SummaryAggregate canonical tags across active registered entity types.
+### PolicyTagging-owned Cedar actions govern discovery; referenced entity authorization is not silently replayed.
+
+    Inactive targets are excluded from discovery through each owner's registered bulk check. Stale association rows are not silently deleted.
+
+  Foundation 2.3<h1>Give people and programs one filter language</h1>Own exact expression semantics above storage, authorization, and every presentation surface.
+2.3
+
+    ## The schema is a public domain contract
+    **typed filter view**stable field names→**Expr parser + checker**accepted syntax→**owned tree**stable semantics→**surface help**fields + examples
+    The filter view need not mirror a SQLite row or returned model. It can expose nested and hydrated values without leaking persistence.
+
+    ## Borrow a compiler, keep ownership
+    ### <code>Source</code>The trimmed expression a person supplied.
+### <code>String</code>Canonical syntax for display and reparsing.
+### <code>Tree</code>Mixology's stable node model for integrations and SQL planning.
+
+    Expr optimization is deliberately disabled. Expr parses, checks, and executes; Mixology owns the restricted language and pushdown plan.
+
+    ## One expression, two execution stages
+    **checked expression**exact contract→**safe SQL pushdown**candidate reduction→**hydrate**tags + derived values→**<code>Match</code>**authoritative result
+    <code>ApplySQLPushdowns</code> returns candidates, never proof. Every operational DAO evaluates the complete hydrated view afterward.
+
+    ## Push down only what the full expression requires
+    ### Conjunction<code>A && tags.contains("x")</code>
+Persisted <code>A</code> is required even when tags need memory evaluation.
+Push down A safely.
+≠### Disjunction<code>A || tags.contains("x")</code>
+A row failing <code>A</code> may still match after tag hydration.
+Do not push down A alone.
+
+    ## Common constraints survive alternatives
+    <code class="language-text">(category == "spirit" && tags contains "featured")
+||
+(category == "spirit" && name.contains("gin"))</code></pre>
+    **both branches require**<code>category == "spirit"</code>→**SQL candidate set**spirits only→**exact Match**full OR expression
+    Optimization is a theorem about preserved truth, not a list of AST nodes the translator happens to understand.
+
+    ## Filtering and authorization compose in order
+    **parse once**typed invalid on error→**filter + hydrate**domain semantics→**authorize each**elide denies→**page**fill visible count
+    Audit can use direct <code>ApplySQL</code> because its filter view comes from one row. Operational domains use staged hydration.
+    <p class="source">[Adjacent article: Typed Filtering over SQLite](/articles/typed-filtering-over-sqlite.md)
+
+  Foundation 2.4<h1>Make persistence a replaceable boundary</h1>The bstore-to-SQLite migration proved which contracts belonged to the application and which belonged to an engine.
+2.4
+
+    ## Preserve the contract, replace the engine
+    <table class="matrix"><thead><tr><th>Preserved</th><th>Rebuilt</th></tr></thead><tbody><tr><td>domain ownership and public module contracts</td><td>DAO implementations, rows, and hydration adapters</td></tr><tr><td>models, commands, queries, policies, events</td><td>schema registration and row conversion</td></tr><tr><td>transaction participation</td><td>query builder and cursor predicates</td></tr><tr><td>typed errors and filter semantics</td><td>SQLite mapping and safe pushdowns</td></tr><tr><td>surface-observable behavior</td><td>change monitoring and concurrency coordination</td></tr></tbody></table>
+
+    ## SQLite stays below domain persistence
+    **Domain DAO**owned queries, row conversion, hydration**Typed store API**<code>Register</code>, <code>Get</code>, <code>Insert</code>, <code>Update</code>, <code>Query</code>**Unit of work**shared transaction carried by operation context**modernc SQLite**WAL, constraints, revisions, migration ledger, data version
+
+    ## Several processes can share one local truth
+    **CLI**short write→**SQLite WAL**one writer, many readers←**TUI**persistent reader↔**GUI**persistent reader
+    ### Process coordinationBusy timeout and immediate transactions make writer contention explicit.
+### Application coordinationKeep commands short; never hold a transaction while waiting for user input.
+
+    ## Revisions turn stale writes into typed conflicts
+    read rev 7→other client writes rev 8→update WHERE rev = 7⤫Conflict
+    Public mutable models carry an opaque revision. The store performs the atomic comparison and increment.
+
+    ## Invalidation carries no domain truth
+    **SQLite <code>data_version</code>**external commit observed→**<code>Signals</code>**coalesced edge+**<code>Epoch</code>**level guard→**ordinary query**reload authorized state
+    The epoch closes lost-wakeup gaps around coalesced signals. Neither carries records or bypasses application policy, filters, and request-order guards.
+
+    ## Treat the file format honestly
+    ### Migration ledgerOrdered migrations advance deliberately; a database from a newer schema is rejected.
+### RegistrationExplicit model schemas fail early; imports do not mutate global persistence state.
+### ErrorsConstraints and stale revisions become application kinds, not leaked driver strings.
+
+    [Adjacent article: Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md)
+
+  Domain workshop 3.1<h1>Preserve truth through degradation</h1>A system can remain operational without pretending its state is healthy.
+3.1
 
     ## Retirement is a business decision
     <table class="matrix"><thead><tr><th>Reference</th><th>No replacement</th><th>Permanent replacement</th></tr></thead><tbody><tr><td>Required recipe component</td><td class="maybe">keep visible, review required</td><td class="yes">rewrite compatible future recipe</td></tr><tr><td>Optional component</td><td class="yes">remove from future recipe</td><td class="yes">rewrite when compatible</td></tr><tr><td>Accepted order snapshot</td><td class="no">block, preserve snapshot</td><td class="no">block, preserve snapshot</td></tr><tr><td>Published menu item</td><td class="maybe" colspan="2">preserve curation and recalculate current availability</td></tr></tbody></table>
@@ -235,8 +536,8 @@ History can be blocked, never laundered.
     ### BlockersInvalid canonical state, unavailable items, or temporary substitution.
 ### WarningsOperational concerns such as low stock that deserve visibility but not a false invariant.
 
-  Chapter four<h1>Grow a reciprocal workflow</h1>planned workshop<br>Add Procurement only when the new business loop teaches something the current seven contexts cannot.
-04
+  Domain workshop 3.2<h1>Grow a reciprocal workflow</h1>planned workshop<br>Add Procurement only when the new business loop teaches something the current seven contexts cannot.
+3.2
 
     ## The next build: stock creates demand
     **Inventory**stock becomes low⇢**Procurement**record demand→**Explicit operation**draft purchase order→**Supplier**ships goods⇢**Inventory**records receipt
@@ -258,8 +559,8 @@ Name the workflow.
 
     Add an outbox when delivery must survive a transaction boundary. Do not use it to decorate a transaction that is already atomic.
 
-  Chapter five<h1>Build a reusable MVVM toolkit for the terminal</h1>Bubble Tea supplies the runtime. Mixology owns the view-model contract.
-05
+  Surfaces 4.1<h1>Build a reusable MVVM toolkit for the terminal</h1>Bubble Tea supplies the runtime. Mixology owns the view-model contract.
+4.1
 
     ## Adapt the pattern to the runtime
     ### Reusable MVVM seamA screen owns presentation state and commands behind a testable view-model contract.
@@ -314,8 +615,8 @@ type Interaction struct {
     ## Tests follow the ownership
     pure presentation model testscomponent update and rendering testsdomain surface testsreal Bubble Tea program driverroot navigation and input ownershipcross-surface persisted behavior
 
-  Chapter six<h1>Adapt the MVVM toolkit to retained widgets</h1>Fyne changes the interaction model, so the reusable mechanics change with it.
-06
+  Surfaces 4.2<h1>Adapt the MVVM toolkit to retained widgets</h1>Fyne changes the interaction model, so the reusable mechanics change with it.
+4.2
 
     ## Start from the application seam
     **<code>main/gui</code>**database, actor, logs, application, session, native lifecycle**domain GUI surfaces**presenters and views shaped for each bounded context**<code>pkg/toolkits/gui</code>**shell, forms, tables, semantic controls, dialogs, executors**Fyne runtime**retained widgets, callbacks, windows, platform event loop
@@ -347,8 +648,8 @@ type Interaction struct {
 
     A third interface is useful precisely because it refuses to fit abstractions built around the first two.
 
-  Chapter seven<h1>Use the third surface as an architecture test</h1>Difference creates pressure. Pressure reveals misplaced ownership.
-07
+  Surfaces 4.3<h1>Use the third surface as an architecture test</h1>Difference creates pressure. Pressure reveals misplaced ownership.
+4.3
 
     ## Parity is a union, not a porting checklist
     ### What every surface must preserveApplication capabilities, authorization, invariants, error meaning, atomicity, and persisted results.
@@ -367,8 +668,8 @@ type Interaction struct {
 3### Route findingsName the owning boundary and add an executable rule.
 4### Repair inwardImprove shared seams, then update every surface.
 
-  Chapter eight<h1>Share behavior, keep views bespoke</h1>Consistency lives in contracts and outcomes, not identical presentation internals.
-08
+  Surfaces 4.4<h1>Share behavior, keep views bespoke</h1>Consistency lives in contracts and outcomes, not identical presentation internals.
+4.4
 
     ## Each runtime has a different unit of interaction
     ### CLIInvocation, flags, stdin, stdout, exit status. State ends when the process ends.
@@ -402,8 +703,8 @@ type Interaction struct {
 
     Share meaning. Specialize interaction. Test equality at the application boundary.
 
-  Chapter nine<h1>Test native desktop behavior headlessly</h1>Confidence comes from a ladder of distinct evidence, not one giant simulated UI test.
-09
+  Surfaces 4.5<h1>Test native desktop behavior headlessly</h1>Confidence comes from a ladder of distinct evidence, not one giant simulated UI test.
+4.5
 
     ## The evidence ladder
     pure state + presenter with fake executor and dispatcherreal Fyne controls in the in-memory driverdialogs, composed shell, and close orderingfresh-process and cross-surface behaviorrace detector and target compilationpixels and manual accessibility evidence
@@ -423,57 +724,8 @@ type Interaction struct {
     ## Pixels are different evidence
     <table class="matrix"><thead><tr><th>Question</th><th>Evidence</th></tr></thead><tbody><tr><td>Did the presenter compute the right state?</td><td>pure model and presenter tests</td></tr><tr><td>Did the widget wire that state correctly?</td><td>virtual window and semantic control tests</td></tr><tr><td>Does the composed process close safely?</td><td>lifecycle and fresh-process tests</td></tr><tr><td>Does it look right?</td><td>targeted screenshots and human review</td></tr><tr><td>Does assistive technology work?</td><td>manual platform protocol, not inferred from pixels</td></tr></tbody></table>
 
-  Chapter ten<h1>Authorization is part of navigation</h1>A policy decision changes what can be discovered, counted, selected, and attempted.
-10
-
-    ## One decision appears at four scales
-    ### WorkspaceCan the actor discover this area?
-### AggregateCan a count reveal hidden records?
-### RowWhich results survive authorization?
-### ActionWhat may happen to this resource now?
-
-    A route is a promise of an authorized read path, not a hard-coded item in a global menu.
-
-    ## Lists filter; failures still fail
-    **DAO**stable cursor stream→**hydrate**complete domain model→**Cedar**authorize each row→**page**fill with visible rows
-    ### Permission denialOmit the row and continue until the page is full or input ends.
-### Evaluation failureReturn the error. Infrastructure trouble is not “no results.”
-
-    ## Denied is different from unavailable
-    <table class="matrix"><thead><tr><th>State</th><th>Presentation</th><th>Meaning</th></tr></thead><tbody><tr><td>Denied</td><td class="no">omit action</td><td>The actor lacks permission.</td></tr><tr><td>Authorized + blocked</td><td class="maybe">visible, disabled, explained</td><td>A domain prerequisite is unmet.</td></tr><tr><td>Authorized + ready</td><td class="yes">visible, enabled</td><td>The projected state permits an attempt.</td></tr></tbody></table>
-    The command re-authorizes and re-checks current state inside the transaction, then commits mutation, events, and audit atomically.
-
-    ## Counts are queries too
-    A dashboard that hides rows but shows the total still leaks the hidden rows.
-    ### Wrong<code>SELECT count(*)</code>, then authorize the widget.
-The number already escaped.
-→### CorrectCompute the count after row-level authorization, or expose unavailable when the aggregate cannot be authorized.
-No hidden existence leak.
-
-    authorized and empty = 0 · denied = omitted · operational failure = unavailable
-
-  Chapter eleven<h1>Give people and programs one filter language</h1>Typed expressions remain the contract. SQLite is an execution detail that may optimize only what stays exact.
-11
-
-    ## Borrow a compiler, own the contract
-    **text**user expression→**parse**AST→**type check**domain environment→**plan**pushdown + residual→**evaluate**exact semantics
-    The public language stays above persistence. A domain exposes fields and types, not JSON paths or SQL fragments.
-
-    ## Push down only what remains true
-    <table class="matrix"><thead><tr><th>Expression shape</th><th>SQLite candidate plan</th><th>Exact evaluation</th></tr></thead><tbody><tr><td>persisted equality / range</td><td class="yes">push down</td><td>complete compiled expression</td></tr><tr><td>set membership</td><td class="yes">push down</td><td>complete compiled expression</td></tr><tr><td>safe conjunction</td><td class="yes">push safe terms</td><td>complete compiled expression</td></tr><tr><td>unsafe disjunction</td><td class="no">do not partially narrow</td><td>complete compiled expression</td></tr><tr><td>derived or hydrated field</td><td class="no">cannot push</td><td>hydrate, then evaluate all</td></tr></tbody></table>
-
-    ## Partial <code>AND</code> can be safe. Partial <code>OR</code> cannot.
-    ### <code>A AND B</code>If SQLite safely selects every possible <code>A</code>, residual <code>B</code> can narrow the candidates.
-No true result is lost.
-≠### <code>A OR B</code>Selecting only pushable <code>A</code> would discard rows that satisfy residual <code>B</code>.
-Semantics change.
-
-    ## Hydrate before exact evaluation
-    **SQL**candidate rows→**domain DAO**hydrate related state→**typed filter**exact predicate→**authorization**visible page
-    Concrete DAOs remain concrete because only the owning domain knows how a stored row becomes a complete model.
-
-  Chapter twelve<h1>Project actions, not widgets</h1>Share durable action meaning across interfaces without sharing runtime state.
-12
+  Surfaces 4.6<h1>Project actions, not widgets</h1>Share durable action meaning across interfaces without sharing runtime state.
+4.6
 
     ## Give each state one meaning
     ### HiddenAuthorization denied. Do not advertise an operation the actor cannot perform.
@@ -500,45 +752,11 @@ Semantics change.
     load→authorize + project→state changes→command re-checks
     A polished control state is not a lock. Current authorization, revision, and invariants are checked inside the write transaction.
 
-  Chapter thirteen<h1>Replace persistence without replacing the app</h1>The bstore-to-SQLite migration tested whether the store was truly a boundary.
-13
-
-    ## Preserve the contract, replace the engine
-    ### Application keepsTyped queries, transactions, errors, revisions, domain-owned DAOs, middleware ordering, and observable behavior.
-⇄### Store changesSQLite records, migrations, JSON-field plans, WAL, busy handling, immediate writes, and connection-local invalidation.
-
-    ## SQLite without SQL in every domain
-    **Domain model**owns meaning, validation, and hydrated relationships**Private row**declares ID, revision, JSON data, uniqueness, and expression indexes**Typed store query**equality, ranges, membership, ordering, cursor, pushdown**SQLite**generic record table plus domain-declared indexes and migrations
-
-    ## Several processes, one local file
-    ### WALReaders continue while another connection commits.
-### 10 s busy timeoutWriters wait for the single write slot.
-### Immediate writesAvoid deferred read-to-write upgrade races.
-### Local filesystemOne machine, never a shared network filesystem.
-
-    Concurrency is explicit, not magical. SQLite serializes writes, and application transactions stay short.
-
-    ## Stale writes fail at the boundary
-    **read**revision 7→**another process**updates to 8→**UPDATE**WHERE revision = 7→**typed conflict**no overwrite
-    <code class="language-sql">UPDATE records
-SET data = ?, revision = revision + 1
-WHERE model = ? AND id = ? AND revision = ?;</code></pre>
-
-    ## Invalidation means “query again”
-    **pinned connection**PRAGMA data_version→**lossy signal**coalesced edge→**persistent client**refresh request→**application query**auth + hydrate
-    The monitor carries no record payload and is not a durable event stream. Multiple commits may collapse into one signal.
-    <p class="source">Rolled-back writes do not signal. Reconnect emits one invalidation because commits may have been missed.
-
-    ## Treat the file format honestly
-    A bstore database is not a SQLite database.
-    ### Disposable dataReseed into a fresh SQLite file.
-### Valuable dataExport with the previous version, import into a fresh database, verify, and keep the backup.
-
   Build path<h1>Walk the pressure, not the package tree</h1>Each chapter starts with a decision the business forces, then follows the mechanism that makes it durable.
 →
 
     ## The recording arc
-    **Premise**ownership + executable rules**Pressure**retirement + degradation**Coordination**transactional fan-out**Interfaces**TUI + GUI + parity**Policy**navigation + actions**Queries**filters + authorization**Persistence**SQLite + concurrency
+    **Ownership**contexts + module contracts**Protocol**types + errors + policy**Execution**pipeline + transactions**Evidence**logs + metrics + audit**Coordination**events + tags + filters**Pressure**degradation + workflows**Surfaces**CLI + TUI + GUI
 
     ## Keep one code trace in frame
     <code class="language-text">main/<surface>

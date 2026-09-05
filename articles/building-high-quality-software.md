@@ -167,8 +167,12 @@ each domain's lifecycle without importing private models or persistence.
 That seam has to hold on reads as well as writes. Domain DAOs hydrate tags for a candidate set in
 one type-scoped query and within the same transaction, avoiding both inconsistent snapshots and an
 N+1 query per result. Complete-set replacements calculate whether the change needs tag permission,
-untag permission, or both, then commit the domain mutation and tag delta atomically through the
-ordinary command pipeline.
+untag permission, or both. When a surface supplies a complete tag set alongside a domain mutation,
+the application-level `RunTaggedMutation` validates the set first, joins or opens an outer
+transaction, runs the public domain mutation, and then calls `Tags.Replace` with the same middleware
+context. Both operations retain their ordinary command-pipeline authorization, audit, and entity
+touch behavior. A failure in either one rolls back the domain change, tag replacement, and their
+audit effects together.
 
 Cross-domain discovery makes the ownership choice especially visible. `tags show` finds active
 entities carrying one exact tag or any value for a key, while `tags summary` aggregates active use
@@ -184,7 +188,7 @@ application reserves neither key; policy gives the metadata meaning where meanin
 
 This lesson will follow seeded tags through canonicalization, centralized persistence,
 domain-owned hydration and lifecycle checks, Cedar authorization, and discovery and editing in
-both the CLI and TUI. Cross-surface end-to-end tests assert equivalent persisted results rather
+the CLI, TUI, and GUI. Cross-surface end-to-end tests assert equivalent persisted results rather
 than merely similar output. The broader question is how to build a feature that crosses every
 boundary while making each intentional disclosure and ownership decision explicit.
 

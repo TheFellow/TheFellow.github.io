@@ -55,7 +55,9 @@ The filtering view is not necessarily the stored row or the returned domain mode
 
 ## Borrow a compiler, own the contract
 
-Expr provides the parser, type checker, optimizer, and virtual machine. Mixology compiles against each domain's concrete view, turns the accepted syntax into an application-owned tree, and retains the original source, canonical text, typed schema, and compiled program.
+Expr provides the parser, type checker, and virtual machine. Mixology compiles against each domain's concrete view, turns the checked syntax into an application-owned tree, and retains the original source, canonical text, typed schema, and compiled program.
+
+The compile call deliberately includes `expr.Optimize(false)`. Mixology derives its canonical form and owned tree from Expr's checked AST, so allowing Expr to fold or rearrange that AST would also let a dependency's optimizer redefine the structure used for public formatting and SQL planning. Disabling that optimization preserves the expression the application accepted. Mixology's own restricted syntax, AST patches, `Node` conversion, and pushdown planner then decide which transformations are valid for this contract.
 
 ```go
 type Node struct {
@@ -67,7 +69,7 @@ type Node struct {
 }
 ```
 
-Those representations serve different jobs. The canonical form gives logs, saved filters, tests, and future SDKs a stable spelling. The application-owned tree supports planning without coupling persistence code to Expr internals. The compiled program evaluates the complete predicate against a typed view.
+Those representations serve different jobs. The canonical form gives logs, saved filters, tests, and future SDKs a stable spelling. The application-owned tree supports planning without coupling persistence code to Expr internals or inheriting Expr optimizer behavior. The compiled program evaluates the complete predicate against a typed view.
 
 ```mermaid
 flowchart LR

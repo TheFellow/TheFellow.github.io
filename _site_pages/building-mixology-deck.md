@@ -3,7 +3,7 @@ title: "Building Mixology: The Slide Deck"
 date: 2026-09-05
 last_modified_at: 2026-09-05
 permalink: /talks/building-mixology/
-excerpt: "A visual, chapter-by-chapter walkthrough of the architecture, domain workflows, presentation surfaces, authorization, filtering, and SQLite persistence in go-modular-monolith."
+excerpt: "A visual walkthrough of the foundational domain, module, middleware, event, audit, tagging, filtering, persistence, and presentation choices behind go-modular-monolith."
 layout: deck
 author_profile: false
 search: false
@@ -38,10 +38,10 @@ search: false
   <section>
     <h2>One deployable, seven owners</h2>
     <div class="domain-map">
-      <svg class="domain-lines" viewBox="0 0 1000 450" aria-hidden="true"><defs><marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#63e6be"/></marker></defs><line x1="180" y1="220" x2="320" y2="90"/><line x1="180" y1="230" x2="320" y2="350"/><line x1="390" y1="90" x2="570" y2="90"/><line x1="390" y1="350" x2="790" y2="230" class="event"/><line x1="630" y1="90" x2="790" y2="200"/><line x1="790" y1="245" x2="390" y2="350" class="event"/><line x1="460" y1="220" x2="785" y2="220"/><line x1="460" y1="240" x2="590" y2="350"/></svg>
+      <svg class="domain-lines" viewBox="0 0 1000 450" aria-hidden="true"><defs><marker id="arrowhead" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><polygon points="0 0, 7 3.5, 0 7" fill="#63e6be"/></marker></defs><line x1="320" y1="90" x2="180" y2="220"/><line x1="320" y1="350" x2="180" y2="230"/><line x1="570" y1="90" x2="390" y2="90"/><line x1="790" y1="200" x2="630" y2="90"/><line x1="180" y1="220" x2="570" y2="90" class="event"/><line x1="180" y1="230" x2="790" y2="220" class="event"/><line x1="390" y1="350" x2="790" y2="230" class="event"/><line x1="790" y1="245" x2="390" y2="350" class="event"/></svg>
       <div class="domain ingredients">Ingredients<small>catalog + retirement</small></div><div class="domain drinks">Drinks<small>recipes</small></div><div class="domain inventory">Inventory<small>stock</small></div><div class="domain menus">Menus<small>curation + publication</small></div><div class="domain orders">Orders<small>lifecycle</small></div><div class="domain audit">Audit<small>append-only activity</small></div><div class="domain tagging">Tagging<small>associations</small></div>
     </div>
-    <div class="legend"><span><i></i> public query</span><span><i class="event"></i> public event</span></div>
+    <div class="legend"><span><i></i> caller → public query owner</span><span><i class="event"></i> event owner ⇢ reacting owner</span></div>
   </section>
 
   <section>
@@ -61,8 +61,8 @@ search: false
 
 <section>
   <section class="centered section-slide">
-    <div class="eyebrow">Chapter one</div><h1>Make architectural intent executable</h1>
-    <p class="lede">Eleven lessons for turning design claims into properties the repository can defend.</p><div class="section-no">01</div>
+    <div class="eyebrow">Foundation 1.1</div><h1>Shape modules around business ownership</h1>
+    <p class="lede">A modular monolith begins with decisions, language, and collaboration contracts, not a folder template.</p><div class="section-no">1.1</div>
   </section>
 
   <section>
@@ -77,6 +77,37 @@ search: false
   </section>
 
   <section>
+    <h2>Start with seven different kinds of ownership</h2>
+    <table class="matrix"><thead><tr><th>Profile</th><th>Contexts</th><th>Why it exists</th></tr></thead><tbody><tr><td>Operational</td><td>Ingredients, Drinks, Inventory, Menus, Orders</td><td>business state, commands, queries, events, persistence, policy</td></tr><tr><td>Activity</td><td>Audit</td><td>append-only evidence written by the operation pipeline</td></tr><tr><td>Cross-cutting domain</td><td>Tagging</td><td>owned associations over registered operational targets</td></tr></tbody></table>
+    <div class="callout">Consistency does not require identical package trees. Audit and Tagging use smaller profiles because their responsibilities differ.</div>
+  </section>
+
+  <section>
+    <h2>A module has a public edge and a private center</h2>
+    <div class="layers"><div class="layer"><strong><code>module.go</code></strong><span>application-facing facade chooses a typed operation path</span></div><div class="layer"><strong><code>models / queries / events</code></strong><span>deliberate vocabulary for callers and neighboring domains</span></div><div class="layer"><strong><code>handlers</code></strong><span>consume public peer facts and mutate only owned state</span></div><div class="layer private"><strong><code>internal/commands + internal/dao</code></strong><span>business decisions and persistence stay private</span></div></div>
+    <div class="callout">Queries answer another domain's question. Events announce a fact. Neither exposes the command that owns the decision.</div>
+  </section>
+
+  <section>
+    <h2>Composition is ordinary, visible Go</h2>
+    <div class="timeline"><div class="step"><strong>Foundation</strong><span>Audit + Tagging schemas</span></div><div class="step"><strong>Ports</strong><span>tag repository + empty registry</span></div><div class="step"><strong>Evidence</strong><span>separate audit writer</span></div><div class="step"><strong>Pipeline</strong><span>dispatcher + writer callback</span></div><div class="step"><strong>Operational modules</strong><span>rows + tag targets</span></div><div class="step"><strong>Public facades</strong><span>Tagging + Audit</span></div></div>
+    <div class="cards two"><div class="card"><h3>No import side effects</h3><p>Private SQLite rows register during construction. Invalid or missing registration fails at startup or in architecture tests.</p></div><div class="card"><h3>No second manifest</h3><p><code>TestEveryDomainIsComposed</code> treats domain directories as the source of truth and verifies <code>app.New</code>.</p></div></div>
+    <div class="callout">The private Audit writer exists before the public Audit facade, breaking the construction cycle between pipeline activity and authorized audit reads.</div>
+  </section>
+
+  <section>
+    <h2>Application state is not request state</h2>
+    <div class="split"><div class="side"><h3><code>App</code></h3><p>Store and public modules whose private composition retains the configured pipeline. No actor identity.</p></div><div class="bridge">+</div><div class="side"><h3><code>Session</code></h3><p>Binds a persistent TUI or GUI to an authenticated base context, then creates a fresh operation context every time.</p></div></div>
+    <div class="flow"><div class="node"><strong>base context</strong>actor + logger + metrics</div><div class="arrow">→</div><div class="node"><strong><code>Session.Context()</code></strong>fresh mutable state</div><div class="arrow">→</div><div class="node"><strong>operation</strong>events + activity + attributes</div><div class="arrow">→</div><div class="node"><strong>discard</strong>nothing leaks forward</div></div>
+    <div class="callout">The CLI starts fresh per invocation. Persistent clients reuse authentication, never accumulated operation state.</div>
+  </section>
+
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.2</div><h1>Let types carry cheap invariants</h1><p class="lede">Use the compiler for distinctions it can defend, and domain behavior for transitions it cannot.</p><div class="section-no">1.2</div></section>
+
+  <section>
     <h2>Let types carry the distinctions they can</h2>
     <div class="cards">
       <div class="card"><h3>Generated entity IDs</h3><p><code>DrinkID</code> and <code>IngredientID</code> share the same generated Cedar method shape without becoming interchangeable parameters.</p></div>
@@ -86,6 +117,63 @@ search: false
     <div class="callout">Go still permits zero values and package-local construction. Constructors, decoding validation, and boundary checks carry the guarantees the type system cannot.</div>
     <p class="source"><a href="/articles/making-illegal-states-unrepresentable-in-go/">Adjacent article: Making Illegal States Unrepresentable in Go</a></p>
   </section>
+
+  <section>
+    <h2>Identity should reveal the entity</h2>
+    <div class="split"><div class="side"><h3>Raw string</h3><pre><code class="language-go">func Load(id string)
+
+Load(orderID) // compiles</code></pre><p class="muted">Meaning survives only in names and review.</p></div><div class="bridge">→</div><div class="side"><h3>Generated ID</h3><pre><code class="language-go">func Load(id DrinkID)
+
+Load(orderID) // compiler error</code></pre><p class="accent">Parsing, prefixes, Cedar identity, and JSON behavior stay consistent.</p></div></div>
+    <div class="callout">Six entity ID types share generated mechanics without becoming interchangeable values.</div>
+  </section>
+
+  <section>
+    <h2>Model absence, variants, and concurrency explicitly</h2>
+    <div class="cards"><div class="card"><h3>Closed variants</h3><p><code>Amount</code> accepts only kernel-owned volume or discrete quantity implementations.</p></div><div class="card"><h3>Intentional absence</h3><p><code>optional.Value[T]</code> distinguishes absent from present, including a deliberately present zero value.</p></div><div class="card"><h3>Opaque revision</h3><p>Mutable public models round-trip the store token. Surfaces never compare or increment it.</p></div></div>
+    <div class="big-statement">Make invalid combinations expensive to express, then validate every decoding boundary.</div>
+  </section>
+
+  <section>
+    <h2>Capability types remove forbidden moves</h2>
+    <div class="split"><div class="side"><h3><code>middleware.Context</code></h3><p>Transaction, principal, activity, <code>AddEvent</code>, and <code>TouchEntity</code>.</p><p class="accent">Commands may originate owned facts.</p></div><div class="bridge">⊃</div><div class="side"><h3><code>HandlerContext</code></h3><p>Transaction, principal, and <code>TouchEntity</code>. No event accumulator.</p><p class="gold">Reactions cannot cascade.</p></div></div>
+    <div class="callout">The most reliable prohibition is an API that cannot express the forbidden operation.</div>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.3</div><h1>Make errors part of the application protocol</h1><p class="lede">Domains choose meaning once. Every present and future edge chooses only how to render it.</p><div class="section-no">1.3</div></section>
+
+  <section>
+    <h2>Failure kind is not presentation</h2>
+    <div class="flow"><div class="node"><strong>Domain / store</strong>typed failure</div><div class="arrow">→</div><div class="node"><strong><code>pkg/errors</code></strong>semantic kind</div><div class="arrow">→</div><div class="node"><strong>CLI / TUI / GUI</strong>native feedback</div><div class="arrow">→</div><div class="node"><strong>HTTP / gRPC</strong>future mapping</div></div>
+    <div class="callout">Lower layers never choose exit codes, colors, dialogs, HTTP status, or gRPC codes.</div>
+  </section>
+
+  <section>
+    <h2>Six meanings cover the application boundary</h2>
+    <table class="matrix"><thead><tr><th>Kind</th><th>Meaning</th><th>Typical response</th></tr></thead><tbody><tr><td>Invalid</td><td>the request is malformed</td><td>fix input</td></tr><tr><td>NotFound</td><td>the resource does not exist</td><td>choose another</td></tr><tr><td>Permission</td><td>the actor is not allowed</td><td>hide or deny</td></tr><tr><td>Conflict</td><td>state collides or revision is stale</td><td>reload or rename</td></tr><tr><td>FailedPrecondition</td><td>valid request, invalid current state</td><td>resolve prerequisite</td></tr><tr><td>Internal</td><td>invariant or dependency failed</td><td>safe message + diagnostics</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>Diagnostics and safe text are different data</h2>
+    <div class="split code-split"><div class="side"><h3>For operators</h3><pre><code class="language-go">errors.Internalf(
+  "load inventory: %w", err,
+)</code></pre><p><code>Error()</code> retains the cause for logs and wrapping.</p></div><div class="bridge">∥</div><div class="side"><h3>For people</h3><pre><code class="language-go">err.WithUserMessage(
+  "Inventory is temporarily unavailable",
+)</code></pre><p>Internal detail is generic unless explicitly made safe.</p></div></div>
+    <div class="callout">Unknown errors do not inherit this safety guarantee. Classify unexpected failures before a presentation boundary.</div>
+  </section>
+
+  <section>
+    <h2>Generate the repetitive family, enforce one vocabulary</h2>
+    <div class="cards"><div class="card"><h3>Generated</h3><p>Typed constructors, classifiers, metadata, and matching test assertions.</p></div><div class="card"><h3>Wrapped</h3><p><code>%w</code>, <code>Is</code>, and <code>As</code> preserve semantic inspection through context.</p></div><div class="card"><h3>Enforced</h3><p><code>arch-lint</code> rejects direct standard-library <code>errors</code> imports outside <code>pkg/errors</code>.</p></div></div>
+    <div class="big-statement">One immutable kind survives every layer without turning the core into a transport library.</div>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.4</div><h1>Give every operation one trustworthy path</h1><p class="lede">Commands and queries should state intent while the pipeline owns the guarantees around them.</p><div class="section-no">1.4</div></section>
 
   <section>
     <h2>One path through the application</h2>
@@ -129,6 +217,30 @@ return middleware.RunCommand(
     <div class="callout">This removed wrappers and specification ceremony. Transactions, authorization, events, audit, paging, and failure behavior did not change.</div>
     <p class="source"><a href="/notes/go-1-27-generic-methods-and-the-mixology-pipeline/">Adjacent note: Go 1.27 Generic Methods and the Mixology Pipeline</a></p>
   </section>
+
+  <section>
+    <h2>The chain runs inward, then proves the result outward</h2>
+    <div class="split"><div class="side"><h3>Enter</h3><p>Serialize, enrich logs, start metrics and activity, open the unit of work, load trusted state, authorize, handle.</p></div><div class="bridge">↩</div><div class="side"><h3>Unwind</h3><p>Authorize result, dispatch facts, record successful activity, commit, observe final duration and error.</p></div></div>
+    <div class="callout">Declaration order and completion order differ. Moving one middleware can move work outside the transaction or hide an unwind failure from telemetry.</div>
+  </section>
+
+  <section>
+    <h2>The unit of work is the consistency membrane</h2>
+    <div class="transaction">domain mutation + prepared event reactions + touched entities + successful audit</div>
+    <div class="split"><div class="side"><h3>Success</h3><p>Every write and the durable activity record commit together.</p><p class="accent">One business operation.</p></div><div class="bridge">or</div><div class="side"><h3>Any failure</h3><p>Result authorization, handler, audit, or storage error rolls the complete write graph back.</p><p class="gold">No partial truth.</p></div></div>
+    <div class="callout">A caller-supplied transaction retains commit and rollback ownership. Ordinary domain calls use the middleware-managed SQLite transaction.</div>
+  </section>
+
+  <section>
+    <h2>Load trusted state inside the transaction</h2>
+    <div class="flow"><div class="node"><strong>ID + intent</strong>small request</div><div class="arrow">→</div><div class="node"><strong><code>LoadCommand</code></strong>current persisted value</div><div class="arrow">→</div><div class="node"><strong>authorize</strong>before + after</div><div class="arrow">→</div><div class="node"><strong>commit</strong>revision still current</div></div>
+    <div class="cards two"><div class="card"><h3>Why not trust a UI model?</h3><p>It may be stale, incomplete, or shaped for display rather than authority.</p></div><div class="card"><h3>Why authorize twice?</h3><p>A policy may allow editing a draft without allowing the transition to produce a published resource.</p></div></div>
+  </section>
+
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.5</div><h1>Make the architecture executable</h1><p class="lede">The compiler provides privacy. Generators, analyzers, and adversarial tests defend the dependency graph.</p><div class="section-no">1.5</div></section>
 
   <section>
     <h2>Compiler, generator, analyzer, test</h2>
@@ -178,9 +290,103 @@ except:
 </section>
 
 <section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.6</div><h1>Make authorization part of the domain</h1><p class="lede">Policy belongs beside the resource language, and enforcement belongs on every trustworthy operation path.</p><div class="section-no">1.6</div></section>
+
+  <section>
+    <h2>Each domain owns its policy vocabulary</h2>
+    <div class="flow"><div class="node"><strong>Domain model</strong>complete business state</div><div class="arrow">→</div><div class="node"><strong>Generated authz model</strong>Cedar shape</div><div class="arrow">→</div><div class="node"><strong>Principal + action</strong>operation intent</div><div class="arrow">→</div><div class="node"><strong>Cedar evaluator</strong>permit or deny</div></div>
+    <div class="callout">The shared evaluator knows Cedar. Ingredients, Menus, and Orders decide what their resources and actions mean.</div>
+  </section>
+
+  <section>
+    <h2>One decision appears at four scales</h2>
+    <div class="cards four"><div class="card"><h3>Workspace</h3><p>Can this actor discover and enter the domain?</p></div><div class="card"><h3>Collection</h3><p>Which rows and counts may become visible?</p></div><div class="card"><h3>Entity</h3><p>May this exact resource be read or selected?</p></div><div class="card"><h3>Action</h3><p>May this exact resource transition now?</p></div></div>
+    <div class="callout">Navigation, summaries, lists, and mutations are all application reads. None gets a policy exemption for being convenient UI.</div>
+  </section>
+
+  <section>
+    <h2>Fill the visible page, not the storage page</h2>
+    <div class="flow"><div class="node"><strong>stable candidates</strong>filter + hydrate</div><div class="arrow">→</div><div class="node"><strong>authorize each</strong>deny disappears</div><div class="arrow">→</div><div class="node"><strong>continue scanning</strong>until N visible</div><div class="arrow">→</div><div class="node"><strong>look ahead</strong>safe cursor</div></div>
+    <div class="cards two"><div class="card"><h3>Permission denial</h3><p>Expected list behavior. Omit the entity and keep scanning.</p></div><div class="card stop"><h3>Evaluation or storage failure</h3><p>Not a denial. Fail the query instead of returning a believable partial result.</p></div></div>
+  </section>
+
+  <section>
+    <h2>Counts can leak what lists conceal</h2>
+    <div class="split"><div class="side"><h3>Unsafe</h3><p><code>SELECT COUNT(*)</code> reports hidden entities even when the list omits them.</p></div><div class="bridge">→</div><div class="side"><h3>Current contract</h3><p>Count the same authorized page stream the actor is allowed to observe.</p></div></div>
+    <div class="big-statement">Authorization changes information architecture, not just button state.</div>
+  </section>
+
+  <section>
+    <h2>Projection guides. Commands enforce.</h2>
+    <div class="split"><div class="side"><h3>Presentation projection</h3><p>Combines permission with durable prerequisites so a view can hide denied actions and explain unavailable ones.</p></div><div class="bridge">≠</div><div class="side"><h3>Authoritative command</h3><p>Reloads current state, repeats authorization, and checks invariants inside the write transaction.</p></div></div>
+    <div class="callout">A stale screen may offer an action that just became invalid. That is a normal race, not authority granted by the UI.</div>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.7</div><h1>Observe the operation, not random functions</h1><p class="lede">Logs diagnose one execution. Metrics describe the population. Neither replaces durable business activity.</p><div class="section-no">1.7</div></section>
+
+  <section>
+    <h2>Three lenses answer three questions</h2>
+    <div class="cards"><div class="card"><h3>Structured logs</h3><p>What happened during this execution, with actor, action, resource, duration, and diagnostic error?</p></div><div class="card"><h3>Bounded metrics</h3><p>How often, how slowly, and how unsuccessfully do operation classes behave?</p></div><div class="card"><h3>Audit activity</h3><p>Who attempted which business action, against what, and what else changed?</p></div></div>
+    <div class="callout">One middleware boundary provides consistent meaning without scattering instrumentation through domain code.</div>
+  </section>
+
+  <section>
+    <h2>Context accumulates useful log meaning</h2>
+    <div class="flow"><div class="node"><strong>Entrypoint</strong>logger + actor</div><div class="arrow">→</div><div class="node"><strong>Pipeline</strong>Cedar action</div><div class="arrow">→</div><div class="node"><strong>Command</strong>primary resource</div><div class="arrow">→</div><div class="node"><strong>Unwind</strong>duration + final error</div></div>
+    <div class="cards two"><div class="card"><h3>Deliberate levels</h3><p>Permission denial is informational; query failures warn; command failures error.</p></div><div class="card"><h3>Fresh scope</h3><p>Enriched attributes live only for one operation and cannot bleed into the next session call.</p></div></div>
+  </section>
+
+  <section>
+    <h2>Metric labels must stay boring</h2>
+    <div class="split"><div class="side"><h3>Current instruments</h3><p>Command/query totals use action + result. Error counters and durations use action. Store read/write durations have no labels.</p><p class="accent">Small, stable cardinality.</p></div><div class="bridge">≠</div><div class="side"><h3>Never labels</h3><p>Entity IDs, user filter text, error messages, tag values, or arbitrary resource names.</p><p class="gold">Unbounded and operationally expensive.</p></div></div>
+    <div class="callout">Authorization and event metric names are reserved but not currently emitted. The deck distinguishes available vocabulary from actual instrumentation.</div>
+  </section>
+
+  <section>
+    <h2>Libraries expose a contract; executables own lifecycle</h2>
+    <div class="layers"><div class="layer"><strong>Domain + store</strong><span>record through a tiny <code>Metrics</code> interface</span></div><div class="layer"><strong><code>pkg/telemetry</code></strong><span>no-op, memory, OTEL, and Prometheus-backed implementations</span></div><div class="layer"><strong><code>main/&lt;surface&gt;</code></strong><span>address, HTTP server, startup, and shutdown</span></div><div class="layer private"><strong>Runtime constraint</strong><span>concurrent local surfaces need distinct metrics ports</span></div></div>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 1.8</div><h1>Treat auditing as a domain</h1><p class="lede">An audit trail is durable business evidence with transaction semantics, policy, filtering, and its own read model.</p><div class="section-no">1.8</div></section>
+
+  <section>
+    <h2>An activity is more than a log line</h2>
+    <div class="cards"><div class="card"><h3>Who + what</h3><p>Principal, Cedar action, and primary resource identify the attempted operation.</p></div><div class="card"><h3>When + outcome</h3><p>Start, completion, success, and diagnostic error preserve what happened.</p></div><div class="card"><h3>Blast radius</h3><p>Deduplicated touched entity IDs reveal every indirect resource changed by handlers.</p></div></div>
+    <div class="callout">Audit is append-only evidence. It is not diagnostic logging and it is not a replayable domain event stream.</div>
+  </section>
+
+  <section>
+    <h2>Success and failure take different transaction paths</h2>
+    <div class="split"><div class="side"><h3>Successful command</h3><div class="transaction">mutation + handlers + success audit</div><p>If recording fails, the business operation rolls back.</p></div><div class="bridge">∥</div><div class="side"><h3>Failed managed command</h3><div class="transaction">rollback first</div><p>Then persist the failed attempt in a separate managed write.</p></div></div>
+    <div class="callout"><code>recordSuccessfulActivity</code> runs inside the unit of work. <code>TrackActivity</code> records a managed failure only after rollback. Caller-owned transactions keep failure activity under the caller's decision.</div>
+  </section>
+
+  <section>
+    <h2>Touches turn fan-out into explainable history</h2>
+    <div class="flow"><div class="node"><strong>Ingredients</strong>retire catalog item</div><div class="arrow">→</div><div class="node"><strong>Drinks</strong>touch recipes</div><div class="arrow">→</div><div class="node"><strong>Inventory</strong>touch stock</div><div class="arrow">→</div><div class="node"><strong>Menus + Orders</strong>touch dependents</div></div>
+    <div class="big-statement">One originating activity can answer “what changed because of this decision?” without pretending every reaction was a separate user command.</div>
+  </section>
+
+  <section>
+    <h2>Failure to record has an explicit policy</h2>
+    <table class="matrix"><thead><tr><th>Situation</th><th>Audit behavior</th><th>Returned result</th></tr></thead><tbody><tr><td>successful command, success audit fails</td><td>inside UoW</td><td>internal error; command rolls back</td></tr><tr><td>failed command, failure audit succeeds</td><td>after managed rollback</td><td>original command error</td></tr><tr><td>failed command, failure audit also fails</td><td>recording failure is logged</td><td>original command error remains authoritative</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>The read side is still an application boundary</h2>
+    <div class="layers"><div class="layer"><strong>Audit module</strong><span>list, count, entity history, and actor activity</span></div><div class="layer"><strong>Query contract</strong><span>action, principal, entity, time window, typed expression, cursor</span></div><div class="layer"><strong>Pipeline</strong><span>Cedar authorization and permission-safe paging</span></div><div class="layer private"><strong>Surfaces</strong><span>CLI, TUI, and GUI adapt the same append-only evidence</span></div></div>
+    <div class="callout">The system that records activity automatically does not grant everyone permission to inspect it.</div>
+  </section>
+</section>
+
+<section>
   <section class="centered section-slide">
-    <div class="eyebrow">Chapter two</div><h1>Turn calls into boundaries</h1>
-    <p class="lede">Ingredient retirement changes four domains without giving Ingredients four collaborators.</p><div class="section-no">02</div>
+    <div class="eyebrow">Foundation 2.1</div><h1>Turn calls into bounded event fan-out</h1>
+    <p class="lede">Ingredient retirement changes four domains without giving Ingredients four collaborators.</p><div class="section-no">2.1</div>
   </section>
 
   <section>
@@ -223,6 +429,18 @@ func (h *IngredientDeleted) Handle(
   </section>
 
   <section>
+    <h2>Prepare every reader before mutating anything</h2>
+    <div class="flow"><div class="node"><strong>fresh handlers</strong>one event-local receiver each</div><div class="arrow">→</div><div class="node"><strong>optional <code>Handling</code></strong>all snapshots finish</div><div class="arrow">┃</div><div class="node"><strong>every <code>Handle</code></strong>apply owned reactions</div><div class="arrow">→</div><div class="node"><strong>commit</strong>one outcome</div></div>
+    <div class="callout"><code>Handling</code> is a generator-recognized method convention, not a shared Go interface. Correctness never depends on generated handler order.</div>
+  </section>
+
+  <section>
+    <h2>No cascades is defended twice</h2>
+    <div class="split"><div class="side"><h3>Capability boundary</h3><p><code>HandlerContext</code> omits <code>AddEvent</code>, so ordinary handlers cannot enqueue another fact.</p></div><div class="bridge">+</div><div class="side"><h3>Runtime boundary</h3><p><code>DispatchEvents</code> clones the original event slice before delivery, so accidental later additions are not dispatched.</p></div></div>
+    <div class="big-statement">Every event has a bounded, reviewable leaf fan-out. Multi-step time-spanning work deserves an explicit workflow.</div>
+  </section>
+
+  <section>
     <h2>Package rules preserve the dependency direction</h2>
     <div class="rule-list"><div class="rule"><b>×</b><span><code>commands-emit-own-domain-events</code></span></div><div class="rule"><b>×</b><span><code>handlers-no-commands</code></span></div><div class="rule"><b>×</b><span><code>handlers-no-modules</code></span></div><div class="rule"><b>×</b><span><code>queries-no-commands</code></span></div></div>
     <div class="big-statement">The event changes the dependency direction. The analyzer keeps it changed.</div>
@@ -230,7 +448,130 @@ func (h *IngredientDeleted) Handle(
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter three</div><h1>Preserve truth through degradation</h1><p class="lede">A system can remain operational without pretending its state is healthy.</p><div class="section-no">03</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 2.2</div><h1>Give cross-cutting tags an owner</h1><p class="lede">Shared vocabulary does not require ownerless persistence, global meaning, or private-domain reach-through.</p><div class="section-no">2.2</div></section>
+
+  <section>
+    <h2>Tagging is a bounded context</h2>
+    <div class="split"><div class="side"><h3>Kernel value</h3><p><code>tag.Tag</code> owns canonical key/value parsing, validation, ordering, and formatting.</p></div><div class="bridge">→</div><div class="side"><h3>Tagging domain</h3><p>Owns polymorphic associations, authorized mutations, discovery, summary, and target registration.</p></div></div>
+    <div class="callout">A tag may influence filtering, presentation, or Cedar ABAC. Its business meaning remains with the policy and domain that interpret it.</div>
+  </section>
+
+  <section>
+    <h2>The registry reverses the dependency</h2>
+    <div class="fanout"><div class="event-source"><strong>Tagging</strong><span class="small">target registry</span></div><div class="event-bus">⇄</div><div class="handler-stack"><div class="handler"><strong>Operational domain provides</strong>load complete Cedar state</div><div class="handler"><strong>Operational domain provides</strong>bulk active-target check</div><div class="handler"><strong>Operational domain provides</strong>get, tag, and untag action IDs</div><div class="handler"><strong>Tagging provides</strong>one narrow association repository port</div></div></div>
+    <div class="callout">Tagging never imports Ingredients, Drinks, Inventory, Menus, or Orders models and private DAOs.</div>
+  </section>
+
+  <section>
+    <h2>Hydration stays with the entity owner</h2>
+    <div class="flow"><div class="node"><strong>Domain DAO</strong>load owned rows</div><div class="arrow">→</div><div class="node"><strong>tag repository</strong>batch associations</div><div class="arrow">→</div><div class="node"><strong>Domain model</strong>complete tags</div><div class="arrow">→</div><div class="node"><strong>Cedar + filter</strong>evaluate full state</div></div>
+    <div class="callout">The association store is shared infrastructure. The complete Ingredient or Drink is still assembled by its owner before authorization and exact filtering.</div>
+  </section>
+
+  <section>
+    <h2>Replace is one intent with dynamic authority</h2>
+    <table class="matrix"><thead><tr><th>Difference</th><th>Required action</th><th>Recorded activity</th></tr></thead><tbody><tr><td>add or change values</td><td>tag</td><td rowspan="3">one stable tag operation</td></tr><tr><td>remove keys</td><td>untag</td></tr><tr><td>mixed replacement</td><td>tag + untag</td></tr></tbody></table>
+    <div class="callout"><code>LoadCommandActions</code> derives the complete Cedar action set from current tags and the desired complete set.</div>
+  </section>
+
+  <section>
+    <h2>Compose domain change and tag change atomically</h2>
+    <div class="transaction">non-nil tag intent: <code>RunTaggedMutation</code> owns or joins one shared transaction</div>
+    <div class="flow"><div class="node"><strong>validate tags</strong>before write</div><div class="arrow">→</div><div class="node"><strong>domain command</strong>normal pipeline</div><div class="arrow">+</div><div class="node"><strong><code>Tags.Replace</code></strong>normal pipeline</div><div class="arrow">→</div><div class="node"><strong>commit</strong>both or neither</div></div>
+    <div class="cards two"><div class="card"><h3><code>nil</code> desired set</h3><p>Preserve existing tags and run only the domain mutation.</p></div><div class="card"><h3>Non-nil empty set</h3><p>Explicitly clear every tag as part of the same application operation.</p></div></div>
+    <div class="callout">The domain command and <code>Tags.Replace</code> remain two normal pipeline commands with two audit activities, committed atomically together.</div>
+  </section>
+
+  <section>
+    <h2>Discovery is its own authorized workflow</h2>
+    <div class="cards"><div class="card"><h3>Show</h3><p>Find active entity references for an exact tag or every value of a key.</p></div><div class="card"><h3>Summary</h3><p>Aggregate canonical tags across active registered entity types.</p></div><div class="card"><h3>Policy</h3><p>Tagging-owned Cedar actions govern discovery; referenced entity authorization is not silently replayed.</p></div></div>
+    <div class="callout">Inactive targets are excluded from discovery through each owner's registered bulk check. Stale association rows are not silently deleted.</div>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 2.3</div><h1>Give people and programs one filter language</h1><p class="lede">Own exact expression semantics above storage, authorization, and every presentation surface.</p><div class="section-no">2.3</div></section>
+
+  <section>
+    <h2>The schema is a public domain contract</h2>
+    <div class="flow"><div class="node"><strong>typed filter view</strong>stable field names</div><div class="arrow">→</div><div class="node"><strong>Expr parser + checker</strong>accepted syntax</div><div class="arrow">→</div><div class="node"><strong>owned tree</strong>stable semantics</div><div class="arrow">→</div><div class="node"><strong>surface help</strong>fields + examples</div></div>
+    <div class="callout">The filter view need not mirror a SQLite row or returned model. It can expose nested and hydrated values without leaking persistence.</div>
+  </section>
+
+  <section>
+    <h2>Borrow a compiler, keep ownership</h2>
+    <div class="cards"><div class="card"><h3><code>Source</code></h3><p>The trimmed expression a person supplied.</p></div><div class="card"><h3><code>String</code></h3><p>Canonical syntax for display and reparsing.</p></div><div class="card"><h3><code>Tree</code></h3><p>Mixology's stable node model for integrations and SQL planning.</p></div></div>
+    <div class="callout">Expr optimization is deliberately disabled. Expr parses, checks, and executes; Mixology owns the restricted language and pushdown plan.</div>
+  </section>
+
+  <section>
+    <h2>One expression, two execution stages</h2>
+    <div class="flow"><div class="node"><strong>checked expression</strong>exact contract</div><div class="arrow">→</div><div class="node"><strong>safe SQL pushdown</strong>candidate reduction</div><div class="arrow">→</div><div class="node"><strong>hydrate</strong>tags + derived values</div><div class="arrow">→</div><div class="node"><strong><code>Match</code></strong>authoritative result</div></div>
+    <div class="callout"><code>ApplySQLPushdowns</code> returns candidates, never proof. Every operational DAO evaluates the complete hydrated view afterward.</div>
+  </section>
+
+  <section>
+    <h2>Push down only what the full expression requires</h2>
+    <div class="split"><div class="side"><h3>Conjunction</h3><p><code>A && tags.contains("x")</code></p><p>Persisted <code>A</code> is required even when tags need memory evaluation.</p><p class="accent">Push down A safely.</p></div><div class="bridge">≠</div><div class="side"><h3>Disjunction</h3><p><code>A || tags.contains("x")</code></p><p>A row failing <code>A</code> may still match after tag hydration.</p><p class="gold">Do not push down A alone.</p></div></div>
+  </section>
+
+  <section>
+    <h2>Common constraints survive alternatives</h2>
+    <pre><code class="language-text">(category == "spirit" && tags contains "featured")
+||
+(category == "spirit" && name.contains("gin"))</code></pre>
+    <div class="flow"><div class="node"><strong>both branches require</strong><code>category == "spirit"</code></div><div class="arrow">→</div><div class="node"><strong>SQL candidate set</strong>spirits only</div><div class="arrow">→</div><div class="node"><strong>exact Match</strong>full OR expression</div></div>
+    <div class="callout">Optimization is a theorem about preserved truth, not a list of AST nodes the translator happens to understand.</div>
+  </section>
+
+  <section>
+    <h2>Filtering and authorization compose in order</h2>
+    <div class="flow"><div class="node"><strong>parse once</strong>typed invalid on error</div><div class="arrow">→</div><div class="node"><strong>filter + hydrate</strong>domain semantics</div><div class="arrow">→</div><div class="node"><strong>authorize each</strong>elide denies</div><div class="arrow">→</div><div class="node"><strong>page</strong>fill visible count</div></div>
+    <div class="callout">Audit can use direct <code>ApplySQL</code> because its filter view comes from one row. Operational domains use staged hydration.</div>
+    <p class="source"><a href="/articles/typed-filtering-over-sqlite/">Adjacent article: Typed Filtering over SQLite</a></p>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Foundation 2.4</div><h1>Make persistence a replaceable boundary</h1><p class="lede">The bstore-to-SQLite migration proved which contracts belonged to the application and which belonged to an engine.</p><div class="section-no">2.4</div></section>
+
+  <section>
+    <h2>Preserve the contract, replace the engine</h2>
+    <table class="matrix"><thead><tr><th>Preserved</th><th>Rebuilt</th></tr></thead><tbody><tr><td>domain ownership and public module contracts</td><td>DAO implementations, rows, and hydration adapters</td></tr><tr><td>models, commands, queries, policies, events</td><td>schema registration and row conversion</td></tr><tr><td>transaction participation</td><td>query builder and cursor predicates</td></tr><tr><td>typed errors and filter semantics</td><td>SQLite mapping and safe pushdowns</td></tr><tr><td>surface-observable behavior</td><td>change monitoring and concurrency coordination</td></tr></tbody></table>
+  </section>
+
+  <section>
+    <h2>SQLite stays below domain persistence</h2>
+    <div class="layers"><div class="layer"><strong>Domain DAO</strong><span>owned queries, row conversion, hydration</span></div><div class="layer"><strong>Typed store API</strong><span><code>Register</code>, <code>Get</code>, <code>Insert</code>, <code>Update</code>, <code>Query</code></span></div><div class="layer"><strong>Unit of work</strong><span>shared transaction carried by operation context</span></div><div class="layer private"><strong>modernc SQLite</strong><span>WAL, constraints, revisions, migration ledger, data version</span></div></div>
+  </section>
+
+  <section>
+    <h2>Several processes can share one local truth</h2>
+    <div class="flow"><div class="node"><strong>CLI</strong>short write</div><div class="arrow">→</div><div class="node"><strong>SQLite WAL</strong>one writer, many readers</div><div class="arrow">←</div><div class="node"><strong>TUI</strong>persistent reader</div><div class="arrow">↔</div><div class="node"><strong>GUI</strong>persistent reader</div></div>
+    <div class="cards two"><div class="card"><h3>Process coordination</h3><p>Busy timeout and immediate transactions make writer contention explicit.</p></div><div class="card"><h3>Application coordination</h3><p>Keep commands short; never hold a transaction while waiting for user input.</p></div></div>
+  </section>
+
+  <section>
+    <h2>Revisions turn stale writes into typed conflicts</h2>
+    <div class="state-line"><div class="state">read rev 7</div><div class="arrow">→</div><div class="state active">other client writes rev 8</div><div class="arrow">→</div><div class="state blocked">update WHERE rev = 7</div><div class="arrow coral">⤫</div><div class="state review">Conflict</div></div>
+    <div class="callout">Public mutable models carry an opaque revision. The store performs the atomic comparison and increment.</div>
+  </section>
+
+  <section>
+    <h2>Invalidation carries no domain truth</h2>
+    <div class="flow"><div class="node"><strong>SQLite <code>data_version</code></strong>external commit observed</div><div class="arrow">→</div><div class="node"><strong><code>Signals</code></strong>coalesced edge</div><div class="arrow">+</div><div class="node"><strong><code>Epoch</code></strong>level guard</div><div class="arrow">→</div><div class="node"><strong>ordinary query</strong>reload authorized state</div></div>
+    <div class="callout">The epoch closes lost-wakeup gaps around coalesced signals. Neither carries records or bypasses application policy, filters, and request-order guards.</div>
+  </section>
+
+  <section>
+    <h2>Treat the file format honestly</h2>
+    <div class="cards"><div class="card"><h3>Migration ledger</h3><p>Ordered migrations advance deliberately; a database from a newer schema is rejected.</p></div><div class="card"><h3>Registration</h3><p>Explicit model schemas fail early; imports do not mutate global persistence state.</p></div><div class="card"><h3>Errors</h3><p>Constraints and stale revisions become application kinds, not leaked driver strings.</p></div></div>
+    <p class="source"><a href="/articles/migrating-mixology-from-bstore-to-sqlite/">Adjacent article: Migrating Mixology from bstore to SQLite</a></p>
+  </section>
+</section>
+
+<section>
+  <section class="centered section-slide"><div class="eyebrow">Domain workshop 3.1</div><h1>Preserve truth through degradation</h1><p class="lede">A system can remain operational without pretending its state is healthy.</p><div class="section-no">3.1</div></section>
 
   <section>
     <h2>Retirement is a business decision</h2>
@@ -263,7 +604,7 @@ func (h *IngredientDeleted) Handle(
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter four</div><h1>Grow a reciprocal workflow</h1><p class="lede"><span class="decision">planned workshop</span><br>Add Procurement only when the new business loop teaches something the current seven contexts cannot.</p><div class="section-no">04</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Domain workshop 3.2</div><h1>Grow a reciprocal workflow</h1><p class="lede"><span class="decision">planned workshop</span><br>Add Procurement only when the new business loop teaches something the current seven contexts cannot.</p><div class="section-no">3.2</div></section>
 
   <section>
     <h2>The next build: stock creates demand</h2>
@@ -289,7 +630,7 @@ func (h *IngredientDeleted) Handle(
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter five</div><h1>Build a reusable MVVM toolkit for the terminal</h1><p class="lede">Bubble Tea supplies the runtime. Mixology owns the view-model contract.</p><div class="section-no">05</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Surfaces 4.1</div><h1>Build a reusable MVVM toolkit for the terminal</h1><p class="lede">Bubble Tea supplies the runtime. Mixology owns the view-model contract.</p><div class="section-no">4.1</div></section>
 
   <section>
     <h2>Adapt the pattern to the runtime</h2>
@@ -350,7 +691,7 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter six</div><h1>Adapt the MVVM toolkit to retained widgets</h1><p class="lede">Fyne changes the interaction model, so the reusable mechanics change with it.</p><div class="section-no">06</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Surfaces 4.2</div><h1>Adapt the MVVM toolkit to retained widgets</h1><p class="lede">Fyne changes the interaction model, so the reusable mechanics change with it.</p><div class="section-no">4.2</div></section>
 
   <section>
     <h2>Start from the application seam</h2>
@@ -388,7 +729,7 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter seven</div><h1>Use the third surface as an architecture test</h1><p class="lede">Difference creates pressure. Pressure reveals misplaced ownership.</p><div class="section-no">07</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Surfaces 4.3</div><h1>Use the third surface as an architecture test</h1><p class="lede">Difference creates pressure. Pressure reveals misplaced ownership.</p><div class="section-no">4.3</div></section>
 
   <section>
     <h2>Parity is a union, not a porting checklist</h2>
@@ -413,7 +754,7 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter eight</div><h1>Share behavior, keep views bespoke</h1><p class="lede">Consistency lives in contracts and outcomes, not identical presentation internals.</p><div class="section-no">08</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Surfaces 4.4</div><h1>Share behavior, keep views bespoke</h1><p class="lede">Consistency lives in contracts and outcomes, not identical presentation internals.</p><div class="section-no">4.4</div></section>
 
   <section>
     <h2>Each runtime has a different unit of interaction</h2>
@@ -454,7 +795,7 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter nine</div><h1>Test native desktop behavior headlessly</h1><p class="lede">Confidence comes from a ladder of distinct evidence, not one giant simulated UI test.</p><div class="section-no">09</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Surfaces 4.5</div><h1>Test native desktop behavior headlessly</h1><p class="lede">Confidence comes from a ladder of distinct evidence, not one giant simulated UI test.</p><div class="section-no">4.5</div></section>
 
   <section>
     <h2>The evidence ladder</h2>
@@ -480,62 +821,7 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter ten</div><h1>Authorization is part of navigation</h1><p class="lede">A policy decision changes what can be discovered, counted, selected, and attempted.</p><div class="section-no">10</div></section>
-
-  <section>
-    <h2>One decision appears at four scales</h2>
-    <div class="cards four"><div class="card"><h3>Workspace</h3><p>Can the actor discover this area?</p></div><div class="card"><h3>Aggregate</h3><p>Can a count reveal hidden records?</p></div><div class="card"><h3>Row</h3><p>Which results survive authorization?</p></div><div class="card"><h3>Action</h3><p>What may happen to this resource now?</p></div></div>
-    <div class="callout">A route is a promise of an authorized read path, not a hard-coded item in a global menu.</div>
-  </section>
-
-  <section>
-    <h2>Lists filter; failures still fail</h2>
-    <div class="flow"><div class="node"><strong>DAO</strong>stable cursor stream</div><div class="arrow">→</div><div class="node"><strong>hydrate</strong>complete domain model</div><div class="arrow">→</div><div class="node"><strong>Cedar</strong>authorize each row</div><div class="arrow">→</div><div class="node"><strong>page</strong>fill with visible rows</div></div>
-    <div class="cards two"><div class="card"><h3>Permission denial</h3><p>Omit the row and continue until the page is full or input ends.</p></div><div class="card stop"><h3>Evaluation failure</h3><p>Return the error. Infrastructure trouble is not “no results.”</p></div></div>
-  </section>
-
-  <section>
-    <h2>Denied is different from unavailable</h2>
-    <table class="matrix"><thead><tr><th>State</th><th>Presentation</th><th>Meaning</th></tr></thead><tbody><tr><td>Denied</td><td class="no">omit action</td><td>The actor lacks permission.</td></tr><tr><td>Authorized + blocked</td><td class="maybe">visible, disabled, explained</td><td>A domain prerequisite is unmet.</td></tr><tr><td>Authorized + ready</td><td class="yes">visible, enabled</td><td>The projected state permits an attempt.</td></tr></tbody></table>
-    <div class="callout">The command re-authorizes and re-checks current state inside the transaction, then commits mutation, events, and audit atomically.</div>
-  </section>
-
-  <section>
-    <h2>Counts are queries too</h2>
-    <div class="big-statement">A dashboard that hides rows but shows the total still leaks the hidden rows.</div>
-    <div class="split"><div class="side"><h3>Wrong</h3><p><code>SELECT count(*)</code>, then authorize the widget.</p><p class="coral">The number already escaped.</p></div><div class="bridge">→</div><div class="side"><h3>Correct</h3><p>Compute the count after row-level authorization, or expose unavailable when the aggregate cannot be authorized.</p><p class="accent">No hidden existence leak.</p></div></div>
-    <p class="source">authorized and empty = 0 · denied = omitted · operational failure = unavailable</p>
-  </section>
-</section>
-
-<section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter eleven</div><h1>Give people and programs one filter language</h1><p class="lede">Typed expressions remain the contract. SQLite is an execution detail that may optimize only what stays exact.</p><div class="section-no">11</div></section>
-
-  <section>
-    <h2>Borrow a compiler, own the contract</h2>
-    <div class="flow five"><div class="node"><strong>text</strong>user expression</div><div class="arrow">→</div><div class="node"><strong>parse</strong>AST</div><div class="arrow">→</div><div class="node"><strong>type check</strong>domain environment</div><div class="arrow">→</div><div class="node"><strong>plan</strong>pushdown + residual</div><div class="arrow">→</div><div class="node"><strong>evaluate</strong>exact semantics</div></div>
-    <div class="callout">The public language stays above persistence. A domain exposes fields and types, not JSON paths or SQL fragments.</div>
-  </section>
-
-  <section>
-    <h2>Push down only what remains true</h2>
-    <table class="matrix"><thead><tr><th>Expression shape</th><th>SQLite candidate plan</th><th>Exact evaluation</th></tr></thead><tbody><tr><td>persisted equality / range</td><td class="yes">push down</td><td>complete compiled expression</td></tr><tr><td>set membership</td><td class="yes">push down</td><td>complete compiled expression</td></tr><tr><td>safe conjunction</td><td class="yes">push safe terms</td><td>complete compiled expression</td></tr><tr><td>unsafe disjunction</td><td class="no">do not partially narrow</td><td>complete compiled expression</td></tr><tr><td>derived or hydrated field</td><td class="no">cannot push</td><td>hydrate, then evaluate all</td></tr></tbody></table>
-  </section>
-
-  <section>
-    <h2>Partial <code>AND</code> can be safe. Partial <code>OR</code> cannot.</h2>
-    <div class="split"><div class="side"><h3><code>A AND B</code></h3><p>If SQLite safely selects every possible <code>A</code>, residual <code>B</code> can narrow the candidates.</p><p class="accent">No true result is lost.</p></div><div class="bridge">≠</div><div class="side"><h3><code>A OR B</code></h3><p>Selecting only pushable <code>A</code> would discard rows that satisfy residual <code>B</code>.</p><p class="coral">Semantics change.</p></div></div>
-  </section>
-
-  <section>
-    <h2>Hydrate before exact evaluation</h2>
-    <div class="flow"><div class="node"><strong>SQL</strong>candidate rows</div><div class="arrow">→</div><div class="node"><strong>domain DAO</strong>hydrate related state</div><div class="arrow">→</div><div class="node"><strong>typed filter</strong>exact predicate</div><div class="arrow">→</div><div class="node"><strong>authorization</strong>visible page</div></div>
-    <div class="callout">Concrete DAOs remain concrete because only the owning domain knows how a stored row becomes a complete model.</div>
-  </section>
-</section>
-
-<section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter twelve</div><h1>Project actions, not widgets</h1><p class="lede">Share durable action meaning across interfaces without sharing runtime state.</p><div class="section-no">12</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Surfaces 4.6</div><h1>Project actions, not widgets</h1><p class="lede">Share durable action meaning across interfaces without sharing runtime state.</p><div class="section-no">4.6</div></section>
 
   <section>
     <h2>Give each state one meaning</h2>
@@ -570,52 +856,11 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter thirteen</div><h1>Replace persistence without replacing the app</h1><p class="lede">The bstore-to-SQLite migration tested whether the store was truly a boundary.</p><div class="section-no">13</div></section>
-
-  <section>
-    <h2>Preserve the contract, replace the engine</h2>
-    <div class="split"><div class="side"><h3>Application keeps</h3><p>Typed queries, transactions, errors, revisions, domain-owned DAOs, middleware ordering, and observable behavior.</p></div><div class="bridge">⇄</div><div class="side"><h3>Store changes</h3><p>SQLite records, migrations, JSON-field plans, WAL, busy handling, immediate writes, and connection-local invalidation.</p></div></div>
-  </section>
-
-  <section>
-    <h2>SQLite without SQL in every domain</h2>
-    <div class="layers"><div class="layer"><strong>Domain model</strong><span>owns meaning, validation, and hydrated relationships</span></div><div class="layer"><strong>Private row</strong><span>declares ID, revision, JSON data, uniqueness, and expression indexes</span></div><div class="layer"><strong>Typed store query</strong><span>equality, ranges, membership, ordering, cursor, pushdown</span></div><div class="layer private"><strong>SQLite</strong><span>generic record table plus domain-declared indexes and migrations</span></div></div>
-  </section>
-
-  <section>
-    <h2>Several processes, one local file</h2>
-    <div class="cards four"><div class="card"><h3>WAL</h3><p>Readers continue while another connection commits.</p></div><div class="card"><h3>10 s busy timeout</h3><p>Writers wait for the single write slot.</p></div><div class="card"><h3>Immediate writes</h3><p>Avoid deferred read-to-write upgrade races.</p></div><div class="card"><h3>Local filesystem</h3><p>One machine, never a shared network filesystem.</p></div></div>
-    <div class="callout">Concurrency is explicit, not magical. SQLite serializes writes, and application transactions stay short.</div>
-  </section>
-
-  <section>
-    <h2>Stale writes fail at the boundary</h2>
-    <div class="flow"><div class="node"><strong>read</strong>revision 7</div><div class="arrow">→</div><div class="node"><strong>another process</strong>updates to 8</div><div class="arrow">→</div><div class="node"><strong>UPDATE</strong>WHERE revision = 7</div><div class="arrow">→</div><div class="node"><strong>typed conflict</strong>no overwrite</div></div>
-    <pre><code class="language-sql">UPDATE records
-SET data = ?, revision = revision + 1
-WHERE model = ? AND id = ? AND revision = ?;</code></pre>
-  </section>
-
-  <section>
-    <h2>Invalidation means “query again”</h2>
-    <div class="flow"><div class="node"><strong>pinned connection</strong>PRAGMA data_version</div><div class="arrow">→</div><div class="node"><strong>lossy signal</strong>coalesced edge</div><div class="arrow">→</div><div class="node"><strong>persistent client</strong>refresh request</div><div class="arrow">→</div><div class="node"><strong>application query</strong>auth + hydrate</div></div>
-    <div class="callout">The monitor carries no record payload and is not a durable event stream. Multiple commits may collapse into one signal.</div>
-    <p class="source">Rolled-back writes do not signal. Reconnect emits one invalidation because commits may have been missed.</p>
-  </section>
-
-  <section>
-    <h2>Treat the file format honestly</h2>
-    <div class="big-statement">A bstore database is not a SQLite database.</div>
-    <div class="cards two"><div class="card"><h3>Disposable data</h3><p>Reseed into a fresh SQLite file.</p></div><div class="card warn"><h3>Valuable data</h3><p>Export with the previous version, import into a fresh database, verify, and keep the backup.</p></div></div>
-  </section>
-</section>
-
-<section>
   <section class="centered section-slide"><div class="eyebrow">Build path</div><h1>Walk the pressure, not the package tree</h1><p class="lede">Each chapter starts with a decision the business forces, then follows the mechanism that makes it durable.</p><div class="section-no">→</div></section>
 
   <section>
     <h2>The recording arc</h2>
-    <div class="timeline"><div class="step"><strong>Premise</strong><span>ownership + executable rules</span></div><div class="step"><strong>Pressure</strong><span>retirement + degradation</span></div><div class="step"><strong>Coordination</strong><span>transactional fan-out</span></div><div class="step"><strong>Interfaces</strong><span>TUI + GUI + parity</span></div><div class="step"><strong>Policy</strong><span>navigation + actions</span></div><div class="step"><strong>Queries</strong><span>filters + authorization</span></div><div class="step"><strong>Persistence</strong><span>SQLite + concurrency</span></div></div>
+    <div class="timeline"><div class="step"><strong>Ownership</strong><span>contexts + module contracts</span></div><div class="step"><strong>Protocol</strong><span>types + errors + policy</span></div><div class="step"><strong>Execution</strong><span>pipeline + transactions</span></div><div class="step"><strong>Evidence</strong><span>logs + metrics + audit</span></div><div class="step"><strong>Coordination</strong><span>events + tags + filters</span></div><div class="step"><strong>Pressure</strong><span>degradation + workflows</span></div><div class="step"><strong>Surfaces</strong><span>CLI + TUI + GUI</span></div></div>
   </section>
 
   <section>
