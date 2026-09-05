@@ -1,7 +1,7 @@
 ---
 title: "Building Mixology"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-10 19:53:27 -0700
+last_modified_at: 2026-09-05
 excerpt: "An ordered path through the architecture, domain modeling, persistence, authorization, and three user interfaces of the go-modular-monolith reference application."
 order: 10
 entries_label: "13 articles and notes"
@@ -19,6 +19,7 @@ The completed [.NET semantic port](/projects/modular-monolith/) preserves that o
 [Explore the project](/projects/go-modular-monolith/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn }
 [Explore the .NET port](/projects/modular-monolith/){: .btn }
+[Present the slide deck](/talks/building-mixology/){: .btn }
 
 {% assign series_entries = site.guides | concat: site.posts | where: "series", page.slug | sort: "series_order" %}
 

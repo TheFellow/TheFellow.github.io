@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#07110f">
+    <title>{{ page.title }} · {{ site.title }}</title>
+    <meta name="description" content="{{ page.excerpt | escape }}">
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+    <meta property="og:title" content="{{ page.title | escape }}">
+    <meta property="og:description" content="{{ page.excerpt | escape }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight/monokai.css">
+    <link rel="stylesheet" href="{{ '/assets/css/mixology-deck.css' | relative_url }}">
+  </head>
+  <body>
+    <a class="deck-home" href="{{ '/series/mixology/' | relative_url }}" aria-label="Return to the Building Mixology series">← Series</a>
+    <a class="deck-scroll" href="?view=scroll" aria-label="Read this deck as a scrolling page">Scroll view</a>
+    <div class="reveal">
+      <div class="slides">
+        {{ content }}
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight.js"></script>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      Reveal.initialize({
+        hash: true,
+        history: true,
+        center: false,
+        controlsTutorial: false,
+        progress: true,
+        slideNumber: 'c/t',
+        showSlideNumber: 'speaker',
+        transition: 'fade',
+        backgroundTransition: 'fade',
+        view: params.get('view') === 'scroll' ? 'scroll' : 'slide',
+        scrollProgress: true,
+        plugins: [RevealNotes, RevealHighlight]
+      });
+    </script>
+  </body>
+</html>
