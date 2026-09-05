@@ -1,7 +1,7 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-05 12:00:00 -0700
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /articles/growing-mixology-with-fyne/
 redirect_from: /guides/growing-mixology-with-fyne/
@@ -73,7 +73,7 @@ The tests run without a display server through `fyne.io/fyne/v2/test`. CI instal
 
 CODE Framework is useful here because its lessons are larger than one binding engine. An application shell should own application-wide experience. Repeated business layouts deserve consistent conventions. View models should expose presentation state and actions that can be tested separately from the pixels. Domain-specific screens should retain their own vocabulary and workflows.
 
-Fyne should change how those lessons are expressed. The desktop shell can own the window, navigation, menus, status, theme, and lifecycle. Domain presentation models can own typed selection, loading and error state, editable values, action availability, and calls to the public application API. Views can construct Fyne containers and widgets, bind callbacks, and translate presentation state onto the UI thread.
+Fyne should change how those lessons are expressed. The toolkit `Shell` owns routes, cached toolkit `View` instances, navigation, identity, activation, guarded commands, and unsaved-change checks; the `main/gui` composition root owns the native window, menus, theme, application session, database monitor, and shutdown ordering. Domain `Presenter` types own typed state, selection, request and form generations, calls to public application APIs, and observable snapshots. Domain views own Fyne containers, widgets, live edit reconciliation, and callback wiring. An injected `Executor` runs application work away from the UI goroutine, a `Dispatcher` publishes accepted snapshots and external invalidations through `fyne.Do`, and `Dialogs` keeps confirmation and error presentation behind a testable window boundary.
 
 This does not require a universal view-model interface shared with Bubble Tea. Such an interface would either expose the least useful common denominator or conceal each runtime behind another framework. The intended reuse is narrower and more durable:
 
@@ -267,7 +267,7 @@ The following checklist served as the evidence ledger during implementation. Com
 - [x] Race-enabled Fyne tests, native macOS build, and arch-lint pass locally at guide closure.
 - [x] CI defines headless desktop tests on Linux, macOS, and Windows.
 - [x] Target-native CI jobs build and package unsigned macOS, Windows, and Linux artifacts.
-- [x] Packaging, shared database defaults, per-user diagnostic logs, and single-process database ownership are documented.
+- [x] Packaging, shared database defaults, per-user diagnostic logs, WAL-backed multi-process coordination, change monitoring, optimistic conflicts, and shutdown ownership are documented.
 - [ ] Manual VoiceOver, Narrator, Orca, high-contrast, and scaling audits are complete.
 - [ ] Production macOS and Windows artifacts are signed and notarized where required.
 

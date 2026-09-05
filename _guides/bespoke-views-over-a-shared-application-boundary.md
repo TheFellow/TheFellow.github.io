@@ -1,7 +1,7 @@
 ---
 title: "Bespoke Views over a Shared Application Boundary"
 date: 2026-08-01
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-05 12:00:00 -0700
 excerpt: "What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model."
 permalink: /articles/bespoke-views-over-a-shared-application-boundary/
 redirect_from: /guides/bespoke-views-over-a-shared-application-boundary/
@@ -45,9 +45,9 @@ This distinction also gives cross-surface tests a precise purpose. Mixology buil
 
 The CLI's natural unit is an invocation. Flags and positional arguments become a typed request, the command calls a public module, output is written, and the process exits. There is no durable selection, focus owner, dirty form, late publication, or back stack to model.
 
-Bubble Tea's natural unit is a message. A domain view model implements `Init`, `Update`, and `View`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
+Bubble Tea's natural unit is a message. A domain view model implements the repository-owned `pkg/toolkits/tui.ViewModel`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Only the root application shell implements `tea.Model`; it adapts the active view model to Bubble Tea while retaining global routing, sizing, help, invalidation, and key ownership. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
 
-Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A presenter publishes snapshots that a view translates onto the UI thread. Dialog completion arrives through callbacks. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
+Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A domain presenter owns typed presentation state and application calls; a domain view owns widgets, live edit reconciliation, and callback wiring. The toolkit executor runs application work, the dispatcher returns async completions and external invalidations to Fyne's UI goroutine, and the dialog boundary owns window-mediated decisions and errors. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
 
 These are not cosmetic variations over one protocol. They are correctness mechanisms imposed by each runtime.
 

@@ -276,9 +276,9 @@ This distinction also gives cross-surface tests a precise purpose. Mixology buil
 
 The CLI's natural unit is an invocation. Flags and positional arguments become a typed request, the command calls a public module, output is written, and the process exits. There is no durable selection, focus owner, dirty form, late publication, or back stack to model.
 
-Bubble Tea's natural unit is a message. A domain view model implements `Init`, `Update`, and `View`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
+Bubble Tea's natural unit is a message. A domain view model implements the repository-owned `pkg/toolkits/tui.ViewModel`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Only the root application shell implements `tea.Model`; it adapts the active view model to Bubble Tea while retaining global routing, sizing, help, invalidation, and key ownership. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
 
-Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A presenter publishes snapshots that a view translates onto the UI thread. Dialog completion arrives through callbacks. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
+Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A domain presenter owns typed presentation state and application calls; a domain view owns widgets, live edit reconciliation, and callback wiring. The toolkit executor runs application work, the dispatcher returns async completions and external invalidations to Fyne's UI goroutine, and the dialog boundary owns window-mediated decisions and errors. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
 
 These are not cosmetic variations over one protocol. They are correctness mechanisms imposed by each runtime.
 
@@ -719,7 +719,7 @@ The shell also keeps the application session in one place. Domain surfaces recei
 
 ## A small view-model contract
 
-Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/view.go):
+Every top-level domain surface implements the repository-owned [`tui.ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/view.go). It does not implement `tea.Model` directly:
 
 ```go
 type ViewModel interface {
@@ -732,7 +732,7 @@ type ViewModel interface {
 }
 ```
 
-The first three methods follow Bubble Tea. The help methods let the shell render a consistent footer without knowing a domain's commands. `Interaction` is the application-specific addition:
+The first three methods adapt Bubble Tea's vocabulary while preserving the narrower return type. The root `main/tui.App` is the only application-level `tea.Model`; it hosts the active `tui.ViewModel`, accepts its replacement value after `Update`, and remains responsible for routing, invalidation, framing, and process-wide keys. The help methods let that shell render a consistent footer without knowing a domain's commands. `Interaction` is the application-specific addition:
 
 ```go
 type Interaction struct {
@@ -741,7 +741,7 @@ type Interaction struct {
 }
 ```
 
-Input ownership changes with state. A list that is filtering captures printable characters. A form or dialog handles Escape itself. A browsing list can leave Escape to the shell. The shell asks the active view before interpreting a global key, which prevents an application shortcut from stealing text or dismissing the wrong layer.
+Input ownership changes with state. A list that is filtering captures printable characters. A form or dialog handles Escape itself. A browsing list can leave Escape to the shell. The shell asks the active view before interpreting a global key, and it also defers database invalidation while the view owns an interaction. Once the form, filter, or dialog yields ownership, the shell delivers a `DataInvalidatedMsg` and the domain view model reloads through its ordinary authorized query. The contract therefore prevents application shortcuts from stealing text, avoids dismissing the wrong layer, and keeps an external commit from overwriting an active edit.
 
 This tiny protocol does work that desktop frameworks often hide in focus systems, routed commands, and modal window ownership. Making it explicit fits a terminal event loop: the active view declares what it owns *now*, and tests can assert the declaration directly.
 
@@ -963,9 +963,9 @@ Architecture is easy to describe after the fact. Draw a few boxes, give each one
 
 [Mixology](https://github.com/TheFellow/go-modular-monolith) is a cocktail-bar application built to examine that question. The domain is intentionally approachable: ingredients become drinks, drinks appear on menus, menus receive orders, and inventory changes as those orders are completed. The interesting part is not the cocktail bar. It is the small set of rules that lets those parts cooperate without slowly becoming one undifferentiated package.
 
-Consider deleting an ingredient. The ingredient may be held in inventory, used by several drinks, and exposed through several menus. One command has to remove or retire all of that dependent state. It must check whether the actor is allowed to do so, leave an audit trail, and roll everything back if any step fails. That is enough behavior to make the architecture real.
+Consider retiring an ingredient. The ingredient may be held in inventory, used by several drinks, captured in pending orders, and exposed through published menus. One command has to record that catalog decision, carry an optional permanent replacement, let each dependent domain preserve the right kind of truth, leave an audit trail, and roll everything back if any reaction fails. That is enough behavior to make the architecture real.
 
-In Mixology, the request enters the same application pipeline whether it came from the CLI, TUI, or GUI. The ingredient module loads the current entity, Cedar authorizes the transition, and the command records an `IngredientDeleted` event. Generated dispatch sends that event to the Drinks, Inventory, and Menus domains. Every handler works through its own persistence boundary, all of them share the original transaction, and none can emit another event. One integration test exercises the whole path.
+In Mixology, the request enters the same application pipeline whether it came from the CLI, TUI, or GUI. The ingredient module loads the current entity, Cedar authorizes the transition and any proposed replacement, and the command records the historically named `IngredientDeleted` event. Generated dispatch sends that retirement fact to Drinks, Inventory, Menus, and Orders. Drinks rewrites future recipes or marks them for review, Inventory removes unusable stock, Menus recomputes retained item availability, and Orders block historical snapshots that still name the retired ingredient. Every handler works through its own persistence boundary, all of them share the original transaction, and none can emit another event. Integration tests exercise the whole path.
 
 That single operation contains most of the series. The lessons below pull it apart, one decision at a time.
 
@@ -996,7 +996,7 @@ Not every business rule belongs in a type, and forcing all of them there can mak
 
 Logging, metrics, authorization, transaction management, event dispatch, and audit recording apply to almost every operation. Repeating them in every handler would not make the behavior explicit. It would make the differences between handlers accidental.
 
-Mixology composes those concerns into a shared [middleware pipeline](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/chains.go). A domain method describes the operation it needs to perform; the pipeline supplies the surrounding guarantees. For a command, [`RunCommand`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/run.go) loads the current resource inside the unit of work, authorizes it, invokes the command, and authorizes the resulting resource before anything commits.
+Mixology composes those concerns into a shared [middleware pipeline](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/chains.go). A domain method describes the operation it needs to perform; the pipeline supplies the surrounding guarantees. Go 1.27 generic methods put that vocabulary on the configured pipeline itself. `Pipeline.Command` handles caller-supplied state, while [`Pipeline.LoadCommand`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/run.go) loads trusted current state inside the unit of work, authorizes it, invokes the command, and authorizes the resulting resource before anything commits. `Query`, `QueryResource`, `PageQuery`, and `LoadCommandActions` make the other supported operation shapes equally explicit.
 
 That second authorization check matters. Permission is sometimes a property of a transition, not merely an action name. A policy may allow someone to edit a draft menu without allowing the same edit to produce a published menu. Looking at both sides gives policy enough information to express that distinction while the command remains concerned with menu behavior.
 
@@ -1006,9 +1006,9 @@ The tutorial will follow a command and a query through the chain and then remove
 
 Events are often introduced with a broker, eventual consistency, retries, and a new set of operational problems. None of those is required to benefit from event-shaped coordination.
 
-`IngredientDeleted` carries the ingredient state that changed. The generated dispatcher gives it independently to Drinks, Inventory, and Menus. The Drinks handler discovers recipes that use the ingredient, while the Menus handler discovers menus containing those drinks. Before any handler mutates data, every handler with a preparation phase runs its [`Handling`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/menus/handlers/ingredient-deleted.go) method. Only then does dispatch begin applying changes. This prevents the first mutation from erasing information a later handler still needs to query.
+`IngredientDeleted` carries the retired ingredient, time, and optional permanent replacement with its conversion ratio. The generated dispatcher gives that fact independently to Drinks, Inventory, Menus, and Orders. Drinks and Menus discover affected recipes and menu items before Inventory removes stock or Drinks rewrites recipes. Before any handler mutates data, every handler with a preparation phase runs its [`Handling`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/menus/handlers/ingredient-deleted.go) method. Only then does dispatch begin applying changes. This prevents the first mutation from erasing information a later handler still needs to query.
 
-All of that work remains inside the transaction opened for the original delete. If removing an affected menu item fails, the ingredient, inventory, drinks, menus, and audit record return to their previous state together. The event separates knowledge between domains without giving up immediate consistency.
+All of that work remains inside the transaction opened for the retirement. If any recipe rewrite, stock removal, menu availability update, or order block fails, the ingredient, dependent state, and audit record return to their previous state together. The event separates knowledge between domains without giving up immediate consistency.
 
 This is a deliberately constrained event model. Handlers are leaf nodes, event payloads carry useful state, and delivery is in-process. The lesson will explore what those constraints buy, where fat events become uncomfortable, and which pressures would justify crossing the boundary into asynchronous messaging.
 
@@ -1137,7 +1137,7 @@ An integration test becomes expensive when the application depends on a collecti
 
 [`testutil.NewFixture`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/testutil/fixture.go) creates an isolated database and constructs the production application around it. Tests call public module methods with real authorization, transactions, dispatch, handlers, audit recording, and in-memory metrics. Builders make domain setup concise, but they do not bypass the application to insert convenient rows.
 
-The ingredient deletion test is only a few dozen lines. It creates an ingredient, inventory, a drink, and a published menu; deletes the ingredient; then observes that inventory and the drink are gone and the menu no longer contains it. That test is compact because the architecture is already doing the orchestration. It does not recreate that orchestration with mocks.
+The ingredient retirement tests create ingredients, inventory, drinks, orders, and published menus, then retire one ingredient through the public module. Without a replacement, a required recipe remains inspectable and moves to `review_required`, the pending order becomes blocked, stock disappears, and the published menu retains its item while reporting degraded availability. With a compatible permanent replacement, the current recipe is rewritten while the historical order snapshot continues to name the retired ingredient. Those tests are compact because the architecture is already doing the orchestration. They do not recreate that orchestration with mocks.
 
 This lesson will use the same fixture at three scales: a focused permission check, a cross-domain behavior test, and an audit assertion that names every touched entity. The aim is not to argue that every test should be an integration test. It is to keep the real path fast and accessible enough that the most important guarantees can be tested together.
 
@@ -1155,7 +1155,7 @@ Simple does not mean unfinished. It means every piece of complexity can point to
 
 The finished chapters will slow these ideas down. Each will begin with a failure mode, walk a small route through the repository, and end with an experiment that changes the code so the design can push back. They will also spend time on the limits: when the technique stops fitting, what it costs, and what a different system might choose instead.
 
-For now, the repository is the complete worked example. Start with the [ingredient deletion test](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/ingredients/delete_test.go), follow the event into the generated dispatcher, and see how far one ordinary operation travels without dissolving the boundaries around it.
+For now, the repository is the complete worked example. Start with the [ingredient retirement tests](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/ingredients/delete_test.go), follow the event into the generated dispatcher, and see how far one ordinary operation travels without dissolving the boundaries around it.
 
 
 ---
@@ -1503,7 +1503,7 @@ The tests run without a display server through `fyne.io/fyne/v2/test`. CI instal
 
 CODE Framework is useful here because its lessons are larger than one binding engine. An application shell should own application-wide experience. Repeated business layouts deserve consistent conventions. View models should expose presentation state and actions that can be tested separately from the pixels. Domain-specific screens should retain their own vocabulary and workflows.
 
-Fyne should change how those lessons are expressed. The desktop shell can own the window, navigation, menus, status, theme, and lifecycle. Domain presentation models can own typed selection, loading and error state, editable values, action availability, and calls to the public application API. Views can construct Fyne containers and widgets, bind callbacks, and translate presentation state onto the UI thread.
+Fyne should change how those lessons are expressed. The toolkit `Shell` owns routes, cached toolkit `View` instances, navigation, identity, activation, guarded commands, and unsaved-change checks; the `main/gui` composition root owns the native window, menus, theme, application session, database monitor, and shutdown ordering. Domain `Presenter` types own typed state, selection, request and form generations, calls to public application APIs, and observable snapshots. Domain views own Fyne containers, widgets, live edit reconciliation, and callback wiring. An injected `Executor` runs application work away from the UI goroutine, a `Dispatcher` publishes accepted snapshots and external invalidations through `fyne.Do`, and `Dialogs` keeps confirmation and error presentation behind a testable window boundary.
 
 This does not require a universal view-model interface shared with Bubble Tea. Such an interface would either expose the least useful common denominator or conceal each runtime behind another framework. The intended reuse is narrower and more durable:
 
@@ -1697,7 +1697,7 @@ The following checklist served as the evidence ledger during implementation. Com
 - [x] Race-enabled Fyne tests, native macOS build, and arch-lint pass locally at guide closure.
 - [x] CI defines headless desktop tests on Linux, macOS, and Windows.
 - [x] Target-native CI jobs build and package unsigned macOS, Windows, and Linux artifacts.
-- [x] Packaging, shared database defaults, per-user diagnostic logs, and single-process database ownership are documented.
+- [x] Packaging, shared database defaults, per-user diagnostic logs, WAL-backed multi-process coordination, change monitoring, optimistic conflicts, and shutdown ownership are documented.
 - [ ] Manual VoiceOver, Narrator, Orca, high-contrast, and scaling audits are complete.
 - [ ] Production macOS and Windows artifacts are signed and notarized where required.
 
@@ -2627,7 +2627,7 @@ sequenceDiagram
     D->>P: publish on UI thread
 ```
 
-Mixology models those directions as small interfaces. An executor starts background application work. A dispatcher publishes changes through Fyne's UI goroutine. Production uses a managed executor and a Fyne dispatcher. Tests use inline or manually controlled implementations.
+Mixology models those directions as small toolkit interfaces. `Executor` starts application work away from the UI goroutine; production uses `ManagedExecutor`, which also rejects new work and drains accepted operations during shutdown. `Dispatcher` publishes changes through Fyne's UI goroutine; production wraps `MainDispatcher`, which calls `fyne.Do`, in `GatedDispatcher` so queued or future publications cannot enter after desktop shutdown closes the gate. Domain presenters own the state being published, domain views own the widgets that receive it, and `Dialogs` owns window-mediated confirmation and error presentation. Tests replace each boundary with inline or manually controlled implementations.
 
 Keeping the seams separate provides several test modes:
 
@@ -2895,7 +2895,7 @@ flowchart LR
 
 [Inventory's handler](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/inventory/handlers/ingredient-deleted.go) decides what retirement means for stock. [Drinks](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/drinks/handlers/ingredient-deleted.go) rewrites future recipes when a permanent replacement is explicit. Without one, an optional component can disappear, but a required component remains visible and moves the drink to `review_required`. [Orders](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/orders/handlers/ingredient-deleted.go) blocks snapshots that still name the retired ingredient. Adding another reaction changes the dispatcher and the interested domain, not the Ingredients command.
 
-Menus does not need a destructive retirement handler. It retains its drink membership and calculates readiness from current Drinks and Inventory state when asked. A published menu can therefore remain published while reporting degraded availability, while publishing a draft with a known blocker fails. The distinction preserves the business record and still prevents promotion into a state the application knows is unsuitable.
+Menus deliberately avoids deleting membership or unpublishing a menu, but it does participate in retirement. Its `IngredientDeleted` handler snapshots affected menus during `Handling`, then recomputes and persists the availability of their retained drink items after the other preparations complete. The separate readiness query calculates blockers and warnings from current Drinks and Inventory state when asked. A published menu can therefore remain published while reporting degraded availability, while publishing a draft with a known blocker fails. The distinction preserves the business record and still prevents promotion into a state the application knows is unsuitable.
 
 The event reduces knowledge, but it does not remove coordination. Mixology's generated dispatcher still invokes the complete handler set. That wiring is intentionally visible and testable.
 
@@ -5923,17 +5923,27 @@ Name the workflow.
 
     Add an outbox when delivery must survive a transaction boundary. Do not use it to decorate a transaction that is already atomic.
 
-  Chapter five<h1>Build a TUI toolkit without hiding the app</h1>Borrow MVVM’s presentation seam and Elm’s explicit loop, then let Go set the shape.
+  Chapter five<h1>Build a reusable MVVM toolkit for the terminal</h1>Bubble Tea supplies the runtime. Mixology owns the view-model contract.
 05
 
-    ## Two lineages, one adaptation
-    ### MVVM contributesScreen-owned presentation state, commands, standard view shapes, and testable view models.
-+### The Elm Architecture contributes<code>Model</code>, typed messages, explicit <code>Update</code>, rendered <code>View</code>, and effects as commands.
+    ## Adapt the pattern to the runtime
+    ### Reusable MVVM seamA screen owns presentation state and commands behind a testable view-model contract.
++### Bubble Tea runtimeMessages drive explicit updates, commands carry effects, and a string view renders each frame.
 
-    Interfaces replace base classes. Messages replace binding notifications. Constructors replace runtime discovery.
+    The framework is an implementation detail of the toolkit, not the architecture of every screen.
 
     ## The shell owns application concerns
-    ### Domain surface- drink workflows- menu publication- order lifecycle- domain action keys### Root application shell- current route and back stack- cached view models- global title, status, help- terminal size and global keys- explicit domain construction### TUI toolkit- list/detail- forms and dialogs- spinners and layout- test drivers
+    ### Domain surface- typed presentation state- queries and commands- domain workflows- action projection### Root application shell- route and back stack- cached view models- title, status, help- global keys and sizing- deferred invalidation### TUI toolkit- view-model contract- list/detail and viewports- forms and dialogs- layout, keys, styles
+
+    ## Only the root is a <code>tea.Model</code>
+    ### Bubble Tea contract<code class="language-go">Update(tea.Msg) (
+    tea.Model, tea.Cmd,
+)</code></pre><p>The executable shell satisfies this runtime boundary.
+≠### Mixology contract<code class="language-go">Update(tea.Msg) (
+    ViewModel, tea.Cmd,
+)</code></pre><p>Every domain screen stays inside the richer repository-owned abstraction.
+
+    Returning <code>ViewModel</code> preserves help and interaction contracts after every update. Domain screens neither embed nor pretend to be <code>tea.Model</code>.
 
     ## A deliberately small contract
     <code class="language-go">type ViewModel interface {
@@ -5951,22 +5961,45 @@ type Interaction struct {
 }</code></pre>
     The toolkit knows Bubble Tea. It does not know Drinks, Menus, Cedar actors, or the application composition root.
 
+    ## The toolkit is a kit, not a base screen
+    ### Browse<p><code>ListDetail</code>, typed <code>ListItem[T]</code>, summaries, loading, filtering, paging, and selection.
+### Compose<code>DetailViewport</code>, <code>FormViewport</code>, layout arithmetic, reusable components.
+### InteractForms, dialogs, keys, styles, help bindings, and explicit input ownership.
+### RefreshDomain-payload-free invalidation starts an ordinary query; request tokens reject stale results.
+
+    <code>pkg/testutil/tuitest</code> is the deterministic program driver. It tests the toolkit and completed application without becoming part of either.
+
     ## Typed messages keep ownership visible
-    **Interaction**shell routes input→**Update**domain screen→**Cmd**application call→**typed Msg**result returns
-    ### Reusable mechanics<p>Generic list items retain their typed domain values while satisfying Bubbles interfaces.
+    **<code>tea.Msg</code>**input arrives→**Root shell**consults <code>Interaction</code>→**ViewModel**updates state→**<code>tea.Cmd</code>**returns typed result
+    ### Reusable mechanicsGeneric list items retain their typed domain values while satisfying Bubbles interfaces.
 ### Domain choicesPublish, complete, cancel, adjust, and retire remain bindings owned by their domain adapters.
+
+    External change? Inactive screens become stale. Active input finishes first, then a domain-payload-free invalidation starts the screen's normal tokenized query.
 
     ## Tests follow the ownership
     pure presentation model testscomponent update and rendering testsdomain surface testsreal Bubble Tea program driverroot navigation and input ownershipcross-surface persisted behavior
 
-  Chapter six<h1>Grow a retained-mode GUI in slices</h1>Fyne changes the interaction model, so the adapter should change too.
+  Chapter six<h1>Adapt the MVVM toolkit to retained widgets</h1>Fyne changes the interaction model, so the reusable mechanics change with it.
 06
 
     ## Start from the application seam
     **<code>main/gui</code>**database, actor, logs, application, session, native lifecycle**domain GUI surfaces**presenters and views shaped for each bounded context**<code>pkg/toolkits/gui</code>**shell, forms, tables, semantic controls, dialogs, executors**Fyne runtime**retained widgets, callbacks, windows, platform event loop
 
-    ## Adapt MVVM to retained widgets
-    ### Presentation model- plain state- validation- latest-request ownership- no native widgets### Presenter- loads through application- publishes deterministic state- owns submission and errors- uses injected dialogs### View- Fyne controls- focus and selection- pointer bindings- native rendering
+    ## Make state publication the binding seam
+    ### State- plain typed snapshot- items and selection- mode, form, errors- busy and action state### Presenter- calls the application- owns latest loads- admits one submission- publishes clones via <code>OnChange</code>### View- subscribes to state- updates Fyne controls- binds pointer and keys- owns widget-local state
+    Synchronous UI actions can publish directly. Async completions and external invalidation cross the injected <code>Dispatcher</code> before touching presenter or widget state.
+
+    ## The GUI toolkit owns retained-mode mechanics
+    **Shell + Route**cache and activate views→**Standard pages**layout and hierarchy→**Semantic controls**stable test identities→**Domain view**renders state
+    ### Navigation<code>UnsavedChanges</code> guards route changes. <code>Commander</code> gives menus, shortcuts, and controls the same intents.
+### PresentationList, form, filter, paging, table, tag, validation, dialog, and error mechanics stay domain-free.
+### TestingSemantic controls preserve visible guards so tests trigger the same behavior as a person.
+
+    ## Async work has two boundaries
+    **Presenter**requests work→**Executor**runs application call→**Dispatcher**publishes on UI thread→**View**updates widgets
+    ### <code>LatestRequest[T]</code>Cancels superseded loads and rejects stale queued publications.
+### <code>Submission</code>Admits one mutation, then releases on dispatched completion before presenting its result.
+### <code>GatedDispatcher</code>Drops widget publications after desktop shutdown closes the publication gate.
 
     ## Reviewable slices kept the change surface small
     **Shell**routes + lifecycle**Models**state + errors**Toolkits**standard mechanics**Domains**workspace by workspace**Parity**paging + workflows**Lifecycle**drain accepted work**Evidence**process + visual checks
@@ -6013,6 +6046,10 @@ type Interaction struct {
 
     ## Reuse mechanics within a surface
     **CLI toolkit**JSON input and output, reflection-based tables**TUI toolkit**view contracts, list/detail, forms, dialogs, layout**GUI toolkit**shell, tables, semantic controls, executors, dispatchers**Domain surfaces**compose only the matching toolkit with domain workflows
+
+    ## Reusable does not mean symmetrical
+    <table class="matrix"><thead><tr><th>Toolkit</th><th>Reusable shape</th><th>Why it differs</th></tr></thead><tbody><tr><td>CLI</td><td>encoders, decoders, tables</td><td>one invocation, then exit</td></tr><tr><td>TUI</td><td>autonomous forms, dialogs, and view models</td><td>messages repeatedly advance explicit state</td></tr><tr><td>GUI</td><td>shell, page objects, controls, async coordinators</td><td>widgets persist and callbacks publish state</td></tr></tbody></table>
+    Package shape follows the runtime’s interaction model. Shared application meaning sits below all three.
 
     ## Cross-cutting does not mean ownerless
     **surface**desired tags→**RunTaggedMutation**validate + compose→**domain mutation**owned behavior+**Tags.Replace**owned association

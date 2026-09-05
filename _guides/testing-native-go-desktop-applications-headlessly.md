@@ -1,7 +1,7 @@
 ---
 title: "Testing Native Go Desktop Applications Headlessly"
 date: 2026-08-01
-last_modified_at: 2026-08-10 12:00:00 -0700
+last_modified_at: 2026-09-05 12:00:00 -0700
 excerpt: "A layered testing strategy for Fyne applications, from deterministic presentation models and virtual widgets through composed lifecycles, fresh processes, race tests, and visual evidence."
 permalink: /articles/testing-native-go-desktop-applications-headlessly/
 redirect_from: /guides/testing-native-go-desktop-applications-headlessly/
@@ -103,7 +103,7 @@ sequenceDiagram
     D->>P: publish on UI thread
 ```
 
-Mixology models those directions as small interfaces. An executor starts background application work. A dispatcher publishes changes through Fyne's UI goroutine. Production uses a managed executor and a Fyne dispatcher. Tests use inline or manually controlled implementations.
+Mixology models those directions as small toolkit interfaces. `Executor` starts application work away from the UI goroutine; production uses `ManagedExecutor`, which also rejects new work and drains accepted operations during shutdown. `Dispatcher` publishes changes through Fyne's UI goroutine; production wraps `MainDispatcher`, which calls `fyne.Do`, in `GatedDispatcher` so queued or future publications cannot enter after desktop shutdown closes the gate. Domain presenters own the state being published, domain views own the widgets that receive it, and `Dialogs` owns window-mediated confirmation and error presentation. Tests replace each boundary with inline or manually controlled implementations.
 
 Keeping the seams separate provides several test modes:
 

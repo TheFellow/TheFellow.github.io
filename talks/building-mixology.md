@@ -258,17 +258,27 @@ Name the workflow.
 
     Add an outbox when delivery must survive a transaction boundary. Do not use it to decorate a transaction that is already atomic.
 
-  Chapter five<h1>Build a TUI toolkit without hiding the app</h1>Borrow MVVM’s presentation seam and Elm’s explicit loop, then let Go set the shape.
+  Chapter five<h1>Build a reusable MVVM toolkit for the terminal</h1>Bubble Tea supplies the runtime. Mixology owns the view-model contract.
 05
 
-    ## Two lineages, one adaptation
-    ### MVVM contributesScreen-owned presentation state, commands, standard view shapes, and testable view models.
-+### The Elm Architecture contributes<code>Model</code>, typed messages, explicit <code>Update</code>, rendered <code>View</code>, and effects as commands.
+    ## Adapt the pattern to the runtime
+    ### Reusable MVVM seamA screen owns presentation state and commands behind a testable view-model contract.
++### Bubble Tea runtimeMessages drive explicit updates, commands carry effects, and a string view renders each frame.
 
-    Interfaces replace base classes. Messages replace binding notifications. Constructors replace runtime discovery.
+    The framework is an implementation detail of the toolkit, not the architecture of every screen.
 
     ## The shell owns application concerns
-    ### Domain surface- drink workflows- menu publication- order lifecycle- domain action keys### Root application shell- current route and back stack- cached view models- global title, status, help- terminal size and global keys- explicit domain construction### TUI toolkit- list/detail- forms and dialogs- spinners and layout- test drivers
+    ### Domain surface- typed presentation state- queries and commands- domain workflows- action projection### Root application shell- route and back stack- cached view models- title, status, help- global keys and sizing- deferred invalidation### TUI toolkit- view-model contract- list/detail and viewports- forms and dialogs- layout, keys, styles
+
+    ## Only the root is a <code>tea.Model</code>
+    ### Bubble Tea contract<code class="language-go">Update(tea.Msg) (
+    tea.Model, tea.Cmd,
+)</code></pre><p>The executable shell satisfies this runtime boundary.
+≠### Mixology contract<code class="language-go">Update(tea.Msg) (
+    ViewModel, tea.Cmd,
+)</code></pre><p>Every domain screen stays inside the richer repository-owned abstraction.
+
+    Returning <code>ViewModel</code> preserves help and interaction contracts after every update. Domain screens neither embed nor pretend to be <code>tea.Model</code>.
 
     ## A deliberately small contract
     <code class="language-go">type ViewModel interface {
@@ -286,22 +296,45 @@ type Interaction struct {
 }</code></pre>
     The toolkit knows Bubble Tea. It does not know Drinks, Menus, Cedar actors, or the application composition root.
 
+    ## The toolkit is a kit, not a base screen
+    ### Browse<p><code>ListDetail</code>, typed <code>ListItem[T]</code>, summaries, loading, filtering, paging, and selection.
+### Compose<code>DetailViewport</code>, <code>FormViewport</code>, layout arithmetic, reusable components.
+### InteractForms, dialogs, keys, styles, help bindings, and explicit input ownership.
+### RefreshDomain-payload-free invalidation starts an ordinary query; request tokens reject stale results.
+
+    <code>pkg/testutil/tuitest</code> is the deterministic program driver. It tests the toolkit and completed application without becoming part of either.
+
     ## Typed messages keep ownership visible
-    **Interaction**shell routes input→**Update**domain screen→**Cmd**application call→**typed Msg**result returns
-    ### Reusable mechanics<p>Generic list items retain their typed domain values while satisfying Bubbles interfaces.
+    **<code>tea.Msg</code>**input arrives→**Root shell**consults <code>Interaction</code>→**ViewModel**updates state→**<code>tea.Cmd</code>**returns typed result
+    ### Reusable mechanicsGeneric list items retain their typed domain values while satisfying Bubbles interfaces.
 ### Domain choicesPublish, complete, cancel, adjust, and retire remain bindings owned by their domain adapters.
+
+    External change? Inactive screens become stale. Active input finishes first, then a domain-payload-free invalidation starts the screen's normal tokenized query.
 
     ## Tests follow the ownership
     pure presentation model testscomponent update and rendering testsdomain surface testsreal Bubble Tea program driverroot navigation and input ownershipcross-surface persisted behavior
 
-  Chapter six<h1>Grow a retained-mode GUI in slices</h1>Fyne changes the interaction model, so the adapter should change too.
+  Chapter six<h1>Adapt the MVVM toolkit to retained widgets</h1>Fyne changes the interaction model, so the reusable mechanics change with it.
 06
 
     ## Start from the application seam
     **<code>main/gui</code>**database, actor, logs, application, session, native lifecycle**domain GUI surfaces**presenters and views shaped for each bounded context**<code>pkg/toolkits/gui</code>**shell, forms, tables, semantic controls, dialogs, executors**Fyne runtime**retained widgets, callbacks, windows, platform event loop
 
-    ## Adapt MVVM to retained widgets
-    ### Presentation model- plain state- validation- latest-request ownership- no native widgets### Presenter- loads through application- publishes deterministic state- owns submission and errors- uses injected dialogs### View- Fyne controls- focus and selection- pointer bindings- native rendering
+    ## Make state publication the binding seam
+    ### State- plain typed snapshot- items and selection- mode, form, errors- busy and action state### Presenter- calls the application- owns latest loads- admits one submission- publishes clones via <code>OnChange</code>### View- subscribes to state- updates Fyne controls- binds pointer and keys- owns widget-local state
+    Synchronous UI actions can publish directly. Async completions and external invalidation cross the injected <code>Dispatcher</code> before touching presenter or widget state.
+
+    ## The GUI toolkit owns retained-mode mechanics
+    **Shell + Route**cache and activate views→**Standard pages**layout and hierarchy→**Semantic controls**stable test identities→**Domain view**renders state
+    ### Navigation<code>UnsavedChanges</code> guards route changes. <code>Commander</code> gives menus, shortcuts, and controls the same intents.
+### PresentationList, form, filter, paging, table, tag, validation, dialog, and error mechanics stay domain-free.
+### TestingSemantic controls preserve visible guards so tests trigger the same behavior as a person.
+
+    ## Async work has two boundaries
+    **Presenter**requests work→**Executor**runs application call→**Dispatcher**publishes on UI thread→**View**updates widgets
+    ### <code>LatestRequest[T]</code>Cancels superseded loads and rejects stale queued publications.
+### <code>Submission</code>Admits one mutation, then releases on dispatched completion before presenting its result.
+### <code>GatedDispatcher</code>Drops widget publications after desktop shutdown closes the publication gate.
 
     ## Reviewable slices kept the change surface small
     **Shell**routes + lifecycle**Models**state + errors**Toolkits**standard mechanics**Domains**workspace by workspace**Parity**paging + workflows**Lifecycle**drain accepted work**Evidence**process + visual checks
@@ -348,6 +381,10 @@ type Interaction struct {
 
     ## Reuse mechanics within a surface
     **CLI toolkit**JSON input and output, reflection-based tables**TUI toolkit**view contracts, list/detail, forms, dialogs, layout**GUI toolkit**shell, tables, semantic controls, executors, dispatchers**Domain surfaces**compose only the matching toolkit with domain workflows
+
+    ## Reusable does not mean symmetrical
+    <table class="matrix"><thead><tr><th>Toolkit</th><th>Reusable shape</th><th>Why it differs</th></tr></thead><tbody><tr><td>CLI</td><td>encoders, decoders, tables</td><td>one invocation, then exit</td></tr><tr><td>TUI</td><td>autonomous forms, dialogs, and view models</td><td>messages repeatedly advance explicit state</td></tr><tr><td>GUI</td><td>shell, page objects, controls, async coordinators</td><td>widgets persist and callbacks publish state</td></tr></tbody></table>
+    Package shape follows the runtime’s interaction model. Shared application meaning sits below all three.
 
     ## Cross-cutting does not mean ownerless
     **surface**desired tags→**RunTaggedMutation**validate + compose→**domain mutation**owned behavior+**Tags.Replace**owned association

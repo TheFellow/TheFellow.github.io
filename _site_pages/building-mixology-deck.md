@@ -289,17 +289,27 @@ func (h *IngredientDeleted) Handle(
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter five</div><h1>Build a TUI toolkit without hiding the app</h1><p class="lede">Borrow MVVM’s presentation seam and Elm’s explicit loop, then let Go set the shape.</p><div class="section-no">05</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Chapter five</div><h1>Build a reusable MVVM toolkit for the terminal</h1><p class="lede">Bubble Tea supplies the runtime. Mixology owns the view-model contract.</p><div class="section-no">05</div></section>
 
   <section>
-    <h2>Two lineages, one adaptation</h2>
-    <div class="split"><div class="side"><h3>MVVM contributes</h3><p>Screen-owned presentation state, commands, standard view shapes, and testable view models.</p></div><div class="bridge">+</div><div class="side"><h3>The Elm Architecture contributes</h3><p><code>Model</code>, typed messages, explicit <code>Update</code>, rendered <code>View</code>, and effects as commands.</p></div></div>
-    <div class="big-statement">Interfaces replace base classes. Messages replace binding notifications. Constructors replace runtime discovery.</div>
+    <h2>Adapt the pattern to the runtime</h2>
+    <div class="split"><div class="side"><h3>Reusable MVVM seam</h3><p>A screen owns presentation state and commands behind a testable view-model contract.</p></div><div class="bridge">+</div><div class="side"><h3>Bubble Tea runtime</h3><p>Messages drive explicit updates, commands carry effects, and a string view renders each frame.</p></div></div>
+    <div class="big-statement">The framework is an implementation detail of the toolkit, not the architecture of every screen.</div>
   </section>
 
   <section>
     <h2>The shell owns application concerns</h2>
-    <div class="ownership"><div><h3>Domain surface</h3><ul><li>drink workflows</li><li>menu publication</li><li>order lifecycle</li><li>domain action keys</li></ul></div><div class="shared"><h3>Root application shell</h3><ul><li>current route and back stack</li><li>cached view models</li><li>global title, status, help</li><li>terminal size and global keys</li><li>explicit domain construction</li></ul></div><div><h3>TUI toolkit</h3><ul><li>list/detail</li><li>forms and dialogs</li><li>spinners and layout</li><li>test drivers</li></ul></div></div>
+    <div class="ownership"><div><h3>Domain surface</h3><ul><li>typed presentation state</li><li>queries and commands</li><li>domain workflows</li><li>action projection</li></ul></div><div class="shared"><h3>Root application shell</h3><ul><li>route and back stack</li><li>cached view models</li><li>title, status, help</li><li>global keys and sizing</li><li>deferred invalidation</li></ul></div><div><h3>TUI toolkit</h3><ul><li>view-model contract</li><li>list/detail and viewports</li><li>forms and dialogs</li><li>layout, keys, styles</li></ul></div></div>
+  </section>
+
+  <section>
+    <h2>Only the root is a <code>tea.Model</code></h2>
+    <div class="split"><div class="side"><h3>Bubble Tea contract</h3><pre><code class="language-go">Update(tea.Msg) (
+    tea.Model, tea.Cmd,
+)</code></pre><p>The executable shell satisfies this runtime boundary.</p></div><div class="bridge">≠</div><div class="side"><h3>Mixology contract</h3><pre><code class="language-go">Update(tea.Msg) (
+    ViewModel, tea.Cmd,
+)</code></pre><p>Every domain screen stays inside the richer repository-owned abstraction.</p></div></div>
+    <div class="callout">Returning <code>ViewModel</code> preserves help and interaction contracts after every update. Domain screens neither embed nor pretend to be <code>tea.Model</code>.</div>
   </section>
 
   <section>
@@ -321,9 +331,16 @@ type Interaction struct {
   </section>
 
   <section>
+    <h2>The toolkit is a kit, not a base screen</h2>
+    <div class="cards four"><div class="card"><h3>Browse</h3><p><code>ListDetail</code>, typed <code>ListItem[T]</code>, summaries, loading, filtering, paging, and selection.</p></div><div class="card"><h3>Compose</h3><p><code>DetailViewport</code>, <code>FormViewport</code>, layout arithmetic, reusable components.</p></div><div class="card"><h3>Interact</h3><p>Forms, dialogs, keys, styles, help bindings, and explicit input ownership.</p></div><div class="card"><h3>Refresh</h3><p>Domain-payload-free invalidation starts an ordinary query; request tokens reject stale results.</p></div></div>
+    <div class="callout"><code>pkg/testutil/tuitest</code> is the deterministic program driver. It tests the toolkit and completed application without becoming part of either.</div>
+  </section>
+
+  <section>
     <h2>Typed messages keep ownership visible</h2>
-    <div class="flow"><div class="node"><strong>Interaction</strong>shell routes input</div><div class="arrow">→</div><div class="node"><strong>Update</strong>domain screen</div><div class="arrow">→</div><div class="node"><strong>Cmd</strong>application call</div><div class="arrow">→</div><div class="node"><strong>typed Msg</strong>result returns</div></div>
+    <div class="flow"><div class="node"><strong><code>tea.Msg</code></strong>input arrives</div><div class="arrow">→</div><div class="node"><strong>Root shell</strong>consults <code>Interaction</code></div><div class="arrow">→</div><div class="node"><strong>ViewModel</strong>updates state</div><div class="arrow">→</div><div class="node"><strong><code>tea.Cmd</code></strong>returns typed result</div></div>
     <div class="cards two"><div class="card"><h3>Reusable mechanics</h3><p>Generic list items retain their typed domain values while satisfying Bubbles interfaces.</p></div><div class="card"><h3>Domain choices</h3><p>Publish, complete, cancel, adjust, and retire remain bindings owned by their domain adapters.</p></div></div>
+    <div class="callout">External change? Inactive screens become stale. Active input finishes first, then a domain-payload-free invalidation starts the screen's normal tokenized query.</div>
   </section>
 
   <section>
@@ -333,7 +350,7 @@ type Interaction struct {
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Chapter six</div><h1>Grow a retained-mode GUI in slices</h1><p class="lede">Fyne changes the interaction model, so the adapter should change too.</p><div class="section-no">06</div></section>
+  <section class="centered section-slide"><div class="eyebrow">Chapter six</div><h1>Adapt the MVVM toolkit to retained widgets</h1><p class="lede">Fyne changes the interaction model, so the reusable mechanics change with it.</p><div class="section-no">06</div></section>
 
   <section>
     <h2>Start from the application seam</h2>
@@ -341,8 +358,21 @@ type Interaction struct {
   </section>
 
   <section>
-    <h2>Adapt MVVM to retained widgets</h2>
-    <div class="ownership"><div><h3>Presentation model</h3><ul><li>plain state</li><li>validation</li><li>latest-request ownership</li><li>no native widgets</li></ul></div><div class="shared"><h3>Presenter</h3><ul><li>loads through application</li><li>publishes deterministic state</li><li>owns submission and errors</li><li>uses injected dialogs</li></ul></div><div><h3>View</h3><ul><li>Fyne controls</li><li>focus and selection</li><li>pointer bindings</li><li>native rendering</li></ul></div></div>
+    <h2>Make state publication the binding seam</h2>
+    <div class="ownership"><div><h3>State</h3><ul><li>plain typed snapshot</li><li>items and selection</li><li>mode, form, errors</li><li>busy and action state</li></ul></div><div class="shared"><h3>Presenter</h3><ul><li>calls the application</li><li>owns latest loads</li><li>admits one submission</li><li>publishes clones via <code>OnChange</code></li></ul></div><div><h3>View</h3><ul><li>subscribes to state</li><li>updates Fyne controls</li><li>binds pointer and keys</li><li>owns widget-local state</li></ul></div></div>
+    <div class="callout">Synchronous UI actions can publish directly. Async completions and external invalidation cross the injected <code>Dispatcher</code> before touching presenter or widget state.</div>
+  </section>
+
+  <section>
+    <h2>The GUI toolkit owns retained-mode mechanics</h2>
+    <div class="flow"><div class="node"><strong>Shell + Route</strong>cache and activate views</div><div class="arrow">→</div><div class="node"><strong>Standard pages</strong>layout and hierarchy</div><div class="arrow">→</div><div class="node"><strong>Semantic controls</strong>stable test identities</div><div class="arrow">→</div><div class="node"><strong>Domain view</strong>renders state</div></div>
+    <div class="cards"><div class="card"><h3>Navigation</h3><p><code>UnsavedChanges</code> guards route changes. <code>Commander</code> gives menus, shortcuts, and controls the same intents.</p></div><div class="card"><h3>Presentation</h3><p>List, form, filter, paging, table, tag, validation, dialog, and error mechanics stay domain-free.</p></div><div class="card"><h3>Testing</h3><p>Semantic controls preserve visible guards so tests trigger the same behavior as a person.</p></div></div>
+  </section>
+
+  <section>
+    <h2>Async work has two boundaries</h2>
+    <div class="flow"><div class="node"><strong>Presenter</strong>requests work</div><div class="arrow">→</div><div class="node"><strong>Executor</strong>runs application call</div><div class="arrow">→</div><div class="node"><strong>Dispatcher</strong>publishes on UI thread</div><div class="arrow">→</div><div class="node"><strong>View</strong>updates widgets</div></div>
+    <div class="cards"><div class="card"><h3><code>LatestRequest[T]</code></h3><p>Cancels superseded loads and rejects stale queued publications.</p></div><div class="card"><h3><code>Submission</code></h3><p>Admits one mutation, then releases on dispatched completion before presenting its result.</p></div><div class="card"><h3><code>GatedDispatcher</code></h3><p>Drops widget publications after desktop shutdown closes the publication gate.</p></div></div>
   </section>
 
   <section>
@@ -399,6 +429,12 @@ type Interaction struct {
   <section>
     <h2>Reuse mechanics within a surface</h2>
     <div class="layers"><div class="layer"><strong>CLI toolkit</strong><span>JSON input and output, reflection-based tables</span></div><div class="layer"><strong>TUI toolkit</strong><span>view contracts, list/detail, forms, dialogs, layout</span></div><div class="layer"><strong>GUI toolkit</strong><span>shell, tables, semantic controls, executors, dispatchers</span></div><div class="layer private"><strong>Domain surfaces</strong><span>compose only the matching toolkit with domain workflows</span></div></div>
+  </section>
+
+  <section>
+    <h2>Reusable does not mean symmetrical</h2>
+    <table class="matrix"><thead><tr><th>Toolkit</th><th>Reusable shape</th><th>Why it differs</th></tr></thead><tbody><tr><td>CLI</td><td>encoders, decoders, tables</td><td>one invocation, then exit</td></tr><tr><td>TUI</td><td>autonomous forms, dialogs, and view models</td><td>messages repeatedly advance explicit state</td></tr><tr><td>GUI</td><td>shell, page objects, controls, async coordinators</td><td>widgets persist and callbacks publish state</td></tr></tbody></table>
+    <div class="callout">Package shape follows the runtime’s interaction model. Shared application meaning sits below all three.</div>
   </section>
 
   <section>

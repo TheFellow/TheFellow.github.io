@@ -1,7 +1,7 @@
 ---
 title: "Turning Cross-Domain Calls into Enforced Boundaries"
 date: 2026-08-02
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-05 12:00:00 -0700
 excerpt: "A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history."
 permalink: /articles/turning-cross-domain-calls-into-enforced-boundaries/
 redirect_from: /guides/turning-cross-domain-calls-into-enforced-boundaries/
@@ -96,7 +96,7 @@ flowchart LR
 
 [Inventory's handler](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/inventory/handlers/ingredient-deleted.go) decides what retirement means for stock. [Drinks](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/drinks/handlers/ingredient-deleted.go) rewrites future recipes when a permanent replacement is explicit. Without one, an optional component can disappear, but a required component remains visible and moves the drink to `review_required`. [Orders](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/orders/handlers/ingredient-deleted.go) blocks snapshots that still name the retired ingredient. Adding another reaction changes the dispatcher and the interested domain, not the Ingredients command.
 
-Menus does not need a destructive retirement handler. It retains its drink membership and calculates readiness from current Drinks and Inventory state when asked. A published menu can therefore remain published while reporting degraded availability, while publishing a draft with a known blocker fails. The distinction preserves the business record and still prevents promotion into a state the application knows is unsuitable.
+Menus deliberately avoids deleting membership or unpublishing a menu, but it does participate in retirement. Its `IngredientDeleted` handler snapshots affected menus during `Handling`, then recomputes and persists the availability of their retained drink items after the other preparations complete. The separate readiness query calculates blockers and warnings from current Drinks and Inventory state when asked. A published menu can therefore remain published while reporting degraded availability, while publishing a draft with a known blocker fails. The distinction preserves the business record and still prevents promotion into a state the application knows is unsuitable.
 
 The event reduces knowledge, but it does not remove coordination. Mixology's generated dispatcher still invokes the complete handler set. That wiring is intentionally visible and testable.
 
