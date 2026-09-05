@@ -77,12 +77,57 @@ search: false
   </section>
 
   <section>
+    <h2>Let types carry the distinctions they can</h2>
+    <div class="cards">
+      <div class="card"><h3>Generated entity IDs</h3><p><code>DrinkID</code> and <code>IngredientID</code> share the same generated Cedar method shape without becoming interchangeable parameters.</p></div>
+      <div class="card"><h3>Closed amount variants</h3><p>An unexported <code>isAmount</code> method limits <code>Amount</code> to volume and discrete quantities owned by the kernel.</p></div>
+      <div class="card"><h3>Validated values</h3><p>Currency, price, quantity, and tag parsers turn accepted external text into domain-shaped values.</p></div>
+    </div>
+    <div class="callout">Go still permits zero values and package-local construction. Constructors, decoding validation, and boundary checks carry the guarantees the type system cannot.</div>
+    <p class="source"><a href="/articles/making-illegal-states-unrepresentable-in-go/">Adjacent article: Making Illegal States Unrepresentable in Go</a></p>
+  </section>
+
+  <section>
     <h2>One path through the application</h2>
     <div class="pipeline">
       <div class="pipe">SerializeTransaction</div><div class="pipe">Logging + Metrics</div><div class="pipe">TrackActivity</div><div class="pipe tx">UnitOfWork begins</div><div class="pipe">load → authorize → handle → authorize result</div><div class="pipe">dispatch events → record success</div><div class="pipe tx">commit everything, or nothing</div>
     </div>
     <div class="callout">Commands do not opt into transactions, authorization, events, or audit independently. The shared path owns the ordering.</div>
     <aside class="notes">This is runtime and unwind order. NewChain lists nested middleware outside-in, so the source declaration reads differently around dispatch and successful activity.</aside>
+  </section>
+
+  <section>
+    <h2>Go 1.27 puts the operation on its owner</h2>
+    <div class="split code-split">
+      <div class="side"><div class="eyebrow">Before</div><pre><code class="language-go">spec := middleware.CommandSpec[
+    Input, Output,
+]{
+    Action: authz.ActionCreate,
+    Load:   load,
+    Handle: m.commands.Create,
+}
+return middleware.RunCommand(
+    m.pipeline, ctx, spec,
+)</code></pre></div>
+      <div class="bridge">→</div>
+      <div class="side"><div class="eyebrow">Go 1.27</div><pre><code class="language-go">m.pipeline.Command(
+    ctx,
+    authz.ActionCreate,
+    input,
+    m.commands.Create,
+)</code></pre><p class="accent">The configured pipeline is the obvious starting point.</p></div>
+    </div>
+    <div class="callout">The completed migration removed <code>RunCommand</code> and <code>CommandSpec</code>. Domain facades now enter through the pipeline methods directly.</div>
+  </section>
+
+  <section>
+    <h2>Six typed entries, one middleware model</h2>
+    <div class="cards">
+      <div class="card"><h3><code>Query</code></h3><p>Load a Cedar entity, then authorize the result.</p></div><div class="card"><h3><code>QueryResource</code></h3><p>Authorize a known resource around a non-entity result.</p></div><div class="card"><h3><code>PageQuery</code></h3><p>Fill a page with authorized rows without leaking denied ones.</p></div>
+      <div class="card"><h3><code>Command</code></h3><p>Authorize caller input and resulting state.</p></div><div class="card"><h3><code>LoadCommand</code></h3><p>Load trusted state inside the transaction.</p></div><div class="card"><h3><code>LoadCommandActions</code></h3><p>Derive transition-specific action requirements from loaded state.</p></div>
+    </div>
+    <div class="callout">This removed wrappers and specification ceremony. Transactions, authorization, events, audit, paging, and failure behavior did not change.</div>
+    <p class="source"><a href="/notes/go-1-27-generic-methods-and-the-mixology-pipeline/">Adjacent note: Go 1.27 Generic Methods and the Mixology Pipeline</a></p>
   </section>
 
   <section>
@@ -95,6 +140,32 @@ search: false
       <tr><td>Composition completeness</td><td>Architecture test</td><td>Every domain is initialized by <code>app.New</code></td></tr>
       <tr><td>Business behavior</td><td>Integration test</td><td>Retirement rolls back as one operation</td></tr>
     </tbody></table>
+  </section>
+
+  <section>
+    <h2>Capture ownership instead of naming every module</h2>
+    <div class="split code-split">
+      <div class="side"><h3>Capture the imported target</h3><pre><code class="language-yaml"># imported target
+forbid:
+  - app/domains/{module}/internal/**
+
+# permitted importers reuse {module}
+except:
+  - app/domains/{module}
+  - app/domains/{module}/queries/**
+  - app/domains/{module}/handlers/**
+  - app/domains/{module}/internal/**</code></pre></div>
+      <div class="bridge">∧</div>
+      <div class="side"><h3>Importer must share ownership</h3><p>The forbidden import captures <code>{module}</code>. Importer exceptions reuse that value, so Drinks cannot claim Ingredients’ private implementation.</p><p class="accent">One rule covers every current and future domain.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Future adapters inherit the rule</h2>
+    <div class="flow"><div class="node"><strong>capture</strong><code>{module}</code> + <code>{surface}</code></div><div class="arrow">→</div><div class="node"><strong>forbid</strong>concrete surface imports</div><div class="arrow">→</div><div class="node"><strong>except</strong>same module + surface</div><div class="arrow">→</div><div class="node"><strong>fixture</strong>CLI, TUI, GUI, and Web</div></div>
+    <div class="cards two"><div class="card go"><h3>Allowed fixture</h3><p><code>drinks/surfaces/web/valid</code> imports its own <code>drinks/surfaces/web</code> implementation.</p></div><div class="card stop"><h3>Rejected fixture</h3><p><code>drinks/surfaces/web/invalid-gui</code> imports the GUI surface and domain-internal storage.</p></div></div>
+    <div class="callout">The same adversarial fixture separately rejects cross-domain surfaces, mismatched toolkits, and <code>main</code> imports across the current adapters. It proves the configuration, not merely a clean tree.</div>
+    <p class="source"><a href="/projects/arch-lint/">Adjacent project: arch-lint</a> · <code>architecture/arch_lint_test.go</code></p>
   </section>
 
   <section>
@@ -328,6 +399,15 @@ type Interaction struct {
   <section>
     <h2>Reuse mechanics within a surface</h2>
     <div class="layers"><div class="layer"><strong>CLI toolkit</strong><span>JSON input and output, reflection-based tables</span></div><div class="layer"><strong>TUI toolkit</strong><span>view contracts, list/detail, forms, dialogs, layout</span></div><div class="layer"><strong>GUI toolkit</strong><span>shell, tables, semantic controls, executors, dispatchers</span></div><div class="layer private"><strong>Domain surfaces</strong><span>compose only the matching toolkit with domain workflows</span></div></div>
+  </section>
+
+  <section>
+    <h2>Cross-cutting does not mean ownerless</h2>
+    <div class="flow"><div class="node"><strong>surface</strong>desired tags</div><div class="arrow">→</div><div class="node"><strong>RunTaggedMutation</strong>validate + compose</div><div class="arrow">→</div><div class="node"><strong>domain mutation</strong>owned behavior</div><div class="arrow">+</div><div class="node"><strong>Tags.Replace</strong>owned association</div></div>
+    <div class="transaction">domain result + complete tag set = one transaction</div>
+    <div class="cards"><div class="card"><h3>Application seam</h3><p>Participates in a caller transaction or opens one shared unit of work.</p></div><div class="card"><h3>Narrow contract</h3><p><code>TaggableEntity</code> exposes only <code>EntityUID</code> and <code>SetTags</code>.</p></div><div class="card"><h3>Bespoke interaction</h3><p>Each surface keeps parsing, confirmation, form state, and feedback native.</p></div></div>
+    <div class="callout">Invalid tags never start the mutation. A replacement failure rolls the domain change back with it.</div>
+    <p class="source"><a href="/projects/go-modular-monolith/">Adjacent project commentary: atomic tagged mutations</a></p>
   </section>
 
   <section>
