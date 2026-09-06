@@ -87,6 +87,18 @@ go run ./main/tui</code></pre>
     <aside class="notes">Use a fresh demo database for recording and prepare seeded data before the take. Current domain-schema changes require fresh seed data: they do not migrate older order snapshots or backfill historical acceptance. The default file is data/mixology.db; set MIXOLOGY_DB to a separate new path in the recording shell to preserve an existing database. The seed executable inserts fixtures, not an in-place historical upgrade. Open README.md for the repository map and main/gui/README.md before running the desktop client, which has native build prerequisites. Actor selection is a demo persona mechanism; authn provides identity and Cedar decides permissions.</aside>
   </section>
 
+  <section class="screenshot-slide" id="tui-dashboard">
+    <h2>The application behind the examples</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/tui-dashboard.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: The application behind the examples">
+        <img src="{{ '/assets/images/mixology/tui-dashboard.png' | relative_url }}" alt="Mixology terminal dashboard with Drinks, Ingredients, Inventory, Menus, Orders, Audit, and Tags workspaces plus recent activity." width="2778" height="1664">
+      </a>
+      <figcaption>Seven workspaces, live counts, and recent activity in the terminal shell.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">Show this immediately after the startup commands. The seeded application contains 18 ingredients, six drinks, and one published menu. Number keys navigate to each workspace. Counts and recent activity come from application queries. Captured from the real Bubble Tea root model with the repository TUI driver; ANSI output is rasterized in headless Chrome. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
+  </section>
+
   <section>
     <h2>The route through the series</h2>
     <table class="matrix"><thead><tr><th>Chapters</th><th>Question we will answer</th></tr></thead><tbody><tr><td>1.1–1.8 · foundations</td><td>Who owns a change, and what happens on every operation?</td></tr><tr><td>2.1–2.4 · collaboration</td><td>How do events, tags, filters, and storage preserve those rules?</td></tr><tr><td>3.1a–d · business walkthroughs</td><td>What happens when stock, recipes, and accepted orders disagree?</td></tr><tr><td>4.0–4.6 · interfaces</td><td>How do three runtimes expose the same application correctly?</td></tr><tr><td>3.2 · optional future workshop</td><td>What would a Procurement workflow add?</td></tr></tbody></table>
@@ -2126,6 +2138,18 @@ writer.Rollback(tx)
     <div class="cards two"><div class="card stop"><h3>Blockers</h3><p>Invalid canonical state, unavailable items, or temporary substitution.</p></div><div class="card warn"><h3>Warnings</h3><p>Operational concerns such as low stock that deserve visibility but not a false invariant.</p></div></div>
     <aside class="notes">Code walk: menus/readiness.go, its publication command, and menus/internal/availability/calculator.go. Demonstrate a healthy published menu, then retire a required ingredient. The menu remains published but reports degraded availability; trying to publish a draft with that problem fails. Readiness is an authorized report and the Publish command checks again. A temporary substitute may support service without approving a new canonical recipe.</aside>
   </section>
+  <section class="screenshot-slide" id="gui-menu-readiness">
+    <h2>Readiness becomes visible in the desktop</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-menu.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Readiness becomes visible in the desktop">
+        <img src="{{ '/assets/images/mixology/gui-menu.png' | relative_url }}" alt="Classic Cocktails menu scrolled to Readiness: ready and six available drinks: Margarita, Daiquiri, Gin & Tonic, Old Fashioned, Negroni, and Mojito." width="1100" height="720">
+      </a>
+      <figcaption>The published menu reports readiness and availability beside its curated drinks.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">This is the healthy starting point from the seed data. The detail form is scrolled down to the readiness report and six menu items. Connect these values to the authorized Menus report on the preceding slide. N/A is the seed menu’s unset price; availability is independently reported as available. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
+  </section>
+
   <section class="implementation-slide">
     <h2>Place saves the concrete fulfillment plan</h2>
     <pre><code class="language-go">usage, err := c.fulfillmentSnapshot(ctx, created)
@@ -2399,6 +2423,18 @@ IngredientUsage
     <div class="callout">Catalog edits affect future service. They must not reinterpret a customer's accepted order.</div>
     <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/models/snapshot.go">Code: app/domains/orders/models/snapshot.go</a></p>
     <aside class="notes">Trace fulfillmentSnapshot during Place. Acceptance and Plan initially contain the selected items; Amend clones the plan and affected nested slices before changing it, preserving acceptance. Historical GUI/TUI details use snapshots rather than looking up today's names and recipe steps. Order-level Notes remain on Order; per-line notes are in ItemSnapshot.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="gui-order-preparation">
+    <h2>An accepted order has a concrete preparation</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-order.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: An accepted order has a concrete preparation">
+        <img src="{{ '/assets/images/mixology/gui-order.png' | relative_url }}" alt="Desktop order detail scrolled to two Margaritas for bar seat four and approved preparation: tequila, lime juice, triple sec, recipe steps, and lime wheel garnish." width="1100" height="720">
+      </a>
+      <figcaption>Two Margaritas retain their quantities, preparation steps, and garnish in the approved plan.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">The capture harness places two Margaritas through Orders.Place against the seeded published menu, then opens and scrolls the actual order detail. The original acceptance and current plan agree here because no amendment has occurred. The displayed preparation reads the saved Plan; an amendment can change that plan while preserving Acceptance. N/A reflects unset seed menu prices. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -2821,6 +2857,30 @@ JSON decoding is not business validation.</code></pre>
     <aside class="notes">Continue from the CLI-created demo ingredient. Capture help on screen so the interaction remains understandable. Show the difference between a list refresh and an open editor: external invalidation should not replace text the person is typing. After the behavior demo, follow the root shell into the ingredient view model and its application call. The business operation is unchanged; the surrounding interaction persists.</aside>
   </section>
 
+  <section class="screenshot-slide" id="tui-ingredient-browser">
+    <h2>Browse without losing the selected record</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/tui-ingredients.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Browse without losing the selected record">
+        <img src="{{ '/assets/images/mixology/tui-ingredients.png' | relative_url }}" alt="Terminal Ingredients workspace with London Dry Gin selected, its spirit category, ounce unit, base-spirit and botanical tags, and description in the adjacent detail pane." width="2778" height="1664">
+      </a>
+      <figcaption>The list and selected ingredient stay together; the shell preserves navigation context.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">The real TUI driver opens Ingredients and moves to London Dry Gin using down keys. Point to the shared domain values in the detail pane, the list on the left, and the shell breadcrumb and status bar. The following image opens this same ingredient for editing. Captured from the real Bubble Tea root model with the repository TUI driver; ANSI output is rasterized in headless Chrome. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="tui-ingredient-editor">
+    <h2>Editing changes who owns the keys</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/tui-ingredient-edit.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Editing changes who owns the keys">
+        <img src="{{ '/assets/images/mixology/tui-ingredient-edit.png' | relative_url }}" alt="Terminal ingredient editor for London Dry Gin with name, category, unit, description, and tags beside the ingredient list." width="2778" height="1664">
+      </a>
+      <figcaption>The editor takes keyboard input while the ingredient list remains in view.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">The capture sends e to the selected ingredient. The form owns text and field navigation until save or cancel. Connect this concrete screen to input ownership, pending invalidation, and the operation context discussed later in the TUI chapter. No edit is submitted during capture. Captured from the real Bubble Tea root model with the repository TUI driver; ANSI output is rasterized in headless Chrome. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
+  </section>
+
   <section>
     <h2>Adapt the pattern to the runtime</h2>
     <div class="split"><div class="side"><h3>View-model responsibility</h3><p>A screen owns presentation state and commands behind a testable view-model contract.</p></div><div class="bridge">+</div><div class="side"><h3>Bubble Tea runtime</h3><p>Messages drive explicit updates, commands carry effects, and a string view renders each frame.</p></div></div>
@@ -2962,6 +3022,30 @@ acceptViewUpdate:
     <div class="layers"><div class="layer"><strong>Open</strong><span>Run <code>go run ./main/gui</code> against the same local database and find the demo ingredient.</span></div><div class="layer"><strong>Interact</strong><span>Browse, filter, edit tags, and compare pointer actions with keyboard shortcuts.</span></div><div class="layer"><strong>Change externally</strong><span>Update from the CLI; observe refresh without replacing an active form.</span></div><div class="layer"><strong>Inspect a decision</strong><span>Open Menus readiness and compare a permitted but blocked Publish action with a denied action.</span></div></div>
     <div class="callout">Widgets persist, queries complete asynchronously, and the window can close while application work is running.</div>
     <aside class="notes">Prepare native prerequisites from main/gui/README.md. Reuse the CLI/TUI scenario so viewers can compare outcomes. Prepare a draft menu with a known readiness blocker for the final step; use a manager and a restricted persona separately. Then open the domain presenter and view to show how state becomes visible controls. Use deterministic async tests to demonstrate request races and shutdown; those should not depend on getting lucky during a live recording.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="gui-ingredient-browser">
+    <h2>The desktop starts with a searchable catalog</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-ingredients.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: The desktop starts with a searchable catalog">
+        <img src="{{ '/assets/images/mixology/gui-ingredients.png' | relative_url }}" alt="Fyne Ingredients workspace with category and expression filters, create and refresh controls, and a table of seeded ingredients." width="1100" height="720">
+      </a>
+      <figcaption>Filters and a table expose the same ingredient catalog through retained widgets.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">This is the composed desktop as owner. The navigation belongs to the shell; the filter controls and ingredient table belong to the Ingredients surface. Compare the visible categories, units, and tags with the TUI list. The next slide selects London Dry Gin from this catalog. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="gui-ingredient-editor">
+    <h2>The same ingredient, a retained form</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-ingredient-edit.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: The same ingredient, a retained form">
+        <img src="{{ '/assets/images/mixology/gui-ingredient-edit.png' | relative_url }}" alt="Desktop editor for London Dry Gin with spirit category, ounce unit, juniper-forward description, and base-spirit and botanical tag tokens." width="1100" height="720">
+      </a>
+      <figcaption>London Dry Gin carries the same values into native fields and tag controls.</figcaption>
+    </figure>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <aside class="notes">Selecting the ingredient as owner opens the editable detail. The capture leaves the form unchanged, so Save and Cancel remain disabled. Scroll to reach further retirement fields. Compare the same ingredient in the TUI editor, then trace the presenter and view rather than treating this form as separate application behavior. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
   <section>
