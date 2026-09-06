@@ -167,6 +167,8 @@ I use a simple placement test:
 
 The table keeps a parity project from becoming an excuse to centralize everything. A behavior can be important in all clients while still requiring three implementations.
 
+The parity audit is a checkpoint, not a permanent claim about every future feature. The current Go application adds amendment and retained-stock lifecycle commands through the CLI, while GUI/TUI expose their historical results and guarded editing. Adding dedicated forms is a separate adapter task. The [onboarding deck](/talks/building-mixology.md) describes the current coverage.
+
 ## A repeatable third-surface audit
 
 The approach is useful before, during, and after implementation.

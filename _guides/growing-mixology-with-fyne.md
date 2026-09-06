@@ -1,7 +1,7 @@
 ---
 title: "Growing Mixology with a GUI Surface"
 date: 2026-07-29 10:00:00 -0700
-last_modified_at: 2026-09-05 12:00:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "A development journal for adding a retained-mode Fyne desktop client to Mixology while preserving bespoke surfaces, executable boundaries, and testable application behavior."
 permalink: /articles/growing-mixology-with-fyne/
 redirect_from: /guides/growing-mixology-with-fyne/
@@ -21,8 +21,10 @@ Mixology presents one application through a command-line interface, a persistent
 This guide is a development journal. It began before the desktop code existed, so the early sections preserve the questions and acceptance criteria that guided the work. Later sections record the reviewed commits, tests, running behavior, and closure audit that resolved them.
 
 <div class="notice--series" markdown="1">
-**Experiment status:** the closure audit now supports code-level functional parity across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
+**Experiment status:** the closure audit supports code-level functional parity for the workflows reviewed in this journal across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 </div>
+
+**Current workflow scope (September 2026):** the Go application also exposes substitution administration, order amendments, quarantine/release, disposal, and movement history through the CLI. GUI/TUI details render accepted preparation and amendment history, and their editors carry captured revisions and tag sets, but dedicated forms for all the newer operations are not part of this journal's parity claim. See the [current onboarding deck](/talks/building-mixology/) for those workflows.
 
 The experiment builds directly on [Mixology's existing TUI architecture](/articles/building-an-application-tui-toolkit/). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 

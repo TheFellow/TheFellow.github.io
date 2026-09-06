@@ -1,7 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-09-05 12:00:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /articles/building-an-application-tui-toolkit/
 redirect_from: /guides/building-an-application-tui-toolkit/
@@ -186,7 +186,7 @@ This narrow shared state does not turn the GUI and TUI into one presentation mod
 
 The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/components/tag_editor.go) is reusable without knowing Mixology's session, Cedar identity, or tag representation. Its type parameters and injected parse and replacement functions preserve typed results while domain adapters supply application behavior. Underneath, it composes the generic form toolkit.
 
-The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, calls the public `Tags.Replace` operation, and returns a `TagsSavedMsg`. It does not mutate its parent view model directly. The parent decides how the successful entity update affects its typed list and detail.
+The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, invokes its injected replacement function, and returns a `TagsSavedMsg`. Mixology supplies `Session.TagReplacer`, which captures the original tag set and passes it to public `Tags.Replace` for a stale-editor check. A concurrent tag change therefore conflicts instead of disappearing under a full replacement. The toolkit knows neither that policy nor the domain's persistence. It does not mutate its parent view model directly; the parent decides how the successful update affects its typed list and detail.
 
 Async ownership matters here. A save result carries the target entity identity, and an editor accepts only results it owns. Duplicate submission and cancellation are disabled while a save is in flight. At the broader tags workspace, asynchronous messages carry a monotonically increasing request ID as well as captured operation and target values. Navigating back invalidates the old generation; a late response is ignored instead of replacing a newer screen.
 

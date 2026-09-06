@@ -3,14 +3,16 @@
 
 @charset "utf-8";
 
+@use "sass:color";
+
 @import "minimal-mistakes/skins/{{ site.minimal_mistakes_skin | default: 'default' }}";
 
 {% if site.minimal_mistakes_skin == "neon" %}
 /* Keep the neon skin's Rouge highlighting aligned with its dark palette. */
 $base00: $code-background-color;
-$base04: mix($text-color, $code-background-color, 58%);
-$base05: mix($text-color, $code-background-color, 92%);
-$base06: mix($text-color, $code-background-color, 10%);
+$base04: color.mix($text-color, $code-background-color, 58%);
+$base05: color.mix($text-color, $code-background-color, 92%);
+$base06: color.mix($text-color, $code-background-color, 10%);
 $base0d: #74a2f2;
 $base0e: #e06bd6;
 {% endif %}
@@ -62,9 +64,9 @@ $base0e: #e06bd6;
 }
 
 .project-meta span {
-  border: 1px solid mix($text-color, $background-color, 25%);
+  border: 1px solid color.mix($text-color, $background-color, 25%);
   border-radius: 999px;
-  color: mix($text-color, $background-color, 82%);
+  color: color.mix($text-color, $background-color, 82%);
   font-size: 0.75em;
   padding: 0.25rem 0.7rem;
 }
@@ -82,7 +84,7 @@ $base0e: #e06bd6;
 
 .series-entry {
   align-items: start;
-  border-top: 1px solid mix($text-color, $background-color, 22%);
+  border-top: 1px solid color.mix($text-color, $background-color, 22%);
   display: grid;
   gap: 1rem;
   grid-template-columns: 2.5rem minmax(0, 1fr);
@@ -91,7 +93,7 @@ $base0e: #e06bd6;
 
 .series-entry__number {
   align-items: center;
-  background: mix($link-color, $background-color, 18%);
+  background: color.mix($link-color, $background-color, 18%);
   border: 1px solid $link-color;
   border-radius: 50%;
   color: $link-color;
@@ -112,7 +114,7 @@ $base0e: #e06bd6;
 }
 
 .series-entry__kind {
-  color: mix($text-color, $background-color, 62%);
+  color: color.mix($text-color, $background-color, 62%);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -137,7 +139,7 @@ $base0e: #e06bd6;
 }
 
 .ecc-figure figcaption {
-  color: mix($text-color, $background-color, 72%);
+  color: color.mix($text-color, $background-color, 72%);
   font-size: 0.75rem;
   margin-top: 0.65rem;
   text-align: center;
@@ -160,7 +162,7 @@ $base0e: #e06bd6;
 }
 
 .article-figure figcaption {
-  color: mix($text-color, $background-color, 72%);
+  color: color.mix($text-color, $background-color, 72%);
   font-size: 0.75rem;
   margin-top: 0.65rem;
   text-align: center;
@@ -196,8 +198,8 @@ $base0e: #e06bd6;
 }
 
 .feature-tile {
-  background: linear-gradient(145deg, mix($background-color, $text-color, 92%), $background-color);
-  border: 1px solid mix($background-color, $text-color, 78%);
+  background: linear-gradient(145deg, color.mix($background-color, $text-color, 92%), $background-color);
+  border: 1px solid color.mix($background-color, $text-color, 78%);
   border-radius: 1rem;
   box-shadow: 0 1rem 2.5rem rgba(#000, 0.18);
   color: $text-color;
@@ -228,7 +230,7 @@ $base0e: #e06bd6;
 }
 
 .feature-tile--static:hover {
-  border-color: mix($background-color, $text-color, 78%);
+  border-color: color.mix($background-color, $text-color, 78%);
   box-shadow: 0 1rem 2.5rem rgba(#000, 0.18);
   transform: none;
 }
@@ -284,7 +286,7 @@ $base0e: #e06bd6;
 }
 
 .feature-tile__description {
-  color: mix($text-color, $background-color, 78%);
+  color: color.mix($text-color, $background-color, 78%);
   display: block;
   font-size: 0.95rem;
   line-height: 1.65;
@@ -299,13 +301,13 @@ $base0e: #e06bd6;
 .feature-tile__topics span {
   background: rgba(#000, 0.2);
   border-radius: 999px;
-  color: mix($text-color, $background-color, 80%);
+  color: color.mix($text-color, $background-color, 80%);
   font-size: 0.68rem;
   padding: 0.3rem 0.65rem;
 }
 
 .feature-tile__updated {
-  color: mix($text-color, $background-color, 65%);
+  color: color.mix($text-color, $background-color, 65%);
   display: block;
   font-size: 0.72rem;
   letter-spacing: 0.03em;
@@ -360,8 +362,8 @@ $base0e: #e06bd6;
 }
 
 .resume-hero {
-  background: linear-gradient(145deg, mix($background-color, $text-color, 92%), $background-color);
-  border: 1px solid mix($background-color, $text-color, 78%);
+  background: linear-gradient(145deg, color.mix($background-color, $text-color, 92%), $background-color);
+  border: 1px solid color.mix($background-color, $text-color, 78%);
   border-radius: 1rem;
   box-shadow: 0 1rem 2.5rem rgba(#000, 0.18);
   padding: clamp(1.5rem, 4vw, 3rem);
@@ -393,7 +395,7 @@ $base0e: #e06bd6;
 }
 
 .resume-hero > p:not(.resume-kicker) {
-  color: mix($text-color, $background-color, 82%);
+  color: color.mix($text-color, $background-color, 82%);
   font-size: 1.05rem;
   line-height: 1.7;
   margin: 1.25rem 0 0;
@@ -409,7 +411,7 @@ $base0e: #e06bd6;
 
 .resume-contact a {
   align-items: center;
-  border: 1px solid mix($background-color, $text-color, 70%);
+  border: 1px solid color.mix($background-color, $text-color, 70%);
   border-radius: 999px;
   display: inline-flex;
   height: 2.65rem;
@@ -443,7 +445,7 @@ $base0e: #e06bd6;
 
 .resume-section > h2,
 .resume-section--split h2 {
-  border-bottom: 1px solid mix($background-color, $text-color, 80%);
+  border-bottom: 1px solid color.mix($background-color, $text-color, 80%);
   font-size: 1.35rem;
   margin-bottom: 1.5rem;
   padding-bottom: 0.65rem;
@@ -458,8 +460,8 @@ $base0e: #e06bd6;
 
 .resume-focus-grid article,
 .resume-work-grid article {
-  background: mix($background-color, $text-color, 94%);
-  border: 1px solid mix($background-color, $text-color, 82%);
+  background: color.mix($background-color, $text-color, 94%);
+  border: 1px solid color.mix($background-color, $text-color, 82%);
   border-radius: 0.8rem;
   padding: 1.25rem;
 }
@@ -492,7 +494,7 @@ $base0e: #e06bd6;
 
 .resume-focus-grid p,
 .resume-work-grid p {
-  color: mix($text-color, $background-color, 76%);
+  color: color.mix($text-color, $background-color, 76%);
   font-size: 0.78rem;
   line-height: 1.6;
   margin: 0;
@@ -506,7 +508,7 @@ $base0e: #e06bd6;
 }
 
 .resume-role + .resume-role {
-  border-top: 1px solid mix($background-color, $text-color, 82%);
+  border-top: 1px solid color.mix($background-color, $text-color, 82%);
   padding-top: 2.5rem;
 }
 
@@ -518,7 +520,7 @@ $base0e: #e06bd6;
 }
 
 .resume-role__meta span:last-child {
-  color: mix($text-color, $background-color, 68%);
+  color: color.mix($text-color, $background-color, 68%);
 }
 
 .resume-role__date {
@@ -541,7 +543,7 @@ $base0e: #e06bd6;
 }
 
 .resume-achievements article {
-  border-top: 1px solid mix($background-color, $text-color, 78%);
+  border-top: 1px solid color.mix($background-color, $text-color, 78%);
   padding-top: 0.85rem;
 }
 
@@ -563,7 +565,7 @@ $base0e: #e06bd6;
 }
 
 .resume-achievements p {
-  color: mix($text-color, $background-color, 82%);
+  color: color.mix($text-color, $background-color, 82%);
   font-size: 0.8rem;
   line-height: 1.55;
   margin: 0;
@@ -588,7 +590,7 @@ $base0e: #e06bd6;
 }
 
 .resume-technology p {
-  color: mix($text-color, $background-color, 78%);
+  color: color.mix($text-color, $background-color, 78%);
   line-height: 1.8;
 }
 

@@ -1,7 +1,7 @@
 ---
 title: "modular-monolith"
 date: 2026-08-09 19:30:00 -0700
-last_modified_at: 2026-08-10 22:19:30 -0700
+last_modified_at: 2026-09-06
 excerpt: "An idiomatic .NET port of Mixology that preserves behavior while rebuilding the architecture for C#."
 language: "C#"
 license: "MIT"
@@ -20,7 +20,7 @@ topics: ["Architecture", "Semantic port", "Expr", "Cedar"]
 [Read the Mixology series](/series/mixology/){: .btn }
 [Explore Expr for .NET](/projects/expr-dotnet/){: .btn }
 
-modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar application with seven bounded contexts, one embedded SQLite database, Cedar authorization, and independent CLI, TUI, and desktop clients. It preserves the Go application's observable behavior while rebuilding its architecture around C# and the .NET ecosystem.
+modular-monolith is the .NET 10 port of Mixology, a stateful cocktail-bar application with seven bounded contexts, one embedded SQLite database, Cedar authorization, and independent CLI, TUI, and desktop clients. It ports a documented Go behavior baseline while rebuilding the architecture around C# and the .NET ecosystem. Its parity ledger, rather than ongoing changes in the Go repository, defines that claim. The September 2026 Go additions for order amendments and retained stock lifecycle are described in the [Go project](/projects/go-modular-monolith/) and should not be inferred to exist here.
 
 That distinction shapes the project. The port does not reproduce Go package layouts or error conventions in C#. It uses the .NET Generic Host for configuration and lifetime, dependency injection for composition, EF Core for persistence, Terminal.Gui for the terminal application, and .NET MAUI for the desktop client. Closed domain states use explicit record hierarchies and exhaustive pattern matching. Public module facades expose deliberate collaboration contracts while commands, persistence rows, and handlers remain internal.
 
