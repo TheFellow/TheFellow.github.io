@@ -410,11 +410,108 @@ CLI: exit code 50
 TUI: style "error", original cause retained
   Readiness is temporarily unavailable
 
+GUI: severity Error, original cause retained
+  Readiness is temporarily unavailable
+
 Without WithUserMessage:
   internal error</code></pre>
-    <div class="callout">The safe message comes from the classified payload, so outer diagnostic prefixes do not leak into CLI or TUI output.</div>
+    <div class="callout">The safe message comes from the classified payload, so outer diagnostic prefixes do not leak into CLI, TUI, or GUI adapter output.</div>
     <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/errors/cli.go">Code: pkg/errors/cli.go</a></p>
-    <aside class="notes">Observed from ToCLIExit and ToTUIError using the previous example. ToCLIExit creates a terminal cli.Exit value with a message and code; ToTUIError also retains Err for diagnostics. Perform semantic inspection before converting to a terminal CLI result. The GUI uses the same classification through PresentError.</aside>
+    <aside class="notes">Observed from ToCLIExit, ToTUIError, and the GUI toolkit’s PresentError using the previous example. ToCLIExit creates a terminal cli.Exit value with a message and code; ToTUIError also retains Err for diagnostics. Perform semantic inspection before converting to a terminal CLI result. The GUI uses the same classification through PresentError.</aside>
+  </section>
+
+  <section class="implementation-slide" id="typed-errors-cli">
+    <h2>The CLI makes error kinds observable</h2>
+    <pre><code class="language-sh">$ echo '{"name":"","category":"spirit","unit":"oz"}' |
+    ./mixology ingredients create --stdin
+name is required
+$ echo $?
+10
+
+$ ./mixology ingredients create --category spirit --unit oz "London Dry Gin"
+insert ingredient "London Dry Gin"
+$ echo $?
+40
+
+$ ./deck-error-probe # injected Internal from the preceding example
+Readiness is temporarily unavailable
+$ echo $?
+50</code></pre>
+    <div class="callout"><code>Invalid → 10</code>, <code>Conflict → 40</code>, <code>Internal → 50</code>. The message goes to stderr; stdout stays empty.</div>
+    <p class="source"><a href="{{ '/assets/images/mixology/cli-errors.txt' | relative_url }}">Captured process output</a> · real CLI for Invalid / Conflict · injected Internal probe</p>
+    <aside class="notes">The first command reaches Ingredients.Create with a missing name; the second collides with the seeded London Dry Gin. Both use the built CLI executable so the process exit status is preserved; go run would itself exit 1 after reporting the application status. MIXOLOGY_DB points to fresh seeded data and MIXOLOGY_LOG_FILE sends diagnostics to a separate file. The transcript reflows the first command for slide width. The third executable calls the preceding injected action-evaluator example, then cli.HandleExitCoder(errors.ToCLIExit(err)), exactly as the CLI process boundary does. No database lock is induced. The following captures compare the native feedback for these same error kinds.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="tui-error-invalid">
+    <h2>Invalid: the terminal identifies bad input</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/tui-error-invalid.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Invalid: the terminal identifies bad input">
+        <img src="{{ '/assets/images/mixology/tui-error-invalid.png' | relative_url }}" alt="Terminal Ingredients workspace with the red root status message: name is required." width="2392" height="1576">
+      </a>
+      <figcaption>The root status bar renders <code>name is required</code> with error styling; the CLI exits <code>10</code>.</figcaption>
+    </figure>
+    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <aside class="notes">The harness calls Ingredients.Create with an empty name and asserts KindInvalid. It delivers that real domain error through routes.ErrorMsg to the composed TUI root. This captures the root status-bar adapter; domain forms have their own validation rendering. The underlying typed error remains available for inspection. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="gui-error-invalid">
+    <h2>Invalid: keep the correction in the form</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-error-invalid.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Invalid: keep the correction in the form">
+        <img src="{{ '/assets/images/mixology/gui-error-invalid.png' | relative_url }}" alt="Desktop New ingredient form with an empty name, spirit category, ounce unit, description Keep this correction, and inline Error: name is required." width="1100" height="720">
+      </a>
+      <figcaption>The GUI keeps <code>name is required</code> inline and preserves the other entered fields.</figcaption>
+    </figure>
+    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <aside class="notes">The real ingredient presenter submits a new-ingredient form with its name empty. Its preflight validation returns Invalid before calling the domain command, and PresentError selects inline severity. Show the retained category, unit, and description. The user can correct the name without reconstructing the form or dismissing a dialog. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="tui-error-conflict">
+    <h2>Conflict: the terminal changes severity</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/tui-error-conflict.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Conflict: the terminal changes severity">
+        <img src="{{ '/assets/images/mixology/tui-error-conflict.png' | relative_url }}" alt="Terminal Ingredients workspace with the yellow root status message: insert ingredient London Dry Gin." width="2392" height="1576">
+      </a>
+      <figcaption>The root status bar uses warning styling for <code>Conflict</code>; the CLI exits <code>40</code>.</figcaption>
+    </figure>
+    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <aside class="notes">The harness attempts Ingredients.Create with the already seeded London Dry Gin. The unique-name collision is translated by the DAO/store boundary into Conflict. Delivering it through routes.ErrorMsg makes the root choose warning styling. The captured message is the current DAO message, insert ingredient followed by the quoted name; the kind identifies the collision without parsing that text. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="gui-error-conflict">
+    <h2>Conflict: preserve the attempted change</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-error-conflict.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Conflict: preserve the attempted change">
+        <img src="{{ '/assets/images/mixology/gui-error-conflict.png' | relative_url }}" alt="Desktop New ingredient form for London Dry Gin with an Unable to complete operation dialog saying insert ingredient London Dry Gin; the entered description remains in the form." width="1100" height="720">
+      </a>
+      <figcaption>A warning dialog reports the collision while the duplicate-name form keeps its input.</figcaption>
+    </figure>
+    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <aside class="notes">The composed desktop submits the duplicate through the real ingredient presenter and application command. Assert that the error remains Conflict through ErrorPresentation, that severity is Warning, and that the description is preserved. ShowPresentation routes this severity to WindowDialogs.ShowWarning, whose Fyne implementation uses an information dialog titled Unable to complete operation. Renaming or choosing the existing ingredient is the recovery. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="tui-error-internal">
+    <h2>Internal: show the safe message in the terminal</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/tui-error-internal.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Internal: show the safe message in the terminal">
+        <img src="{{ '/assets/images/mixology/tui-error-internal.png' | relative_url }}" alt="Terminal Menus workspace with a red root status message: Readiness is temporarily unavailable. No database or evaluator details are displayed." width="2392" height="1576">
+      </a>
+      <figcaption>Injected dependency failure: the status bar shows <code>Readiness is temporarily unavailable</code>; exit code <code>50</code>.</figcaption>
+    </figure>
+    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <aside class="notes">This is the explicitly injected Internal failure from the preceding action-evaluator example. It is delivered to routes.ErrorMsg while the Menus workspace is open. ToTUIError finds the typed payload through both fmt wrappers, chooses error styling, and uses WithUserMessage. The capture asserts that database is locked, load readiness, and condition 0 do not appear on screen. This demonstrates adapter behavior, not a naturally occurring database outage. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
+  </section>
+
+  <section class="screenshot-slide" id="gui-error-internal">
+    <h2>Internal: show the safe message in a dialog</h2>
+    <figure class="surface-capture">
+      <a href="{{ '/assets/images/mixology/gui-error-internal.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: Internal: show the safe message in a dialog">
+        <img src="{{ '/assets/images/mixology/gui-error-internal.png' | relative_url }}" alt="Desktop Menus workspace dimmed behind an Error dialog saying Readiness is temporarily unavailable." width="1100" height="720">
+      </a>
+      <figcaption>Injected dependency failure: the GUI uses error severity and the same safe message as CLI and TUI.</figcaption>
+    </figure>
+    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <aside class="notes">Pass the same injected and wrapped Internal error through ShowPresentation and the composed window’s WindowDialogs. The GUI adapter keeps the original cause while displaying the safe override in an error dialog. Diagnostic Error() still contains the database cause for logging and inspection. This is a deterministic adapter demonstration; the underlying database remains healthy. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
   <section class="implementation-slide">

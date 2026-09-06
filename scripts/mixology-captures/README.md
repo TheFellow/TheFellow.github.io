@@ -48,3 +48,36 @@ The scripts fail if expected seed records are missing or a TUI frame exceeds its
 viewport. Inspect new PNGs before committing, and update HTML image dimensions
 if the renderer or viewport changes. The deck links each image at full size and
 includes alt text, captions, and capture context in speaker notes.
+
+## Typed error captures (chapter 1.3)
+
+The same script also captures six error screens and `cli-errors.txt` using the
+fixtures and harnesses in `errors/`:
+
+| Kind | Scenario | CLI | TUI root | GUI |
+| --- | --- | --- | --- | --- |
+| Invalid | Create an ingredient with no name. | stderr, exit 10 | error styling | inline form validation |
+| Conflict | Create the existing London Dry Gin again. | stderr, exit 40 | warning styling | warning dialog, input retained |
+| Internal | Inject a readiness failure through the real action evaluator. | safe stderr, exit 50 | safe error styling | safe error dialog |
+
+The first two CLI examples run the actual built CLI. `deck-error-probe` is a
+small capture-only executable that feeds the chapter's injected, wrapped
+Internal failure into the same `ToCLIExit` / `HandleExitCoder` boundary.
+`MIXOLOGY_LOG_FILE` separates diagnostic logging from the captured stderr.
+The capture asserts actual process exit codes, empty stdout, and safe output.
+
+The TUI harness obtains Invalid and Conflict from real application commands,
+then delivers each error through `routes.ErrorMsg`. These are specifically
+**root status-bar adapter captures**, not recordings of a form's submit path.
+The root uses `ToTUIError`; individual domain forms also have local error
+rendering. Error frames use 120 × 34 cells. The harness checks the typed kind,
+CLI code, TUI severity, displayed text, and absence of injected diagnostic detail.
+
+The GUI captures call the real ingredient presenter's submit method. Invalid
+is rejected by presenter preflight validation; Conflict reaches the domain/store
+and returns through the mutation callback. Both preserve entered form values.
+Internal is injected directly at `ShowPresentation` with the composed window's
+real dialogs. GUI assertions check typed classification through presentation
+wrappers, severity, safe message parity, and retained input on conflict.
+The Internal captures do not induce a database outage or claim to exercise an
+actual failed menu load.
