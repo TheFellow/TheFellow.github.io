@@ -207,3 +207,22 @@ body { margin: 0; }
 @media print {
   .deck-home, .deck-scroll { display: none; }
 }
+
+/* Give each real UI capture a full slide and retain a link to its native pixels. */
+.reveal .screenshot-slide h2 { font-size: 1.3em; margin-bottom: .45em; }
+.reveal .surface-capture { margin: 0; }
+.reveal .surface-capture > a { display: block; height: 440px; text-align: center; }
+.reveal .surface-capture img {
+  display: inline-block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0;
+  object-fit: contain;
+  border: 1px solid var(--mx-border);
+  border-radius: 6px;
+}
+.reveal .surface-capture figcaption { margin-top: .6em; color: var(--mx-soft); font-size: .56em; line-height: 1.4; }
+.reveal .screenshot-slide .source { margin: .65em 0 0; font-size: .36em; line-height: 1.4; }
+.reveal .surface-capture a:focus-visible { outline: 2px solid var(--mx-mint); outline-offset: 4px; }
