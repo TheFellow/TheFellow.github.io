@@ -1,7 +1,7 @@
 ---
 title: "Preserving Truth Through Operational Degradation"
 date: 2026-08-05
-last_modified_at: 2026-08-06 16:50:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "How explicit replacement, review states, readiness reports, and historical snapshots let a modular application degrade honestly without erasing business context."
 permalink: /articles/preserving-truth-through-operational-degradation/
 redirect_from: /guides/preserving-truth-through-operational-degradation/
@@ -26,10 +26,12 @@ This guide follows the modeling decisions. [Turning Cross-Domain Calls into Enfo
 
 Deletion describes storage. Retirement describes intent.
 
-The Ingredients domain exposes a Retire operation with its own Cedar action and stable presentation control. The request can include a replacement ingredient and conversion ratio. Absence is meaningful: it says that no approved permanent replacement is currently known.
+The Ingredients domain exposes a Retire operation with its own Cedar action and stable presentation control. The request can include a replacement ingredient and conversion ratio, a reason, and an explicit withdrawal choice. Without withdrawal, retirement discontinues future service while honoring usable existing reservations; withdrawal quarantines stock and blocks affected open orders. An absent replacement says that no approved permanent successor is currently known.
 
 ```go
 type Retirement struct {
+    Withdraw      bool
+    Reason        string
     ReplacementID IngredientID
     Ratio         float64
 }
@@ -49,26 +51,59 @@ Permanent replacement, temporary substitution, and removal express different fac
 | Temporary substitution | Fulfill a current shortage without redefining the product | Keep the canonical recipe and report limited availability |
 | No replacement | The required component has no approved successor | Preserve the unresolved reference and require review |
 
-An optional ingredient is the useful exception. If it retires without replacement, Drinks can remove it from the future recipe because its absence does not change whether the drink is achievable. A required ingredient remains in the recipe and moves the Drink from `active` to `review_required`. Keeping the reference tells an editor what must be resolved.
+An optional ingredient is the useful exception. If it retires without replacement, Drinks can remove it from the future recipe. If that would leave an empty recipe, the drink requires review rather than pretending that an empty recipe is valid. A required ingredient remains in the recipe and moves the Drink from `active` to `review_required`. Keeping the reference tells an editor what must be resolved.
 
-The event handler also cleans substitute lists. A retired substitute is removed, a permanent replacement can take its place, and duplicates of the primary ingredient are discarded. These small rules prevent a mechanically valid rewrite from leaving contradictory recipe state.
+The event handler also cleans substitute lists. A retired substitute is removed, a permanent replacement can take its place, and duplicates of the primary ingredient are discarded. An ID-only substitute candidate cannot express an independent ratio. A permanent replacement with a non-1 ratio affecting that candidate is rejected with the dependent drink ID until the candidate is explicitly revised. These rules prevent a mechanically valid rewrite from silently changing recipe quantities.
+
+Temporary catalog substitutions are persisted by original and substitute IDs, with ratio, quality, disabled state, notes, and revision. Renames do not alter those identities. `Ingredients.SetSubstitution` checks update authority on the original, read authority on the substitute, and dimensional compatibility. Rule and stock changes refresh menu availability, including dependencies that appear only through those rules.
 
 ## Rewrite plans, preserve records
 
 A replacement applies to future intent. It does not rewrite history.
 
-Drink recipes are current product definitions, so an explicit permanent replacement updates them transactionally. Pending Orders contain snapshots of the recipe selected when the order was placed. Those snapshots continue to name the retired ingredient and the order becomes blocked, even if the current Drink now uses its successor.
+Drink recipes are current product definitions, so an explicit permanent replacement updates them transactionally. Orders preserve an immutable `AcceptanceSnapshot` containing menu and drink names, agreed prices, ordered quantities and notes, preparation steps and garnish, and the chosen or omitted ingredients. A separate `Plan` describes currently approved preparation; `IngredientUsage` aggregates the quantities that Inventory reserves. Retirement does not change acceptance or silently amend the plan. Discontinuation honors usable reservations, while explicit withdrawal blocks affected open orders.
 
 ```text
 retirement with replacement
   current recipe       -> rewritten to replacement
-  historical snapshot  -> retains retired ingredient
-  pending order        -> blocked for explicit resolution
+  acceptance           -> unchanged
+  approved plan        -> unchanged unless explicitly amended
+  discontinue          -> honor usable reservations
+  withdraw             -> quarantine stock, block affected orders
 ```
 
 That asymmetry is important. If the application silently changed an existing order, it would lose the ability to explain what the customer requested, what inventory commitment was made, and why fulfillment later stopped. Snapshot fields are valuable only when later catalog changes cannot reinterpret them.
 
-Audit follows the same rule. The retirement entry touches the retired ingredient, the selected replacement, and every recipe or order changed by handlers. A reviewer can connect one authorized decision with its complete transactional blast radius without pretending that the event erased earlier facts.
+Audit distinguishes changed resources in `Touches`, referenced entities in `Participants`, and domain-authored before/after explanations in `Effects`. Merely inspecting a menu does not claim its contents changed. A `WorkflowID` connects composed commands; after a managed rollback, one failed activity records attempted effects, not committed changes. The returned error preserves both the original failure and a failure to record evidence.
+
+## Amend the approved plan explicitly
+
+`Orders.Amend` takes the order ID, expected revision, reason, explicit replacements, and optional preparation changes for selected drink lines. It accepts only pending or blocked orders. Ratios multiply currently selected quantities; unspecified preparation retains its previously approved values. The original acceptance and agreed prices remain unchanged.
+
+The command projects stock with its own reservations released before planning the complete amended order. That prevents an order from competing with its own existing commitment. `OrderAmended` carries before and after state. Inventory verifies the old reservation identities and quantities, releases them, and reserves the new plan; Menus prepares availability from the net change; Orders reconciles peers helped by released commitments. Failure in any reaction rolls the plan, amendment history, reservations, projections, and success audit back together.
+
+`App.AmendOrders` validates every selected order's revision before executing any amendment, because reconciliation can legitimately advance a peer's revision within the batch. It then reloads the in-transaction token for each command. `App.RetireIngredient` can compose those selected amendments and retirement in one workflow. The operator supplies the selection and reason; the system does not infer customer consent or amend unselected orders.
+
+## Keep physical stock after service eligibility changes
+
+| Operation | Physical record | Fulfillment consequence |
+| --- | --- | --- |
+| Discontinue | Retain quantity, identity, tags, and history | No new service; honor usable accepted reservations |
+| Withdraw or quarantine | Retain stock and reason | Block affected open orders |
+| Release quarantine | Retain stock; restore active or discontinued state according to catalog lifecycle | Reconcile commitments without reviving a retired catalog item |
+| Dispose | Subtract physical quantity and append a movement; retain the row | Reconcile shortages; zero remainder becomes disposed |
+
+A replacement ingredient does not inherit the old ingredient's physical stock. Disposal requires a positive amount, reason, and expected revision; it rejects removing more than exists. Completion refuses quarantined stock and incomplete or mismatched reservations.
+
+Stock and reservations persist canonical quantities, using ml for volume and each discrete unit's native identity. Display units are separate from `CostUnit`, the basis of `CostPerUnit`. Changing an ingredient from oz to ml changes presentation, not physical quantity, accepted usage, or the meaning of the price. Incompatible dimensional changes require a replacement identity.
+
+## Recover commitments as deliberately as they are blocked
+
+A stock correction below aggregate reservations blocks every affected open order; it does not choose winners by FIFO or priority. Replenishment, cancellation, amendment release, and quarantine release reconcile the same rule. Clearing one ingredient's blocker must not clear another.
+
+For example, two orders reserve 2 units each against 3 on hand. Both are blocked. Cancelling one releases 2 units; the remaining commitment fits and returns to pending if no other blockers remain. The Orders cancellation handler prepares this result from projected remaining reservations before Inventory removes reservation rows.
+
+Optional ingredients participate in planning too. An included optional is snapshotted, reserved, consumed, and costed. If a candidate would prevent fulfilling a required ingredient, the planner can backtrack and omit the optional. Its omission remains explicit in acceptance; nothing silently consumes it later. Cost estimates use a complete feasible recipe plan, skip omitted optionals, preserve unknown prices, and require compatible currencies for margins.
 
 ## Distinguish degradation from promotion
 
@@ -125,9 +160,9 @@ Authorization still executes inside the command and query pipelines. Presentatio
 
 ## Carry the same behavior through every surface
 
-The CLI, Bubble Tea TUI, and Fyne GUI all expose permanent replacement during retirement and menu-readiness inspection. They share domain operations, control IDs, and the function that composes readiness into an already-authorized Publish action. They do not share views.
+The CLI, Bubble Tea TUI, and Fyne GUI expose permanent replacement during retirement and menu-readiness inspection. Amendment, batch amendment, substitution administration, quarantine/release, disposal, and movement history also have CLI entrypoints. GUI/TUI historical details show accepted preparation and amendment reasons, but dedicated forms for all the newer workflows are not yet present. They share domain operations, control IDs, and the function that composes readiness into an already-authorized Publish action. They do not share views.
 
-The graphical and terminal interfaces load readiness asynchronously because it crosses several query boundaries. Each request captures the selected menu. If selection changes before the result returns, the surface rejects the stale result rather than attaching one menu's blockers to another menu's Publish control. The TUI follows the same rule for asynchronously loaded Drink names and never performs database reads during `View`.
+The graphical and terminal interfaces load readiness asynchronously because it crosses several query boundaries. Each request captures the selected menu. If selection changes before the result returns, the surface rejects the stale result rather than attaching one menu's blockers to another menu's Publish control. The TUI also keeps reads out of `View`. Historical order details use accepted names and preparation rather than resolving the current catalog as though it were the accepted order.
 
 The CLI remains synchronous, but it presents the same report codes and severities and receives the same rich command errors. Cross-surface tests can retire through one adapter and observe the resulting state through another, proving that business behavior lives below presentation.
 
@@ -135,16 +170,24 @@ The CLI remains synchronous, but it presents the same report codes and severitie
 
 The most useful scenarios begin with a healthy, published menu and a pending order, then introduce change:
 
-1. Retire a required ingredient without replacement. Assert `review_required`, blocked order history, degraded published menu, and rejected future publication.
+1. Discontinue a required ingredient without replacement. Assert recipe review, retained stock and acceptance, honored usable reservations, degraded menu, and rejected future publication. Explicit withdrawal should instead quarantine and block.
 2. Retire with a compatible permanent replacement. Assert the future recipe rewrite and unchanged historical snapshot.
-3. Retire an optional ingredient. Assert that the stale recipe reference disappears without forcing review.
+3. Retire an optional ingredient. Assert that the stale reference disappears; if the recipe becomes empty, assert review.
 4. Offer only a temporary substitute. Assert limited availability and a publication blocker without canonical rewrite.
 5. Leave stock merely low. Assert a warning that does not block publication.
 6. Query readiness as different actors. Assert useful visibility for managers and no disclosure to denied roles.
 7. Force a handler failure. Assert rollback across the retirement and every dependent mutation.
 8. Change interface selection while readiness loads. Assert that stale results are discarded.
+9. Permute retirement and cancellation handler order. Assert identical persisted results.
+10. Fail the second selected amendment. Assert all plans and reservations unchanged and one failed workflow activity retained.
+11. Change display units, quarantine, release, and dispose stock. Assert physical history, cost basis, and existing commitments stay coherent.
+12. Race a stale stock or combined entity/tag editor with another writer. Assert conflict and no partial commit.
+
+The [cross-domain regression tests](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_regression_test.go) and [workflow tests](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_workflows_test.go) make these distinctions executable. These domain-schema changes use a freshly seeded teaching database, not an invented backfill of missing historical facts.
 
 Each case protects a semantic boundary. Together they show that consistency means more than making all tables agree. Current plans, historical records, operational availability, user-visible actions, and authorization can legitimately represent different views of the same event.
+
+Drink and menu deletion have separate dependency guards. Active menus and historical order usage can veto drink deletion; order usage can veto menu deletion, including terminal history. Redrafting retains the prior publication timestamp. An immutable acceptance snapshot is not blanket permission to delete every referenced catalog identity.
 
 ## Preserve enough truth to recover
 

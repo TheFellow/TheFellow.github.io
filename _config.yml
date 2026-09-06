@@ -15,6 +15,14 @@ repository: "TheFellow/TheFellow.github.io"
 minimal_mistakes_skin: "neon"
 remote_theme: "mmistakes/minimal-mistakes@4.28.0"
 
+# The remote theme and its bundled Susy/Breakpoint still use legacy Sass.
+# Match the theme's upstream settings until it migrates to Sass modules:
+# https://github.com/mmistakes/minimal-mistakes/blob/master/_config.yml
+sass:
+  quiet_deps: true
+  # Our two theme imports must retain its shared skin/variable scope.
+  silence_deprecations: [import]
+
 # Site behavior
 search: true
 search_full_content: true

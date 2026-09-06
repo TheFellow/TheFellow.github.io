@@ -121,6 +121,8 @@ The three surfaces should still feel like views of one product. Mixology gets th
 - Feature parity is measured against workflows, not matching classes or screen layouts.
 - Cross-surface tests observe persisted effects through another real adapter.
 
+The current amendment and inventory-lifecycle commands illustrate the distinction between shared capability and adapter coverage. They have CLI entrypoints and public application contracts; GUI/TUI details show the historical results, but dedicated forms for all those commands are not yet present. Their editors also carry captured row revisions and expected tag sets so a stale form cannot silently replace newer state.
+
 Parity is the union of useful application behavior, not a demand for identical interaction. Order placement can be one CLI invocation, a terminal workflow with explicit modes, and a desktop form with constrained selectors. The three are equivalent when they validate and authorize the same request, produce the same domain effect, and report the same typed failure meaning.
 
 This also allows a surface to use its strengths. The CLI composes in scripts. The TUI exposes contextual keys and persistent navigation without leaving a terminal. The GUI uses native tables, menus, dialogs, focus, and accessibility semantics. Flattening those strengths would make consistency easier to describe and the product worse to use.

@@ -1,7 +1,7 @@
 ---
 title: "Bespoke Views over a Shared Application Boundary"
 date: 2026-08-01
-last_modified_at: 2026-09-05 12:05:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model."
 permalink: /articles/bespoke-views-over-a-shared-application-boundary/
 redirect_from: /guides/bespoke-views-over-a-shared-application-boundary/
@@ -122,6 +122,8 @@ The three surfaces should still feel like views of one product. Mixology gets th
 - Each surface presents loading, empty, validation, permission, and failure states in its native form.
 - Feature parity is measured against workflows, not matching classes or screen layouts.
 - Cross-surface tests observe persisted effects through another real adapter.
+
+The current amendment and inventory-lifecycle commands illustrate the distinction between shared capability and adapter coverage. They have CLI entrypoints and public application contracts; GUI/TUI details show the historical results, but dedicated forms for all those commands are not yet present. Their editors also carry captured row revisions and expected tag sets so a stale form cannot silently replace newer state.
 
 Parity is the union of useful application behavior, not a demand for identical interaction. Order placement can be one CLI invocation, a terminal workflow with explicit modes, and a desktop form with constrained selectors. The three are equivalent when they validate and authorize the same request, produce the same domain effect, and report the same typed failure meaning.
 

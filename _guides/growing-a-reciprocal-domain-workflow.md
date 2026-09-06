@@ -1,7 +1,7 @@
 ---
 title: "Growing a Reciprocal Domain Workflow"
 date: 2026-08-05
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows."
 permalink: /articles/growing-a-reciprocal-domain-workflow/
 redirect_from: /guides/growing-a-reciprocal-domain-workflow/
@@ -19,6 +19,8 @@ topics: ["Vertical slices", "Reciprocal events", "Process managers"]
 The next Mixology workshop will add Procurement as a complete vertical slice. It starts with suppliers and the ingredients they offer, grows into purchase orders and receipts, then connects Procurement to Inventory in both directions.
 
 That reciprocal relationship is the important part. Low stock in Inventory can create purchasing work, while receiving a purchase order in Procurement can replenish Inventory. Neither domain is simply upstream of the other. Their relationship forms a cycle in the business graph even though the package dependency graph must remain controlled.
+
+Orders and Inventory already demonstrate reciprocal consistency in the current repository: placement reserves stock, stock changes block orders, and cancellation or amendment release reconciles affected peers. `App.AmendOrders` and `App.RetireIngredient` also provide explicit same-transaction compositions through `middleware.RunWorkflow`. Procurement remains the proposed extension for work that spans time and commits, not the first example of reciprocal reactions.
 
 This guide records the intended workshop before the feature is implemented. It gives the future implementation a sequence, a set of ownership decisions, and concrete checkpoints. It also leaves room for the code to teach us where Mixology's current transactional dispatcher is sufficient and where a longer-running workflow deserves a different abstraction.
 
