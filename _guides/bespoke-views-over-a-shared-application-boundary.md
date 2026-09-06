@@ -1,7 +1,7 @@
 ---
 title: "Bespoke Views over a Shared Application Boundary"
 date: 2026-08-01
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "What Mixology shares across CLI, Bubble Tea, and Fyne, and why each surface keeps a presentation model shaped for its own runtime instead of adopting a universal view model."
 permalink: /articles/bespoke-views-over-a-shared-application-boundary/
 redirect_from: /guides/bespoke-views-over-a-shared-application-boundary/
@@ -45,9 +45,9 @@ This distinction also gives cross-surface tests a precise purpose. Mixology buil
 
 The CLI's natural unit is an invocation. Flags and positional arguments become a typed request, the command calls a public module, output is written, and the process exits. There is no durable selection, focus owner, dirty form, late publication, or back stack to model.
 
-Bubble Tea's natural unit is a message. A domain view model implements `Init`, `Update`, and `View`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
+Bubble Tea's natural unit is a message. A domain view model implements the repository-owned `pkg/toolkits/tui.ViewModel`, returns commands for asynchronous work, reports contextual help, and declares whether its current interaction captures text or handles Back. Only the root application shell implements `tea.Model`; it adapts the active view model to Bubble Tea while retaining global routing, sizing, help, invalidation, and key ownership. Forms distinguish selection from editing because terminal keys flow through one event loop. A workflow mode decides which child model owns the next message.
 
-Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A presenter publishes snapshots that a view translates onto the UI thread. Dialog completion arrives through callbacks. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
+Fyne's natural unit is a retained object and callback. Widgets remain alive while data changes around them. A domain presenter owns typed presentation state and application calls; a domain view owns widgets, live edit reconciliation, and callback wiring. The toolkit executor runs application work, the dispatcher returns async completions and external invalidations to Fyne's UI goroutine, and the dialog boundary owns window-mediated decisions and errors. A text entry can contain newer input than the last presenter snapshot. Request generations reject stale loads, submission ownership prevents overlapping mutations, and form-instance identity distinguishes two workflows containing equal values.
 
 These are not cosmetic variations over one protocol. They are correctness mechanisms imposed by each runtime.
 
@@ -78,7 +78,7 @@ Mixology avoids both outcomes. Its TUI view models live below each domain's `sur
 
 Rejecting a universal view model does not mean duplicating every screen. Mixology has two narrower kinds of presentation reuse.
 
-The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/readme.md) owns searchable list/detail composition, forms, dialogs, spinners, layout, and test drivers in Bubble Tea terms. [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/gui/readme.md) owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, dispatchers, and deterministic presentation test seams. The smaller [`pkg/toolkits/cli`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/cli/readme.md) standardizes JSON input and output plus human-readable rendering. These packages know their presentation technology but not Drinks, Menus, or Orders.
+The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/readme.md) owns searchable list/detail composition, forms, dialogs, spinners, and layout in Bubble Tea terms. The deterministic Bubble Tea driver lives separately in [`pkg/testutil/tuitest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/tuitest), where it drains commands, sends keys and messages, and asserts rendered behavior without making test support part of the production toolkit. [`pkg/toolkits/gui`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/gui/readme.md) owns a Fyne shell, standard list/detail and form layouts, semantic controls, tables, dialogs, executors, and dispatchers; [`pkg/testutil/fynetest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/fynetest) provides its deterministic presentation driver. The smaller [`pkg/toolkits/cli`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/cli/readme.md) standardizes JSON input and output plus human-readable rendering. These packages know their presentation technology but not Drinks, Menus, or Orders.
 
 The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
 
@@ -122,6 +122,8 @@ The three surfaces should still feel like views of one product. Mixology gets th
 - Each surface presents loading, empty, validation, permission, and failure states in its native form.
 - Feature parity is measured against workflows, not matching classes or screen layouts.
 - Cross-surface tests observe persisted effects through another real adapter.
+
+The current amendment and inventory-lifecycle commands illustrate the distinction between shared capability and adapter coverage. They have CLI entrypoints and public application contracts; GUI/TUI details show the historical results, but dedicated forms for all those commands are not yet present. Their editors also carry captured row revisions and expected tag sets so a stale form cannot silently replace newer state.
 
 Parity is the union of useful application behavior, not a demand for identical interaction. Order placement can be one CLI invocation, a terminal workflow with explicit modes, and a desktop form with constrained selectors. The three are equivalent when they validate and authorize the same request, produce the same domain effect, and report the same typed failure meaning.
 

@@ -1,7 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-06
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /articles/building-an-application-tui-toolkit/
 redirect_from: /guides/building-an-application-tui-toolkit/
@@ -57,7 +57,7 @@ The shell also keeps the application session in one place. Domain surfaces recei
 
 ## A small view-model contract
 
-Every top-level surface implements the [`ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/view.go):
+Every top-level domain surface implements the repository-owned [`tui.ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/view.go). It does not implement `tea.Model` directly:
 
 ```go
 type ViewModel interface {
@@ -70,7 +70,7 @@ type ViewModel interface {
 }
 ```
 
-The first three methods follow Bubble Tea. The help methods let the shell render a consistent footer without knowing a domain's commands. `Interaction` is the application-specific addition:
+The first three methods adapt Bubble Tea's vocabulary while preserving the narrower return type. The root `main/tui.App` is the only application-level `tea.Model`; it hosts the active `tui.ViewModel`, accepts its replacement value after `Update`, and remains responsible for routing, invalidation, framing, and process-wide keys. The help methods let that shell render a consistent footer without knowing a domain's commands. `Interaction` is the application-specific addition:
 
 ```go
 type Interaction struct {
@@ -79,7 +79,7 @@ type Interaction struct {
 }
 ```
 
-Input ownership changes with state. A list that is filtering captures printable characters. A form or dialog handles Escape itself. A browsing list can leave Escape to the shell. The shell asks the active view before interpreting a global key, which prevents an application shortcut from stealing text or dismissing the wrong layer.
+Input ownership changes with state. A list that is filtering captures printable characters. A form or dialog handles Escape itself. A browsing list can leave Escape to the shell. The shell asks the active view before interpreting a global key, and it also defers database invalidation while the view owns an interaction. Once the form, filter, or dialog yields ownership, the shell delivers a `DataInvalidatedMsg` and the domain view model reloads through its ordinary authorized query. The contract therefore prevents application shortcuts from stealing text, avoids dismissing the wrong layer, and keeps an external commit from overwriting an active edit.
 
 This tiny protocol does work that desktop frameworks often hide in focus systems, routed commands, and modal window ownership. Making it explicit fits a terminal event loop: the active view declares what it owns *now*, and tests can assert the declaration directly.
 
@@ -186,7 +186,7 @@ This narrow shared state does not turn the GUI and TUI into one presentation mod
 
 The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/components/tag_editor.go) is reusable without knowing Mixology's session, Cedar identity, or tag representation. Its type parameters and injected parse and replacement functions preserve typed results while domain adapters supply application behavior. Underneath, it composes the generic form toolkit.
 
-The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, calls the public `Tags.Replace` operation, and returns a `TagsSavedMsg`. It does not mutate its parent view model directly. The parent decides how the successful entity update affects its typed list and detail.
+The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, invokes its injected replacement function, and returns a `TagsSavedMsg`. Mixology supplies `Session.TagReplacer`, which captures the original tag set and passes it to public `Tags.Replace` for a stale-editor check. A concurrent tag change therefore conflicts instead of disappearing under a full replacement. The toolkit knows neither that policy nor the domain's persistence. It does not mutate its parent view model directly; the parent decides how the successful update affects its typed list and detail.
 
 Async ownership matters here. A save result carries the target entity identity, and an editor accepts only results it owns. Duplicate submission and cancellation are disabled while a save is in flight. At the broader tags workspace, asynchronous messages carry a monotonically increasing request ID as well as captured operation and target values. Navigating back invalidates the old generation; a late response is ignored instead of replacing a newer screen.
 

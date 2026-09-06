@@ -86,9 +86,9 @@ That distinction keeps observation separate from domain messaging. Several commi
 
 ## Make stale writes fail at the store boundary
 
-Refresh reduces stale windows, but it cannot close the race between reading a row and writing it. Rows opt into optimistic concurrency with a `revision` tag. Insert requires revision zero and establishes revision one. Reads return the current token. Update and delete include the expected revision in their SQL predicate, and update advances the value atomically.
+Refresh reduces stale windows, but it cannot close the race between reading a row and writing it. Rows declare optimistic concurrency with a `revision` tag. Architecture tests now require revision fields on registered domain records. Insert requires revision zero and establishes revision one. Reads return the current token. Update and delete include the expected revision in their SQL predicate, and update advances the value atomically.
 
-If another process or unit of work has already advanced the row, the predicate matches nothing and the store returns a typed conflict. Public domain models and presentation DTOs round-trip the token, but they do not compare or calculate it. The invariant stays beside the write, where it cannot become a check-then-update race. A stale GUI or TUI form therefore cannot silently replace a newer CLI change even when its refresh signal has not arrived yet.
+If another process or unit of work has already advanced the row, the predicate matches nothing and the store returns a typed conflict. Public domain models and presentation DTOs round-trip the token without calculating its next value. Commands may compare a submitted token with the loaded state for an early conflict, but the SQL predicate remains authoritative at the write. A stale GUI or TUI form therefore cannot silently replace a newer CLI change even when its refresh signal has not arrived yet.
 
 ## Keep transactional domain behavior intact
 
@@ -97,6 +97,10 @@ Mixology's most important persistence property is larger than a row update. A co
 The unit-of-work middleware still owns that lifecycle. Read operations use ordinary read transactions. Write operations acquire an immediate SQLite transaction and carry its application-owned `*store.Tx` through the command and leaf event handlers. A serializer prevents concurrent goroutines from using the same transaction object, while SQLite coordinates independent transactions and processes.
 
 Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, optimistic conflicts, committed-change signals, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
+
+Current domain-schema work uses a freshly seeded teaching database; accepted-order history and canonical stock data are not fabricated by a historical backfill. That is separate from the store's versioned schema migration mechanism described here. Re-seeding is the documented path for this domain-model revision.
+
+The current application also uses expected revisions for absolute stock sets and lifecycle commands, and captured complete tag sets for guarded editor replacements. SQLite writer serialization cannot detect stale user intent on its own. Composed commands use `RunWorkflow` when they own the transaction so a failed operation can record correlated attempted effects after rollback.
 
 ## Move filtering by preserving semantics
 

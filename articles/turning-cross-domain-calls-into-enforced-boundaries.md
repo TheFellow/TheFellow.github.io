@@ -16,7 +16,7 @@ Source: [https://thefellow.github.io/articles/turning-cross-domain-calls-into-en
 
 A boundary becomes interesting when a change on one side has consequences on the other.
 
-In [Mixology](https://github.com/TheFellow/go-modular-monolith), retiring an ingredient affects more than the Ingredients domain. Inventory may hold a quantity of it, Drinks may use it in recipes, Orders may have captured it in historical snapshots, and Menus may contain those drinks. The direct implementation is tempting: let the ingredient command call each dependent domain in sequence.
+In [Mixology](https://github.com/TheFellow/go-modular-monolith), retiring an ingredient affects more than the Ingredients domain. Inventory may hold a quantity of it, Drinks may use it in recipes, Orders may have captured it in historical snapshots, and Menus may contain those drinks. As an illustrative alternative, not the current implementation, direct orchestration is tempting: let the ingredient command call each dependent domain in sequence.
 
 ```go
 func (c *Commands) Retire(ctx *middleware.Context, ingredient *models.Ingredient) error {
@@ -66,10 +66,14 @@ The package names are useful because they state what kind of dependency a caller
 
 An ingredient command knows that an ingredient was retired. It should not know every consequence of that fact.
 
-The real [retirement command](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/ingredients/internal/commands/delete.go) updates the ingredient, records every touched entity for audit, and adds an `IngredientDeleted` event to the operation context. The event name remains compatible with the original workflow, but its payload now describes retirement: the retired ingredient, the time, and an optional permanent replacement with a conversion ratio.
+The real [retirement command](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/ingredients/internal/commands/delete.go) updates the ingredient, records every touched entity for audit, and adds an `IngredientDeleted` event to the operation context. The event name remains compatible with the original workflow, but its payload now describes retirement: the retired ingredient, time, reason, withdrawal choice, and an optional permanent replacement with a conversion ratio.
+
+The following excerpt abbreviates local variable names:
 
 ```go
 ctx.AddEvent(events.IngredientDeleted{
+    Withdraw:         retirement.Withdraw,
+    Reason:           retirement.Reason,
     Ingredient:       retired,
     DeletedAt:        now,
     Replacement:      replacement,
@@ -92,9 +96,9 @@ flowchart LR
     O --> OD[(Orders data)]
 ```
 
-[Inventory's handler](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/inventory/handlers/ingredient-deleted.go) decides what retirement means for stock. [Drinks](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/drinks/handlers/ingredient-deleted.go) rewrites future recipes when a permanent replacement is explicit. Without one, an optional component can disappear, but a required component remains visible and moves the drink to `review_required`. [Orders](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/orders/handlers/ingredient-deleted.go) blocks snapshots that still name the retired ingredient. Adding another reaction changes the dispatcher and the interested domain, not the Ingredients command.
+[Inventory's handler](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/inventory/handlers/ingredient-deleted.go) decides what retirement means for stock. [Drinks](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/handlers/ingredient-deleted.go) rewrites future recipes when a permanent replacement is explicit. Without one, an optional component can disappear, but a required component remains visible and moves the drink to `review_required`. [Orders](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/handlers/ingredient-deleted.go) blocks open orders using withdrawn stock, while ordinary discontinuation honors usable accepted reservations. Inventory retains the stock row, tags, quantity, and movement history instead of deleting them. Adding another reaction changes the dispatcher and the interested domain, not the Ingredients command.
 
-Menus does not need a destructive retirement handler. It retains its drink membership and calculates readiness from current Drinks and Inventory state when asked. A published menu can therefore remain published while reporting degraded availability, while publishing a draft with a known blocker fails. The distinction preserves the business record and still prevents promotion into a state the application knows is unsuitable.
+Menus deliberately preserves membership and publication state during ingredient retirement. Its [`preparedMenus`](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/handlers/prepared.go) helper calculates resulting availability during `Handling`, using stock overrides and the public pure `Drink.RetireIngredient` rule to project sibling effects. `Handle` persists only those prepared Menu values and does not read peer state. Scanning active menus covers implicit substitution dependencies, and caching per-drink calculations bounds repeated work within that scan. Inspected menus become audit participants; changed menus receive effects. The strict readiness query and publication command propagate dependency errors instead of converting them into ordinary unavailability.
 
 The event reduces knowledge, but it does not remove coordination. Mixology's generated dispatcher still invokes the complete handler set. That wiring is intentionally visible and testable.
 
@@ -104,7 +108,7 @@ Events do not imply asynchronous delivery. Mixology dispatches these events in p
 
 This choice gives the boundary a strong behavioral contract. If the Order reaction fails, the retirement and the changes made by earlier handlers roll back together. Callers observe one successful application operation or no change. The domains are separated by ownership and dependency direction without giving up immediate consistency.
 
-The dispatcher also has a preparation phase. A handler may need to discover affected state before another handler changes it. For retirement, Drinks discovers affected recipes before any reaction mutates related state. Every `Handling` method runs before any `Handle` method begins mutating data. Preparation gathers the information each reaction needs, then application starts.
+The dispatcher also has a preparation phase. A handler may need to discover affected state before another handler changes it. For retirement, Drinks discovers affected recipes before any reaction mutates related state. Every `Handling` method runs before any `Handle` method begins mutating data. Preparation must capture enough information to make application independent of sibling order. Merely remembering affected IDs and re-reading peer state during `Handle` would still allow order-dependent results. The barrier is per event, not per command: a second queued event observes the first event's completed reactions inside the same transaction.
 
 ```mermaid
 sequenceDiagram
@@ -124,9 +128,9 @@ sequenceDiagram
     end
 ```
 
-Handlers receive a narrower [`HandlerContext`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/context.go) that has transaction, principal, and audit capabilities but cannot add another event. A handler is a leaf reaction. This prevents one retirement from growing into an implicit, unbounded event chain whose transaction and ordering become difficult to reason about.
+Handlers receive a narrower [`HandlerContext`](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/context.go) that has transaction, principal, and audit capabilities but cannot add another event. A handler is a leaf reaction. This prevents one retirement from growing into an implicit, unbounded event chain whose transaction and ordering become difficult to reason about.
 
-The constraint is a design choice, not an incidental limitation. If a reaction needs to start a new business operation, that workflow should become explicit at the application boundary instead of hiding inside recursive dispatch.
+The constraint is a design choice, not an incidental limitation. Explicit composition belongs at the application boundary. `App.AmendOrders` validates a selected batch and runs ordinary `Orders.Amend` commands; `App.RetireIngredient` can combine that selection with retirement. `middleware.RunWorkflow` supplies one transaction and workflow ID. Child success activities commit with the business writes. On managed failure, they roll back and the owner records one failed activity containing attempted effects. If the caller supplied the transaction, that caller retains rollback and failure-recording responsibility. None of this requires recursive dispatch.
 
 ## Turn the package diagram into build rules
 
@@ -140,7 +144,7 @@ A package diagram documents intent. It does not stop a handler from importing an
 - queries cannot import commands;
 - handlers collaborate through public events, queries, and models rather than another domain's facade.
 
-The current [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) records the exact rules. Captures make ownership relative instead of hard-coding Ingredients, Drinks, Inventory, and Menus into separate declarations. When a developer adds a domain, the existing rule already knows what crossing its private boundary means.
+The current [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/.arch-lint.yaml) records the exact rules. Captures make ownership relative instead of hard-coding Ingredients, Drinks, Inventory, and Menus into separate declarations. When a developer adds a domain, the existing rule already knows what crossing its private boundary means.
 
 The rules deliberately leave collaboration paths open. A blanket ban on cross-domain imports would only push coupling into a generic package or duplicate useful contracts. Public models, queries, and events are the vocabulary through which domains may collaborate. The linter distinguishes those intentional paths from private commands and persistence.
 
@@ -150,7 +154,7 @@ Import checks cover edges in the dependency graph, but not missing nodes. Mixolo
 
 The architecture earns its complexity in integration tests that begin with healthy operations. They create ingredients, stock, recipes, orders, and menus, publish a valid menu, then retire an ingredient through the public module. The tests observe each consequence through public modules instead of calling handlers or inspecting dispatcher registration.
 
-One route retires an ingredient without a replacement. The drink requires review, the pending order is blocked, and the already-published menu reports degradation without losing its contents. Another route supplies a compatible permanent replacement and ratio. Future canonical recipes are rewritten, while historical order snapshots remain blocked because later catalog intent must not rewrite what an order recorded. These tests protect the complete route:
+One route discontinues an ingredient without a replacement: the future recipe requires review, the published menu degrades, and accepted orders retain usable reserved stock. Another explicitly withdraws stock and blocks affected orders. A compatible permanent replacement changes future recipes but never silently changes order acceptance; that requires an approved amendment of the current plan. These tests protect the complete route:
 
 ```text
 public module
@@ -161,6 +165,8 @@ public module
   -> owned reactions
   -> one commit
 ```
+
+The regression suite also permutes retirement and cancellation handler order and asserts identical persisted results. A selected-amendment test lets the first order succeed provisionally, fails the second on scarce replacement stock, and checks that only one failed workflow activity survives. These tests distinguish a working preparation protocol from a fortunate generated order.
 
 Failure-path tests make the atomicity claim executable by forcing one reaction to fail and asserting that every domain retains its original state. Readiness tests prove the second consistency boundary: low stock is a warning, while a review-required drink, retired reference, temporary substitution, or unavailable ingredient blocks publication. The import linter proves that forbidden shortcuts do not compile in the repository. The application tests prove that the allowed route still accomplishes the work.
 

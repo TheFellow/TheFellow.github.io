@@ -18,6 +18,8 @@ The next Mixology workshop will add Procurement as a complete vertical slice. It
 
 That reciprocal relationship is the important part. Low stock in Inventory can create purchasing work, while receiving a purchase order in Procurement can replenish Inventory. Neither domain is simply upstream of the other. Their relationship forms a cycle in the business graph even though the package dependency graph must remain controlled.
 
+Orders and Inventory already demonstrate reciprocal consistency in the current repository: placement reserves stock, stock changes block orders, and cancellation or amendment release reconciles affected peers. `App.AmendOrders` and `App.RetireIngredient` also provide explicit same-transaction compositions through `middleware.RunWorkflow`. Procurement remains the proposed extension for work that spans time and commits, not the first example of reciprocal reactions.
+
 This guide records the intended workshop before the feature is implemented. It gives the future implementation a sequence, a set of ownership decisions, and concrete checkpoints. It also leaves room for the code to teach us where Mixology's current transactional dispatcher is sufficient and where a longer-running workflow deserves a different abstraction.
 
 The workshop builds on [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md). That guide derives one-way reactions from an ingredient deletion. This one asks what changes when two stateful domains continually affect one another.

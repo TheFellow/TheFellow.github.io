@@ -14,11 +14,14 @@ Source: [https://thefellow.github.io/series/mixology/](https://thefellow.github.
 
 Mixology is a Go reference application that makes modular boundaries and cross-cutting concerns executable. This series follows the application from its architectural premise through transactional domain collaboration, presentation boundaries, native desktop testing, authorization, shared action meaning, and the migration from bstore to SQLite.
 
-The completed [.NET semantic port](/projects/modular-monolith.md) preserves that observable behavior while rebuilding the application with .NET 10, EF Core, Terminal.Gui, and .NET MAUI. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
+The [.NET semantic port](/projects/modular-monolith.md) explores the same architecture using .NET 10, EF Core, Terminal.Gui, and .NET MAUI; its own parity ledger defines the ported baseline. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
+
+The [onboarding deck](/talks/building-mixology.md) follows the current Go implementation, including Cedar's input/result authorization, prepared transactional reactions, accepted-order amendments, retained stock lifecycle, correlated audit evidence, and all three presentation toolkits. The articles include development journals and migration histories; their historical checkpoints remain identified as such.
 
 [Explore the project](/projects/go-modular-monolith.md)
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Explore the .NET port](/projects/modular-monolith.md)
+[Present the slide deck](/talks/building-mixology.md)
 
 1. **Article:** [Building High-Quality Software](/articles/building-high-quality-software.md): A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example.
 2. **Article:** [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md): A worked path from direct cross-domain orchestration to transactional retirement, owned reactions, and package rules that preserve both current operations and history.
