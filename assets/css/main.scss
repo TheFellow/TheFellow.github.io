@@ -339,13 +339,16 @@ $base0e: #e06bd6;
   transform: translateX(0.3rem);
 }
 
+.feature-tile--featured {
+  grid-column: 1 / -1;
+}
+
 @media (min-width: 64em) {
   .feature-tiles {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .feature-tile--featured {
-    grid-column: 1 / -1;
     min-height: 16rem;
   }
 
