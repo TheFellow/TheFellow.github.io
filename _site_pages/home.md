@@ -51,7 +51,7 @@ Software architecture, developer tools, and experiments explained through the pr
     <span class="feature-tile__cta">Browse series <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
   </a>
 
-  <a class="feature-tile" href="{{ '/notes/' | relative_url }}" style="--feature-accent: #f783ac;">
+  <a class="feature-tile feature-tile--featured" href="{{ '/notes/' | relative_url }}" style="--feature-accent: #f783ac;">
     <header class="feature-tile__header">
       <span class="feature-tile__icon">{% include feature-icon.html name="note" %}</span>
       <span>
