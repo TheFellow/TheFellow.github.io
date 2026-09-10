@@ -19,6 +19,7 @@ The local semantic names map to Lucide icons as follows:
 | `braces` | `braces` |
 | `route` | `route` |
 | `fluid` | `waves-horizontal` |
+| `racing` | `flag-triangle-right` |
 | `values` | `shapes` |
 | `layers` | `layers` |
 | `book` | `book-open` |

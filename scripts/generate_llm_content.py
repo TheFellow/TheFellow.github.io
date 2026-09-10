@@ -44,6 +44,8 @@ SUMMARIES = {
     "/projects/fkyeah/": ("Agent pipelines", "An F# engine executing inspectable, resumable AI workflows from DOT graphs."),
     "/projects/enumstruct/": ("Exhaustive unions", "A Go analyzer that detects missing pointer-union cases as models evolve."),
     "/projects/fluid/": ("Fluid simulation", "An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics."),
+    "/projects/the-line/": ("Racing playground", "Editable roads and car setups make racing physics visible."),
+    "/notes/building-a-racing-line-playground/": ("Racing physics", "Building racing lines from tyre forces, geometry, and profiling."),
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
     "/series/mixology/": ("Mixology series", "An ordered path through Mixology's executable application architecture."),
     "/talks/building-mixology/": ("Mixology deck", "A visual walkthrough of Mixology's executable modular architecture."),

@@ -24,3 +24,4 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Retiring Weave](/notes/retiring-weave.md): What I learned from building and benchmarking a compact local code index for coding agents.
 - [Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): How generic methods let Mixology put typed middleware operations on the pipeline they configure.
 - [Building a Persistent Merkle Trie in Go](/notes/building-a-persistent-merkle-trie-in-go.md): How canonical codecs, radix routing, structural sharing, and lazy snapshots fit together in a generic content-addressed trie.
+- [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and a surprisingly expensive optimization problem.

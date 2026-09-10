@@ -25,4 +25,5 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 - [F#kYeah](/projects/fkyeah.md): An F# pipeline engine for multi-stage AI workflows described as executable graphs.
 - [enumstruct](/projects/enumstruct.md): A Go analyzer that makes pointer-union switches exhaustive, catching missing cases as generated models evolve.
 - [fluid](/projects/fluid.md): An interactive 2D fluid simulator and visualization playground written in Go.
+- [the-line](/projects/the-line.md): A racing-line playground in Go for reshaping corners, experimenting with car setup, and watching the physics change a lap.
 - [ValueTypes](/projects/value-types.md): A small C# library for expressing structural equality in domain-driven value objects.
