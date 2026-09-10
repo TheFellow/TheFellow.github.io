@@ -7,18 +7,18 @@ Source: [https://thefellow.github.io/notes/building-a-racing-line-playground/](h
 ## Pyramid summary
 
 - **~2 words:** Racing physics
-- **~8 words:** Building racing lines from tyre forces, geometry, and profiling.
-- **Expanded:** A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and a surprisingly expensive optimization problem.
+- **~8 words:** Building racing lines and overtaking experiments from tyre physics.
+- **Expanded:** A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
 
 ## Full content
 
 I enjoy racing, and I program professionally. [The Line](/projects/the-line.md) is where those interests meet: a little physics playground for asking why one line through a corner works better than another. It has the same appeal as [fluid](/projects/fluid.md). Drag something, change a parameter, and watch the consequences. A line on a road becomes much more interesting when there is a speed trace beneath it and a ghost showing what changed.
 
-The result is a Go application with a native Ebitengine viewer, twelve fictional tracks, editable car setups, authored lines, pinned references, and a CLI that exports images, animations, and numerical results. The fun is in making a small change and following its consequences through the corner.
+The result is a Go application with a native Ebitengine viewer, twelve fictional tracks, editable car setups, authored lines, pinned references, and a CLI that exports images, animations, and numerical results. The latest addition is two-car racecraft: put another car in the corner and explore how starting position, inside defence, and exit speed change an overtaking attempt. The fun is in making a small change and following its consequences through the corner.
 
 <figure class="article-figure">
-  <img src="/assets/images/projects/the-line/club-loop.gif" alt="The Line showing a GT car and reference ghost around a closed circuit, with a synchronized speed chart." width="960" height="600">
-  <figcaption>The Club Loop preset. Playback shows the two cars at the same elapsed time; the chart compares their speed at the same road station.</figcaption>
+  <img src="/assets/images/projects/the-line/club-loop.gif" alt="The Line cycling through a qualifying ghost on Club Loop, an over-under move, and a pass/repass battle with speed and position-gap charts." width="960" height="600">
+  <figcaption>Qualifying on Club Loop, then an over-under in plan view and a pass/repass in elevated view. Racecraft puts both cars and their speed traces on the same clock.</figcaption>
 </figure>
 
 ## A road needs more than a smooth outline
@@ -106,10 +106,44 @@ The remaining cost shaped the interface. Even cold centreline evaluation missed 
 
 I also kept verification independent of the performance shortcuts. Tests reconstruct forces from exported geometry and kinematics, while deterministic fixture comparisons check that the faster default path preserves the recorded trajectories. The [search notes](https://github.com/TheFellow/the-line/blob/main/docs/SEARCH.md) describe the evaluation density, worker boundaries, and reproducible profiling commands.
 
+## Put another car in the corner
+
+The [two-car racecraft update](https://github.com/TheFellow/the-line/pull/1) adds a different question: what happens when the line I want is occupied? Green car A starts ahead, and amber car B attacks through an open corner sequence. Both have physical bodies, and their paths have to leave room for each other.
+
+I kept the existing vehicle solver and added a bounded tactical planner around it. Each example authors an intention, such as defending the inside or cutting back for a faster exit. The planner evaluates those smooth paths, then checks the pair over their shared race time. If B's preferred placement is occupied, it tries a small set of give-room alternatives that widen the placement, delay the crossover, and reduce the entry cap. The first certified pair becomes the experiment. If none works, the editor retains the last accepted run.
+
+The over-under, pass/repass, and defence examples use the same hairpin. With the default road car, the recorded results are:
+
+| Experiment | Starting gap | B's entry-cap delta | Completed passes |
+| --- | ---: | ---: | --- |
+| Over-under | 6 m | +3 m/s | B passes at 12.02 s |
+| Pass/repass | 5 m | +8 m/s | B passes at 6.16 s; A retakes the lead at 11.84 s |
+| Defend | 14 m | 0 m/s | A holds position |
+| Esses duel | 6 m | +4 m/s | Nose-ahead advantage trades; no completed pass |
+
+Increasing the over-under's starting gap to **11 m** prevents its completed pass before the finish. The example names describe the intended move; the inputs and evaluated trajectories determine whether it happens. The entry-cap delta needs careful reading too: it applies at station zero, while A begins farther along its path and may already have accelerated or braked. The panel shows both realized starting speeds so a zero cap delta does not imply an equal-speed start.
+
+## Leave room between the frames
+
+A convincing animation needs a geometric check behind it. Racecraft encloses each 4.4 m long car in a horizontal disc large enough to contain the whole body at any heading. That radius also increases the road-edge margin. For car-to-car separation, a bound on relative travel certifies whole time intervals; ambiguous intervals are subdivided. Reaching the resolution or work limit rejects the pair. One regression case has safe endpoints but a collision inside a **10 ms** interval, which catches the mistake of checking only displayed frames.
+
+The panel separates the certified clearance lower bound from the closest gap found in 401 samples. Pass markers use another measurement: a new leader must gain a full body length in road station, with events sampled every 0.02 s. Briefly getting a nose ahead is visible without becoming a completed pass. The experiment ends at the first finish and restarts both cars together.
+
+These choices make the teaching model concrete: enclosing discs leave conservative room, and tactical intentions are planned offline. The [racecraft design and measurements](https://github.com/TheFellow/the-line/blob/main/docs/RACECRAFT.md) explain the alternatives, clearance bounds, and observed outcomes.
+
 ## Make the comparison part of the toy
 
 A pinned reference is what turns a moving car into an experiment. Pin the current run, change one setting, and scrub the chart at the same road station. A negative elapsed-time delta means the new line got there sooner. The ghost answers the complementary question: where was the other car at this same elapsed time?
 
 You can also drag an authored line and test an idea directly. Opening the exit, sacrificing the first part of an esses, or changing the bank becomes a hypothesis with a visible consequence. Saving the study preserves the setup and reference so the comparison can be revisited.
+
+Press **R** to enter racecraft, choose an example, and adjust starting gap, entry-cap delta, lateral separation, or extra body clearance. Scrub the shared timeline to compare speeds and signed position gap, or step through a crossover with **, / .**. **Save race** preserves the road, vehicle, and race inputs together. Pressing **R** returns to the retained qualifying study and cancels any pending race plan.
+
+The same experiments can run from the CLI, including JSON, CSV, PNG, and GIF exports. From the repository root:
+
+```sh
+go run ./main/gui --mode racecraft --scenario pass-repass
+go run ./main/cli race --scenario over-under --gap 11 --format csv --out race.csv
+```
 
 That is the part I enjoy most about these little physics projects. The equations become controls, and the controls make the equations easier to question. The repository's [quick start](https://github.com/TheFellow/the-line#readme) gets the viewer running; the default esses is a good place to pin a ghost, move a corner, and see what happens.
