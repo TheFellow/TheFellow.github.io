@@ -16,6 +16,11 @@ are codified in [`AGENTS.md`](AGENTS.md).
 - Top navigation is in `_data/navigation.yml`.
 - Standalone pages live in `_site_pages/`.
 
+Articles, notes, and series appear together at `/writing/`, sorted by publication
+date with a type label on each tile. The original collection indexes and content
+URLs remain available for existing links. The generated `/writing.md` mirrors
+the combined list.
+
 ## LLM-readable site
 
 Every public page has a generated Markdown alternate: remove a trailing slash and

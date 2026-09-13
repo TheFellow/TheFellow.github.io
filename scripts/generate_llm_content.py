@@ -28,6 +28,7 @@ GENERATOR_NAME = "scripts/generate_llm_content.py"
 SUMMARIES = {
     "/": ("Engineering notes", "Public notes connecting software architecture to working projects."),
     "/projects/": ("Project catalog", "Open-source projects with design context beyond their repository READMEs."),
+    "/writing/": ("Collected writing", "Articles, notes, and series together, newest writing first."),
     "/articles/": ("Practical articles", "Long-form articles turning architecture principles into testable working designs."),
     "/notes/": ("Technical notes", "Focused observations drawn from active projects, experiments, and research."),
     "/series/": ("Reading series", "Ordered paths through related articles, notes, and projects."),
@@ -223,6 +224,35 @@ def sort_value(doc: Document) -> tuple[int, float | int]:
     return 2, 0
 
 
+def writing_kind(doc: Document) -> str | None:
+    return {
+        "_guides": "Article",
+        "_posts": "Note",
+        "_reading_series": "Series",
+    }.get(Path(doc["source"]).parts[0])
+
+
+def writing_by_date(all_docs: list[Document]) -> list[Document]:
+    # Match the human index: newest publication day, then title within each day.
+    selected = sorted(
+        (doc for doc in all_docs if writing_kind(doc)),
+        key=lambda doc: doc["title"].lower(),
+    )
+    return sorted(selected, key=lambda doc: str(doc["date"])[:10], reverse=True)
+
+
+def writing_index(doc: Document, all_docs: list[Document]) -> str | None:
+    if route_for(doc) != "/writing/":
+        return None
+    intro = clean_body(doc["body"].split('<div class="feature-tiles', 1)[0])
+    links = [
+        f"- **{str(item['date'])[:10]} · {writing_kind(item)}:** "
+        f"[{item['title']}]({markdown_url(route_for(item))}): {item['excerpt']}"
+        for item in writing_by_date(all_docs)
+    ]
+    return f"{intro}\n\n{'\n'.join(links)}"
+
+
 def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
     route = route_for(doc)
     prefixes = {
@@ -277,7 +307,7 @@ def series_body(doc: Document, all_docs: list[Document]) -> str | None:
 
 def home_body(all_docs: list[Document]) -> str:
     lines = []
-    for route in ("/projects/", "/articles/", "/notes/", "/series/", "/resume/"):
+    for route in ("/projects/", "/writing/", "/resume/"):
         doc = next(item for item in all_docs if route_for(item) == route)
         lines.append(
             f"- [{doc['title']}]({markdown_url(route)}): "
@@ -296,7 +326,8 @@ def render_page(doc: Document, all_docs: list[Document]) -> str:
     body = (
         home_body(all_docs)
         if route == "/"
-        else collection_index(doc, all_docs)
+        else writing_index(doc, all_docs)
+        or collection_index(doc, all_docs)
         or series_body(doc, all_docs)
         or clean_body(doc["body"])
     )
@@ -386,7 +417,7 @@ def main() -> None:
         write_if_changed(markdown_path(route), content)
     write_legacy_article_alternates(routes)
 
-    core_routes = ("/", "/projects/", "/articles/", "/notes/", "/series/", "/resume/")
+    core_routes = ("/", "/projects/", "/writing/", "/resume/")
     sections = {
         "Start Here": core_routes,
         "Projects": [
@@ -395,9 +426,7 @@ def main() -> None:
             if re.fullmatch(r"/projects/.+/$", route)
             or doc.get("project_listing") is True
         ],
-        "Articles": [route for route in routes if re.fullmatch(r"/articles/.+/$", route)],
-        "Notes": [route for route in routes if re.fullmatch(r"/notes/.+/$", route)],
-        "Series": [route for route in routes if re.fullmatch(r"/series/.+/$", route)],
+        "Writing": [route_for(doc) for doc in writing_by_date(docs)],
     }
     llms = [
         "# Ryan Harris — Engineering in Public",
@@ -408,10 +437,14 @@ def main() -> None:
     ]
     for heading, section_routes in sections.items():
         llms.append(f"\n## {heading}\n")
-        for route in sorted(section_routes):
+        for route in section_routes if heading == "Writing" else sorted(section_routes):
             doc = routes[route]
+            qualifier = (
+                f"{str(doc['date'])[:10]} · {writing_kind(doc)}. "
+                if heading == "Writing" else ""
+            )
             llms.append(
-                f"- [{doc['title']}]({SITE_URL}/{markdown_path(route)}): {SUMMARIES[route][1]}"
+                f"- [{doc['title']}]({SITE_URL}/{markdown_path(route)}): {qualifier}{SUMMARIES[route][1]}"
             )
     write_if_changed("llms.txt", "\n".join(llms) + "\n")
 

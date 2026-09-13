@@ -1,12 +1,8 @@
 main:
   - title: "Projects"
     url: /projects/
-  - title: "Articles"
-    url: /articles/
-  - title: "Notes"
-    url: /notes/
-  - title: "Series"
-    url: /series/
+  - title: "Writing"
+    url: /writing/
   - title: "Resume"
     url: /resume/
   - title: "GitHub"
