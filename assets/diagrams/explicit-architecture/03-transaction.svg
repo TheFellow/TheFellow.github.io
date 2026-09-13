@@ -1,69 +1,69 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1500" height="850" viewBox="0 0 1500 850" role="img" aria-labelledby="title desc">
 <title id="title">One command, one local commit</title><desc id="desc">Dashed numbered arrows describe execution. The preparation barrier applies separately to each event.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline a7c2efda8c0cd905089a27060242ff841bb0ad41. Linked panels open implementation evidence.</desc>
-<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#24649b"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#98600b"/></marker></defs>
-<style>text {font-family:Arial,Helvetica,sans-serif;fill:#183441} a:hover rect {stroke:#087e7e;stroke-width:3} .muted {fill:#45606b} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#087e7e}</style>
-<rect x="0" y="0" width="1500" height="850" rx="0" fill="#f6faf9" stroke="none" stroke-width="1.5"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74c0fc"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc36b"/></marker></defs>
+<style>text {font-family:Arial,Helvetica,sans-serif;fill:#fff6fb} a:hover rect {stroke:#ff4f94;stroke-width:3} .muted {fill:#d0c8d2} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#ff4f94}</style>
+<rect x="0" y="0" width="1500" height="850" rx="0" fill="#141010" stroke="none" stroke-width="1.5"/>
 <text x="40.0" y="42.0" font-size="15" text-anchor="start" class="eyebrow">MIXOLOGY / EXPLICIT ARCHITECTURE / 03</text>
 <text x="40.0" y="88.0" font-size="34" text-anchor="start" font-weight="700">One command, one local commit</text>
 <text x="40.0" y="122.0" font-size="18" text-anchor="start" class="muted">Dashed numbered arrows describe execution. The preparation barrier applies separately to each event.</text>
-<rect x="35" y="175" width="1430" height="410" rx="14" fill="#fff0d5" stroke="#98600b" stroke-width="1.5"/>
+<rect x="35" y="175" width="1430" height="410" rx="14" fill="#3b2d1b" stroke="#ffc36b" stroke-width="1.5"/>
 <text x="55.0" y="208.0" font-size="17" text-anchor="start" font-weight="700">COMMAND UNIT OF WORK / JOIN EXISTING TRANSACTION OR OWN COMMIT</text>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" target="_blank">
-<rect x="55" y="235" width="325" height="130" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="55" y="235" width="325" height="130" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="75.0" y="268.0" font-size="21" text-anchor="start" font-weight="700">1 · Load + authorize</text>
 <text x="75.0" y="298.0" font-size="17" text-anchor="start" class="muted">Trusted current input</text>
 <text x="75.0" y="325.0" font-size="17" text-anchor="start" class="muted">Policy inside transaction</text>
 </a>
-<path d="M380,300 L409,300" fill="none" stroke="#98600b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
+<path d="M380,300 L409,300" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" target="_blank">
-<rect x="410" y="235" width="325" height="130" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="410" y="235" width="325" height="130" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="430.0" y="268.0" font-size="21" text-anchor="start" font-weight="700">2 · Decide + authorize</text>
 <text x="430.0" y="298.0" font-size="17" text-anchor="start" class="muted">Mutate source state</text>
 <text x="430.0" y="325.0" font-size="17" text-anchor="start" class="muted">Authorize resulting resource</text>
 </a>
-<path d="M735,300 L764,300" fill="none" stroke="#98600b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
+<path d="M735,300 L764,300" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/dispatcher/dispatcher_gen.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/dispatcher/dispatcher_gen.go" target="_blank">
-<rect x="765" y="235" width="325" height="130" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="765" y="235" width="325" height="130" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="785.0" y="268.0" font-size="21" text-anchor="start" font-weight="700">3 · Dispatch events</text>
 <text x="785.0" y="298.0" font-size="17" text-anchor="start" class="muted">Prepare, then apply</text>
 <text x="785.0" y="325.0" font-size="17" text-anchor="start" class="muted">All interested owners</text>
 </a>
-<path d="M1090,300 L1119,300" fill="none" stroke="#98600b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
+<path d="M1090,300 L1119,300" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/chains.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/chains.go" target="_blank">
-<rect x="1120" y="235" width="325" height="130" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="1120" y="235" width="325" height="130" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="1140.0" y="268.0" font-size="21" text-anchor="start" font-weight="700">4 · Audit + commit</text>
 <text x="1140.0" y="298.0" font-size="17" text-anchor="start" class="muted">Record successful activity</text>
 <text x="1140.0" y="325.0" font-size="17" text-anchor="start" class="muted">Commit all domain writes</text>
 </a>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/events/ingredient-deleted.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/events/ingredient-deleted.go" target="_blank">
-<rect x="55" y="402" width="385" height="140" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="55" y="402" width="385" height="140" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="75.0" y="435.0" font-size="21" text-anchor="start" font-weight="700">The source fact</text>
 <text x="75.0" y="465.0" font-size="17" text-anchor="start" class="muted">Ingredients → IngredientDeleted</text>
 <text x="75.0" y="492.0" font-size="17" text-anchor="start" class="muted">Retirement, withdrawal, replacement</text>
 </a>
-<path d="M440,468 L485,468" fill="none" stroke="#98600b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
+<path d="M440,468 L485,468" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/handlers/prepared.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/handlers/prepared.go" target="_blank">
-<rect x="485" y="402" width="410" height="140" rx="14" fill="#e3effb" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="485" y="402" width="410" height="140" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="505.0" y="435.0" font-size="21" text-anchor="start" font-weight="700">Prepare every applicable receiver</text>
 <text x="505.0" y="465.0" font-size="17" text-anchor="start" class="muted">Calculate from pre-reaction state</text>
 <text x="505.0" y="492.0" font-size="17" text-anchor="start" class="muted">Menus projects stock + recipe changes</text>
 </a>
-<path d="M895,468 L940,468" fill="none" stroke="#98600b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
+<path d="M895,468 L940,468" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go" target="_blank">
-<rect x="940" y="402" width="505" height="140" rx="14" fill="#eee7f7" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="940" y="402" width="505" height="140" rx="14" fill="#30243e" stroke="#797482" stroke-width="1.5"/>
 <text x="960.0" y="435.0" font-size="21" text-anchor="start" font-weight="700">Apply leaf reactions in the same transaction</text>
 <text x="960.0" y="465.0" font-size="17" text-anchor="start" class="muted">Drinks · Inventory · Menus · Orders</text>
 <text x="960.0" y="492.0" font-size="17" text-anchor="start" class="muted">HandlerContext has no AddEvent</text>
 </a>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/workflow.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/workflow.go" target="_blank">
-<rect x="40" y="620" width="685" height="140" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="40" y="620" width="685" height="140" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="653.0" font-size="21" text-anchor="start" font-weight="700">Failure when this operation owns the transaction</text>
 <text x="60.0" y="683.0" font-size="17" text-anchor="start" class="muted">Roll back domain changes and success activities.</text>
 <text x="60.0" y="710.0" font-size="17" text-anchor="start" class="muted">Record the failed attempt separately after rollback.</text>
 <text x="60.0" y="737.0" font-size="17" text-anchor="start" class="muted">Workflow owner correlates attempted effects across child commands.</text>
 </a>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/cross_domain_regression_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/cross_domain_regression_test.go" target="_blank">
-<rect x="755" y="620" width="705" height="140" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="755" y="620" width="705" height="140" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="775.0" y="653.0" font-size="21" text-anchor="start" font-weight="700">Ownership and cost</text>
 <text x="775.0" y="683.0" font-size="17" text-anchor="start" class="muted">Caller-supplied transaction → caller owns completion and failure audit.</text>
 <text x="775.0" y="710.0" font-size="17" text-anchor="start" class="muted">One slow or failing reaction affects the originating command.</text>

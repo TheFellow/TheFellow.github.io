@@ -13,22 +13,25 @@ OUT = ROOT / 'assets/diagrams/explicit-architecture'
 SHA = 'a7c2efda8c0cd905089a27060242ff841bb0ad41'
 CODE = f'https://github.com/TheFellow/go-modular-monolith/blob/{SHA}/'
 SITE = 'https://thefellow.github.io/'
-C = {'ink':'#183441', 'muted':'#45606b', 'line':'#b1c7cc', 'paper':'#f6faf9',
-     'teal':'#087e7e', 'blue':'#24649b', 'gold':'#98600b', 'purple':'#7151a0',
-     'green':'#e0f3e8', 'ice':'#e3effb', 'sand':'#fff0d5', 'lav':'#eee7f7'}
+# Match the site's Minimal Mistakes neon skin, retaining semantic color groups.
+# Keep colors embedded so downloaded SVG/PDF files also render in the dark theme.
+C = {'ink':'#fff6fb', 'muted':'#d0c8d2', 'line':'#797482', 'paper':'#141010',
+     'panel':'#242021', 'accent':'#ff4f94',
+     'teal':'#63e6be', 'blue':'#74c0fc', 'gold':'#ffc36b', 'purple':'#c084fc',
+     'green':'#18372f', 'ice':'#1c2d46', 'sand':'#3b2d1b', 'lav':'#30243e'}
 
 class SVG:
     def __init__(self, width, height, step, title, subtitle):
         self.w, self.h = width, height
         self.parts = [f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-labelledby="title desc">',
           f'<title id="title">{escape(title)}</title><desc id="desc">{escape(subtitle)}. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline {SHA}. Linked panels open implementation evidence.</desc>',
-          '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#24649b"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#98600b"/></marker></defs>',
-          '<style>text {font-family:Arial,Helvetica,sans-serif;fill:#183441} a:hover rect {stroke:#087e7e;stroke-width:3} .muted {fill:#45606b} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#087e7e}</style>']
+          '<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="{blue}"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="{gold}"/></marker></defs>'.format_map(C),
+          '<style>text {{font-family:Arial,Helvetica,sans-serif;fill:{ink}}} a:hover rect {{stroke:{accent};stroke-width:3}} .muted {{fill:{muted}}} .mono {{font-family:monospace}} .eyebrow {{font-weight:700;letter-spacing:2px;fill:{accent}}}</style>'.format_map(C)]
         self.rect(0,0,width,height,C['paper'],rx=0,stroke='none')
         self.text(40,42,f'MIXOLOGY / EXPLICIT ARCHITECTURE / {step}',15,cls='eyebrow')
         self.text(40,88,title,34,bold=True)
         self.text(40,122,subtitle,18,cls='muted')
-    def rect(self,x,y,w,h,fill='white',stroke=C['line'],rx=14,dash=None):
+    def rect(self,x,y,w,h,fill=C['panel'],stroke=C['line'],rx=14,dash=None):
         self.parts.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" stroke="{stroke}" stroke-width="1.5"'+(f' stroke-dasharray="{dash}"' if dash else '')+'/>')
     def text(self,x,y,s,size=18,bold=False,anchor='start',cls=None):
         self.parts.append(f'<text x="{x:.1f}" y="{y:.1f}" font-size="{size}" text-anchor="{anchor}"'+(' font-weight="700"' if bold else '')+(f' class="{cls}"' if cls else '')+f'>{escape(s)}</text>')
@@ -36,7 +39,7 @@ class SVG:
         for i,line in enumerate(lines): self.text(x,y+i*leading,line,size,anchor=anchor,cls=cls)
     def link(self,url): self.parts.append(f'<a href="{escape(url,quote=True)}" xlink:href="{escape(url,quote=True)}" target="_blank">')
     def endlink(self): self.parts.append('</a>')
-    def card(self,x,y,w,h,title,lines,fill='white',url=None,size=18):
+    def card(self,x,y,w,h,title,lines,fill=C['panel'],url=None,size=18):
         if url: self.link(url)
         self.rect(x,y,w,h,fill)
         self.text(x+20,y+33,title,21,bold=True)
@@ -70,7 +73,7 @@ def boundaries():
 
 def domain_slice():
     s=SVG(1280,890,'02','A domain is a vertical slice','Directory proximity keeps a capability findable; import rules keep its responsibilities separate.')
-    s.rect(40,165,950,626,'white')
+    s.rect(40,165,950,626,C['panel'])
     s.text(65,205,'app/domains/<context>/',24,bold=True)
     s.card(65,230,900,105,'surfaces/{cli,tui,gui}',['Concrete presentation adapters; matching toolkit only; no access to private writes.'],C['green'],CODE+'app/domains/readme.md',size=17)
     s.arrow(235,335,235,375)
@@ -94,15 +97,15 @@ def transaction():
     steps=[('1 · Load + authorize',['Trusted current input','Policy inside transaction'],'pkg/middleware/run.go'),('2 · Decide + authorize',['Mutate source state','Authorize resulting resource'],'pkg/middleware/run.go'),('3 · Dispatch events',['Prepare, then apply','All interested owners'],'pkg/dispatcher/dispatcher_gen.go'),('4 · Audit + commit',['Record successful activity','Commit all domain writes'],'pkg/middleware/chains.go')]
     for i,(title,lines,path) in enumerate(steps):
         x=55+i*355
-        s.card(x,235,325,130,title,lines,'white',CODE+path,size=17)
+        s.card(x,235,325,130,title,lines,C['panel'],CODE+path,size=17)
         if i<3:s.arrow(x+325,300,x+354,300,True)
     s.card(55,402,385,140,'The source fact',['Ingredients → IngredientDeleted','Retirement, withdrawal, replacement'],C['green'],CODE+'app/domains/ingredients/events/ingredient-deleted.go',size=17)
     s.arrow(440,468,485,468,True)
     s.card(485,402,410,140,'Prepare every applicable receiver',['Calculate from pre-reaction state','Menus projects stock + recipe changes'],C['ice'],CODE+'app/domains/menus/handlers/prepared.go',size=17)
     s.arrow(895,468,940,468,True)
     s.card(940,402,505,140,'Apply leaf reactions in the same transaction',['Drinks · Inventory · Menus · Orders','HandlerContext has no AddEvent'],C['lav'],CODE+'pkg/middleware/context.go',size=17)
-    s.card(40,620,685,140,'Failure when this operation owns the transaction',['Roll back domain changes and success activities.','Record the failed attempt separately after rollback.','Workflow owner correlates attempted effects across child commands.'],'white',CODE+'pkg/middleware/workflow.go',size=17)
-    s.card(755,620,705,140,'Ownership and cost',['Caller-supplied transaction → caller owns completion and failure audit.','One slow or failing reaction affects the originating command.','Per-event preparation is a protocol tested with handler permutations.'],'white',CODE+'app/cross_domain_regression_test.go',size=17)
+    s.card(40,620,685,140,'Failure when this operation owns the transaction',['Roll back domain changes and success activities.','Record the failed attempt separately after rollback.','Workflow owner correlates attempted effects across child commands.'],C['panel'],CODE+'pkg/middleware/workflow.go',size=17)
+    s.card(755,620,705,140,'Ownership and cost',['Caller-supplied transaction → caller owns completion and failure audit.','One slow or failing reaction affects the originating command.','Per-event preparation is a protocol tested with handler permutations.'],C['panel'],CODE+'app/cross_domain_regression_test.go',size=17)
     s.save('03-transaction.svg')
 
 
@@ -123,7 +126,7 @@ def polar(cx,cy,r,a):
 
 def sector(s,cx,cy,r1,r2,a,b,fill):
     p1=polar(cx,cy,r2,a);p2=polar(cx,cy,r2,b);p3=polar(cx,cy,r1,b);p4=polar(cx,cy,r1,a)
-    s.parts.append(f'<path d="M {p1[0]} {p1[1]} A {r2} {r2} 0 0 1 {p2[0]} {p2[1]} L {p3[0]} {p3[1]} A {r1} {r1} 0 0 0 {p4[0]} {p4[1]} Z" fill="{fill}" stroke="#b1c7cc" stroke-width="1.5"/>')
+    s.parts.append(f'<path d="M {p1[0]} {p1[1]} A {r2} {r2} 0 0 1 {p2[0]} {p2[1]} L {p3[0]} {p3[1]} A {r1} {r1} 0 0 0 {p4[0]} {p4[1]} Z" fill="{fill}" stroke="{C["line"]}" stroke-width="1.5"/>')
 
 
 def complete():
@@ -131,7 +134,7 @@ def complete():
     s.text(40,163,'DRIVING SIDE',17,bold=True); s.text(1535,163,'DRIVEN TOOLS + OWNED ADAPTERS',17,bold=True)
     # Main map: seven conceptual slices, with a common operation boundary.
     cx,cy=1000,585
-    s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="410" fill="#e3effb" stroke="#24649b" stroke-width="3"/>')
+    s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="410" fill="{C["ice"]}" stroke="{C["blue"]}" stroke-width="3"/>')
     domains=[('Ingredients',['Catalog · substitutions','Retirement and replacement'],'ingredients'),('Drinks',['Recipes · preparation','Active / review required'],'drinks'),('Inventory',['Stock · reservations','Disposition · movements'],'inventory'),('Menus',['Curation · publication','Readiness · availability'],'menus'),('Orders',['Acceptance · current plan','Amendments · lifecycle'],'orders'),('Audit',['Append-only activities','Touches · participants · effects'],'audit'),('Tagging',['Associations · target registry','Domain-owned action resolution'],'tagging')]
     for i,(title,lines,path) in enumerate(domains):
         a=-90-360/14+i*360/7;b=a+360/7
@@ -141,7 +144,7 @@ def complete():
         s.text(x,y-19,title,24,bold=True,anchor='middle')
         s.lines(x,y+11,lines,15,23,anchor='middle')
         s.endlink()
-    s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="141" fill="white" stroke="#087e7e" stroke-width="2"/>')
+    s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="141" fill="{C["panel"]}" stroke="{C["teal"]}" stroke-width="2"/>')
     s.lines(cx,cy-42,['DOMAIN DECISIONS','Values · lifecycle','Historical commitments','Pure transition rules'],19,30,anchor='middle')
     s.text(cx,164,'PUBLIC APPLICATION OPERATIONS',17,bold=True,anchor='middle')
     s.text(cx,1015,'TYPED FACADES + CONFIGURED PIPELINE',16,bold=True,anchor='middle')
@@ -164,7 +167,7 @@ def complete():
     steps=[('1 · Load + authorize',['Trusted input','Current principal']),('2 · Execute + authorize',['Source mutation','Resulting resource']),('3 · Dispatch each event',['Prepare every receiver','Apply leaf reactions']),('4 · Success audit',['Domain effects','Same transaction']),('5 · Commit',['All writes together','One result to caller'])]
     for i,(title,lines) in enumerate(steps):
         x=60+i*380
-        s.card(x,1275,350,115,title,lines,'white',CODE+('pkg/dispatcher/dispatcher_gen.go' if i==2 else 'pkg/middleware/run.go'),size=17)
+        s.card(x,1275,350,115,title,lines,C['panel'],CODE+('pkg/dispatcher/dispatcher_gen.go' if i==2 else 'pkg/middleware/run.go'),size=17)
         if i<4:s.arrow(x+350,1332,x+379,1332,True)
     s.text(60,1420,'Retirement: IngredientDeleted → Drinks / Inventory / Menus / Orders. Preparation is per event; HandlerContext cannot AddEvent.',19,bold=True)
     s.text(60,1452,'Failure: owner rolls back, then records failed attempt. RunWorkflow correlates children; an external transaction retains caller ownership.',18,cls='muted')
@@ -172,7 +175,7 @@ def complete():
     s.card(40,1510,610,240,'SHARED VALUES + NARROW PORTS',['app/kernel: typed entity IDs, money,','measurement, quality, tags, tag.Repository.','Common identity and unit semantics.','Tagging owns associations; registered','domain loaders preserve target ownership.','Kernel does not depend on domains.'],C['green'],CODE+'app/kernel/readme.md',size=18)
     s.card(680,1510,640,240,'MECHANISMS + EXPLICIT WIRING',['middleware: transactions, activity, dispatch.','app.New injects dispatcher + audit writer.','pkg/dispatcher imports domain receivers.','pkg/authz assembles domain policy material.','Generators: events, policies, IDs, errors.','pkg is not uniformly domain-independent.'],C['lav'],CODE+'app/app.go',size=18)
     s.card(1350,1510,610,240,'OBSERVATION + PRESENTATION',['Gets authorize results; lists elide denials.','Action state: hidden / disabled / enabled.','Commands repeat policy and prerequisites.','Errors keep typed, transport-neutral meaning.','Log + metrics surround operation paths.','Audit explains effects; it is not a replay log.'],C['ice'],CODE+'pkg/presentation/actions/README.md',size=18)
-    s.rect(40,1780,1920,133,'white',stroke=C['teal'])
+    s.rect(40,1780,1920,133,C['panel'],stroke=C['teal'])
     s.text(60,1813,'EXECUTABLE EVIDENCE',20,bold=True)
     for x,title,path in [(60,'Types + Go internal','pkg/middleware/context.go'),(425,'Captured import rules','.arch-lint.yaml'),(790,'Topology + registration','architecture/domain_topology_test.go'),(1220,'Permutation + rollback','app/cross_domain_regression_test.go'),(1625,'Independent clients','main/gui/README.md')]:
         s.link(CODE+path);s.text(x,1850,title,18,bold=True);s.endlink()
