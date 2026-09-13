@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1400" height="880" viewBox="0 0 1400 880" role="img" aria-labelledby="title desc">
+<title id="title">Shared code has more than one job</title><desc id="desc">The package prefix is not the architecture: distinguish common values, mechanisms, and concrete wiring.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline a7c2efda8c0cd905089a27060242ff841bb0ad41. Linked panels open implementation evidence.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#24649b"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#98600b"/></marker></defs>
+<style>text {font-family:Arial,Helvetica,sans-serif;fill:#183441} a:hover rect {stroke:#087e7e;stroke-width:3} .muted {fill:#45606b} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#087e7e}</style>
+<rect x="0" y="0" width="1400" height="880" rx="0" fill="#f6faf9" stroke="none" stroke-width="1.5"/>
+<text x="40.0" y="42.0" font-size="15" text-anchor="start" class="eyebrow">MIXOLOGY / EXPLICIT ARCHITECTURE / 04</text>
+<text x="40.0" y="88.0" font-size="34" text-anchor="start" font-weight="700">Shared code has more than one job</text>
+<text x="40.0" y="122.0" font-size="18" text-anchor="start" class="muted">The package prefix is not the architecture: distinguish common values, mechanisms, and concrete wiring.</text>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/docs/architecture.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/docs/architecture.md" target="_blank">
+<rect x="40" y="170" width="840" height="126" rx="14" fill="#e3effb" stroke="#b1c7cc" stroke-width="1.5"/>
+<text x="60.0" y="203.0" font-size="21" text-anchor="start" font-weight="700">Domain contexts and public contracts</text>
+<text x="60.0" y="233.0" font-size="18" text-anchor="start" class="muted">Ingredients · Drinks · Inventory · Menus · Orders · Audit · Tagging</text>
+<text x="60.0" y="260.0" font-size="18" text-anchor="start" class="muted">Owner-local models, queries, and events express supported collaboration.</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/readme.md" target="_blank">
+<rect x="925" y="170" width="435" height="126" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<text x="945.0" y="203.0" font-size="21" text-anchor="start" font-weight="700">Concrete presentation</text>
+<text x="945.0" y="233.0" font-size="17" text-anchor="start" class="muted">Domain surfaces + main composition</text>
+<text x="945.0" y="260.0" font-size="17" text-anchor="start" class="muted">CLI / TUI / GUI remain independent.</text>
+</a>
+<path d="M450,296 L450,345" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M1130,296 L1130,345" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/kernel/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/kernel/readme.md" target="_blank">
+<rect x="40" y="345" width="840" height="130" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<text x="60.0" y="378.0" font-size="21" text-anchor="start" font-weight="700">app/kernel: shared vocabulary and narrow ports</text>
+<text x="60.0" y="408.0" font-size="18" text-anchor="start" class="muted">Typed IDs · money · measurement · quality · tags · tag.Repository</text>
+<text x="60.0" y="435.0" font-size="18" text-anchor="start" class="muted">Domains depend on these values; the kernel does not import domains.</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/toolkits/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/toolkits/readme.md" target="_blank">
+<rect x="925" y="345" width="435" height="130" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<text x="945.0" y="378.0" font-size="21" text-anchor="start" font-weight="700">pkg/toolkits/{cli,tui,gui}</text>
+<text x="945.0" y="408.0" font-size="17" text-anchor="start" class="muted">Framework-specific mechanics</text>
+<text x="945.0" y="435.0" font-size="17" text-anchor="start" class="muted">No application or sibling-toolkit imports</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/chains.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/chains.go" target="_blank">
+<rect x="40" y="520" width="635" height="240" rx="14" fill="#fff0d5" stroke="#b1c7cc" stroke-width="1.5"/>
+<text x="60.0" y="553.0" font-size="21" text-anchor="start" font-weight="700">Named mechanisms and concrete adapters</text>
+<text x="60.0" y="583.0" font-size="17" text-anchor="start" class="muted">middleware: configured operation pipeline</text>
+<text x="60.0" y="610.0" font-size="17" text-anchor="start" class="muted">store: owned SQLite persistence and query types</text>
+<text x="60.0" y="637.0" font-size="17" text-anchor="start" class="muted">filter: typed syntax, safe pushdown, exact evaluation</text>
+<text x="60.0" y="664.0" font-size="17" text-anchor="start" class="muted">errors / log / telemetry: common application mechanics</text>
+<text x="60.0" y="691.0" font-size="17" text-anchor="start" class="muted">Cedar entities appear in public models and IDs.</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" target="_blank">
+<rect x="705" y="520" width="655" height="240" rx="14" fill="#eee7f7" stroke="#b1c7cc" stroke-width="1.5"/>
+<text x="725.0" y="553.0" font-size="21" text-anchor="start" font-weight="700">Application wiring, including generated code</text>
+<text x="725.0" y="583.0" font-size="17" text-anchor="start" class="muted">app.New constructs modules and supplies dependencies.</text>
+<text x="725.0" y="610.0" font-size="17" text-anchor="start" class="muted">pkg/dispatcher imports concrete domain handlers and events.</text>
+<text x="725.0" y="637.0" font-size="17" text-anchor="start" class="muted">pkg/authz assembles domain policy material.</text>
+<text x="725.0" y="664.0" font-size="17" text-anchor="start" class="muted">Generators also produce entity IDs and typed error helpers.</text>
+<text x="725.0" y="691.0" font-size="17" text-anchor="start" class="muted">These packages are not all domain-independent libraries.</text>
+</a>
+<text x="40.0" y="843.0" font-size="15" text-anchor="start" class="muted">Ryan Harris · thefellow.github.io · 2026-09-12 · Go baseline a7c2efd</text>
+<text x="40.0" y="866.0" font-size="14" text-anchor="start" class="muted">Original diagram; progressive approach inspired by Herberto Graça’s Explicit Architecture. Open SVG directly to follow source links.</text>
+</svg>
