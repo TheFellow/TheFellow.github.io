@@ -14,8 +14,8 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), ordered by last updated, newest first. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
+- [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-13. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
-- [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-06. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [go-merkletrie](/projects/go-merkletrie.md): Updated 2026-09-03. An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
 - [Apex](/apex.md): Updated 2026-08-24. A working recreation of the Windows 3.1 unit converter my dad built and released as shareware in the 1990s.
 - [Expr for .NET](/projects/expr-dotnet.md): Updated 2026-08-17. A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution.

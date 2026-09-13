@@ -1,12 +1,12 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-09-12
+last_modified_at: 2026-09-13
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
 repository_url: "https://github.com/TheFellow/go-modular-monolith"
-last_updated: 2026-09-06
+last_updated: 2026-09-13
 series_url: "/series/mixology/"
 order: 10
 featured: true
@@ -34,11 +34,11 @@ Domain facades enter typed generic methods such as `pipeline.Command`, `pipeline
 
 Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or admit that no replacement is known. Event handlers prepare dependent results before any sibling reaction writes, then persist their own state in the originating transaction. Menus projects both stock disposition and the public pure recipe-retirement rule during preparation, so its result does not depend on whether Drinks or Inventory handles the event first. A replacement rewrites future recipes. An unresolved required ingredient leaves its recipe in `review_required`; menus retain their curation and report degraded availability. Any reaction failure rolls the operation back.
 
-That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI expose replacement and readiness through native interactions. The newer substitution administration, amendment, quarantine, release, disposal, and movement-history workflows have CLI entrypoints; the GUI/TUI show accepted preparation and amendment history without yet supplying dedicated forms for all those operations.
+That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI expose replacement and readiness through native interactions. The [September surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md) also brings substitution administration, single and batch amendments, initial stock receipt, quarantine, release, disposal, and movement history to all three clients. GUI/TUI forms retain reviewed revisions and preserve drafts after conflicts; details distinguish accepted history, approved fulfillment, and committed or attempted audit effects.
 
 Discontinuation excludes an ingredient from new service but honors usable accepted reservations. Explicit withdrawal quarantines retained stock and blocks affected open orders. Release, disposal, and movement history preserve stock identity, quantity, tags, and reasons instead of deleting the evidence. Canonical quantities keep display-unit changes separate from physical stock and the `CostUnit` that gives a price its meaning.
 
-Orders preserve immutable acceptance separately from their current approved plan. Acceptance includes menu and drink names, agreed prices, preparation, and selected or omitted ingredients. `Orders.Amend` changes only the current plan, with expected revision, actor, reason, and append-only before/after history. `App.AmendOrders` commits an explicitly selected batch together; `App.RetireIngredient` can compose that selection with retirement. The whole-order planner accounts for optional ingredients, and cancellation or amendment release reconciles other blocked orders.
+Orders preserve immutable acceptance separately from their current approved plan. Acceptance includes menu and drink names, agreed prices, preparation, and selected or omitted ingredients. `Orders.Amend` changes only the current plan, with expected revision, actor, reason, and append-only before/after history. `App.AmendOrders` commits an explicitly selected batch together; `App.RetireIngredient` can compose that selection with retirement. Separate surface operations do not share that combined transaction. The whole-order planner accounts for optional ingredients, and cancellation or amendment release reconciles other blocked orders.
 
 Audit distinguishes changed entities, referenced participants, and domain-authored effects. `middleware.RunWorkflow` correlates child commands and owns post-rollback failure recording: successful child activities roll back with their writes, while one failed workflow retains attempted effects. Failure to record evidence is joined with the business error. Captured row revisions and expected complete tag sets independently protect multi-part editors from stale intent.
 

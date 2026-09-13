@@ -80,7 +80,9 @@ The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com
 
 The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
 
-Domain surfaces supply the remaining meaning. Drinks owns recipe rows and substitute selection. Menus owns drink curation, publication, and cost analysis. Orders owns placement, completion, and cancellation. Audit remains read-only. A standard list/detail layout can arrange these workflows without claiming they are one generic CRUD screen.
+Domain surfaces supply the remaining meaning. Drinks owns recipe rows and substitute selection. Menus owns drink curation, publication, and cost analysis. Orders owns placement, approved amendments, completion, and cancellation. Inventory owns stock receipt, disposition, and movement history. Audit remains read-only. A standard list/detail layout can arrange these workflows without claiming they are one generic CRUD screen.
+
+Some of that domain presentation meaning can also be shared across runtimes. The [order amendment form](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/orders/surfaces/amendment.go) lives directly under `orders/surfaces`. It captures the reviewed revision, builds replacement and preparation requests, and summarizes a selected batch. The [audit detail helpers](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/audit/surfaces/detail.go) label committed effects and rolled-back attempts consistently. These helpers contain domain-specific presentation data and transformations; the GUI still owns widgets and callbacks, and the TUI still owns modes and messages.
 
 ```mermaid
 flowchart TD
@@ -121,7 +123,9 @@ The three surfaces should still feel like views of one product. Mixology gets th
 - Feature parity is measured against workflows, not matching classes or screen layouts.
 - Cross-surface tests observe persisted effects through another real adapter.
 
-The current amendment and inventory-lifecycle commands illustrate the distinction between shared capability and adapter coverage. They have CLI entrypoints and public application contracts; GUI/TUI details show the historical results, but dedicated forms for all those commands are not yet present. Their editors also carry captured row revisions and expected tag sets so a stale form cannot silently replace newer state.
+The [September surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md) extends that contract to substitution-rule administration, single and batch order amendments, stock receipt, quarantine, release, disposal, and movement history. Each has CLI entrypoints and native GUI/TUI interactions. The persistent interfaces show immutable acceptance alongside the current approved plan and amendment before/after records. Their forms retain captured revisions, and combined entity/tag edits retain the expected tag set; conflicts preserve the draft for review.
+
+An amendment batch also makes transaction ownership visible. GUI and TUI collect requests with each order's reviewed revision, show the selected batch, and submit it through `App.AmendOrders`. The application commits every selected amendment or none. Combining those amendments with ingredient retirement remains a separate application composition, `App.RetireIngredient`; performing retirement and amendment through separate surface operations does not create that shared transaction.
 
 Parity is the union of useful application behavior, not a demand for identical interaction. Order placement can be one CLI invocation, a terminal workflow with explicit modes, and a desktop form with constrained selectors. The three are equivalent when they validate and authorize the same request, produce the same domain effect, and report the same typed failure meaning.
 
