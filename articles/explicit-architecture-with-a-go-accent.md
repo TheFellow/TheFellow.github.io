@@ -34,13 +34,13 @@ The [third article][ea3] translates the maps into source organization and depend
 
 ## Start with the same application behind every surface
 
-[![Stage 1: CLI, TUI, and GUI enter public operations; application behavior connects to local persistence and policy evaluation.](/assets/diagrams/explicit-architecture/01-boundaries.svg)](/assets/diagrams/explicit-architecture/01-boundaries.svg)
+[![Stage 1: The urfave/cli CLI, Bubble Tea TUI, and Fyne GUI enter public operations; application behavior connects to local persistence and policy evaluation.](/assets/diagrams/explicit-architecture/01-boundaries.svg)](/assets/diagrams/explicit-architecture/01-boundaries.svg)
 
 *Stage 1. Start with ownership. [Open or download the SVG](/assets/diagrams/explicit-architecture/01-boundaries.svg).*
 
 Mixology has three executable composition roots: `main/cli`, `main/tui`, and `main/gui`. Each constructs the application and its domain surfaces. A fourth executable, `main/seed`, creates sample data. The application has seven contexts: Ingredients, Drinks, Inventory, Menus, Orders, Audit, and Tagging.
 
-A CLI invocation parses a request and exits. A Bubble Tea application owns a persistent message loop. A Fyne application owns retained controls, callbacks, and UI-thread publication. Each enters public application operations. A persistent session remembers the selected principal, while every operation gets fresh mutable middleware state.
+The urfave/cli CLI parses a request and exits. The Bubble Tea TUI owns a persistent message loop. The Fyne GUI owns retained controls, callbacks, and UI-thread publication. Each enters public application operations. A persistent session remembers the selected principal, while every operation gets fresh mutable middleware state.
 
 That is an architectural claim with observable consequences. Retiring an ingredient through the CLI must produce the same domain transition as retiring it through a desktop form. A denied operation must fail below the presentation. A presenter must not need a DAO to finish its screen.
 
@@ -52,7 +52,7 @@ The test was especially valuable because Fyne differed from Bubble Tea. Reusing 
 
 | Concern | Explicit Architecture reference | Mixology's concrete choice |
 | --- | --- | --- |
-| Delivery | Driving adapters and application ports [1][ea1] | Domain-owned CLI/TUI/GUI surfaces call public Go facades. |
+| Delivery | Driving adapters and application ports [1][ea1] | Domain-owned urfave/cli, Bubble Tea, and Fyne adapters call public Go facades. |
 | Core organization | Components crossing application/domain layers [1][ea1] | Seven contexts, with named public contracts and private implementation. |
 | Calls | Direct calls or a command/query bus [1][ea1] | Typed facade calls through one configured operation pipeline. |
 | Shared contracts | Shared kernel below components [2][ea2] | A small kernel plus owner-local public models, queries, and events. |
@@ -219,7 +219,7 @@ Each context owns stable control IDs and action projections. Cedar denial hides 
 
 The [navigation article](/articles/authorization-is-part-of-navigation.md) follows that policy through routes, dashboard aggregates, rows, and actions. The [action-projection note](/notes/projecting-actions-across-user-interfaces.md) describes the deliberately small shared state: ID, visibility, enabled status, and disabled reason. The command repeats authorization and invariants when it executes against current state.
 
-This is the kind of presentation sharing I want. The [bespoke-views article](/articles/bespoke-views-over-a-shared-application-boundary.md) explains why I stop short of a universal view model. Bubble Tea needs message ownership and commands. Fyne needs retained-control reconciliation, execution/publication seams, and stale-generation checks. The CLI needs parsing and output. Their common semantics do not make those interaction models interchangeable.
+This is the kind of presentation sharing I want. The [bespoke-views article](/articles/bespoke-views-over-a-shared-application-boundary.md) explains why I stop short of a universal view model. The urfave/cli CLI needs argument parsing, command dispatch, and output. The Bubble Tea TUI needs message ownership and commands. The Fyne GUI needs retained-control reconciliation, execution/publication seams, and stale-generation checks. Their common semantics do not make those interaction models interchangeable.
 
 The [TUI toolkit article](/articles/building-an-application-tui-toolkit.md) records a separate influence: CODE Framework's shells and standard views, adapted to Bubble Tea's event loop. Toolkits share mechanics within a runtime after several domains establish the need. Domain surfaces contribute vocabulary and workflows. Architecture rules prevent toolkit-to-application imports, sibling-toolkit coupling, and a surface borrowing the wrong runtime's toolkit.
 
