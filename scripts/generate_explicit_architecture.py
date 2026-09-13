@@ -57,7 +57,7 @@ class SVG:
 
 def boundaries():
     s=SVG(1200,730,'01','One application, three conversations','Driving adapters translate intent; public operations own the behavior that must agree.')
-    for y,title,lines,path in [(195,'CLI',['Arguments → typed request','One invocation, then exit'],'main/cli/README.md'),(355,'TUI / Bubble Tea',['Messages, commands, text','Persistent application session'],'main/tui/README.md'),(515,'GUI / Fyne',['Callbacks, retained widgets','Background work → UI thread'],'main/gui/README.md')]:
+    for y,title,lines,path in [(195,'CLI / urfave/cli',['Arguments → typed request','One invocation, then exit'],'main/cli/README.md'),(355,'TUI / Bubble Tea',['Messages, commands, text','Persistent application session'],'main/tui/README.md'),(515,'GUI / Fyne',['Callbacks, retained widgets','Background work → UI thread'],'main/gui/README.md')]:
         s.card(40,y,300,125,title,lines,C['green'],CODE+path)
         s.arrow(340,y+62,430,y+62)
     s.rect(430,195,350,445,C['ice'])
@@ -149,7 +149,7 @@ def complete():
     s.text(cx,164,'PUBLIC APPLICATION OPERATIONS',17,bold=True,anchor='middle')
     s.text(cx,1015,'TYPED FACADES + CONFIGURED PIPELINE',16,bold=True,anchor='middle')
     # Driving adapters and selected real source dependencies.
-    for y,title,lines,path in [(195,'CLI · main/cli',['Parse flags / JSON; print results','Fresh invocation context','Native command hierarchy'],'main/cli/README.md'),(397,'TUI · main/tui',['Bubble Tea messages + commands','ViewModel / Interaction ownership','Forms, dialogs, keys, text frames'],'main/tui/README.md'),(599,'GUI · main/gui',['Fyne presenters + retained widgets','Executor → UI dispatcher','Live input and request generations'],'main/gui/README.md')]:
+    for y,title,lines,path in [(195,'CLI · main/cli',['urfave/cli flags + command hierarchy','Parse args / JSON; print results','Fresh invocation context'],'main/cli/README.md'),(397,'TUI · main/tui',['Bubble Tea messages + commands','ViewModel / Interaction ownership','Forms, dialogs, keys, text frames'],'main/tui/README.md'),(599,'GUI · main/gui',['Fyne presenters + retained widgets','Executor → UI dispatcher','Live input and request generations'],'main/gui/README.md')]:
         s.card(40,y,410,169,title,lines,C['green'],CODE+path,size=18)
     s.card(40,801,410,166,'Independent adapter mechanics',['surfaces/{cli,tui,gui} per domain','Matching pkg/toolkits only','main/seed supplies sample data'],C['green'],CODE+'pkg/toolkits/readme.md',size=18)
     s.arrow(450,480,595,480);s.text(468,451,'calls public',16,cls='muted');s.text(468,471,'operations',16,cls='muted')

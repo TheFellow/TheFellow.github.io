@@ -8,7 +8,7 @@
 <text x="40.0" y="122.0" font-size="18" text-anchor="start" class="muted">Driving adapters translate intent; public operations own the behavior that must agree.</text>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" target="_blank">
 <rect x="40" y="195" width="300" height="125" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
-<text x="60.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">CLI</text>
+<text x="60.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">CLI / urfave/cli</text>
 <text x="60.0" y="258.0" font-size="18" text-anchor="start" class="muted">Arguments → typed request</text>
 <text x="60.0" y="285.0" font-size="18" text-anchor="start" class="muted">One invocation, then exit</text>
 </a>

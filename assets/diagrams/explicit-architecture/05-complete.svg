@@ -61,9 +61,9 @@
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" target="_blank">
 <rect x="40" y="195" width="410" height="169" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">CLI · main/cli</text>
-<text x="60.0" y="258.0" font-size="18" text-anchor="start" class="muted">Parse flags / JSON; print results</text>
-<text x="60.0" y="285.0" font-size="18" text-anchor="start" class="muted">Fresh invocation context</text>
-<text x="60.0" y="312.0" font-size="18" text-anchor="start" class="muted">Native command hierarchy</text>
+<text x="60.0" y="258.0" font-size="18" text-anchor="start" class="muted">urfave/cli flags + command hierarchy</text>
+<text x="60.0" y="285.0" font-size="18" text-anchor="start" class="muted">Parse args / JSON; print results</text>
+<text x="60.0" y="312.0" font-size="18" text-anchor="start" class="muted">Fresh invocation context</text>
 </a>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" target="_blank">
 <rect x="40" y="397" width="410" height="169" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
