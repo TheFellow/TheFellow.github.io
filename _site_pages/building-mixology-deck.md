@@ -466,6 +466,34 @@ $ echo $?
     <aside class="notes">The real ingredient presenter submits a new-ingredient form with its name empty. Its preflight validation returns Invalid before calling the domain command, and PresentError selects inline severity. Show the retained category, unit, and description. The user can correct the name without reconstructing the form or dismissing a dialog. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
+  <section class="screenshot-slide error-comparison" id="typed-error-three-surfaces">
+    <h2>One Conflict, three native responses</h2>
+    <p class="comparison-scenario">Create <strong>London Dry Gin</strong> when that ingredient already exists.</p>
+    <div class="error-evidence">
+      <figure class="cli-evidence">
+        <figcaption><strong>CLI</strong><br>stderr + exit <code>40</code></figcaption>
+        <a href="{{ '/assets/images/mixology/cli-error-conflict.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size CLI Conflict capture">
+          <img src="{{ '/assets/images/mixology/cli-error-conflict.png' | relative_url }}" alt="Real CLI duplicate ingredient command reports insert ingredient London Dry Gin and exits with status 40." width="736" height="344">
+        </a>
+      </figure>
+      <figure class="tui-evidence">
+        <figcaption><strong>Bubble Tea TUI</strong><br>Warning status</figcaption>
+        <a href="{{ '/assets/images/mixology/tui-error-conflict.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open complete TUI Conflict screenshot">
+          <img src="{{ '/assets/images/mixology/tui-error-conflict-detail.png' | relative_url }}" alt="Cropped TUI status bar shows insert ingredient London Dry Gin in warning yellow." width="920" height="60">
+        </a>
+      </figure>
+      <figure class="gui-evidence">
+        <figcaption><strong>Fyne GUI</strong><br>Warning dialog<br>Form input retained</figcaption>
+        <a href="{{ '/assets/images/mixology/gui-error-conflict.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open complete GUI Conflict screenshot">
+          <img src="{{ '/assets/images/mixology/gui-error-conflict-detail.png' | relative_url }}" alt="Cropped Fyne warning dialog titled Unable to complete operation reports insert ingredient London Dry Gin." width="310" height="170">
+        </a>
+      </figure>
+    </div>
+    <div class="callout">The typed <code>Conflict</code> selects exit status and severity. No surface parses the message to discover its meaning.</div>
+    <p class="source">Real duplicate-name failure · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · TUI/GUI detail crops link to full captures</p>
+    <aside class="notes">Compare the identical message across all three images. CLI output is rasterized from the actual built executable's stderr and exit status; only the displayed command is reflowed. The TUI capture delivers the real Ingredients.Create conflict through routes.ErrorMsg to the root status-bar adapter. The GUI submits the duplicate through the real presenter and domain/store path. The two detail crops preserve pixels from the full screenshots linked here and shown on the following slides. The capture harness asserts KindConflict, exit 40, warning severity, matching messages, and retained GUI input. The message alone says only insert ingredient and its name; the typed kind supplies the semantics without string matching. Reproduce with scripts/mixology-captures/capture.sh.</aside>
+  </section>
+
   <section class="screenshot-slide" id="tui-error-conflict">
     <h2>Conflict: the terminal changes severity</h2>
     <figure class="surface-capture">

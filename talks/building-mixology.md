@@ -438,6 +438,33 @@ $ echo $?
 
     <aside class="notes">The real ingredient presenter submits a new-ingredient form with its name empty. Its preflight validation returns Invalid before calling the domain command, and PresentError selects inline severity. Show the retained category, unit, and description. The user can correct the name without reconstructing the form or dismissing a dialog. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
 
+    ## One Conflict, three native responses
+    Create **London Dry Gin** when that ingredient already exists.
+
+      <figure class="cli-evidence">
+        <figcaption>**CLI**<br>stderr + exit <code>40</code></figcaption>
+        [
+          <img src="/assets/images/mixology/cli-error-conflict.png" alt="Real CLI duplicate ingredient command reports insert ingredient London Dry Gin and exits with status 40." width="736" height="344">
+        ](/assets/images/mixology/cli-error-conflict.png)
+      </figure>
+      <figure class="tui-evidence">
+        <figcaption>**Bubble Tea TUI**<br>Warning status</figcaption>
+        [
+          <img src="/assets/images/mixology/tui-error-conflict-detail.png" alt="Cropped TUI status bar shows insert ingredient London Dry Gin in warning yellow." width="920" height="60">
+        ](/assets/images/mixology/tui-error-conflict.png)
+      </figure>
+      <figure class="gui-evidence">
+        <figcaption>**Fyne GUI**<br>Warning dialog<br>Form input retained</figcaption>
+        [
+          <img src="/assets/images/mixology/gui-error-conflict-detail.png" alt="Cropped Fyne warning dialog titled Unable to complete operation reports insert ingredient London Dry Gin." width="310" height="170">
+        ](/assets/images/mixology/gui-error-conflict.png)
+      </figure>
+
+    The typed <code>Conflict</code> selects exit status and severity. No surface parses the message to discover its meaning.
+    Real duplicate-name failure · [635c59b](https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787) · TUI/GUI detail crops link to full captures
+
+    <aside class="notes">Compare the identical message across all three images. CLI output is rasterized from the actual built executable's stderr and exit status; only the displayed command is reflowed. The TUI capture delivers the real Ingredients.Create conflict through routes.ErrorMsg to the root status-bar adapter. The GUI submits the duplicate through the real presenter and domain/store path. The two detail crops preserve pixels from the full screenshots linked here and shown on the following slides. The capture harness asserts KindConflict, exit 40, warning severity, matching messages, and retained GUI input. The message alone says only insert ingredient and its name; the typed kind supplies the semantics without string matching. Reproduce with scripts/mixology-captures/capture.sh.</aside>
+
     ## Conflict: the terminal changes severity
     <figure class="surface-capture">
       [

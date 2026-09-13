@@ -21,4 +21,10 @@ for command, args, code, stdin in cases:
     assert not result.stdout, (command, result.stdout)
     assert 'database is locked' not in result.stderr
     transcript.extend([f'$ {command}', result.stderr.strip(), '$ echo $?', str(result.returncode), ''])
+    if code == 40:
+        # Reflow the invocation for the comparison slide; output and status are
+        # copied verbatim from the real process, with no added severity styling.
+        conflict = '$ ./mixology ingredients create \\\n    --category spirit --unit oz \\\n    "London Dry Gin"\n'
+        conflict += result.stderr.strip() + '\n$ echo $?\n' + str(result.returncode) + '\n'
+        (scratch / 'frames' / 'cli-error-conflict.ansi').write_text(conflict)
 (output / 'cli-errors.txt').write_text('\n'.join(transcript))
