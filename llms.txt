@@ -29,6 +29,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 
 ## Writing
 
+- [Autonomous Semantic Porting with F#kYeah](https://thefellow.github.io/notes/autonomous-semantic-porting-with-fkyeah.md): 2026-09-12 · Note. Graph-driven semantic ports with validation, agent review, and recovery.
 - [Building a Racing-Line Playground](https://thefellow.github.io/notes/building-a-racing-line-playground.md): 2026-09-10 · Note. Building racing lines and overtaking experiments from tyre physics.
 - [Building a Persistent Merkle Trie in Go](https://thefellow.github.io/notes/building-a-persistent-merkle-trie-in-go.md): 2026-09-03 · Note. Canonical codecs and lazy snapshots build a persistent content-addressed trie.
 - [Go 1.27 Generic Methods and the Mixology Pipeline](https://thefellow.github.io/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): 2026-08-20 · Note. Go 1.27 generic methods simplify Mixology's typed middleware calls.

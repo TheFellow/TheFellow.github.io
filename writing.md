@@ -14,6 +14,7 @@ Source: [https://thefellow.github.io/writing/](https://thefellow.github.io/writi
 
 Articles, notes, and series from the projects and experiments behind this site, ordered by publication date, newest first.
 
+- **2026-09-12 · Note:** [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md): How I use F#kYeah across projects to analyze, implement, validate, and review semantic ports without a human in the execution loop.
 - **2026-09-10 · Note:** [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
 - **2026-09-03 · Note:** [Building a Persistent Merkle Trie in Go](/notes/building-a-persistent-merkle-trie-in-go.md): How canonical codecs, radix routing, structural sharing, and lazy snapshots fit together in a generic content-addressed trie.
 - **2026-08-20 · Note:** [Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): How generic methods let Mixology put typed middleware operations on the pipeline they configure.
