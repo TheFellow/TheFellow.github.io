@@ -275,11 +275,14 @@ def collection_index(doc: Document, all_docs: list[Document]) -> str | None:
         ),
         key=sort_value,
     )
+    if route == "/projects/":
+        selected.sort(key=lambda item: str(item["last_updated"]), reverse=True)
     links = []
     for item in selected:
         item_route = route_for(item)
+        updated = f"Updated {item['last_updated']}. " if route == "/projects/" else ""
         links.append(
-            f"- [{item['title']}]({markdown_url(item_route)}): {item['excerpt']}"
+            f"- [{item['title']}]({markdown_url(item_route)}): {updated}{item['excerpt']}"
         )
     return f"{intro}\n\n{'\n'.join(links)}"
 

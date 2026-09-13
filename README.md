@@ -21,6 +21,9 @@ date with a type label on each tile. The original collection indexes and content
 URLs remain available for existing links. The generated `/writing.md` mirrors
 the combined list.
 
+The Projects index includes Apex and orders all entries by `last_updated`, newest
+first, using the same repeating 1–2–2 tile layout as Writing.
+
 ## LLM-readable site
 
 Every public page has a generated Markdown alternate: remove a trailing slash and
