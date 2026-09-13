@@ -11,6 +11,10 @@ Source baseline: https://github.com/TheFellow/go-modular-monolith/tree/a7c2efda8
 05-complete.svg: full architecture atlas, linked to implementation evidence.
 05-complete.pdf: printable vector export of the complete atlas.
 
+The diagrams use the site's dark neon palette, with high-contrast text and
+muted green, blue, amber, and purple regions. Colors are embedded in the SVG
+and PDF so downloads retain the same appearance without the website CSS.
+
 Solid blue arrows show selected dependency / contract use. Dashed amber arrows
 show execution. The circles group responsibilities; they are not a literal
 package import graph. Named mechanisms and generated application wiring are

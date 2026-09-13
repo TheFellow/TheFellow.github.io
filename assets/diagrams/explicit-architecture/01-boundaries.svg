@@ -1,39 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1200" height="730" viewBox="0 0 1200 730" role="img" aria-labelledby="title desc">
 <title id="title">One application, three conversations</title><desc id="desc">Driving adapters translate intent; public operations own the behavior that must agree.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline a7c2efda8c0cd905089a27060242ff841bb0ad41. Linked panels open implementation evidence.</desc>
-<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#24649b"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#98600b"/></marker></defs>
-<style>text {font-family:Arial,Helvetica,sans-serif;fill:#183441} a:hover rect {stroke:#087e7e;stroke-width:3} .muted {fill:#45606b} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#087e7e}</style>
-<rect x="0" y="0" width="1200" height="730" rx="0" fill="#f6faf9" stroke="none" stroke-width="1.5"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74c0fc"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc36b"/></marker></defs>
+<style>text {font-family:Arial,Helvetica,sans-serif;fill:#fff6fb} a:hover rect {stroke:#ff4f94;stroke-width:3} .muted {fill:#d0c8d2} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#ff4f94}</style>
+<rect x="0" y="0" width="1200" height="730" rx="0" fill="#141010" stroke="none" stroke-width="1.5"/>
 <text x="40.0" y="42.0" font-size="15" text-anchor="start" class="eyebrow">MIXOLOGY / EXPLICIT ARCHITECTURE / 01</text>
 <text x="40.0" y="88.0" font-size="34" text-anchor="start" font-weight="700">One application, three conversations</text>
 <text x="40.0" y="122.0" font-size="18" text-anchor="start" class="muted">Driving adapters translate intent; public operations own the behavior that must agree.</text>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" target="_blank">
-<rect x="40" y="195" width="300" height="125" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="40" y="195" width="300" height="125" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">CLI</text>
 <text x="60.0" y="258.0" font-size="18" text-anchor="start" class="muted">Arguments → typed request</text>
 <text x="60.0" y="285.0" font-size="18" text-anchor="start" class="muted">One invocation, then exit</text>
 </a>
-<path d="M340,257 L430,257" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M340,257 L430,257" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" target="_blank">
-<rect x="40" y="355" width="300" height="125" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="40" y="355" width="300" height="125" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="388.0" font-size="21" text-anchor="start" font-weight="700">TUI / Bubble Tea</text>
 <text x="60.0" y="418.0" font-size="18" text-anchor="start" class="muted">Messages, commands, text</text>
 <text x="60.0" y="445.0" font-size="18" text-anchor="start" class="muted">Persistent application session</text>
 </a>
-<path d="M340,417 L430,417" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M340,417 L430,417" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" target="_blank">
-<rect x="40" y="515" width="300" height="125" rx="14" fill="#e0f3e8" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="40" y="515" width="300" height="125" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="548.0" font-size="21" text-anchor="start" font-weight="700">GUI / Fyne</text>
 <text x="60.0" y="578.0" font-size="18" text-anchor="start" class="muted">Callbacks, retained widgets</text>
 <text x="60.0" y="605.0" font-size="18" text-anchor="start" class="muted">Background work → UI thread</text>
 </a>
-<path d="M340,577 L430,577" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
-<rect x="430" y="195" width="350" height="445" rx="14" fill="#e3effb" stroke="#b1c7cc" stroke-width="1.5"/>
+<path d="M340,577 L430,577" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="430" y="195" width="350" height="445" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="455.0" y="231.0" font-size="17" text-anchor="start" font-weight="700">PUBLIC APPLICATION OPERATIONS</text>
 <text x="455.0" y="277.0" font-size="21" text-anchor="start">Seven domain facades</text>
 <text x="455.0" y="311.0" font-size="21" text-anchor="start">Typed commands and queries</text>
 <text x="455.0" y="345.0" font-size="21" text-anchor="start">Fresh operation context</text>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/README.md" target="_blank">
-<rect x="453" y="388" width="304" height="224" rx="14" fill="white" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="453" y="388" width="304" height="224" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="473.0" y="421.0" font-size="21" text-anchor="start" font-weight="700">One behavioral boundary</text>
 <text x="473.0" y="451.0" font-size="16" text-anchor="start" class="muted">Authorization on current state</text>
 <text x="473.0" y="478.0" font-size="16" text-anchor="start" class="muted">Domain decisions and values</text>
@@ -41,21 +41,21 @@
 <text x="473.0" y="532.0" font-size="16" text-anchor="start" class="muted">Audit and typed errors</text>
 </a>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/README.md" target="_blank">
-<rect x="890" y="195" width="270" height="165" rx="14" fill="#fff0d5" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="890" y="195" width="270" height="165" rx="14" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="910.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">Local persistence</text>
 <text x="910.0" y="258.0" font-size="16" text-anchor="start" class="muted">Owned Store / Tx / Query</text>
 <text x="910.0" y="285.0" font-size="16" text-anchor="start" class="muted">SQLite JSON records</text>
 <text x="910.0" y="312.0" font-size="16" text-anchor="start" class="muted">One local database file</text>
 </a>
 <a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/authz/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/authz/README.md" target="_blank">
-<rect x="890" y="425" width="270" height="165" rx="14" fill="#eee7f7" stroke="#b1c7cc" stroke-width="1.5"/>
+<rect x="890" y="425" width="270" height="165" rx="14" fill="#30243e" stroke="#797482" stroke-width="1.5"/>
 <text x="910.0" y="458.0" font-size="21" text-anchor="start" font-weight="700">Policy evaluation</text>
 <text x="910.0" y="488.0" font-size="16" text-anchor="start" class="muted">Domain-owned Cedar policy</text>
 <text x="910.0" y="515.0" font-size="16" text-anchor="start" class="muted">Shared evaluation machinery</text>
 <text x="910.0" y="542.0" font-size="16" text-anchor="start" class="muted">Models expose Cedar entities</text>
 </a>
-<path d="M780,277 L890,277" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
-<path d="M780,507 L890,507" fill="none" stroke="#24649b" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M780,277 L890,277" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
+<path d="M780,507 L890,507" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
 <text x="805.0" y="256.0" font-size="16" text-anchor="start" class="muted">uses</text>
 <text x="805.0" y="486.0" font-size="16" text-anchor="start" class="muted">uses</text>
 <text x="40.0" y="693.0" font-size="15" text-anchor="start" class="muted">Ryan Harris · thefellow.github.io · 2026-09-12 · Go baseline a7c2efd</text>
