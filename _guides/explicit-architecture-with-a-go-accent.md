@@ -1,7 +1,7 @@
 ---
 title: "Explicit Architecture, with a Go Accent"
 date: 2026-09-12
-last_modified_at: 2026-09-12
+last_modified_at: 2026-09-13
 excerpt: "What Mixology borrows from Herberto Graça's Explicit Architecture, where it deliberately differs, and what transactions, types, three interfaces, and a storage migration taught me about those choices."
 permalink: /articles/explicit-architecture-with-a-go-accent/
 series: mixology
@@ -20,21 +20,19 @@ Retiring an ingredient is a surprisingly good architecture exercise. The catalog
 
 That is the kind of problem I built [Mixology](/projects/go-modular-monolith/) to explore. A great deal of its inspiration came from Herberto Graça's [Explicit Architecture series][ea1], together with DDD, ports and adapters, Clean Architecture, CQRS, functional modeling, and the application frameworks I have used. Mixology is where those influences meet my preferences: concrete public APIs, small capabilities, visible wiring, native presentation models, and rules the repository can enforce.
 
-The interesting comparison is what survived contact with a working application. Some ideas appear almost directly. Some have a distinctly Go-shaped implementation. Others have been narrowed because I want one local application with strong transactional behavior. Several of the most useful boundaries became clearer only after replacing the database or adding a third user interface.
+I narrowed some of those ideas to suit one local application with strong transactional behavior. Several of the most useful boundaries became clearer only after replacing the database or adding a third user interface.
 
-This article follows the Go repository at [commit `a7c2efd`][baseline]. Earlier articles preserve their own historical checkpoints. In particular, Procurement remains a planned workshop, and the desktop parity journal describes the workflows reviewed at its closure; newer amendment and stock-lifecycle operations have broader CLI coverage than GUI/TUI coverage.
+At [commit `a7c2efd`][baseline], Procurement remains planned work, and newer amendment and stock-lifecycle operations have broader CLI coverage than GUI/TUI coverage.
 
 ## The original map, and the downloadable PDF
 
 Graça's [first article][ea1] connects delivery mechanisms, adapters, ports, application behavior, and domain models, then slices the layers into components. It distinguishes runtime control flow from source dependencies and shows both direct application calls and a command/query bus. The diagram is a vocabulary for making choices, rather than a list of components every application must contain.
 
-The complete graphic is still available through the **[original Google Drawing][drawing]**. Its **[direct PDF export][pdf]** downloads a one-page vector diagram. I verified that export on September 12, 2026. It includes the full map with driving and driven adapters, components, application and domain layers, queues, buses, search, and persistence. Open the drawing if you also want Google's other export formats.
+The complete graphic is still available through the **[original Google Drawing][drawing]**. Its **[direct PDF export][pdf]** downloads a one-page vector diagram. It includes the full map with driving and driven adapters, components, application and domain layers, queues, buses, search, and persistence. Open the drawing if you also want Google's other export formats.
 
 The [second article][ea2] revisits the shared kernel. Graça places shared application/domain contracts below the component map, then separates those from general language extensions. That helps distinguish common business vocabulary from reusable programming machinery. A shared package needs an explanation stronger than “several things import it.”
 
 The [third article][ea3] translates the maps into source organization and dependency checks. It proposes explicit namespaces for interfaces, infrastructure, components, ports, and shared code, and uses Deptrac to enforce the dependency rules. The move from a diagram to a checked structure is already part of the upstream work.
-
-My diagrams below are original drawings of Mixology. They borrow the progressive teaching approach and credit that lineage; their labels, boundaries, and execution details describe this repository.
 
 ## Start with the same application behind every surface
 
@@ -64,7 +62,7 @@ The test was especially valuable because Fyne differed from Bubble Tea. Reusing 
 | Source structure | UI, Core, Infrastructure namespaces [3][ea3] | Vertical domain directories include their own surface adapters and DAOs. |
 | Enforcement | Dependency rules checked with Deptrac [3][ea3] | Go visibility, arch-lint, topology tests, registration tests, and behavioral tests. |
 
-I read the common principle as making ownership and dependency choices legible. The rest of this article examines the costs of my particular choices, rather than treating a matching directory name as proof of a matching architecture.
+I read the common principle as making ownership and dependency choices legible.
 
 ## Package the capability vertically
 
@@ -95,7 +93,7 @@ I want a reader investigating ingredient retirement to find its public operation
 
 Go's `internal` rule provides part of the protection. Another context cannot import Ingredients' private DAO. But an Ingredients surface is inside the parent tree and Go permits that import. Mixology's [arch-lint rules][rules] reject it. Only the facade, queries, handlers, and internal implementation may consume that context's internals.
 
-There is a useful distinction here: some bad programs fail to compile because of Go visibility or types; other imports are legal Go but fail the repository's architecture checks. The diagram should not attribute both guarantees to the compiler.
+There is a useful distinction here: some bad programs fail to compile because of Go visibility or types; other imports are legal Go but fail the repository's architecture checks.
 
 ## Accept public coupling, preserve write ownership
 
@@ -130,7 +128,7 @@ return m.pipeline.LoadCommand(ctx, authz.ActionRetire,
 
 The important detail is where the load happens. `LoadCommand` opens or joins the unit of work before loading trusted authorization state. The pipeline authorizes the input, invokes the command, authorizes its result, then lets transactional dispatch and success auditing finish before commit.
 
-The [generic-methods note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline/) records how the API became a method on the configured pipeline. The current source uses Go 1.27 generic methods; this snippet belongs to that repository baseline. The architectural point is independent of the syntax: a domain operation selects a typed execution shape, and the shared pipeline owns its surrounding behavior.
+The [generic-methods note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline/) records how the API became a method on the configured pipeline. The current source uses Go 1.27 generic methods. The architectural point is independent of the syntax: a domain operation selects a typed execution shape, and the shared pipeline owns its surrounding behavior.
 
 Queries have different shapes. `Query` authorizes the returned entity. `QueryResource` authorizes a known resource before a read. `PageQuery` continues consuming until it has a page of visible entities or reaches the end. A permission denial removes a row; an evaluation or storage failure fails the query. This is a more useful contract than authorizing a route and letting every client filter its own results. The [implementation][pipeline] makes those differences explicit.
 
@@ -177,7 +175,7 @@ On managed failure, child success activities roll back with their writes. The wo
 
 Audit consequently distinguishes changed resources, inspected participants, and domain-authored effects. It explains the attempt and its outcome. The database is not reconstructed by replaying those activities; this is not event sourcing.
 
-The [reciprocal-workflow workshop](/articles/growing-a-reciprocal-domain-workflow/) explores the next pressure point. Procurement is planned work involving suppliers, receipts, and potentially approvals over time. A process manager or outbox would earn its place when progress must survive separate commits, human waits, or external delivery. Neither appears as an implemented component in the complete diagram below.
+The [reciprocal-workflow workshop](/articles/growing-a-reciprocal-domain-workflow/) explores the next pressure point. Procurement is planned work involving suppliers, receipts, and potentially approvals over time. A process manager or outbox would earn its place when progress must survive separate commits, human waits, or external delivery.
 
 Replacing the local dispatcher with a broker would therefore change the business contract. Serialization, durable delivery, idempotency, retries, and partial outcomes would need explicit designs. An outbox could atomically record an intent to deliver; it would not make remote consumers part of this SQLite transaction.
 
@@ -189,15 +187,15 @@ Replacing the local dispatcher with a broker would therefore change the business
 
 Mixology's `app/kernel` contains typed entity IDs, money, measurement, quality, and tags, including a narrow tag repository port. These are shared because domain operations must agree about identity and values. Canonical stock quantities and separate display/cost units are examples where a common type protects meaning across contexts.
 
-The practical type-system preference is modest: distinguish identifiers, validate meaningful values, and withhold capabilities that should not be present. My [illegal-states article](/articles/making-illegal-states-unrepresentable-in-go/) develops the broader functional-modeling influence. It is not a claim that Mixology represents every lifecycle with a closed type hierarchy. Its exported models and status values still require runtime validation.
+The practical type-system preference is modest: distinguish identifiers, validate meaningful values, and withhold capabilities that should not be present. My [illegal-states article](/articles/making-illegal-states-unrepresentable-in-go/) develops the broader functional-modeling influence. Mixology's exported models and status values still require runtime validation.
 
 Tagging demonstrates a different kind of sharing. Its module owns associations, while domains register target loaders and actions. The shared tag value type does not make Tagging the owner of Drinks' authorization or private data. The [tag repository port][tagport] and application registration give the cross-cutting feature an explicit seam.
 
 `pkg` is more heterogeneous. `pkg/middleware` supplies mechanisms through configured dependencies. `pkg/store` owns a concrete persistence abstraction. Presentation toolkits own framework mechanics. Crucially, `pkg/dispatcher` contains generated imports of domain events and handlers. `pkg/authz` also assembles generated domain policy material. These are application wiring, despite their `pkg` prefix.
 
-That matters when drawing the system. A diagram that labels all of `pkg` “independent infrastructure” would contradict the actual imports. [`app.New`][composition] constructs the dispatcher and audit writer and supplies them to the pipeline through its configured boundaries. The generated dispatcher is allowed to know the receivers; the originating Ingredients command does not.
+The `pkg` prefix therefore does not imply independence from domains. [`app.New`][composition] constructs the dispatcher and audit writer and supplies them to the pipeline through its configured boundaries. The generated dispatcher is allowed to know the receivers; the originating Ingredients command does not.
 
-There is another deliberate compromise with a strict framework-free core: public models implement `CedarEntity`, and identifiers use Cedar identity representations. [Drink's model][drinkmodel] makes that dependency visible. Keeping policies domain-owned and evaluation centralized has been useful, but replacing Cedar would touch those contracts. I prefer to show that coupling rather than draw an isolation boundary the code does not possess.
+There is another deliberate compromise with a strict framework-free core: public models implement `CedarEntity`, and identifiers use Cedar identity representations. [Drink's model][drinkmodel] makes that dependency visible. Keeping policies domain-owned and evaluation centralized has been useful, but replacing Cedar would touch those contracts.
 
 ## Judge persistence boundaries by an actual replacement
 
@@ -233,7 +231,7 @@ Errors cross the same boundary. A typed conflict or permission failure has one a
 
 [![Complete Mixology architecture atlas: seven domain contexts, three driving surfaces, typed operation paths, concrete infrastructure, transactional event fan-out, shared contracts, generated wiring, and executable checks.](/assets/diagrams/explicit-architecture/05-complete.svg)](/assets/diagrams/explicit-architecture/05-complete.svg)
 
-*Stage 5. [Open the full-size SVG](/assets/diagrams/explicit-architecture/05-complete.svg) or [download the printable PDF](/assets/diagrams/explicit-architecture/05-complete.pdf). Small article previews cannot carry every label; the vector originals are intended for zooming.*
+*Stage 5. [Open the full-size SVG](/assets/diagrams/explicit-architecture/05-complete.svg) or [download the printable PDF](/assets/diagrams/explicit-architecture/05-complete.pdf).*
 
 The complete drawing has several reading paths:
 
