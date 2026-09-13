@@ -1,0 +1,53 @@
+// Render: dot -Tsvg assets/diagrams/fkyeah-semport.dot -o assets/images/notes/fkyeah/semport-flow.svg
+// A simplified view of Expr.NET's semport workflow, not an executable pipeline.
+digraph semport_flow {
+    graph [
+        bgcolor="#191b24", pad="0.35", nodesep="0.4", ranksep="0.5",
+        fontname="Helvetica", fontsize=22, fontcolor="#f3f4f8",
+        label="F#kYeah / autonomous semport", labelloc=t,
+        splines=polyline
+    ];
+    node [
+        shape=box, style="rounded,filled", penwidth=1.4,
+        fontname="Helvetica", fontsize=15, fontcolor="#f3f4f8",
+        color="#555c75", fillcolor="#252938", margin="0.18,0.12"
+    ];
+    edge [
+        fontname="Helvetica", fontsize=12, fontcolor="#c7ccda",
+        color="#8993aa", arrowsize=0.7, penwidth=1.3
+    ];
+
+    next [label="Select upstream commit\nRead the ledger", color="#f783ac", fillcolor="#422c40"];
+    analyze [label="Analyze the semantic change"];
+    implement [label="Plan and implement\nPreserve behavior in idiomatic C#", color="#74c0fc", fillcolor="#22394b"];
+    validate [label="Run validation\nFormat · build · test · package", color="#74c0fc", fillcolor="#22394b"];
+    review [label="Agent review\nCompare with upstream semantics", color="#74c0fc", fillcolor="#22394b"];
+    commit [label="Commit the port\nRecord implemented", color="#8ce99a", fillcolor="#243e35"];
+    skip [label="Agent reviews\nproposed skip"];
+    acknowledge [label="Record acknowledged\nKeep skip evidence", color="#8ce99a", fillcolor="#243e35"];
+    repair [label="Repair and recheck\nBounded retry paths", color="#ffd43b", fillcolor="#443d29"];
+    wedge [label="Record wedged\nPreserve work and failure evidence", color="#ffa8a8", fillcolor="#452f38"];
+    advance [label="Continue to next commit", color="#f783ac", fillcolor="#422c40"];
+
+    next -> analyze;
+    analyze -> implement [label="port"];
+    implement -> validate;
+    validate -> review [label="pass"];
+    review -> commit [label="approved"];
+    commit -> advance;
+
+    analyze -> skip [label="proposed skip"];
+    skip -> acknowledge [label="approved"];
+    skip -> implement [label="port required", constraint=false];
+    acknowledge -> advance;
+
+    validate -> repair [label="fail"];
+    review -> repair [label="revise", constraint=false];
+    repair:e -> validate:e [label="retry", constraint=false];
+    repair -> wedge [label="still blocked\nafter retries"];
+    wedge -> advance;
+
+    { rank=same; implement; skip; }
+    { rank=same; review; repair; }
+    { rank=same; commit; wedge; acknowledge; }
+}

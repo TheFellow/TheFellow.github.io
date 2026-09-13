@@ -25,3 +25,5 @@ DOT is a strong fit because it keeps control flow declarative and inspectable. A
 - The unified model client separates pipeline semantics from any single provider.
 
 Start with a small graph under `examples`, use the schema command to understand its attributes, and then follow graph parsing into the execution engine.
+
+For how I use it across projects, read [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md). The note follows upstream changes through analysis, implementation, validation, and agent review without a human in the execution loop.
