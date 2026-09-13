@@ -226,3 +226,17 @@ body { margin: 0; }
 .reveal .surface-capture figcaption { margin-top: .6em; color: var(--mx-soft); font-size: .56em; line-height: 1.4; }
 .reveal .screenshot-slide .source { margin: .65em 0 0; font-size: .36em; line-height: 1.4; }
 .reveal .surface-capture a:focus-visible { outline: 2px solid var(--mx-mint); outline-offset: 4px; }
+
+/* Native error details stay legible together; each links to the full capture. */
+.reveal .error-comparison .comparison-scenario { font-size: .6em; margin-bottom: .6em; }
+.reveal .error-evidence { display: grid; gap: 10px; }
+.reveal .error-evidence figure { display: grid; grid-template-columns: 165px 1fr; align-items: center; gap: 16px; margin: 0; }
+.reveal .error-evidence figcaption { color: var(--mx-soft); font-size: .55em; line-height: 1.5; }
+.reveal .error-evidence figcaption strong { color: var(--mx-mint); }
+.reveal .error-evidence a { display: flex; align-items: center; }
+.reveal .error-evidence img { margin: 0; width: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; }
+.reveal .cli-evidence a { height: 175px; }
+.reveal .tui-evidence a { height: 50px; }
+.reveal .gui-evidence a { height: 170px; }
+.reveal .error-evidence a:focus-visible { outline: 2px solid var(--mx-mint); outline-offset: 4px; }
+.reveal .error-comparison .callout { margin-top: 12px; font-size: .57em; }

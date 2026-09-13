@@ -81,3 +81,14 @@ real dialogs. GUI assertions check typed classification through presentation
 wrappers, severity, safe message parity, and retained input on conflict.
 The Internal captures do not induce a database outage or claim to exercise an
 actual failed menu load.
+
+The chapter also places the same duplicate-ingredient `Conflict` side by side
+as three images. `cli-error-conflict.png` rasterizes the built CLI's captured
+stderr and exit status; only its displayed invocation is reflowed with shell
+continuations. `tui-error-conflict-detail.png` and
+`gui-error-conflict-detail.png` crop the status bar and dialog from their full
+captures without changing their pixels. The comparison links to the full images
+and explains how the typed kind selects exit code 40 and warning severity
+without parsing the message. The crop coordinates and expected capture sizes
+are checked in `render_terminal.py`; inspect the comparison slide after changing
+the capture viewport or application layout.
