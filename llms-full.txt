@@ -312,7 +312,9 @@ The first is runtime-specific mechanics. [`pkg/toolkits/tui`](https://github.com
 
 The second is application-wide presentation vocabulary. A shell can establish navigation, identity, status, and lifecycle for its surface. Shared keys or tag editors can encode Mixology conventions used by several domains. Those components may know the application, but they still belong to one runtime.
 
-Domain surfaces supply the remaining meaning. Drinks owns recipe rows and substitute selection. Menus owns drink curation, publication, and cost analysis. Orders owns placement, completion, and cancellation. Audit remains read-only. A standard list/detail layout can arrange these workflows without claiming they are one generic CRUD screen.
+Domain surfaces supply the remaining meaning. Drinks owns recipe rows and substitute selection. Menus owns drink curation, publication, and cost analysis. Orders owns placement, approved amendments, completion, and cancellation. Inventory owns stock receipt, disposition, and movement history. Audit remains read-only. A standard list/detail layout can arrange these workflows without claiming they are one generic CRUD screen.
+
+Some of that domain presentation meaning can also be shared across runtimes. The [order amendment form](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/orders/surfaces/amendment.go) lives directly under `orders/surfaces`. It captures the reviewed revision, builds replacement and preparation requests, and summarizes a selected batch. The [audit detail helpers](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/audit/surfaces/detail.go) label committed effects and rolled-back attempts consistently. These helpers contain domain-specific presentation data and transformations; the GUI still owns widgets and callbacks, and the TUI still owns modes and messages.
 
 ```mermaid
 flowchart TD
@@ -353,7 +355,9 @@ The three surfaces should still feel like views of one product. Mixology gets th
 - Feature parity is measured against workflows, not matching classes or screen layouts.
 - Cross-surface tests observe persisted effects through another real adapter.
 
-The current amendment and inventory-lifecycle commands illustrate the distinction between shared capability and adapter coverage. They have CLI entrypoints and public application contracts; GUI/TUI details show the historical results, but dedicated forms for all those commands are not yet present. Their editors also carry captured row revisions and expected tag sets so a stale form cannot silently replace newer state.
+The [September surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md) extends that contract to substitution-rule administration, single and batch order amendments, stock receipt, quarantine, release, disposal, and movement history. Each has CLI entrypoints and native GUI/TUI interactions. The persistent interfaces show immutable acceptance alongside the current approved plan and amendment before/after records. Their forms retain captured revisions, and combined entity/tag edits retain the expected tag set; conflicts preserve the draft for review.
+
+An amendment batch also makes transaction ownership visible. GUI and TUI collect requests with each order's reviewed revision, show the selected batch, and submit it through `App.AmendOrders`. The application commits every selected amendment or none. Combining those amendments with ingredient retirement remains a separate application composition, `App.RetireIngredient`; performing retirement and amendment through separate surface operations does not create that shared transaction.
 
 Parity is the union of useful application behavior, not a demand for identical interaction. Order placement can be one CLI invocation, a terminal workflow with explicit modes, and a desktop form with constrained selectors. The three are equivalent when they validate and authorize the same request, produce the same domain effect, and report the same typed failure meaning.
 
@@ -1753,7 +1757,7 @@ This guide is a development journal. It began before the desktop code existed, s
 
 **Experiment status:** the closure audit supports code-level functional parity for the workflows reviewed in this journal across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 
-**Current workflow scope (September 2026):** the Go application also exposes substitution administration, order amendments, quarantine/release, disposal, and movement history through the CLI. GUI/TUI details render accepted preparation and amendment history, and their editors carry captured revisions and tag sets, but dedicated forms for all the newer operations are not part of this journal's parity claim. See the [current onboarding deck](/talks/building-mixology.md) for those workflows.
+**Current workflow scope (September 13, 2026):** the [cross-domain surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md) adds native GUI/TUI interactions for substitution administration, single and batch order amendments, initial stock receipt, quarantine, release, disposal, and movement history. Details distinguish accepted history from approved fulfillment and expose correlated audit effects. The original experiment checkpoints remain below; the September follow-up records the expanded coverage.
 
 The experiment builds directly on [Mixology's existing TUI architecture](/articles/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 
@@ -1904,6 +1908,35 @@ The next audit pass tightened fidelity that broad workflow tests had not yet mad
 The last closure discrepancy was GUI Audit page-size validation. The [fix](https://github.com/TheFellow/go-modular-monolith/commit/92e5ff4ab967d20456733a82dacd6855c0145473) rejects zero, negative, and nonnumeric sizes without changing the retained query, rows, cursor history, or selection, while preserving an intentionally empty inverted time interval as a valid query. The [acceptance correction](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) then aligned tests with explicit paging metadata and repaired a Menu detail fixture so it satisfies the real recipe invariant rather than depending on test order.
 
 With those corrections, the audited matrix supports code-level functional parity. The lesson is stronger than “three surfaces now look alike.” A third adapter supplied enough independent pressure to identify behavior that belonged in the application, behavior that belonged in each concrete view, and accidental differences that belonged nowhere.
+
+## Extend parity as the domain grows
+
+The [September alignment commit](https://github.com/TheFellow/go-modular-monolith/commit/b070b7184878270a69a9a05432d76795a44fe1d3) revisits the matrix after the transactional domain work expanded the application. Substitution rules, approved order amendments, and retained stock lifecycle already had public operations and CLI entrypoints. The follow-up carries those operations into native desktop and terminal interactions.
+
+| Workflow | GUI and TUI behavior |
+| --- | --- |
+| Substitution rules | List enabled and disabled rules; create, revise, disable, and re-enable with captured revisions |
+| Ingredient retirement | Choose permanent replacement and ratio, withdrawal, and reason |
+| Order amendments | Edit replacements and approved preparation; submit one order or queue and review an atomic batch |
+| Order history | Show immutable acceptance, current approved plan, amendment before/after records, and cancellation metadata |
+| Inventory | Receive initial stock; quarantine, release, dispose, and inspect retained movement history |
+| Quantity and price | Label quantities in stock display units and expose the separate cost unit |
+| Audit | Show workflow correlation, referenced entities, and field changes; label failed effects as uncommitted attempts |
+
+Forms retain the revision shown when editing begins, and failed submissions preserve the draft or amendment queue. Initial receipt uses revision zero, so two editors cannot overwrite each other's first stock entry. Batch submission calls `App.AmendOrders`; combining a selection with retirement remains available through `App.RetireIngredient`, rather than through separate retirement and amendment interactions.
+
+The same pass improves retirement-aware recipe details, catalog deletion feedback, menu readiness, and substitution details in cost analysis. Domain-owned helpers share amendment request construction and audit wording while each adapter retains its own interaction state. This is a concrete example of the boundary described in [Bespoke Views](/articles/bespoke-views-over-a-shared-application-boundary.md).
+
+Behavioral tests cover permissions, captured revisions, batch rollback, keyboard input, and semantic widget controls. The [render review commands](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md#review-captures) exercise the composed clients and write GUI PNGs and terminal ANSI frames for inspection:
+
+```sh
+MIXOLOGY_RENDER_DIR=/tmp/mixology-review go test -tags ci ./main/gui \
+  -run '^TestRenderWorkspaceReview$' -count=1
+MIXOLOGY_RENDER_DIR=/tmp/mixology-review go test ./main/tui \
+  -run '^TestRenderCrossDomainReview$' -count=1
+```
+
+Those captures make the forms and resulting histories reviewable alongside list/detail pages. They complement assertions about committed state and rollback; they are not platform-specific pixel goldens.
 
 ## Enforce the new boundary
 
@@ -2833,7 +2866,13 @@ Authorization still executes inside the command and query pipelines. Presentatio
 
 ## Carry the same behavior through every surface
 
-The CLI, Bubble Tea TUI, and Fyne GUI expose permanent replacement during retirement and menu-readiness inspection. Amendment, batch amendment, substitution administration, quarantine/release, disposal, and movement history also have CLI entrypoints. GUI/TUI historical details show accepted preparation and amendment reasons, but dedicated forms for all the newer workflows are not yet present. They share domain operations, control IDs, and the function that composes readiness into an already-authorized Publish action. They do not share views.
+The CLI, Bubble Tea TUI, and Fyne GUI now expose the [same transactional workflows](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md). Retirement includes a permanent replacement and ratio, withdrawal, and reason. Substitution administration lists enabled and disabled rules and supports creating, revising, disabling, and re-enabling them with captured revisions. Inventory provides initial stock receipt, quarantine, release, disposal, and movement history, including retained stock whose ingredient has retired. Quantity labels use the stock's display unit, while price has a separate explicit cost unit.
+
+GUI and TUI amendment forms start from the current approved plan. The operator can submit one order or queue selected requests, review the batch, and commit it through `App.AmendOrders`. Each request retains the revision seen in its editor; a conflict preserves the draft or queue. Separate retirement and amendment interactions remain separate transactions. A caller needing both to commit together uses `App.RetireIngredient`.
+
+Order details distinguish accepted names, prices, preparation, and omissions from the current approved plan, append-only amendment before/after records, and cancellation metadata. Audit details expose workflow correlation, changed and referenced entities, and labeled field changes. Failed activities identify their effects as attempts that did not commit. The CLI exposes that evidence with audit `--details`; `--json` preserves the structured response and takes precedence when both flags are supplied.
+
+The interfaces share domain operations, control IDs, domain-owned presentation helpers, and the function that composes readiness into an already-authorized Publish action. Each keeps its own views.
 
 The graphical and terminal interfaces load readiness asynchronously because it crosses several query boundaries. Each request captures the selected menu. If selection changes before the result returns, the surface rejects the stale result rather than attaching one menu's blockers to another menu's Publish control. The TUI also keeps reads out of `View`. Historical order details use accepted names and preparation rather than resolving the current catalog as though it were the accepted order.
 
@@ -2857,6 +2896,8 @@ The most useful scenarios begin with a healthy, published menu and a pending ord
 12. Race a stale stock or combined entity/tag editor with another writer. Assert conflict and no partial commit.
 
 The [cross-domain regression tests](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_regression_test.go) and [workflow tests](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_workflows_test.go) make these distinctions executable. These domain-schema changes use a freshly seeded teaching database, not an invented backfill of missing historical facts.
+
+The surface alignment adds [GUI amendment tests](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/orders/surfaces/gui/amendment_test.go) for accepted-history preservation, stale drafts, and batch rollback after a later stock failure, plus [TUI keyboard tests](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/orders/surfaces/tui/amend_vm_test.go) for amendment input and queue retention. Stock-receipt tests also race two editors creating the first row: one receipt cannot silently overwrite the other.
 
 Each case protects a semantic boundary. Together they show that consistency means more than making all tables agree. Current plans, historical records, operational availability, user-visible actions, and authorization can legitimately represent different views of the same event.
 
@@ -5385,8 +5426,8 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), ordered by last updated, newest first. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
+- [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-13. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
-- [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-06. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [go-merkletrie](/projects/go-merkletrie.md): Updated 2026-09-03. An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
 - [Apex](/apex.md): Updated 2026-08-24. A working recreation of the Windows 3.1 unit converter my dad built and released as shareware in the 1990s.
 - [Expr for .NET](/projects/expr-dotnet.md): Updated 2026-08-17. A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution.
@@ -5863,11 +5904,11 @@ Domain facades enter typed generic methods such as `pipeline.Command`, `pipeline
 
 Retiring an ingredient makes those claims concrete. The command may name a compatible permanent replacement, or admit that no replacement is known. Event handlers prepare dependent results before any sibling reaction writes, then persist their own state in the originating transaction. Menus projects both stock disposition and the public pure recipe-retirement rule during preparation, so its result does not depend on whether Drinks or Inventory handles the event first. A replacement rewrites future recipes. An unresolved required ingredient leaves its recipe in `review_required`; menus retain their curation and report degraded availability. Any reaction failure rolls the operation back.
 
-That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI expose replacement and readiness through native interactions. The newer substitution administration, amendment, quarantine, release, disposal, and movement-history workflows have CLI entrypoints; the GUI/TUI show accepted preparation and amendment history without yet supplying dedicated forms for all those operations.
+That lifecycle also separates degradation from promotion. Existing published menus can honestly report that service has deteriorated, but a draft menu with a known blocker cannot be published. Menus owns the readiness report and its Cedar permission, so manager and owner surfaces can inspect precise blockers and warnings without disclosing operational details to every actor. CLI, TUI, and GUI expose replacement and readiness through native interactions. The [September surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md) also brings substitution administration, single and batch amendments, initial stock receipt, quarantine, release, disposal, and movement history to all three clients. GUI/TUI forms retain reviewed revisions and preserve drafts after conflicts; details distinguish accepted history, approved fulfillment, and committed or attempted audit effects.
 
 Discontinuation excludes an ingredient from new service but honors usable accepted reservations. Explicit withdrawal quarantines retained stock and blocks affected open orders. Release, disposal, and movement history preserve stock identity, quantity, tags, and reasons instead of deleting the evidence. Canonical quantities keep display-unit changes separate from physical stock and the `CostUnit` that gives a price its meaning.
 
-Orders preserve immutable acceptance separately from their current approved plan. Acceptance includes menu and drink names, agreed prices, preparation, and selected or omitted ingredients. `Orders.Amend` changes only the current plan, with expected revision, actor, reason, and append-only before/after history. `App.AmendOrders` commits an explicitly selected batch together; `App.RetireIngredient` can compose that selection with retirement. The whole-order planner accounts for optional ingredients, and cancellation or amendment release reconciles other blocked orders.
+Orders preserve immutable acceptance separately from their current approved plan. Acceptance includes menu and drink names, agreed prices, preparation, and selected or omitted ingredients. `Orders.Amend` changes only the current plan, with expected revision, actor, reason, and append-only before/after history. `App.AmendOrders` commits an explicitly selected batch together; `App.RetireIngredient` can compose that selection with retirement. Separate surface operations do not share that combined transaction. The whole-order planner accounts for optional ingredients, and cancellation or amendment release reconciles other blocked orders.
 
 Audit distinguishes changed entities, referenced participants, and domain-authored effects. `middleware.RunWorkflow` correlates child commands and owns post-rollback failure recording: successful child activities roll back with their writes, while one failed workflow retains attempted effects. Failure to record evidence is joined with the business error. Captured row revisions and expected complete tag sets independently protect multi-part editors from stale intent.
 
@@ -6315,7 +6356,7 @@ Building Mixology
   A cocktail bar application with seven business owners, three interfaces, and tests that keep their boundaries intact.
 
   ← / → chapter↑ / ↓ detail<b>S</b> speaker view<b>Esc</b> map
-  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Code links pin the reviewed repository snapshot 635c59b from go-modular-monolith PR #62; use that revision for reproducible demonstrations.</aside>
+  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Original code links and captures pin the reviewed repository snapshot 635c59b from go-modular-monolith PR #62. The September surface-alignment slide separately pins b070b71; use that revision for the expanded GUI/TUI workflows.</aside>
 
     Orientation
     <h1>Why this application exists</h1>
@@ -8872,7 +8913,14 @@ mixology inventory history --ingredient-id ing-A</code></pre>
     Replace illustrative IDs with seeded IDs. Capture revisions when intent must refer to the state you reviewed.
     <p class="source">[Code: main/cli/order_amend.go](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/cli/order_amend.go)
 
-    <aside class="notes">These are command shapes, not a sequential fixture: quarantine/release/dispose need the corresponding lifecycle preconditions. Disposal quantity uses the current stock display unit. Batch input is a JSON array of models.Amendment with each expected revision; preparation changes can be included there. CLI operations without an explicit revision load the current token immediately before writing. GUI/TUI display history and guard edits but do not yet offer dedicated forms for all these workflows. This is the bridge back to chapter 4.0's output and input toolkit.</aside>
+    <aside class="notes">These are command shapes, not a sequential fixture: quarantine/release/dispose need the corresponding lifecycle preconditions. Disposal quantity uses the current stock display unit. Batch input is a JSON array of models.Amendment with each expected revision; preparation changes can be included there. CLI operations without an explicit revision load the current token immediately before writing. The September alignment adds dedicated GUI/TUI interactions for these workflows, summarized next. This is the bridge back to chapter 4.0's output and input toolkit.</aside>
+
+    ## September alignment: carry the workflows into every client
+    **Ingredients**Revise substitution rules; retire with replacement, ratio, withdrawal, and reason.**Orders**Amend one order or review an atomic batch; inspect acceptance, approved plans, and amendment history.**Inventory**Receive stock, quarantine, release, dispose, and inspect retained movements with explicit quantity and cost units.**Audit**Read workflow correlation, referenced entities, and before/after effects; distinguish committed changes from failed attempts.
+    GUI and TUI retain reviewed revisions and preserve drafts after conflicts. Selected batches commit through App.AmendOrders.
+    [September 13 surface audit and render checks](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md)
+
+    <aside class="notes">This slide follows b070b71, after the original captures. All three clients now expose these workflows. GUI and TUI keep native interaction state while sharing domain-owned amendment request construction and audit detail helpers. An amendment queue preserves every selected order's revision; a conflict retains the queue, and a later failure rolls back earlier amendments. Separate retirement and amendment interactions remain separate transactions. App.RetireIngredient supplies the combined application workflow when both must commit together. The linked audit includes opt-in tests that render GUI PNGs and terminal ANSI frames. Use those captures alongside behavioral tests for permissions, keyboard input, stale revisions, and rollback.</aside>
 
   Optional extension 3.2<h1>Extend the model with Procurement</h1>planned, not implemented<br>Orders and Inventory already demonstrate reciprocal reactions. Procurement would add a workflow that spans time and commits.
 3.2<aside class="notes">This chapter is an optional future recording, not part of the current repository onboarding. Continue to 4.0 for the shipped interfaces. If recording the extension, first recap the existing order/reservation loop and ask what changes when a supplier response arrives hours or days later.</aside>

@@ -20,7 +20,7 @@ This guide is a development journal. It began before the desktop code existed, s
 
 **Experiment status:** the closure audit supports code-level functional parity for the workflows reviewed in this journal across the CLI, Bubble Tea TUI, and Fyne-backed GUI surface. The desktop composition can mount all seven domain-owned surfaces plus the dashboard, exposes only those readable by the active persona, owns async shutdown, presents typed errors consistently, exposes guarded keyboard commands, and has composed acceptance and fresh-process cross-surface tests. Manual assistive-technology audits and production signing remain release responsibilities rather than completed claims.
 
-**Current workflow scope (September 2026):** the Go application also exposes substitution administration, order amendments, quarantine/release, disposal, and movement history through the CLI. GUI/TUI details render accepted preparation and amendment history, and their editors carry captured revisions and tag sets, but dedicated forms for all the newer operations are not part of this journal's parity claim. See the [current onboarding deck](/talks/building-mixology.md) for those workflows.
+**Current workflow scope (September 13, 2026):** the [cross-domain surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md) adds native GUI/TUI interactions for substitution administration, single and batch order amendments, initial stock receipt, quarantine, release, disposal, and movement history. Details distinguish accepted history from approved fulfillment and expose correlated audit effects. The original experiment checkpoints remain below; the September follow-up records the expanded coverage.
 
 The experiment builds directly on [Mixology's existing TUI architecture](/articles/building-an-application-tui-toolkit.md). That surface adapts ideas from CODE Framework's shell, standard-view, and MVVM patterns to Bubble Tea's message loop. Fyne gave those ideas a different test. A retained widget tree has callbacks, bindings, focus, dialogs, and a UI thread rather than `Init`, `Update`, `View`, and `tea.Cmd`. The opening hypothesis was that a real application boundary would let the desktop surface adopt Fyne's native shape without copying business behavior or turning the TUI into a framework-neutral compromise. The completed implementation supports that hypothesis.
 
@@ -171,6 +171,35 @@ The next audit pass tightened fidelity that broad workflow tests had not yet mad
 The last closure discrepancy was GUI Audit page-size validation. The [fix](https://github.com/TheFellow/go-modular-monolith/commit/92e5ff4ab967d20456733a82dacd6855c0145473) rejects zero, negative, and nonnumeric sizes without changing the retained query, rows, cursor history, or selection, while preserving an intentionally empty inverted time interval as a valid query. The [acceptance correction](https://github.com/TheFellow/go-modular-monolith/commit/5f71a3151fe733a1ca1fc8045450d7e2a4f0d4bf) then aligned tests with explicit paging metadata and repaired a Menu detail fixture so it satisfies the real recipe invariant rather than depending on test order.
 
 With those corrections, the audited matrix supports code-level functional parity. The lesson is stronger than “three surfaces now look alike.” A third adapter supplied enough independent pressure to identify behavior that belonged in the application, behavior that belonged in each concrete view, and accidental differences that belonged nowhere.
+
+## Extend parity as the domain grows
+
+The [September alignment commit](https://github.com/TheFellow/go-modular-monolith/commit/b070b7184878270a69a9a05432d76795a44fe1d3) revisits the matrix after the transactional domain work expanded the application. Substitution rules, approved order amendments, and retained stock lifecycle already had public operations and CLI entrypoints. The follow-up carries those operations into native desktop and terminal interactions.
+
+| Workflow | GUI and TUI behavior |
+| --- | --- |
+| Substitution rules | List enabled and disabled rules; create, revise, disable, and re-enable with captured revisions |
+| Ingredient retirement | Choose permanent replacement and ratio, withdrawal, and reason |
+| Order amendments | Edit replacements and approved preparation; submit one order or queue and review an atomic batch |
+| Order history | Show immutable acceptance, current approved plan, amendment before/after records, and cancellation metadata |
+| Inventory | Receive initial stock; quarantine, release, dispose, and inspect retained movement history |
+| Quantity and price | Label quantities in stock display units and expose the separate cost unit |
+| Audit | Show workflow correlation, referenced entities, and field changes; label failed effects as uncommitted attempts |
+
+Forms retain the revision shown when editing begins, and failed submissions preserve the draft or amendment queue. Initial receipt uses revision zero, so two editors cannot overwrite each other's first stock entry. Batch submission calls `App.AmendOrders`; combining a selection with retirement remains available through `App.RetireIngredient`, rather than through separate retirement and amendment interactions.
+
+The same pass improves retirement-aware recipe details, catalog deletion feedback, menu readiness, and substitution details in cost analysis. Domain-owned helpers share amendment request construction and audit wording while each adapter retains its own interaction state. This is a concrete example of the boundary described in [Bespoke Views](/articles/bespoke-views-over-a-shared-application-boundary.md).
+
+Behavioral tests cover permissions, captured revisions, batch rollback, keyboard input, and semantic widget controls. The [render review commands](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md#review-captures) exercise the composed clients and write GUI PNGs and terminal ANSI frames for inspection:
+
+```sh
+MIXOLOGY_RENDER_DIR=/tmp/mixology-review go test -tags ci ./main/gui \
+  -run '^TestRenderWorkspaceReview$' -count=1
+MIXOLOGY_RENDER_DIR=/tmp/mixology-review go test ./main/tui \
+  -run '^TestRenderCrossDomainReview$' -count=1
+```
+
+Those captures make the forms and resulting histories reviewable alongside list/detail pages. They complement assertions about committed state and rollback; they are not platform-specific pixel goldens.
 
 ## Enforce the new boundary
 

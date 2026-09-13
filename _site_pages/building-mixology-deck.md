@@ -1,7 +1,7 @@
 ---
 title: "Building Mixology: The Slide Deck"
 date: 2026-09-05
-last_modified_at: 2026-09-06
+last_modified_at: 2026-09-13
 permalink: /talks/building-mixology/
 excerpt: "A visual walkthrough of the foundational domain, module, middleware, event, audit, tagging, filtering, persistence, and presentation choices behind go-modular-monolith."
 layout: deck
@@ -14,7 +14,7 @@ search: false
   <h1>Building a modular monolith in Go</h1>
   <p class="lede">A cocktail bar application with seven business owners, three interfaces, and tests that keep their boundaries intact.</p>
   <div class="chapter-path"><span>← / → chapter</span><span>↑ / ↓ detail</span><span><b>S</b> speaker view</span><span><b>Esc</b> map</span></div>
-  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Code links pin the reviewed repository snapshot 635c59b from go-modular-monolith PR #62; use that revision for reproducible demonstrations.</aside>
+  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Original code links and captures pin the reviewed repository snapshot 635c59b from go-modular-monolith PR #62. The September surface-alignment slide separately pins b070b71; use that revision for the expanded GUI/TUI workflows.</aside>
 </section>
 
 <section>
@@ -2755,7 +2755,15 @@ mixology inventory dispose --ingredient-id ing-A \
 mixology inventory history --ingredient-id ing-A</code></pre>
     <div class="callout">Replace illustrative IDs with seeded IDs. Capture revisions when intent must refer to the state you reviewed.</div>
     <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/cli/order_amend.go">Code: main/cli/order_amend.go</a></p>
-    <aside class="notes">These are command shapes, not a sequential fixture: quarantine/release/dispose need the corresponding lifecycle preconditions. Disposal quantity uses the current stock display unit. Batch input is a JSON array of models.Amendment with each expected revision; preparation changes can be included there. CLI operations without an explicit revision load the current token immediately before writing. GUI/TUI display history and guard edits but do not yet offer dedicated forms for all these workflows. This is the bridge back to chapter 4.0's output and input toolkit.</aside>
+    <aside class="notes">These are command shapes, not a sequential fixture: quarantine/release/dispose need the corresponding lifecycle preconditions. Disposal quantity uses the current stock display unit. Batch input is a JSON array of models.Amendment with each expected revision; preparation changes can be included there. CLI operations without an explicit revision load the current token immediately before writing. The September alignment adds dedicated GUI/TUI interactions for these workflows, summarized next. This is the bridge back to chapter 4.0's output and input toolkit.</aside>
+  </section>
+
+  <section>
+    <h2>September alignment: carry the workflows into every client</h2>
+    <div class="layers"><div class="layer"><strong>Ingredients</strong><span>Revise substitution rules; retire with replacement, ratio, withdrawal, and reason.</span></div><div class="layer"><strong>Orders</strong><span>Amend one order or review an atomic batch; inspect acceptance, approved plans, and amendment history.</span></div><div class="layer"><strong>Inventory</strong><span>Receive stock, quarantine, release, dispose, and inspect retained movements with explicit quantity and cost units.</span></div><div class="layer"><strong>Audit</strong><span>Read workflow correlation, referenced entities, and before/after effects; distinguish committed changes from failed attempts.</span></div></div>
+    <div class="callout">GUI and TUI retain reviewed revisions and preserve drafts after conflicts. Selected batches commit through App.AmendOrders.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md">September 13 surface audit and render checks</a></p>
+    <aside class="notes">This slide follows b070b71, after the original captures. All three clients now expose these workflows. GUI and TUI keep native interaction state while sharing domain-owned amendment request construction and audit detail helpers. An amendment queue preserves every selected order's revision; a conflict retains the queue, and a later failure rolls back earlier amendments. Separate retirement and amendment interactions remain separate transactions. App.RetireIngredient supplies the combined application workflow when both must commit together. The linked audit includes opt-in tests that render GUI PNGs and terminal ANSI frames. Use those captures alongside behavioral tests for permissions, keyboard input, stale revisions, and rollback.</aside>
   </section>
 </section>
 
