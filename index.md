@@ -13,7 +13,5 @@ Source: [https://thefellow.github.io/](https://thefellow.github.io/)
 ## Full content
 
 - [Projects](/projects.md): Open-source projects with design context beyond their repository READMEs.
-- [Articles](/articles.md): Long-form articles turning architecture principles into testable working designs.
-- [Notes](/notes.md): Focused observations drawn from active projects, experiments, and research.
-- [Series](/series.md): Ordered paths through related articles, notes, and projects.
+- [Writing](/writing.md): Articles, notes, and series together, newest writing first.
 - [Resume](/resume.md): Staff-level experience in authorization, architecture, delivery, and technical leadership.

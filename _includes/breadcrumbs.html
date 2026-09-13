@@ -34,8 +34,13 @@
         {% unless path_type == '#' %}
           {% assign crumb_url = crumb_url | append: '/' %}
         {% endunless %}
+        {% assign crumb_label = crumb | url_decode | replace: '-', ' ' | capitalize %}
+        {% if crumb == 'articles' or crumb == 'notes' or crumb == 'series' %}
+          {% assign crumb_url = '/writing/' %}
+          {% assign crumb_label = 'Writing' %}
+        {% endif %}
         <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-          <a href="{{ crumb_url | relative_url }}" itemprop="item"><span itemprop="name">{{ crumb | url_decode | replace: '-', ' ' | capitalize }}</span></a>
+          <a href="{{ crumb_url | relative_url }}" itemprop="item"><span itemprop="name">{{ crumb_label }}</span></a>
           <meta itemprop="position" content="{{ i }}" />
         </li>
         <span class="sep">{{ site.data.ui-text[locale].breadcrumb_separator | default: "/" }}</span>

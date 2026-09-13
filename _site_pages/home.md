@@ -2,7 +2,7 @@
 layout: single
 title: "Engineering in public"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-12
 permalink: /
 author_profile: true
 classes: wide
@@ -25,43 +25,17 @@ Software architecture, developer tools, and experiments explained through the pr
     <span class="feature-tile__cta">Browse projects <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
   </a>
 
-  <a class="feature-tile" href="{{ '/articles/' | relative_url }}" style="--feature-accent: #ffa94d;">
+  <a class="feature-tile feature-tile--featured" href="{{ '/writing/' | relative_url }}" style="--feature-accent: #ffa94d;">
     <header class="feature-tile__header">
       <span class="feature-tile__icon">{% include feature-icon.html name="book" %}</span>
       <span>
-        <span class="feature-tile__eyebrow">Tutorials and walkthroughs</span>
-        <span class="feature-tile__title">Articles</span>
+        <span class="feature-tile__eyebrow">Articles, notes, and series</span>
+        <span class="feature-tile__title">Writing</span>
       </span>
     </header>
-    <span class="feature-tile__description">Read long-form tutorials, essays, case studies, and development journals grounded in working software.</span>
-    <span class="feature-tile__topics"><span>Tutorials</span><span>Essays</span><span>Case studies</span></span>
-    <span class="feature-tile__cta">Open articles <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
-  </a>
-
-  <a class="feature-tile" href="{{ '/series/' | relative_url }}" style="--feature-accent: #b197fc;">
-    <header class="feature-tile__header">
-      <span class="feature-tile__icon">{% include feature-icon.html name="sitemap" %}</span>
-      <span>
-        <span class="feature-tile__eyebrow">Connected reading</span>
-        <span class="feature-tile__title">Series</span>
-      </span>
-    </header>
-    <span class="feature-tile__description">Follow ordered paths through articles and notes that develop one project or engineering idea over time.</span>
-    <span class="feature-tile__topics"><span>Projects</span><span>Architecture</span><span>Reading paths</span></span>
-    <span class="feature-tile__cta">Browse series <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
-  </a>
-
-  <a class="feature-tile feature-tile--featured" href="{{ '/notes/' | relative_url }}" style="--feature-accent: #f783ac;">
-    <header class="feature-tile__header">
-      <span class="feature-tile__icon">{% include feature-icon.html name="note" %}</span>
-      <span>
-        <span class="feature-tile__eyebrow">Project notes</span>
-        <span class="feature-tile__title">Notes</span>
-      </span>
-    </header>
-    <span class="feature-tile__description">Read focused observations about implementation details, design decisions, and lessons learned from active projects.</span>
-    <span class="feature-tile__topics"><span>Cedar</span><span>Engineering</span><span>AI workflows</span></span>
-    <span class="feature-tile__cta">Read notes <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
+    <span class="feature-tile__description">Explore tutorials, observations, and connected reading paths grounded in working software, all in one place, newest first.</span>
+    <span class="feature-tile__topics"><span>Architecture</span><span>Developer tools</span><span>Experiments</span></span>
+    <span class="feature-tile__cta">Browse writing <span class="feature-tile__arrow" aria-hidden="true">→</span></span>
   </a>
 
   <a class="feature-tile feature-tile--featured" href="{{ '/resume/' | relative_url }}" style="--feature-accent: #74c0fc;">
