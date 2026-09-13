@@ -1,7 +1,7 @@
 ---
 title: "Projects"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-08-23 12:00:00 -0700
+last_modified_at: 2026-09-12
 permalink: /projects/
 layout: single
 author_profile: true
@@ -30,7 +30,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 
   {% assign sorted_projects = site.projects | sort: "order" %}
   {% for project in sorted_projects %}
-    {% assign tile_position = forloop.index0 | modulo: 5 %}
+    {% assign tile_position = forloop.index | modulo: 5 %}
     {% assign project_target = project.series_url | default: project.url %}
     <a class="feature-tile{% if tile_position == 0 %} feature-tile--featured{% endif %}" href="{{ project_target | relative_url }}" style="--feature-accent: {{ project.accent }};">
       <header class="feature-tile__header">
