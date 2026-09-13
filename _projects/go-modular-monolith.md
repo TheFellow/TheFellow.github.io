@@ -1,7 +1,7 @@
 ---
 title: "go-modular-monolith"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-09-06
+last_modified_at: 2026-09-12
 excerpt: "A Go reference application that makes modular boundaries and cross-cutting concerns executable."
 language: "Go"
 license: "MIT"
@@ -20,6 +20,7 @@ topics: ["Architecture", "Reference app", "Cedar"]
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn .btn--primary }
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start){: .btn }
 [Explore the .NET port](/projects/modular-monolith/){: .btn }
+[Read the architecture comparison](/articles/explicit-architecture-with-a-go-accent/){: .btn }
 [Read the Mixology series](/series/mixology/){: .btn }
 [Present the onboarding deck](/talks/building-mixology/){: .btn }
 [Read the GUI surface article](/articles/growing-mixology-with-fyne/){: .btn }

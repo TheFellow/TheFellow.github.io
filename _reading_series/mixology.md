@@ -1,10 +1,10 @@
 ---
 title: "Building Mixology"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-09-06
+last_modified_at: 2026-09-12
 excerpt: "An ordered path through the architecture, domain modeling, persistence, authorization, and three user interfaces of the go-modular-monolith reference application."
 order: 10
-entries_label: "13 articles and notes"
+entries_label: "14 articles and notes"
 icon: "modules"
 accent: "#63e6be"
 topics: ["Go", "Modular architecture", "Application design"]
@@ -17,6 +17,8 @@ Mixology is a Go reference application that makes modular boundaries and cross-c
 The [.NET semantic port](/projects/modular-monolith/) explores the same architecture using .NET 10, EF Core, Terminal.Gui, and .NET MAUI; its own parity ledger defines the ported baseline. It provides a parallel implementation for separating the architecture's durable ideas from the Go-specific mechanisms described throughout this series.
 
 The [onboarding deck](/talks/building-mixology/) follows the current Go implementation, including Cedar's input/result authorization, prepared transactional reactions, accepted-order amendments, retained stock lifecycle, correlated audit evidence, and all three presentation toolkits. The articles include development journals and migration histories; their historical checkpoints remain identified as such.
+
+The concluding [Explicit Architecture comparison](/articles/explicit-architecture-with-a-go-accent/) traces the design back to Herberto Graça’s series, examines the deliberate departures, and builds a five-stage SVG architecture atlas linked to the implementation.
 
 [Explore the project](/projects/go-modular-monolith/){: .btn .btn--primary }
 [View the repository](https://github.com/TheFellow/go-modular-monolith){: .btn }

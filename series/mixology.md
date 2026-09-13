@@ -18,6 +18,8 @@ The [.NET semantic port](/projects/modular-monolith.md) explores the same archit
 
 The [onboarding deck](/talks/building-mixology.md) follows the current Go implementation, including Cedar's input/result authorization, prepared transactional reactions, accepted-order amendments, retained stock lifecycle, correlated audit evidence, and all three presentation toolkits. The articles include development journals and migration histories; their historical checkpoints remain identified as such.
 
+The concluding [Explicit Architecture comparison](/articles/explicit-architecture-with-a-go-accent.md) traces the design back to Herberto Graça’s series, examines the deliberate departures, and builds a five-stage SVG architecture atlas linked to the implementation.
+
 [Explore the project](/projects/go-modular-monolith.md)
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Explore the .NET port](/projects/modular-monolith.md)
@@ -36,3 +38,4 @@ The [onboarding deck](/talks/building-mixology.md) follows the current Go implem
 11. **Article:** [Typed Filtering over SQLite](/articles/typed-filtering-over-sqlite.md): How Mixology gives people and programs one typed filter language, then translates its safe subset into SQLite while retaining exact application semantics.
 12. **Note:** [Projecting Actions Across User Interfaces](/notes/projecting-actions-across-user-interfaces.md): How Mixology projects authorization and lifecycle prerequisites once, then lets GUI and TUI render native action state without sharing their views.
 13. **Article:** [Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md): How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.
+14. **Article:** [Explicit Architecture, with a Go Accent](/articles/explicit-architecture-with-a-go-accent.md): What Mixology borrows from Herberto Graça's Explicit Architecture, where it deliberately differs, and what transactions, types, three interfaces, and a storage migration taught me about those choices.

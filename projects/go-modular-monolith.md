@@ -15,6 +15,7 @@ Source: [https://thefellow.github.io/projects/go-modular-monolith/](https://thef
 [View the repository](https://github.com/TheFellow/go-modular-monolith)
 [Start with the repository guide](https://github.com/TheFellow/go-modular-monolith#five-minute-start)
 [Explore the .NET port](/projects/modular-monolith.md)
+[Read the architecture comparison](/articles/explicit-architecture-with-a-go-accent.md)
 [Read the Mixology series](/series/mixology.md)
 [Present the onboarding deck](/talks/building-mixology.md)
 [Read the GUI surface article](/articles/growing-mixology-with-fyne.md)
