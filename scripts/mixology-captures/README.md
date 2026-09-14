@@ -2,7 +2,7 @@
 
 These are real application renders for `_site_pages/building-mixology-deck.md`.
 The capture scripts use the deck's pinned source revision,
-`635c59b4101bdc614beb973cef83e8c2073a9787`, from `go-modular-monolith`.
+`0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c`, from `go-modular-monolith`.
 
 Run from the website checkout with Go 1.27.1+, `uv`, Google Chrome, Git, and
 the C toolchain needed to compile Fyne's headless tests:
@@ -41,7 +41,7 @@ These images capture application content without OS window chrome.
 | `gui-menu.png` | Published Classic Cocktails, scrolled to readiness and six drinks. |
 | `gui-order.png` | Place two Margaritas for “Bar seat four” through `Orders.Place`, then inspect the saved preparation. |
 
-The ingredient forms remain unchanged. Seed menu prices are unset, so menu and
+The complete capture set was rerendered from PR #64 on September 13, 2026, including the dashboard, ingredient editors, menu and order details, and typed-error adapters. The harness asserts real domain results and typed errors before capturing each surface. Seed menu prices are unset, so menu and
 order values display `N/A`. IDs, timestamps, recent activity order, and catalog
 row ordering can vary across runs; these are review images, not pixel goldens.
 The scripts fail if expected seed records are missing or a TUI frame exceeds its

@@ -14,7 +14,7 @@ search: false
   <h1>Building a modular monolith in Go</h1>
   <p class="lede">A cocktail bar application with seven business owners, three interfaces, and tests that keep their boundaries intact.</p>
   <div class="chapter-path"><span>← / → chapter</span><span>↑ / ↓ detail</span><span><b>S</b> speaker view</span><span><b>Esc</b> map</span></div>
-  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Original code links and captures pin the reviewed repository snapshot 635c59b from go-modular-monolith PR #62. The September surface-alignment slide separately pins b070b71; use that revision for the expanded GUI/TUI workflows.</aside>
+  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Code links and application captures pin the reviewed repository snapshot 0d5e64b from go-modular-monolith PR #64. Commands own their transaction, leaf reactions, and one audit activity.</aside>
 </section>
 
 <section>
@@ -95,7 +95,7 @@ go run ./main/tui</code></pre>
       </a>
       <figcaption>Seven workspaces, live counts, and recent activity in the terminal shell.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">Show this immediately after the startup commands. The seeded application contains 18 ingredients, six drinks, and one published menu. Number keys navigate to each workspace. Counts and recent activity come from application queries. Captured from the real Bubble Tea root model with the repository TUI driver; ANSI output is rasterized in headless Chrome. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -142,7 +142,7 @@ go run ./main/tui</code></pre>
     <div class="timeline"><div class="step"><strong>Foundation</strong><span>Audit + Tagging schemas</span></div><div class="step"><strong>Ports</strong><span>tag repository + empty registry</span></div><div class="step"><strong>Evidence</strong><span>separate audit writer</span></div><div class="step"><strong>Pipeline</strong><span>dispatcher + writer callback</span></div><div class="step"><strong>Operational modules</strong><span>rows + tag targets</span></div><div class="step"><strong>Public facades</strong><span>Tagging + Audit</span></div></div>
     <div class="cards two"><div class="card"><h3>No import side effects</h3><p>Private SQLite rows register during construction. Invalid or missing registration fails at startup or in architecture tests.</p></div><div class="card"><h3>No second manifest</h3><p><code>TestEveryDomainIsComposed</code> treats domain directories as the source of truth and verifies <code>app.New</code>.</p></div></div>
     <div class="callout">The private Audit writer exists before the public Audit facade, breaking the construction cycle between pipeline activity and authorized audit reads.</div>
-    <aside class="notes">Code walk: app/app.go. The pipeline needs a callback that writes activities, while the public Audit module needs the pipeline to authorize reads. Constructing the writer separately resolves that dependency directly. Likewise, Tagging's registry starts empty; operational modules register their own loaders before the public tagging workflow is exposed. These are constructor dependencies that can be inspected in one function.</aside>
+    <aside class="notes">Code walk: app/app.go. The pipeline needs a callback that writes activities, while the public Audit module needs the pipeline to authorize reads. Constructing the writer separately resolves that dependency directly. Likewise, Tagging's registry starts empty; operational modules register their own loaders before the public tagging API is exposed. These are constructor dependencies that can be inspected in one function.</aside>
   </section>
 
   <section>
@@ -150,7 +150,7 @@ go run ./main/tui</code></pre>
     <div class="split"><div class="side"><h3><code>App</code></h3><p>Store and public modules whose private composition retains the configured pipeline. No actor identity.</p></div><div class="bridge">+</div><div class="side"><h3><code>Session</code></h3><p>Binds a persistent TUI or GUI to an authenticated base context, then creates a fresh operation context every time.</p></div></div>
     <div class="flow"><div class="node"><strong>base context</strong>actor + logger + metrics</div><div class="arrow">→</div><div class="node"><strong><code>Session.Context()</code></strong>fresh mutable state</div><div class="arrow">→</div><div class="node"><strong>operation</strong>events + activity + attributes</div><div class="arrow">→</div><div class="node"><strong>discard</strong>nothing leaks forward</div></div>
     <div class="callout">The CLI starts fresh per invocation. Persistent clients reuse authentication, never accumulated operation state.</div>
-    <aside class="notes">Open app/session.go and pkg/middleware/context.go. The stable context supplies cancellation, actor, and logging. Each operation has a separate event accumulator, activity, and log attributes. Chain.Execute also isolates mutable state for each command when several commands share a caller-owned transaction. Otherwise, a later click could inherit an earlier event or audit resource.</aside>
+    <aside class="notes">Open app/session.go and pkg/middleware/context.go. The stable context supplies cancellation, actor, and logging. Each operation has a separate event accumulator, activity, and log attributes. Chain.Execute isolates mutable state for each operation and rejects a second command in the same transaction. Otherwise, a later click could inherit an earlier event or audit resource.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -168,7 +168,7 @@ ingredientsModule := ingredients.NewModule(
     ctx, s, tags, targets, pipeline,
 )</code></pre>
     <div class="callout">The pipeline receives an audit-writing capability. The public Audit module is constructed later with that same pipeline.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/app.go">Code: app/app.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go">Code: app/app.go</a></p>
     <aside class="notes">Excerpt from app.New after schema registration. Follow NewModule into its private DAO, peer queries, and tag registration. There is no runtime service locator: the dependencies are visible in constructor parameters. The application owns this graph; the session adds actor context without rebuilding it.</aside>
   </section>
 
@@ -181,9 +181,9 @@ ingredientsModule := ingredients.NewModule(
     derived.activity = nil
     return &amp;derived
 }</code></pre>
-    <div class="callout">The principal and optional transaction survive the copy. The event slice and activity do not: two commands can share a commit without sharing an operation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/context.go">Code: pkg/middleware/context.go</a></p>
-    <aside class="notes">Exact method. Follow Chain.Execute to its final next(ctx.forOperation()) call. Then inspect WithTransaction: it starts another event slice but preserves the activity pointer, so handler touches and successful recording belong to the originating command. This distinction is easy to miss when reading shallow copies.</aside>
+    <div class="callout">The principal and optional transaction survive the copy. The event slice and activity do not: a transaction belongs to one command, while its queries and leaf reactions share that transaction.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/context.go">Code: pkg/middleware/context.go</a></p>
+    <aside class="notes">Exact method. Follow Chain.Execute: it checks ownership, calls forOperation, and then marks the inherited context before executing the chain. Then inspect WithTransaction: it starts another event slice but preserves the activity pointer, so handler touches and successful recording belong to the originating command. This distinction is easy to miss when reading shallow copies.</aside>
   </section>
 
 </section>
@@ -239,7 +239,7 @@ func (id DrinkID) String() string {
     return string(cedar.EntityUID(id).ID)
 }</code></pre>
     <div class="callout">Domain signatures retain DrinkID. Conversion to Cedar is explicit at the policy boundary; parsing validates external IDs at entry.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/kernel/entity/entities_gen.go">Code: app/kernel/entity/entities_gen.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/entity/entities_gen.go">Code: app/kernel/entity/entities_gen.go</a></p>
     <aside class="notes">Selected generated methods. Compare IngredientID beside this code: identical mechanics, distinct parameter types. A Go type conversion can still be written deliberately; the guarantee is against accidental interchange, not a security boundary. Show the generator input and the ID parsing tests before navigating to the next type.</aside>
   </section>
 
@@ -260,7 +260,7 @@ pieces := measurement.MustAmount(1, measurement.UnitPiece)
 _, err := volume.Add(pieces)
 // Invalid: "unit mismatch: ml vs piece"</code></pre>
     <div class="callout">The unexported marker controls direct implementations. Add and Convert enforce dimensional compatibility between valid variants.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/kernel/measurement/amount.go">Code: app/kernel/measurement/amount.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/measurement/amount.go">Code: app/kernel/measurement/amount.go</a></p>
     <aside class="notes">The interface is abbreviated; the executable statements use the actual package. MustAmount is appropriate for known-good fixture literals, while NewAmount returns errors for external values. Open VolumeAmount.Add to see its type switch and typed Invalid result. A nil interface, zero value, or embedded implementation still requires ordinary Go reasoning; this is not a proof of every numeric invariant.</aside>
   </section>
 
@@ -281,7 +281,7 @@ ml.Value() // 29.5735
 
 // Pieces, dashes, and splashes cannot convert to liquid volume.</code></pre>
     <div class="callout">Amounts prevent dimensional mistakes. They do not make floating-point arithmetic exact or enforce every business quantity constraint.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/kernel/measurement/quantity.go">Code: app/kernel/measurement/quantity.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/measurement/quantity.go">Code: app/kernel/measurement/quantity.go</a></p>
     <aside class="notes">Selected declarations and an illustrative conversion using the current constant. Add/Sub operate on normalized volume and preserve the left operand's display unit. DiscreteQuantity retains its own unit and also uses float64; discrete does not imply integer-only validation. Nonnegative stock, positive recipe amounts, and acceptable scaling belong to domain validation. Follow this representation into fulfillment's unit conversion before comparing availability.</aside>
   </section>
 </section>
@@ -333,7 +333,7 @@ func Internalf(format string, args ...any) *InternalError {
     return &amp;InternalError{err: newErrorf(KindInternal, format, args...)}
 }</code></pre>
     <div class="callout">InternalError identifies the failure family. Error carries the immutable kind, diagnostic detail, safe override, and one wrapped cause.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/errors/errors_gen.go">Code: pkg/errors/errors_gen.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/errors/errors_gen.go">Code: pkg/errors/errors_gen.go</a></p>
     <aside class="notes">Selected declarations. newErrorf uses fmt.Errorf to format detail and standard errors.Unwrap to retain a single cause. It does not capture runtime PCs or a stack trace. Avoid treating multiple %w operands as the same contract; this constructor stores one cause. Generated methods supply Kind, UserMessage, ExitCode, and the custom As bridge.</aside>
   </section>
 
@@ -355,7 +355,7 @@ _, err := actions.Evaluate(ctx, actions.Group{
     }},
 }){% endraw %}</code></pre>
     <div class="callout">The condition returns a typed error. evaluateControl adds the condition index; evaluateGroup adds the control ID. Neither layer needs a CLI or GUI type.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
     <aside class="notes">Runnable illustration using the repository APIs, with an injected dependency failure rather than a real database lock. Imports are context, pkg/errors, and pkg/presentation/actions; ctx is context.Background(). Keep this example open for the next three slides. This call was executed to verify the exact chain and surface outputs.</aside>
   </section>
 
@@ -373,7 +373,7 @@ _, err := actions.Evaluate(ctx, actions.Group{
             └─ *errors.errorString
                  database is locked</code></pre>
     <div class="callout">This is a causal wrapping chain, not a captured Go runtime stack. Error() includes every added prefix; Unwrap preserves the path to the original cause.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
     <aside class="notes">The repository wrappers are fmt.Errorf("condition %d: %w", i, err) and fmt.Errorf("actions: control %q: %w", control.ID, err). The tree is the observed chain from the previous example; diagnostic lines are wrapped here for slide width. InternalError.Unwrap delegates directly to its underlying cause rather than exposing the shared Error as another chain node.</aside>
   </section>
 
@@ -394,7 +394,7 @@ if p, ok := target.(**Error); ok {
     return true
 }</code></pre>
     <div class="callout">A domain caller can classify the concrete failure. A generic adapter can extract the common payload without switching over six wrapper types.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/errors/errors_gen.go">Code: pkg/errors/errors_gen.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/errors/errors_gen.go">Code: pkg/errors/errors_gen.go</a></p>
     <aside class="notes">As walks through both fmt wrappers and calls InternalError.As. The shared payload is reachable even though it is not an Unwrap node. No string matching is required. These results were checked against the real package; use errors.Is for a particular sentinel and the generated IsInternal helper for the typed family.</aside>
   </section>
 
@@ -416,7 +416,7 @@ GUI: severity Error, original cause retained
 Without WithUserMessage:
   internal error</code></pre>
     <div class="callout">The safe message comes from the classified payload, so outer diagnostic prefixes do not leak into CLI, TUI, or GUI adapter output.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/errors/cli.go">Code: pkg/errors/cli.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/errors/cli.go">Code: pkg/errors/cli.go</a></p>
     <aside class="notes">Observed from ToCLIExit, ToTUIError, and the GUI toolkit’s PresentError using the previous example. ToCLIExit creates a terminal cli.Exit value with a message and code; ToTUIError also retains Err for diagnostics. Perform semantic inspection before converting to a terminal CLI result. The GUI uses the same classification through PresentError.</aside>
   </section>
 
@@ -450,7 +450,7 @@ $ echo $?
       </a>
       <figcaption>The root status bar renders <code>name is required</code> with error styling; the CLI exits <code>10</code>.</figcaption>
     </figure>
-    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · select image for full size</p>
     <aside class="notes">The harness calls Ingredients.Create with an empty name and asserts KindInvalid. It delivers that real domain error through routes.ErrorMsg to the composed TUI root. This captures the root status-bar adapter; domain forms have their own validation rendering. The underlying typed error remains available for inspection. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
@@ -462,7 +462,7 @@ $ echo $?
       </a>
       <figcaption>The GUI keeps <code>name is required</code> inline and preserves the other entered fields.</figcaption>
     </figure>
-    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · select image for full size</p>
     <aside class="notes">The real ingredient presenter submits a new-ingredient form with its name empty. Its preflight validation returns Invalid before calling the domain command, and PresentError selects inline severity. Show the retained category, unit, and description. The user can correct the name without reconstructing the form or dismissing a dialog. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
@@ -490,7 +490,7 @@ $ echo $?
       </figure>
     </div>
     <div class="callout">The typed <code>Conflict</code> selects exit status and severity. No surface parses the message to discover its meaning.</div>
-    <p class="source">Real duplicate-name failure · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · TUI/GUI detail crops link to full captures</p>
+    <p class="source">Real duplicate-name failure · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · TUI/GUI detail crops link to full captures</p>
     <aside class="notes">Compare the identical message across all three images. CLI output is rasterized from the actual built executable's stderr and exit status; only the displayed command is reflowed. The TUI capture delivers the real Ingredients.Create conflict through routes.ErrorMsg to the root status-bar adapter. The GUI submits the duplicate through the real presenter and domain/store path. The two detail crops preserve pixels from the full screenshots linked here and shown on the following slides. The capture harness asserts KindConflict, exit 40, warning severity, matching messages, and retained GUI input. The message alone says only insert ingredient and its name; the typed kind supplies the semantics without string matching. Reproduce with scripts/mixology-captures/capture.sh.</aside>
   </section>
 
@@ -502,7 +502,7 @@ $ echo $?
       </a>
       <figcaption>The root status bar uses warning styling for <code>Conflict</code>; the CLI exits <code>40</code>.</figcaption>
     </figure>
-    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · select image for full size</p>
     <aside class="notes">The harness attempts Ingredients.Create with the already seeded London Dry Gin. The unique-name collision is translated by the DAO/store boundary into Conflict. Delivering it through routes.ErrorMsg makes the root choose warning styling. The captured message is the current DAO message, insert ingredient followed by the quoted name; the kind identifies the collision without parsing that text. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
@@ -514,7 +514,7 @@ $ echo $?
       </a>
       <figcaption>A warning dialog reports the collision while the duplicate-name form keeps its input.</figcaption>
     </figure>
-    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · select image for full size</p>
     <aside class="notes">The composed desktop submits the duplicate through the real ingredient presenter and application command. Assert that the error remains Conflict through ErrorPresentation, that severity is Warning, and that the description is preserved. ShowPresentation routes this severity to WindowDialogs.ShowWarning, whose Fyne implementation uses an information dialog titled Unable to complete operation. Renaming or choosing the existing ingredient is the recovery. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
@@ -526,7 +526,7 @@ $ echo $?
       </a>
       <figcaption>Injected dependency failure: the status bar shows <code>Readiness is temporarily unavailable</code>; exit code <code>50</code>.</figcaption>
     </figure>
-    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <p class="source">TUI root status-bar adapter · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · select image for full size</p>
     <aside class="notes">This is the explicitly injected Internal failure from the preceding action-evaluator example. It is delivered to routes.ErrorMsg while the Menus workspace is open. ToTUIError finds the typed payload through both fmt wrappers, chooses error styling, and uses WithUserMessage. The capture asserts that database is locked, load readiness, and condition 0 do not appear on screen. This demonstrates adapter behavior, not a naturally occurring database outage. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
@@ -538,7 +538,7 @@ $ echo $?
       </a>
       <figcaption>Injected dependency failure: the GUI uses error severity and the same safe message as CLI and TUI.</figcaption>
     </figure>
-    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">635c59b</a> · select image for full size</p>
+    <p class="source">Fyne desktop · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">0d5e64b</a> · select image for full size</p>
     <aside class="notes">Pass the same injected and wrapped Internal error through ShowPresentation and the composed window’s WindowDialogs. The GUI adapter keeps the original cause while displaying the safe override in an error dialog. Diagnostic Error() still contains the database cause for logging and inspection. This is a deterministic adapter demonstration; the underlying database remains healthy. Reproduce with scripts/mixology-captures/capture.sh; errors/ contains the fixtures and assertions for all three surfaces.</aside>
   </section>
 
@@ -557,7 +557,7 @@ return fmt.Errorf("publish menu: %w", err)
 errors.ToCLIExit(errors.New("raw dependency detail"))
 // exit 1, message "raw dependency detail"</code></pre>
     <div class="callout">Expected store failures become domain-facing kinds. Unexpected failures retain their cause under Internal. A new typed wrapper is a semantic decision, not routine decoration.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/errors.go">Code: pkg/store/errors.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/errors.go">Code: pkg/store/errors.go</a></p>
     <aside class="notes">MapError intentionally replaces the message for expected NotFound, Conflict, and Invalid branches; those branches do not preserve the incoming cause. The Internal branch does. Wrapping a Conflict inside Internal leaves both types discoverable in the chain, while a generic payload lookup finds the outer classification. Explain this before asserting that an immutable kind means no layer can ever reclassify a failure. The policy is to preserve existing meaning unless a boundary deliberately changes it.</aside>
   </section>
 
@@ -583,7 +583,7 @@ errors.ToCLIExit(errors.New("raw dependency detail"))
     </div>
     <div class="callout">Choose the method by the operation's input and authorization needs. The shared pipeline still owns transaction and failure behavior.</div>
     <aside class="notes">Open orders/place.go to see a facade select Command, then menus/publish.go for LoadCommand. The distinction is where trusted authorization state comes from. Query authorizes a returned entity; QueryResource authorizes a separate known resource before executing its query; PageQuery authorizes each visible row. LoadCommand loads trusted state first. LoadCommandActions is used for tag replacement because adding and removing tags require different actions.</aside>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/README.md">Code guide: pkg/middleware/README.md</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/README.md">Code guide: pkg/middleware/README.md</a></p>
   </section>
 
   <section>
@@ -619,7 +619,7 @@ errors.ToCLIExit(errors.New("raw dependency detail"))
     DispatchEvents(config.Dispatcher),
 )</code></pre>
     <div class="callout">Enter top to bottom; unwind bottom to top. Dispatch and successful audit complete before UnitOfWork returns and commits.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/chains.go">Code: pkg/middleware/chains.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/chains.go">Code: pkg/middleware/chains.go</a></p>
     <aside class="notes">Exact chain from NewPipeline. Put the code next to its stack in the earlier slide. Next is a function, not a queue. Every after-next branch can change the final error, so logging and metrics stay outside the transaction. UnitOfWork joins an injected transaction or calls Store.Write; it does not silently commit a caller's transaction.</aside>
   </section>
 
@@ -627,17 +627,24 @@ errors.ToCLIExit(errors.New("raw dependency detail"))
     <h2>Publish authorizes persisted state, then the result</h2>
     <pre><code class="language-go">func (m *Module) Publish(
     ctx *middleware.Context, menu *models.Menu,
+    edits ...tag.Edit,
 ) (*models.Menu, error) {
+    if menu == nil { return nil, errors.Invalidf("menu is required") }
     return m.pipeline.LoadCommand(ctx, authz.ActionPublish,
         func(ctx *middleware.Context) (*models.Menu, error) {
-            return m.queries.Get(ctx, menu.ID)
+            loaded, err := m.queries.Get(ctx, menu.ID)
+            if err != nil { return nil, err }
+            if menu.Revision != 0 &amp;&amp; menu.Revision != loaded.Revision {
+                return nil, errors.Conflictf("menu changed; reload before publish")
+            }
+            return loaded, nil
         },
-        m.commands.Publish,
+        withTags(edits, m.commands.Publish),
     )
 }</code></pre>
     <div class="callout">The submitted ID selects the resource. Its current fields are loaded inside the transaction before authorization; the returned entity is authorized again before dispatch.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/publish.go">Code: app/domains/menus/publish.go</a></p>
-    <aside class="notes">Exact facade with a reflowed signature. In run.go, trace load → actions → authorizeCommandActions → handler → result authorization. The returned Go value alone is not proof of success: a later dispatch, audit, or commit error can still invalidate the operation. Callers must check err before using the result.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/publish.go">Code: app/domains/menus/publish.go</a></p>
+    <aside class="notes">Exact facade with reflowed signature and error checks. In run.go, trace load → actions → authorizeCommandActions → handler → result authorization. The returned Go value alone is not proof of success: a later dispatch, audit, or commit error can still invalidate the operation. Callers must check err before using the result.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -657,8 +664,8 @@ testutil.Equals(t, recordCalls, 2)
 testutil.Equals(t, transactionProbeKinds(t, ctx, s),
     []string{"failure-audit"})</code></pre>
     <div class="callout">Business and success-audit rows roll back. Only the separately recorded failed attempt survives.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
-    <aside class="notes">Excerpt from TestLoadCommand_ActivityRecorderFailureRollsBackBusinessWrite; setup and error assertions omitted. TrackActivity retries as a failure after rollback even when successful activity was already finalized. It skips recording only when CompletedAt is set AND err is nil. Run this test before tracing the workflow case in chapter 1.8.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
+    <aside class="notes">Excerpt from TestLoadCommand_ActivityRecorderFailureRollsBackBusinessWrite; setup and error assertions omitted. TrackActivity retries as a failure after rollback even when successful activity was already finalized. It skips recording only when CompletedAt is set AND err is nil. Run this test before tracing command failure evidence in chapter 1.8.</aside>
   </section>
 
 
@@ -679,26 +686,25 @@ func Write(ctx Context, f func(*Tx) error) error {
     return f(tx)
 }</code></pre>
     <div class="callout">The lowercase package helper requires a transaction. Domain DAOs cannot accidentally turn one business operation into several commits.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/access.go">Code: pkg/store/access.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/access.go">Code: pkg/store/access.go</a></p>
     <aside class="notes">First block is illustrative; second is the exact store.Write implementation. Store.ReadContext similarly reuses an injected transaction so queries and handlers see its tentative writes. UnitOfWork owns the default outer boundary. Neither the helper nor a joined pipeline command creates a savepoint. A callback error must reach the actual transaction owner.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>A caller-owned transaction owns every nested outcome</h2>
-    <pre><code class="language-text">application composition opens transaction T
-  command A joins T
-    business write + reactions + success activity
-  command B joins T
-    business write + reactions + success activity
-  caller returns nil  → commit all of T
-  caller returns err  → roll back all of T
+    <h2>One SQL transaction accepts one command</h2>
+    <pre><code class="language-text">command claims transaction T
+  domain writes + leaf reactions + one success activity
+  queries and leaf persistence share T
 
-If B fails:
-  propagate the error; do not commit A's tentative success
-  joined middleware does not open a separate failure-audit write</code></pre>
-    <div class="callout">A successful inner call is provisional until the caller commits. Transaction ownership includes error handling and audit policy.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/track_activity.go">Code: pkg/middleware/track_activity.go</a></p>
-    <aside class="notes">Trace middleware.RunWorkflow and UnitOfWork. RunTaggedMutation supplies RunWorkflow as the owning boundary when it opens the transaction; that owner records the correlated failed attempt afterward. In TrackActivity, a context already carrying a transaction bypasses separate managed failure recording. An outer rollback removes earlier successful activities too. TestLoadCommand_UsesCallerTransactionForBusinessAndSuccessActivity verifies business and audit rows disappear together after caller rollback. The Store callback contract is error-based; it does not promise rollback on recovered panics.</aside>
+second command using T → FailedPrecondition
+  even after the first command returns
+  even through a fresh context
+
+command inside command / query / handler → FailedPrecondition
+  including a context reconstructed from that parent</code></pre>
+    <div class="callout">A low-level caller supplying T owns rollback and failure recording. It cannot use T to compose several commands.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/operation_boundary_test.go">Code: pkg/middleware/operation_boundary_test.go</a></p>
+    <aside class="notes">Trace Chain.Execute, UnitOfWork, and store.Tx.ClaimCommand. The command guard runs before transaction serialization, so recursive entry fails instead of waiting on a non-reentrant mutex. TestCallerTransactionCannotComposeMultipleCommands checks sequential calls and fresh contexts against the same transaction. Queries and leaf DAOs retain access to the owning command’s tentative state.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -714,9 +720,9 @@ If B fails:
 
 // LockTransaction keys a sync.Mutex by *store.Tx.
 // Separate transactions are coordinated by SQLite.</code></pre>
-    <div class="callout">The lock protects concurrent operations sharing one caller-owned transaction. It is not a process-wide writer lock or a reentrant transaction primitive.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/transaction.go">Code: pkg/middleware/transaction.go</a></p>
-    <aside class="notes">Exact middleware. app.RunTaggedMutation calls sibling operations sequentially from outside their pipelines. Do not recursively enter a facade pipeline with the same injected Tx while holding this mutex: a sync.Mutex is not reentrant. Domain collaboration uses public query packages and handlers rather than nested module calls. Direct store helpers do not independently acquire this pipeline lock.</aside>
+    <div class="callout">The lock serializes access to an injected transaction. Command ownership is checked before this lock; it never permits a second command.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/transaction.go">Code: pkg/middleware/transaction.go</a></p>
+    <aside class="notes">Exact middleware. Chain.Execute rejects nested command entry before acquiring the transaction lock. A transaction can be claimed only once, including through a fresh context after the first command returns. Domain collaboration uses public query packages and leaf handlers. Direct store helpers do not independently acquire this pipeline lock.</aside>
   </section>
 </section>
 
@@ -786,7 +792,7 @@ Import drinks/surfaces/tui
 
 Run: go tool arch-lint -config=.arch-lint.yaml</code></pre>
     <div class="callout">Go protects the owning subtree. Architecture rules narrow the permitted layers within it and prevent coupling between presentation runtimes.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/.arch-lint.yaml">Code: .arch-lint.yaml</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml">Code: .arch-lint.yaml</a></p>
     <aside class="notes">Derived examples from domain-internals-have-explicit-consumers and surfaces-are-bespoke. These are expected outcomes, not pasted diagnostic wording. Open architecture/arch_lint_test.go for fixtures that test allowed and forbidden imports, including an invented Web surface. Adding another domain should not require enumerating its name in every rule.</aside>
   </section>
 
@@ -807,7 +813,7 @@ func NewStockAdjusted(
 
 go generate ./pkg/dispatcher</code></pre>
     <div class="callout">The generator converts discoverable source structure into ordinary, reviewable calls. A package's presence alone does not register a reaction.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/dispatcher/README.md">Code: pkg/dispatcher/README.md</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/README.md">Code: pkg/dispatcher/README.md</a></p>
     <aside class="notes">Signature/constructor shapes from the dispatcher guide. The scanner ignores test files and discovers event structs under app and pkg, then matching handler methods under app. New&lt;Type&gt; must satisfy the generated constructor convention. Review dispatcher_gen.go after generation, build it, and run a behavioral fixture test: valid generated wiring does not prove the reaction's business semantics.</aside>
   </section>
 
@@ -825,7 +831,7 @@ f.Orders.Complete(ctx, &amp;ordersmodels.Order{ID: order.ID})
 f.Ingredients.Create(ctx, &amp;ingredient)
 // stock must still be 8 oz; old events must not replay.</code></pre>
     <div class="callout">Tests should preserve the production unit of work. A fixture-wide transaction can hide commit, rollback, and operation-state bugs.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/testutil/transaction_test.go">Code: pkg/testutil/transaction_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/testutil/transaction_test.go">Code: pkg/testutil/transaction_test.go</a></p>
     <aside class="notes">Illustrative excerpt from two testutil transaction tests; setup and error assertions are omitted here. Run TestFixtureContextsUseProductionTransactionBoundaries and TestFixtureCommandsDoNotReplayPriorEvents. The latter reuses one context deliberately: Chain.Execute must reset events and activity on every operation. This is a behavioral check for the context-copying design from chapter 1.1.</aside>
   </section>
 </section>
@@ -838,7 +844,7 @@ f.Ingredients.Create(ctx, &amp;ingredient)
     <div class="cards"><div class="card"><h3>Identity</h3><p>Which principal is making this request?</p></div><div class="card"><h3>Capability</h3><p>Which domain action is requested?</p></div><div class="card"><h3>Scope</h3><p>Which resource attributes and tags make that action permissible?</p></div></div>
     <div class="callout">A sommelier can manage wine, read a tagged cocktail, and still be denied permission to update that cocktail.</div>
     <aside class="notes">Introduce attribute-based access control (ABAC) with this concrete distinction. A persona is not a blanket grant to a screen or endpoint. The same method and action can be allowed for one resource and denied for another. Keep the wine/cocktail example throughout all three authorization chapters.</aside>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/authz/policies.cedar">Code: app/domains/drinks/authz/policies.cedar</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/authz/policies.cedar">Code: app/domains/drinks/authz/policies.cedar</a></p>
   </section>
 
   <section class="implementation-slide">
@@ -853,7 +859,7 @@ ctx := authn.ToContext(context.Background(), principal)
 // Current demo actors:
 owner, manager, sommelier, bartender, anonymous</code></pre>
     <div class="callout">Actor selection is a demo identity mechanism. Cedar determines that actor's access; it does not authenticate the caller.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/authn/authn.go">Code: pkg/authn/authn.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authn/authn.go">Code: pkg/authn/authn.go</a></p>
     <aside class="notes">Illustrative context setup followed by a list of actor names, not one compilable block. ParseActor accepts these personas and defaults an empty selection to owner. The current evaluator gives the principal no attributes or parent memberships. These are named identities, not an implemented group hierarchy or tenant model. A real identity provider would need a trusted mapping into the authorization request.</aside>
   </section>
 
@@ -878,7 +884,7 @@ entities := cedar.EntityMap{
 }
 decision, diagnostic := cedar.Authorize(ps, entities, req)</code></pre>
     <div class="callout">The request names the resource. The entity map supplies its attributes and tags. Cedar does not fetch missing domain state.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/authz/authorize.go">Code: pkg/authz/authorize.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authz/authorize.go">Code: pkg/authz/authorize.go</a></p>
     <aside class="notes">Abbreviated entity-map entry; the request and evaluator call match authorize.go. Principal, action, resource, context form the decision request. This adapter supplies only the principal and resource entities and an empty context. Policy expressiveness is bounded by that supplied data: referenced entity IDs do not automatically load an entity graph.</aside>
   </section>
 
@@ -903,7 +909,7 @@ namespace Mixology::Drink {
     };
 }</code></pre>
     <div class="callout">Drink has four declared attributes and string-valued Cedar tags. An attribute is not available to policy merely because it exists on the Go model.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/authz/schema.cedarschema">Code: app/domains/drinks/authz/schema.cedarschema</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/authz/schema.cedarschema">Code: app/domains/drinks/authz/schema.cedarschema</a></p>
     <aside class="notes">Exact schema, with the actor list reflowed. Revision, recipe, and review status are Go model fields but are not declared in this authorization shape. Extending policy to one of them requires an intentional schema and conversion change. The generator produces action IDs, the resource model, and schema validation support.</aside>
   </section>
 
@@ -918,7 +924,7 @@ namespace Mixology::Drink {
     }.CedarEntity()
 }</code></pre>
     <div class="callout">Hydrate authoritative state before this conversion. A valid schema proves shape, not that an attribute or tag came from a trusted source.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/models/drink.go">Code: app/domains/drinks/models/drink.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/models/drink.go">Code: app/domains/drinks/models/drink.go</a></p>
     <aside class="notes">Exact method, reflowed. Follow the domain DAO's tag hydration into this mapping. An empty Category is still a String and could satisfy a policy using != wine, so schema validation cannot substitute for trusted loading and business validation. Generated CedarEntity fixes the resource type, preserves the ID, and converts the declared attributes and tags.</aside>
   </section>
 
@@ -938,7 +944,7 @@ namespace Mixology::Drink {
     resource.Category == "wine"
 };</code></pre>
     <div class="callout">The grant is the intersection of principal, action, resource type, and category. Changing category changes the decision.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/authz/policies.cedar">Code: app/domains/drinks/authz/policies.cedar</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/authz/policies.cedar">Code: app/domains/drinks/authz/policies.cedar</a></p>
     <aside class="notes">Exact permit from the shipped policy. The manager permit has no category condition; the bartender permit requires Category != wine. Do not describe this as a role check followed by arbitrary command code: the resource restriction is part of the policy decision itself.</aside>
   </section>
 
@@ -956,7 +962,7 @@ namespace Mixology::Drink {
     resource.getTag("audience") == "sommelier"
 };</code></pre>
     <div class="callout">This extends reading to an individual resource. It does not grant update, tag, or untag.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/authz/policies.cedar">Code: app/domains/drinks/authz/policies.cedar</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/authz/policies.cedar">Code: app/domains/drinks/authz/policies.cedar</a></p>
     <aside class="notes">Exact shipped permit. hasTag guards the lookup when a key is absent. Tags are ordinary data until an authored policy gives them meaning. The wine permit and audience permit are additive; removing the audience tag from a wine does not revoke category-based access.</aside>
   </section>
 
@@ -965,7 +971,7 @@ namespace Mixology::Drink {
     <table class="matrix"><thead><tr><th>Sommelier resource</th><th>Get</th><th>Update</th><th>Tag</th></tr></thead><tbody><tr><td>Wine, no audience tag</td><td>Allow</td><td>Allow</td><td>Allow</td></tr><tr><td>Cocktail, no audience tag</td><td>Deny</td><td>Deny</td><td>Deny</td></tr><tr><td>Cocktail, audience=sommelier</td><td>Allow</td><td>Deny</td><td>Deny</td></tr></tbody></table>
     <div class="callout">Being able to read a resource never implies permission to mutate it or change who can read it.</div>
     <aside class="notes">These nine decisions were executed against AuthorizeWithEntity and the current assembled policy set. The tag grant is scoped to list/get, while update/tag still use category rules. Use this matrix as the starting fixture for command and UI tests.</aside>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/authz/authorize.go">Code: pkg/authz/authorize.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authz/authorize.go">Code: pkg/authz/authorize.go</a></p>
   </section>
 
   <section class="implementation-slide">
@@ -985,7 +991,7 @@ forbid(
     resource
 );</code></pre>
     <div class="callout">Cedar denies without a matching permit. A matching forbid wins over a matching permit, regardless of document order.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/audit/authz/policies.cedar">Code: app/domains/audit/authz/policies.cedar</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/audit/authz/policies.cedar">Code: app/domains/audit/authz/policies.cedar</a></p>
     <aside class="notes">Source excerpts, reflowed. All embedded domain documents join one policy set. The owner grant is a permit, not a privileged evaluator bypass; a forbid that matched owner would still deny. Current audit forbids name the four non-owner personas. Document sorting makes assembly deterministic, not priority-ordered. Cedar combines policies without a first-match rule. See https://docs.cedarpolicy.com/auth/authorization.html for the algorithm.</aside>
   </section>
 
@@ -1012,7 +1018,7 @@ return nil</code></pre>
     <div class="layers"><div class="layer"><strong>Authored</strong><span>domain schema, policies, and Go model conversion</span></div><div class="layer"><strong>Generated</strong><span>action IDs, Cedar resource model, validator, tests, policy registry</span></div><div class="layer"><strong>At runtime</strong><span>validate resource shape, evaluate the assembled policies, classify the result</span></div></div>
     <div class="callout">Changing policy is a behavior change. Changing the schema also changes the data contract that every authorization call must supply.</div>
     <aside class="notes">Run go generate ./... after schema or policy changes and review generated output with its source. The generator validates policy syntax and schema consistency. Its supported profile is intentionally narrow: required supported scalar/entity-reference attributes, string tags, no resource parent types, and empty action contexts. Policy validation does not prove intended access or business-state authenticity; test the matrix.</aside>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/authz/README.md">Code: pkg/authz/README.md</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authz/README.md">Code: pkg/authz/README.md</a></p>
   </section>
 </section>
 
@@ -1023,7 +1029,7 @@ return nil</code></pre>
     <h2>Authority must cover both sides of the change</h2>
     <div class="split"><div class="side"><h3>Input authorization</h3><p>May this principal perform this action on the resource we are about to change?</p><p class="accent">Reject before business mutation.</p></div><div class="bridge">∩</div><div class="side"><h3>Result authorization</h3><p>May this principal perform this action on the resource state the handler actually produced?</p><p class="gold">Reject before effects can commit.</p></div></div>
     <div class="callout">Permission to start a mutation is not permission to produce every possible resulting state.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/run.go">Code: pkg/middleware/run.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go">Code: pkg/middleware/run.go</a></p>
     <aside class="notes">The same principal and required action set are evaluated against two different resource snapshots. The second check is not a redundant role lookup and is not a read check on the response. Both must succeed. This gives attribute-based rules authority over the state a command may produce, including values assigned by command code.</aside>
   </section>
 
@@ -1031,7 +1037,7 @@ return nil</code></pre>
     <h2>The wine boundary constrains an update</h2>
     <table class="matrix"><thead><tr><th>Sommelier update</th><th>Loaded state</th><th>Result state</th><th>Outcome</th></tr></thead><tbody><tr><td>Wine → wine</td><td>Allow</td><td>Allow</td><td>May commit</td></tr><tr><td>Cocktail → wine</td><td>Deny</td><td>Not reached</td><td>Handler blocked</td></tr><tr><td>Wine → beer</td><td>Allow</td><td>Deny</td><td>Rollback</td></tr></tbody></table>
     <div class="callout">An input-only check permits escape from the authorized category. A result-only check permits taking control of an unauthorized resource.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
     <aside class="notes">This matrix isolates the pipeline contract using the shipped sommelier policy. The result-denial row uses a handler that produces beer; the public Drinks.Update facade also checks the submitted proposal and can reject earlier. Allow/Allow is necessary, not sufficient: validation, revision checks, event reactions, auditing, and commit can still fail.</aside>
   </section>
 
@@ -1054,7 +1060,7 @@ for _, action := range actions {
 }
 return out, nil</code></pre>
     <div class="callout">Result authorization uses the same required actions as input authorization. One denial or evaluation error aborts the operation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/run.go">Code: pkg/middleware/run.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go">Code: pkg/middleware/run.go</a></p>
     <aside class="notes">Reflowed excerpt with the if initializers expanded; behavior matches run.go. The action set is derived once from loaded state before the handler executes. The wrapper returns the zero result on an authorization error. LoadCommand then propagates the error through the command chain to the transaction owner.</aside>
   </section>
 
@@ -1069,17 +1075,19 @@ return out, nil</code></pre>
        run commands.Update
        authorize update on ACTUAL result
   │
+  withTags publishes TagsReplaced and attaches desired tags, if supplied
   authorize update on ACTUAL result
   dispatch events → record success → commit</code></pre>
-    <div class="callout">The current composition makes four authorization calls over three state roles. The outer pipeline protects trusted state; the inner wrapper also constrains the proposal.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/update.go">Code: app/domains/drinks/update.go</a></p>
-    <aside class="notes">Exact call structure of drinks/update.go, not a claim that every command needs four evaluations. The actual result is checked by both wrappers. Persisted state prevents a caller from changing authorization attributes in a submitted payload to acquire authority over an existing resource. The proposal check can reject a forbidden requested category before the handler runs. Result checks cover the state command code actually returns.</aside>
+    <div class="callout">Without a tag edit, the composition makes four authorization calls over three state roles. With a tag edit, the outer result gate also sees the desired tags. The outer pipeline protects trusted state; the inner wrapper also constrains the proposal.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/update.go">Code: app/domains/drinks/update.go</a></p>
+    <aside class="notes">Exact call structure of drinks/update.go, not a claim that every command needs four evaluations. The inner wrapper checks the command result before withTags; the outer gate checks the returned result including any desired tags. Persisted state prevents a caller from changing authorization attributes in a submitted payload to acquire authority over an existing resource. The proposal check can reject a forbidden requested category before the handler runs. Result checks cover the state command code actually returns.</aside>
   </section>
 
   <section class="implementation-slide">
     <h2>Read the complete update facade</h2>
     <pre><code class="language-go">func (m *Module) Update(
     ctx *middleware.Context, drink *models.Drink,
+    edits ...tag.Edit,
 ) (*models.Drink, error) {
     authorizedUpdate := middleware.AuthorizeCommand(
         authz.ActionUpdate, m.commands.Update)
@@ -1087,15 +1095,15 @@ return out, nil</code></pre>
         func(ctx *middleware.Context) (*models.Drink, error) {
             return m.queries.Get(ctx, drink.ID)
         },
-        func(
+        withTags(edits, func(
             ctx *middleware.Context, _ *models.Drink,
         ) (*models.Drink, error) {
             return authorizedUpdate(ctx, drink)
-        },
+        }),
     )
 }</code></pre>
     <div class="callout">The persisted object establishes authority over the target. The caller's object supplies the requested replacement, not proof of authority.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/update.go">Code: app/domains/drinks/update.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/update.go">Code: app/domains/drinks/update.go</a></p>
     <aside class="notes">Exact facade with reflowed signature and wrapper call. Open internal/commands/update.go next: it validates fields and recipe dependencies, preserves persisted tags, sets status, writes through the DAO, and returns the updated model. A submitted model is not necessarily the resulting model. The DAO's revision check is an additional concurrency guarantee, not an authorization substitute.</aside>
   </section>
 
@@ -1113,7 +1121,7 @@ Current LoadCommand path:
   load drk-X → cocktail → Permission
   commands.Update never runs</code></pre>
     <div class="callout">An authorized-looking proposal does not grant authority over the record it names.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/update.go">Code: app/domains/drinks/update.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/update.go">Code: app/domains/drinks/update.go</a></p>
     <aside class="notes">Illustrative request, derived from the real facade and category policy. This is why the loader is inside the command transaction and uses the submitted ID only as a selector. It is not sufficient to authorize a detached UI model, even if its revision token is valid. Result-only authorization would also miss this attack if the command produced wine.</aside>
   </section>
 
@@ -1135,7 +1143,7 @@ _, err := pipeline.LoadCommand(
 testutil.ErrorIsPermission(t, err)
 testutil.IsTrue(t, handled)</code></pre>
     <div class="callout">The handler ran, but its successful Go return did not make the command authorized.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
     <aside class="notes">Existing repository test, reflowed. The fixture and wine entity are defined above the excerpt; testEntity fills the schema's required String fields. Run go test ./pkg/middleware -run TestLoadCommand_AuthorizesResultAfterHandle -v. Separately, the domain test TestDrinks_ABAC_SommelierCannotChangeWineToCocktail verifies the public facade rejects a forbidden proposal and preserves wine; do not mislabel that earlier rejection as proof of result-gate execution.</aside>
   </section>
 
@@ -1155,7 +1163,7 @@ func(
     return out, nil
 }</code></pre>
     <div class="callout">The write is tentative. Output denial must propagate to UnitOfWork; returning an error only after commit would be too late.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/uow.go">Code: pkg/middleware/uow.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/uow.go">Code: pkg/middleware/uow.go</a></p>
     <aside class="notes">Verification probe, not a shipped domain handler. Use the preceding test's sommelier/wine setup, register probe{ID int; Kind string}, and attach counting dispatcher/activity callbacks. This probe was executed against the real pipeline and SQLite store. It adds a write to the result-gate scenario so rollback, suppressed event dispatch, and failure-audit behavior are directly observable.</aside>
   </section>
 
@@ -1175,7 +1183,7 @@ Result gate denies
   → managed transaction rolls back
   → failure activity is attempted separately</code></pre>
     <div class="callout">Both authorization gates live inside the transaction. Denial of the produced state prevents that state from becoming durable.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/chains.go">Code: pkg/middleware/chains.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/chains.go">Code: pkg/middleware/chains.go</a></p>
     <aside class="notes">Observed values from the preceding verification probe. Activity callbacks were counters; this output does not claim they persisted audit rows. Existing middleware tests cover durable failure activities separately. With a caller-owned transaction, the caller must propagate the error and roll back the outer composition. Never swallow an error and commit tentative writes. Irreversible external side effects do not belong in this transaction path.</aside>
   </section>
 
@@ -1194,7 +1202,7 @@ After mutation:  allow(tag, result)  AND allow(untag, result)
 No derived actions → Internal, handler does not run
 No-op replacement → tag is still required</code></pre>
     <div class="callout">The submitted replacement is one intent, but its authority is the complete set of actions implied by the change.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/tagging/module.go">Code: app/domains/tagging/module.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/module.go">Code: app/domains/tagging/module.go</a></p>
     <aside class="notes">Trace replaceActions in tagging/module.go and authorizeCommandActions in run.go. No-op replacement deliberately selects TagAction; an empty callback result is a pipeline misuse and fails closed. The same action set is checked against both snapshots, including reloaded tags. The stable activity action is tag even when untag is additionally required. Chapter 2.2 follows the registry and persistence composition.</aside>
   </section>
 
@@ -1202,7 +1210,7 @@ No-op replacement → tag is still required</code></pre>
     <h2>Endpoint checks constrain transitions, not arbitrary pairs</h2>
     <div class="cards"><div class="card"><h3>Same request intent</h3><p>The principal and action set stay fixed while the resource snapshot changes.</p></div><div class="card"><h3>Both states must qualify</h3><p>A policy requiring Category=wine restricts both the source and destination.</p></div><div class="card"><h3>Business transition rules</h3><p>Readiness and legal lifecycle changes still require command validation.</p></div></div>
     <div class="callout">Cedar is called twice with one resource at a time. The current adapter does not supply an old/new pair or a phase flag.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/authz/authorize.go">Code: pkg/authz/authorize.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authz/authorize.go">Code: pkg/authz/authorize.go</a></p>
     <aside class="notes">This distinction matters for fine-grained policy design. A publish policy that permits only draft resources would also reject the published result. A policy for the same action must admit legitimate source and destination states; the command enforces their legal relationship. More expressive pairwise conditions would need an explicit authorization-model design beyond today's empty request context. Current menu policies grant manager publication without a status condition.</aside>
   </section>
 
@@ -1210,8 +1218,8 @@ No-op replacement → tag is still required</code></pre>
     <h2>The result gate has a precise enforcement boundary</h2>
     <div class="layers"><div class="layer"><strong>Authorized result</strong><span>the resource returned by the command, before event dispatch</span></div><div class="layer"><strong>Consumer-owned effects</strong><span>trusted handlers perform bounded reactions in the same transaction</span></div><div class="layer"><strong>Domain obligation</strong><span>return accurate policy state and validate every owned business effect</span></div></div>
     <div class="callout">The pipeline does not independently authorize every row written by every event handler.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/dispatch_events.go">Code: pkg/middleware/dispatch_events.go</a></p>
-    <aside class="notes">The command authorization contract must account for its business consequences. A caller authorized to place an order need not independently hold a stock-management action for Inventory's reservation reaction. Handlers are internal collaboration, not arbitrary user-callable commands. Result authorization occurs before those reactions and is not a global scan of final database state. When adding an effect that needs independent user authority, express that requirement explicitly in the originating workflow.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/dispatch_events.go">Code: pkg/middleware/dispatch_events.go</a></p>
+    <aside class="notes">The command authorization contract must account for its business consequences. A caller authorized to place an order need not independently hold a stock-management action for Inventory's reservation reaction. Handlers are internal collaboration, not arbitrary user-callable commands. Result authorization occurs before those reactions and is not a global scan of final database state. When an effect needs independent user authority, carry the originating domain’s required actions explicitly, as TagsReplaced does for Tagging’s before/after authorization.</aside>
   </section>
 </section>
 
@@ -1242,7 +1250,7 @@ testutil.Ok(t, err)
 _, err = f.Drinks.Get(sommelier, cocktail.ID)
 testutil.ErrorIsPermission(t, err)</code></pre>
     <div class="callout">An authorized manager can grant and revoke read access by changing policy-relevant data. No policy reload is needed for that resource change.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/tag_abac_test.go">Code: app/tag_abac_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/tag_abac_test.go">Code: app/tag_abac_test.go</a></p>
     <aside class="notes">Adapted excerpt from TestDrinkAudienceTagExtendsSommelierReadPolicy; the repeated tag literal is named grant. The full test also proves unrelated tags do nothing, list filtering sees the same grant, and changing the audience value revokes it. The tag operation itself loads and authorizes current state before mutation, so the sommelier cannot opt an unauthorized cocktail into its own read access. Policy documents are embedded and parsed once; changing policy text is a different deployment operation.</aside>
   </section>
 
@@ -1271,7 +1279,7 @@ default:
     return err
 }</code></pre>
     <div class="callout">The extra authorized item proves there is a next page. A denied item neither consumes a page slot nor becomes the returned cursor.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/run.go">Code: pkg/middleware/run.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go">Code: pkg/middleware/run.go</a></p>
     <aside class="notes">Exact inner switch from PageQuery with the call reflowed. Work through candidates A denied, B allowed, C denied, D allowed, E allowed with limit two: return B/D and cursor D. E is the lookahead. If evaluating E fails, the operation returns an error; callers must not present the partially accumulated page as a successful result.</aside>
   </section>
 
@@ -1289,7 +1297,7 @@ default:
     })
 }</code></pre>
     <div class="callout">The displayed total describes the actor's visible collection, with the same filters and policy decisions as the list.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/list.go">Code: app/domains/drinks/list.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/list.go">Code: app/domains/drinks/list.go</a></p>
     <aside class="notes">Exact method with reflowed signature. Open List above it: parsing, domain DAO hydration, and PageQuery all remain in the count path. A raw database count would disclose hidden resources and disagree with the UI. This is more work than a single COUNT query; any optimization must preserve the authorized result set. This design does not claim to eliminate timing side channels or provide field-level redaction.</aside>
   </section>
 
@@ -1297,7 +1305,7 @@ default:
     <h2>Discovery has an explicit disclosure contract</h2>
     <table class="matrix"><thead><tr><th>Operation</th><th>Authority</th><th>Disclosure</th></tr></thead><tbody><tr><td>Drinks.Get / List</td><td>Drink action on each resource</td><td>allowed domain models</td></tr><tr><td>Tags.List(target)</td><td>target domain's Get action</td><td>that target's tags</td></tr><tr><td>Tags.Show / Summary</td><td>TagDiscovery action, owner-only today</td><td>matching references or aggregates</td></tr></tbody></table>
     <div class="callout">Tag discovery deliberately does not replay every target's Get permission. Its own grant authorizes that broader disclosure.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/tagging/module.go">Code: app/domains/tagging/module.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/module.go">Code: app/domains/tagging/module.go</a></p>
     <aside class="notes">Show uses QueryResource on TagDiscovery and returns active target type, ID, name, and tag; Summary returns tag aggregates. The owner-only discovery policy is authored beside Tagging. This is a different contract from per-resource paging, not a shortcut around it. If the discovery grant is broadened, review exactly which references and counts the newly authorized principal may learn. Opening a target remains separately authorized.</aside>
   </section>
 
@@ -1318,7 +1326,7 @@ action in [Mixology::Menu::Action::"publish",
            Mixology::Menu::Action::"readiness"]
 resource is Mixology::Menu</code></pre>
     <div class="callout">Permission answers whether the actor may publish. The command's readiness check answers whether this menu can be published now.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/authz/policies.cedar">Code: app/domains/menus/authz/policies.cedar</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/authz/policies.cedar">Code: app/domains/menus/authz/policies.cedar</a></p>
     <aside class="notes">The first permit is exact; the second block lists selected clauses from the larger manager permit and is not a standalone policy. Owner permission comes from the assembled policy set. Do not invent a draft visibility rule: the current Menu list/get permit is public. Contrast that policy with another domain's restricted resources when showing row elision.</aside>
   </section>
 
@@ -1343,7 +1351,7 @@ Controls: []actions.Control{
 // Control permission replaces the inherited default.
 // Permission runs first; conditions run only when authorized.</code></pre>
     <div class="callout">Being allowed to edit does not imply being allowed to publish. A control with a distinct action must project that action's permission.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/actions.go">Code: app/domains/menus/actions.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/actions.go">Code: app/domains/menus/actions.go</a></p>
     <aside class="notes">Selected fields from the Group declaration, with other controls omitted. The shared evaluator treats an explicit control permission as an override of the inherited default, not an additional Edit requirement. This permits publish-only policy designs without changing widget logic. Current manager policies allow both. Permission denial hides the control; an allowed but unmet lifecycle/readiness condition disables it with a reason; evaluation errors propagate. Chapter 4.6 follows the evaluator and native adapters.</aside>
   </section>
 
@@ -1351,7 +1359,7 @@ Controls: []actions.Control{
     <h2>Test the authorization contract at every boundary</h2>
     <table class="matrix"><thead><tr><th>Evidence</th><th>Failure it catches</th></tr></thead><tbody><tr><td>Policy matrix + schema tests</td><td>wrong grants, malformed resource data</td></tr><tr><td>Loaded-state denial</td><td>unauthorized target reaches the handler</td></tr><tr><td>Handler runs, result denied</td><td>input-only authorization</td></tr><tr><td>Stored rows, events, activity</td><td>denial occurs after effects escape</td></tr><tr><td>Get, List, Count, discovery, controls</td><td>inconsistent disclosure or advertised authority</td></tr></tbody></table>
     <div class="callout">Test permits and denials through the public facade, and isolate both pipeline gates so an earlier denial cannot hide a missing result check.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/command_tx_test.go">Code: pkg/middleware/command_tx_test.go</a></p>
     <aside class="notes">Code walk: pkg/authz/authorize_test.go, pkg/middleware/command_tx_test.go, drinks/update_test.go and permissions_test.go, app/tag_abac_test.go, and menus/actions_test.go. Include every derived action in before/after tests and assert empty action sets fail closed. The focused suites and an additional SQLite rollback probe were executed for this chapter. When extending the authorization model, add both positive and adversarial cases before treating the new attribute as a trusted policy boundary.</aside>
   </section>
 </section>
@@ -1395,7 +1403,7 @@ if err != nil {
     mc.commandErrors.Inc(actionLabel)
 }</code></pre>
     <div class="callout">A denial is informational in logs but still increments command error metrics. Interpret the counters according to this implementation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/logging.go">Code: pkg/middleware/logging.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/logging.go">Code: pkg/middleware/logging.go</a></p>
     <aside class="notes">Selected branches from logging.go and metrics.go. For Menu.publish, the action label is Menu.publish; the instruments are mixology_command_total, mixology_command_errors_total, and mixology_command_duration_seconds. Example label sets are action=Menu.publish,result=error for total and action=Menu.publish for errors/duration. IDs live in diagnostic log fields, not metric labels. No fake latency or measured sample is implied.</aside>
   </section>
 
@@ -1413,7 +1421,7 @@ if err != nil {
 Duration includes everything inside those wrappers.
 Caller transaction lock wait happens outside both wrappers.</code></pre>
     <div class="callout">Where instrumentation sits defines what its numbers mean. Handler success is not operation success.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/chains.go">Code: pkg/middleware/chains.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/chains.go">Code: pkg/middleware/chains.go</a></p>
     <aside class="notes">Trace NewPipeline, Metrics, and Logging. Both observation wrappers sit outside TrackActivity and UnitOfWork, so their measured work includes managed failure-audit attempts and transaction completion. SerializeTransaction is outside them; time waiting for its per-Tx mutex is excluded. Store read/write durations are a different measurement boundary, not additive independent work.</aside>
   </section>
 
@@ -1432,7 +1440,7 @@ memory.CounterValue(
 
 // The equivalent successful call uses result="success".</code></pre>
     <div class="callout">The application owns names and label meaning. Backend choice must not change the operation's observable outcome.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/metrics.go">Code: pkg/middleware/metrics.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/metrics.go">Code: pkg/middleware/metrics.go</a></p>
     <aside class="notes">Illustrative MemoryMetrics assertions, with pipeline setup omitted. Label values are positional: action then result on totals, only action on errors/duration. Use an isolated backend so expected counts are local to the example. A permission denial remains an error metric even though the log uses informational severity. The backend is metrics-only; this is not distributed tracing.</aside>
   </section>
 </section>
@@ -1450,12 +1458,12 @@ memory.CounterValue(
     <h2>Success and failure take different transaction paths</h2>
     <div class="split"><div class="side"><h3>Successful command</h3><div class="transaction">mutation + handlers + success audit</div><p>If recording fails, the business operation rolls back.</p></div><div class="bridge">∥</div><div class="side"><h3>Failed managed command</h3><div class="transaction">rollback first</div><p>Then persist the failed attempt in a separate managed write.</p></div></div>
     <div class="callout"><code>recordSuccessfulActivity</code> runs inside the unit of work. <code>TrackActivity</code> records a managed failure only after rollback. Caller-owned transactions keep failure activity under the caller's decision.</div>
-    <aside class="notes">Open pkg/middleware/track_activity.go and app/domains/audit. A successful activity must describe writes that actually committed, so it belongs in their transaction. A failed attempt must survive their rollback, so managed commands record it afterward. A caller composing several commands owns the outer transaction and must handle its error. TouchEntity, ReferenceEntity, and RecordEffect are explicit attribution, not automatic change detection; tests must verify changed entities, references, and effects.</aside>
+    <aside class="notes">Open pkg/middleware/track_activity.go and app/domains/audit. A successful activity must describe writes that actually committed, so it belongs in their transaction. A failed attempt must survive their rollback, so managed commands record it afterward. A low-level caller supplying a transaction may run one command and owns rollback and failure recording. TouchEntity, ReferenceEntity, and RecordEffect are explicit attribution, not automatic change detection; tests must verify changed entities, references, and effects.</aside>
   </section>
 
   <section>
     <h2>Separate changes, references, and explanations</h2>
-    <table class="matrix"><thead><tr><th>Activity field</th><th>Meaning</th><th>Example</th></tr></thead><tbody><tr><td>Touches</td><td>Attributed changed resources</td><td>rewritten Drink</td></tr><tr><td>Participants</td><td>Referenced resources</td><td>inspected, unchanged Menu</td></tr><tr><td>Effects</td><td>Domain-authored before/after explanation</td><td>recipe or stock disposition change</td></tr><tr><td>WorkflowID</td><td>Correlation across commands</td><td>domain edit + tag replacement</td></tr></tbody></table>
+    <table class="matrix"><thead><tr><th>Activity field</th><th>Meaning</th><th>Example</th></tr></thead><tbody><tr><td>Touches</td><td>Attributed changed resources</td><td>rewritten Drink</td></tr><tr><td>Participants</td><td>Referenced resources</td><td>inspected, unchanged Menu</td></tr><tr><td>Effects</td><td>Domain-authored before/after explanation</td><td>recipe or stock disposition change</td></tr></tbody></table>
     <div class="callout">A reference is not a mutation. An effect explains selected facts; it is not an automatic database diff.</div>
     <aside class="notes">Open pkg/middleware/activity.go and events/activity.go. RecordEffect also touches its resource; ReferenceEntity deduplicates references. Domain writers choose the effect kind and fields, serialized as strings. This is not event sourcing or a complete replay model.</aside>
   </section>
@@ -1463,7 +1471,7 @@ memory.CounterValue(
   <section>
     <h2>Failure to record has an explicit policy</h2>
     <table class="matrix"><thead><tr><th>Situation</th><th>Audit behavior</th><th>Returned result</th></tr></thead><tbody><tr><td>success recorder or commit fails</td><td>rollback, attempt failure record</td><td>operation failure</td></tr><tr><td>managed command fails</td><td>record after rollback</td><td>original error</td></tr><tr><td>failure recording also fails</td><td>durability cannot be promised</td><td>errors.Join preserves both</td></tr><tr><td>caller supplies transaction</td><td>record inside caller transaction</td><td>caller owns failure policy</td></tr></tbody></table>
-    <aside class="notes">Read TrackActivity and RunWorkflow. Both preserve the initiating failure if post-rollback recording fails. They detach cancellation for the evidence write, not for continuing business work. A joined error is a tree; do not assume every error has one unwrap successor. No retry queue is implied.</aside>
+    <aside class="notes">Read TrackActivity. It preserves the initiating failure if post-rollback recording fails and detaches cancellation for the evidence write, not for continuing business work. A joined error is a tree; do not assume every error has one unwrap successor. No retry queue is implied.</aside>
   </section>
 
   <section>
@@ -1475,7 +1483,6 @@ memory.CounterValue(
     <h2>The activity stores explanations, not a replay log</h2>
     <pre><code class="language-go">// Selected fields; actor, action, resource and times omitted.
 type Activity struct {
-    WorkflowID   string
     Touches      []cedar.EntityUID
     Participants []cedar.EntityUID
     Effects      []Effect
@@ -1488,26 +1495,26 @@ type Effect struct {
     Changes  []Change // Field, Before, After are strings.
 }</code></pre>
     <div class="callout">On a failed activity, effects describe attempts that rolled back, not committed state.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/events/activity.go">Code: pkg/middleware/events/activity.go</a></p>
-    <aside class="notes">Selected declarations. Effects do not replace domain snapshots, amendment history, or inventory movement records. Correlation connects operations; domain history preserves accepted facts. Diagnostic Error remains subject to Audit's separate authorization policy.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/events/activity.go">Code: pkg/middleware/events/activity.go</a></p>
+    <aside class="notes">Selected declarations. Effects do not replace domain snapshots, amendment history, or inventory movement records. One command activity covers all leaf effects; domain history preserves accepted facts. Diagnostic Error remains subject to Audit's separate authorization policy.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>A composed failure has one outer owner</h2>
-    <pre><code class="language-go">// RunWorkflow control flow, success/failure construction omitted.
-state := &amp;workflowState{id: ksuid.New().String()}
-derived := *ctx
-derived.workflow = state
-err := s.Write(ctx, func(tx *store.Tx) error {
-    return run(derived.WithTransaction(tx))
-})
-// On failure, aggregate child touches, participants and effects.
-// Complete a failed Mixology::Workflow::Action activity.
-// Record it in a new write after the business rollback.
-return errors.Join(err, auditErr)</code></pre>
-    <div class="callout">Successful child activities share WorkflowID and commit with business writes. Outer failure replaces them with one correlated failed attempt.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/workflow.go">Code: pkg/middleware/workflow.go</a></p>
-    <aside class="notes">Control-flow excerpt, not a complete function. RunWorkflow joins an existing transaction without creating another owner or savepoint. The owner must propagate errors and handle rollback. Invalid tags rejected before the workflow do not produce a workflow activity. TestFailedSelectedAmendmentsRollBackAllEffectsAndPersistFailure and TestLateWorkflowFailureRollsBackEveryDomain exercise this owning boundary.</aside>
+    <h2>The command owns every effect and its failure evidence</h2>
+    <pre><code class="language-go">{% raw %}// Real tagged-edit call shape; fixture construction omitted.
+desired := tag.Tags{{Key: "region", Value: "east"}}
+updated := *created
+updated.Name = "After"
+result, err := f.Ingredients.Update(
+    f.OwnerContext(), &amp;updated,
+    tag.Replace(&amp;desired, tag.Tags{{Key: "stale"}}),
+)
+// Tagging vetoes the stale expected set during Handling.
+// The ingredient write rolls back; result is nil.
+// TrackActivity records one failed command after rollback.{% endraw %}</code></pre>
+    <div class="callout">Domain writes, tag effects, and other reactions belong to one command activity. Failed effects describe attempted changes.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/tagged_mutation_test.go">Code: app/tagged_mutation_test.go</a></p>
+    <aside class="notes">TestDomainCommandRollsBackOnStaleTagsAndRecordsOneFailure checks the restored ingredient and exactly one additional audit activity. TestLateTagVetoRollsBackCompletionAndEveryReaction extends the same failure path to an order, inventory, and menu projections. The current activity model and all three UIs have no workflow correlation field; unknown fields in historical audit JSON are ignored.</aside>
   </section>
 
 </section>
@@ -1576,7 +1583,7 @@ func (h *IngredientDeleted) Handle(
   <section>
     <h2>No cascades is defended twice</h2>
     <div class="split"><div class="side"><h3>Capability boundary</h3><p><code>HandlerContext</code> omits <code>AddEvent</code>, so ordinary handlers cannot enqueue another fact.</p></div><div class="bridge">+</div><div class="side"><h3>Runtime boundary</h3><p><code>DispatchEvents</code> clones the original event slice before delivery, so accidental later additions are not dispatched.</p></div></div>
-    <div class="big-statement">Every event has a bounded, reviewable leaf fan-out. Multi-step time-spanning work deserves an explicit workflow.</div>
+    <div class="big-statement">Every event has a bounded, reviewable leaf fan-out. Later decisions belong to explicit domain commands over persisted state.</div>
   </section>
 
   <section>
@@ -1600,7 +1607,7 @@ inventoryHandler.Handle(hctx, e)
 menusHandler.Handle(hctx, e)
 ordersHandler.Handle(hctx, e)</code></pre>
     <div class="callout">The same receiver holds preparation data and later applies its reaction. Generated order is visible, but must not become an undocumented dependency.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/dispatcher/dispatcher_gen.go">Code: pkg/dispatcher/dispatcher_gen.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/dispatcher_gen.go">Code: pkg/dispatcher/dispatcher_gen.go</a></p>
     <aside class="notes">This is the actual call order in the generated case, expressed as a trace. Open the full case to inspect each handlerError branch, then change to menus/handlers/ingredient-deleted.go. Handling calculates menu changes using projected stock and the public pure Drink.RetireIngredient rule. Handle persists prepared values without reading sibling state. The barrier alone does not guarantee independence; prepared data and permutation tests establish it.</aside>
   </section>
 
@@ -1619,7 +1626,7 @@ IngredientDeleted.Handling:
 Handle:
   persist prepared values; do not re-read sibling state</code></pre>
     <div class="callout">All preparations precede all reactions. Independence comes from what is prepared, not from the barrier alone.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/handlers/prepared.go">Code: app/domains/menus/handlers/prepared.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/handlers/prepared.go">Code: app/domains/menus/handlers/prepared.go</a></p>
     <aside class="notes">The originating command has already written in the transaction. preparedMenus projects peer effects that have not happened yet, then applies only its own domain's values. It scans active draft/published menus to cover implicit substitutions, caches each drink calculation per preparation, references inspected menus, and records effects only for changed menus. Publication limits refresh to its own menu. TestRetirementPreparationIsIndependentOfEveryHandlerOrder and TestCancellationPreparationRecoversPeersInEveryHandlerOrder permute siblings. This scan is an explicit completeness/cost tradeoff, not a reverse index.</aside>
   </section>
 
@@ -1634,13 +1641,17 @@ if d == nil {
 events := slices.Clone(ctx.Events())
 for _, event := range events {
     if err := d.Dispatch(ctx, event); err != nil {
+        var typed *errors.Error
+        if errors.As(err, &amp;typed) {
+            return fmt.Errorf("dispatch event %T: %w", event, err)
+        }
         return errors.Internalf("dispatch event %T: %w", event, err)
     }
 }
 return nil</code></pre>
     <div class="callout">A command failure prevents delivery. A delivery failure aborts the transaction. New events appended during delivery are outside this snapshot.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/dispatch_events.go">Code: pkg/middleware/dispatch_events.go</a></p>
-    <aside class="notes">Exact core from DispatchEvents. The dispatcher is configured in app.New; the nil branch supports a pipeline without it. HandlerContext also omits AddEvent. Notice the explicit Internal wrapper on dispatch failure: classify the returned operation error before rendering it, while retaining the cause for investigation. Delivery is synchronous and has no retry queue.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/dispatch_events.go">Code: pkg/middleware/dispatch_events.go</a></p>
+    <aside class="notes">Exact core from DispatchEvents. The dispatcher is configured in app.New; the nil branch supports a pipeline without it. HandlerContext also omits AddEvent. Typed handler vetoes retain their actionable classification, including Conflict for stale tags. Untyped failures receive an Internal wrapper. Both keep the cause for investigation and abort the command transaction. Delivery is synchronous and has no retry queue.</aside>
   </section>
 
 
@@ -1658,7 +1669,7 @@ return nil</code></pre>
 
 A failure stops remaining delivery and rolls back the operation.</code></pre>
     <div class="callout">Preparing E2 can observe effects of E1. Preparing handlers for E1 cannot assume another E1 handler has already reacted.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/middleware/dispatch_events.go">Code: pkg/middleware/dispatch_events.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/dispatch_events.go">Code: pkg/middleware/dispatch_events.go</a></p>
     <aside class="notes">Trace DispatchEvents' sequential loop and one generated switch case. Handling sees the originating command's tentative writes, not a pre-command database snapshot. Its purpose is to capture dependencies before peer reactions erase them. It does not make arbitrary Handle reads order-independent; each consumer must preserve that property explicitly.</aside>
   </section>
 
@@ -1673,7 +1684,7 @@ Current delivery:
   one local transaction
   no durable event log, retry queue, or replay cursor</code></pre>
     <div class="callout">An event may be a valid extension point without subscribers. A successful dispatch does not prove that an intended handler was generated.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/dispatcher/dispatcher_test.go">Code: pkg/dispatcher/dispatcher_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/dispatcher_test.go">Code: pkg/dispatcher/dispatcher_test.go</a></p>
     <aside class="notes">TestDispatcher_IgnoresUnknownEvents asserts this behavior. When adding a reaction, review generated wiring and verify a persisted business effect in an integration test. Audit records the operation and touched resources, not a replayable event stream. If a future requirement introduces durable asynchronous delivery, that is a different transaction and retry contract, not a configuration change to this dispatcher.</aside>
   </section>
 </section>
@@ -1701,18 +1712,19 @@ Current delivery:
   </section>
 
   <section>
-    <h2>Replace is one intent with dynamic authority</h2>
+    <h2>A standalone tag replacement derives dynamic authority</h2>
     <table class="matrix"><thead><tr><th>Difference</th><th>Required action</th><th>Recorded activity</th></tr></thead><tbody><tr><td>add or change values</td><td>tag</td><td rowspan="3">one stable tag operation</td></tr><tr><td>remove keys</td><td>untag</td></tr><tr><td>mixed replacement</td><td>tag + untag</td></tr></tbody></table>
     <div class="callout"><code>LoadCommandActions</code> derives the complete Cedar action set from current tags and the desired complete set.</div>
   </section>
 
-  <section>
-    <h2>Compose domain change and tag change atomically</h2>
-    <div class="transaction">non-nil tag intent: <code>RunTaggedMutation</code> owns or joins one shared transaction</div>
-    <div class="flow"><div class="node"><strong>validate tags</strong>before write</div><div class="arrow">→</div><div class="node"><strong>domain command</strong>normal pipeline</div><div class="arrow">+</div><div class="node"><strong><code>Tags.Replace</code></strong>normal pipeline</div><div class="arrow">→</div><div class="node"><strong>commit</strong>both or neither</div></div>
-    <div class="cards two"><div class="card"><h3><code>nil</code> desired set</h3><p>Preserve existing tags and run only the domain mutation.</p></div><div class="card"><h3>Non-nil empty set</h3><p>Explicitly clear every tag as part of the same application operation.</p></div></div>
-    <div class="callout">The domain command and <code>Tags.Replace</code> remain two normal pipeline commands with correlated audit activities, committed atomically together. Managed failure records one failed workflow after rollback.</div>
-    <aside class="notes">Open app/tagged_mutation.go and its tests. Suppose a drink edit succeeds but removing a tag is denied. Two independent commits would leave a partially applied form. RunTaggedMutation validates the requested tag set, runs both commands with one transaction, and returns only after both succeed. A nil pointer means the caller made no tag request; a pointer to an empty set explicitly clears tags. The rollback test makes that distinction and the atomic outcome concrete.</aside>
+  <section class="implementation-slide">
+    <h2>The consuming domain owns a tagged edit</h2>
+    <div class="transaction">optional <code>tag.Edit</code> → one domain command → one transaction</div>
+    <div class="flow"><div class="node"><strong>domain command</strong>validate + write</div><div class="arrow">→</div><div class="node"><strong>TagsReplaced</strong>domain-owned fact</div><div class="arrow">→</div><div class="node"><strong>Tagging handler</strong>prepare + persist</div><div class="arrow">→</div><div class="node"><strong>commit</strong>one activity</div></div>
+    <div class="cards two"><div class="card"><h3><code>nil</code> desired set</h3><p>Preserve existing tags.</p></div><div class="card"><h3>Non-nil empty set</h3><p>Clear every tag.</p></div></div>
+    <div class="callout">Tagging validates and compares expected tags, authorizes before and after sets in Handling, then persists associations in Handle.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/handlers/replacement.go">Code: app/domains/tagging/handlers/replacement.go</a></p>
+    <aside class="notes">Each consuming domain publishes its own TagsReplaced event carrying tag.Replacement and its tag/untag authorization actions. The handler uses Tagging’s private DAO. A tag veto rolls back the originating command and every earlier reaction. A standalone Tags.Replace remains available for a tag-only operation, but it is not called from inside another command.</aside>
   </section>
 
   <section>
@@ -1737,12 +1749,12 @@ type TargetState struct {
     Tags        tag.Tags
 }</code></pre>
     <div class="callout">Ingredients supplies Load and Active. Tagging can authorize and discover targets without importing Ingredient or its DAO.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/tagging/registry.go">Code: app/domains/tagging/registry.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/registry.go">Code: app/domains/tagging/registry.go</a></p>
     <aside class="notes">Exact declarations. Open app/domains/ingredients/tagging.go: the registered loader parses the typed ID, calls the domain query, and returns value.CedarEntity(), value.Name, and value.Tags. Complete current tags matter because policy can interpret them. Registry.Register panics for incomplete or duplicate registrations during composition.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>Replace derives authority from the tag delta</h2>
+    <h2>Standalone replacement derives authority from the tag delta</h2>
     <pre><code class="language-text">Current:  featured, region=west
 Desired:  region=east, seasonal
 
@@ -1756,30 +1768,26 @@ load complete resulting state
 authorize {tag, untag} against result
 record one tag activity</code></pre>
     <div class="callout">The stable audit action is tag; the authorization action set can include both tag and untag.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/tagging/module.go">Code: app/domains/tagging/module.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/module.go">Code: app/domains/tagging/module.go</a></p>
     <aside class="notes">Concrete example of replaceActions and LoadCommandActions. A user allowed to add a label is not automatically allowed to remove another one. Inspect the action derivation callback passed to LoadCommandActions and its before/after authorization loop. A permission failure rolls back the association replacement.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>Two pipeline commands share one transaction</h2>
-    <pre><code class="language-go">compose := func(txCtx *middleware.Context) error {
-    var err error
-    result, err = mutate(txCtx)
-    if err != nil { return err }
+    <h2>Pass tag intent directly to the owning command</h2>
+    <pre><code class="language-go">// Application call; expected is the complete set the editor read.
+result, err := application.Ingredients.Update(
+    ctx, ingredient, tag.Replace(&amp;desired, expected),
+)
 
-    replaced, err := application.Tags.Replace(
-        txCtx, result.EntityUID(), *desired, expected...,
-    )
-    if err != nil { return err }
-    result.SetTags(replaced.Tags)
-    return nil
-}
-err := middleware.RunWorkflow(ctx, application.Store,
-    "tagged_mutation", audit.NewWriter(application.Store).RecordActivity,
-    compose)</code></pre>
-    <div class="callout">The domain command and tag command each authorize and audit. Returning an error from either prevents the outer transaction from committing.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/tagged_mutation.go">Code: app/tagged_mutation.go</a></p>
-    <aside class="notes">Excerpt of the non-nil tag path. The full function validates tags first and joins an already supplied transaction rather than nesting another write. Show TestRunTaggedMutationRollsBackDomainMutationWhenTagReplacementFails. This is the shared application workflow invoked from each native surface, not a transaction opened by a widget.</aside>
+// Inside Ingredients.withTags, after the domain mutation succeeds:
+ctx.AddEvent(events.TagsReplaced{Replacement: tag.Replacement{
+    Edit: edit, Entity: result.CedarEntity(),
+    TagAction: authz.ActionTag, UntagAction: authz.ActionUntag,
+}})
+result.SetTags(edit.Desired.Sorted())</code></pre>
+    <div class="callout">One pipeline invocation owns the business result, association changes, and successful activity.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/tag_edit.go">Code: app/domains/ingredients/tag_edit.go</a></p>
+    <aside class="notes">Selected call and event-construction excerpts. withTags validates the desired set before calling the domain mutation. The pipeline authorizes the resulting entity and then dispatches events. Tagging’s Handling compares the expected set and authorizes tag/untag against both sets before its Handle writes associations. GUI and TUI retain the expected tags read by the editor.</aside>
   </section>
 
 
@@ -1791,13 +1799,13 @@ Editor submits: revision=7; tags={region=east}
 
 The entity revision alone cannot detect the tag change.
 
-RunTaggedMutation(..., expectedTags)
+Ingredients.Update(ctx, edited, tag.Replace(&amp;desired, expected))
   domain command checks its captured revision
-  Tags.Replace compares the expected complete tag set
+  Tagging Handling compares the expected complete tag set
   mismatch → Conflict → both changes roll back</code></pre>
     <div class="callout">SQLite serializes writes. It does not know that a stale form would erase someone else's intent.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/tagged_mutation.go">Code: app/tagged_mutation.go</a></p>
-    <aside class="notes">Read Tags.Replace's variadic expected set and Session.TagReplacer. The expected set is optional in the module API: when supplied, a mismatch is rejected; omission performs replacement against current state. GUI/TUI editors capture their original tags. Do not infer the same stale-editor guarantee from a caller that omits expected tags. The checks may occur after a provisional domain write, but the shared transaction prevents partial commit. TestComposedEditorRejectsStaleTagsAndRollsBackDomainUpdate also verifies the failed workflow record.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/tag/edit.go">Code: app/kernel/tag/edit.go</a></p>
+    <aside class="notes">Read tag.Edit and tag.Replace. Expected is optional: when supplied, a mismatch is rejected; omission replaces the current set. GUI/TUI editors capture their original tags. The tag check follows a provisional domain write, and the owning transaction prevents partial commit. TestComposedEditorRejectsStaleTagsAndRollsBackDomainUpdate checks restored domain state; TestDomainCommandRollsBackOnStaleTagsAndRecordsOneFailure also checks the one failed activity.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -1814,8 +1822,8 @@ Repeat identical Upsert / Replace
 Repeat the same business command
   not automatically an idempotent request</code></pre>
     <div class="callout">The tag service's idempotent set semantics do not create system-wide command deduplication.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/tagging/repository.go">Code: app/domains/tagging/repository.go</a></p>
-    <aside class="notes">Read the association row's compound unique store tag and repository Upsert/Replace tests. A label is represented by an empty Value, while Key remains the association identity. Changed controls whether the target is added to activity touches; the command can still produce an activity for a no-op. Do not infer request idempotency from deterministic target identity or from SQLite transaction atomicity.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/internal/dao/repository.go">Code: app/domains/tagging/internal/dao/repository.go</a></p>
+    <aside class="notes">Read internal/dao/models.go and the repository Upsert/Replace tests. Tagging owns handlers and internal/dao; StoreModelName preserves the original persisted model identity after the move, so existing associations remain visible. The association row has a compound unique store tag. A label is represented by an empty Value, while Key remains the association identity. Changed controls whether the target is added to activity touches; the command can still produce an activity for a no-op. Do not infer request idempotency from deterministic target identity or from SQLite transaction atomicity.</aside>
   </section>
 </section>
 
@@ -1861,7 +1869,7 @@ type RecipeFilterView struct {
 expr, err := filter.Parse(models.ListFilterSchema(),
     `name == "Daiquiri" &amp;&amp; tags contains "featured"`)</code></pre>
     <div class="callout">Name has a persisted column mapping. Tags and recipe.garnish are part of the public language without claiming that same storage representation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/models/filter.go">Code: app/domains/drinks/models/filter.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/models/filter.go">Code: app/domains/drinks/models/filter.go</a></p>
     <aside class="notes">Selected actual fields plus a Parse call using the full repository schema. Struct tags support both validation and help output. filter-column is an optimization promise, so giving a hydrated field a misleading column mapping can change results. Show invalid field/type errors before moving into the planner.</aside>
   </section>
 
@@ -1878,7 +1886,7 @@ if err != nil { return err }
 if !matched { continue }
 if !yield(&amp;drink, nil) { return nil }</code></pre>
     <div class="callout">SQL only reduces candidates. Match evaluates the complete value; PageQuery then decides which matched entities the actor may see.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/internal/dao/list.go">Code: app/domains/drinks/internal/dao/list.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/internal/dao/list.go">Code: app/domains/drinks/internal/dao/list.go</a></p>
     <aside class="notes">Reflowed excerpt from DAO.List. Inspect d.query to find ApplySQLPushdowns. The current implementation materializes candidate rows with List and batches tag hydration before yielding, so do not describe this as a database cursor that streams exactly one page. Permission-aware paging can scan more candidates than the visible page size. This tradeoff keeps exact semantics explicit while leaving room for a later storage optimization.</aside>
   </section>
 
@@ -1900,7 +1908,7 @@ A false negative cannot be recovered by later hydration.
 
 Final result = candidates that satisfy E</code></pre>
     <div class="callout">The optimizer may do less work. It may not change which records the expression means.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/filter/sql.go">Code: pkg/filter/sql.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql.go">Code: pkg/filter/sql.go</a></p>
     <aside class="notes">Explain implication with an unsafe OR before opening code. A SQL predicate that drops a valid row is not repaired by running Match afterward. filter-column is a semantic promise: the persisted field must represent the same value as the public filter field. The optimizer is conservative, not a general theorem prover.</aside>
   </section>
 
@@ -1918,7 +1926,7 @@ Unsafe SQL: WHERE Category = 'spirit'
 
 Current behavior: retain both candidates; evaluate the OR</code></pre>
     <div class="callout">Neither branch alone is a requirement of the whole OR.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/filter/sql_test.go">Code: pkg/filter/sql_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql_test.go">Code: pkg/filter/sql_test.go</a></p>
     <aside class="notes">This is the data and expression from TestApplySQLDoesNotPushUnsafeOR. Show both returned rows in the test, not only the AST. Contrast it with AND, where each conjunct is necessary. Some constraints common to both OR branches are safe, which is the next case.</aside>
   </section>
 
@@ -1935,7 +1943,7 @@ Still requires exact matching:
   a spirit tagged only seasonal must be rejected
   a mixer tagged only featured must be rejected</code></pre>
     <div class="callout">The widened candidate set deliberately forgets which tag belongs to which branch. The residual expression restores that relationship.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/filter/sql.go">Code: pkg/filter/sql.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql.go">Code: pkg/filter/sql.go</a></p>
     <aside class="notes">TestApplySQLPushdownsExtractNecessaryORConstraints proves candidate narrowing. disjunctionPushdowns preserves equivalent predicates and unions compatible equality values for a shared column. It does not generally combine differing range predicates. Returning the candidate set directly would admit cross-branch false positives.</aside>
   </section>
 
@@ -1954,7 +1962,7 @@ Still requires exact matching:
 !(category == "spirit" &amp;&amp; tags contains "featured")
   ⇒ no category-only constraint is necessary</code></pre>
     <div class="callout">Negating a conjunction does not let us push down the negation of whichever field happens to be stored.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/filter/sql.go">Code: pkg/filter/sql.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql.go">Code: pkg/filter/sql.go</a></p>
     <aside class="notes">Abbreviated control flow from impliedPushdowns; its actual unary branch also checks child count. Trace De Morgan through the two examples. Negated supported comparison leaves can produce predicates, but a hydrated tag branch may leave no common condition under OR. The complete expression remains unchanged for exact evaluation.</aside>
   </section>
 
@@ -1975,7 +1983,7 @@ tree, err := buildTree(program.Node())
 // String: canonical syntax
 // Tree:   application-owned nodes, not Expr AST</code></pre>
     <div class="callout">Successful library compilation is only the first gate. The owned tree restricts the language the application promises to support.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/filter/filter.go">Code: pkg/filter/filter.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/filter.go">Code: pkg/filter/filter.go</a></p>
     <aside class="notes">Selected Parse code; error branches are described in comments. String-method spelling and collection membership are normalized, then buildTree rejects unsupported constructs. Accepted language excludes arbitrary functions and arithmetic; regex patterns and date/duration literals are checked. A compiler upgrade must preserve these semantics, canonical formatting, evaluation, and pushdown behavior together.</aside>
   </section>
 
@@ -1994,7 +2002,7 @@ TestApplySQLPushdownsExtractNecessaryORConstraints:
 TestApplySQLPushdownBooleanSemantics:
   negation and boolean columns keep their meaning</code></pre>
     <div class="callout">An optimization test should prove both that no true match is lost and that residual false positives are rejected.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/filter/sql_test.go">Code: pkg/filter/sql_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql_test.go">Code: pkg/filter/sql_test.go</a></p>
     <aside class="notes">Run go test ./pkg/filter -count=1. ApplySQL installs an exact FilterFn and panics if its supposedly checked expression fails at runtime; the staged domain path instead calls Match explicitly and propagates its error. Neither path should silently interpret an evaluator failure as a non-match. The suite covers candidate extraction and exact evaluation through distinct tests.</aside>
   </section>
 </section>
@@ -2029,7 +2037,7 @@ TestApplySQLPushdownBooleanSemantics:
   <section>
     <h2>Treat the file format honestly</h2>
     <div class="cards"><div class="card"><h3>Migration ledger</h3><p>Ordered migrations advance deliberately; a database from a newer schema is rejected.</p></div><div class="card"><h3>Registration</h3><p>Explicit model schemas fail early; imports do not mutate global persistence state.</p></div><div class="card"><h3>Errors</h3><p>Constraints and stale revisions become application kinds, not leaked driver strings.</p></div></div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/README.md">Code guide: pkg/store/README.md</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md">Code guide: pkg/store/README.md</a></p>
   </section>
   <section class="implementation-slide">
     <h2>The SQLite storage shape is more specific than “tables”</h2>
@@ -2045,7 +2053,7 @@ UPDATE records
 SET data = ?, revision = revision + 1
 WHERE model = ? AND id = ? AND revision = ?;</code></pre>
     <div class="callout">The generic store keeps typed row data as JSON in records, partitioned by model identity. Domain DAOs still own conversion and query meaning.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/query.go">Code: pkg/store/query.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/query.go">Code: pkg/store/query.go</a></p>
     <aside class="notes">SQL statements selected from query.go. Open store.go to inspect schema migrations and model registration, then query.go for JSON-backed predicates and indexes. This is not one hand-designed SQL table per aggregate. The replaceable boundary preserves the application contract, while this particular engine adapter makes a concrete representation choice.</aside>
   </section>
 
@@ -2067,7 +2075,7 @@ if n == 0 {
         revision, current)
 }</code></pre>
     <div class="callout">Zero updated rows can mean absence or a stale edit. The store distinguishes those meanings before the DAO maps them to its own operation context.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/query.go">Code: pkg/store/query.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/query.go">Code: pkg/store/query.go</a></p>
     <aside class="notes">Reflowed exact branch following the conditional UPDATE. Success calls setRevision(v, revision+1). Open drinks/internal/dao/update.go: toRow carries the revision, MapError adds the operation message, and drink.Revision receives the new token after success. MapError's Conflict branch preserves the kind but replaces the lower-level message, so not every surface displays the expected/current numbers.</aside>
   </section>
 
@@ -2083,7 +2091,7 @@ Entity revision:
   read revision 7 → another writer saves revision 8
   submit revision 7 → conditional UPDATE changes 0 rows → Conflict</code></pre>
     <div class="callout">An epoch is a refresh hint, a generation selects a result, and a revision guards a write. None substitutes for the others.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
     <aside class="notes">Trace the epoch in pkg/store/changes.go, generation in pkg/toolkits/gui/async.go, and revision in pkg/store/query.go. The change monitor polls a dedicated connection's PRAGMA data_version. Compare values on that connection, not as a global sequence shared by all processes. A re-query still passes through authorization.</aside>
   </section>
 
@@ -2106,13 +2114,17 @@ Command:
 
 Competing writer waits or returns an error at acquisition.</code></pre>
     <div class="callout">The loaded authorization state and the mutation share one write transaction. WAL does not make SQLite a multi-writer database.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/store.go">Code: pkg/store/store.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go">Code: pkg/store/store.go</a></p>
     <aside class="notes">Trace Store.Begin and UnitOfWork. Immediate acquisition avoids starting with a read snapshot that later cannot be upgraded after another writer commits. Readers on other WAL connections can continue seeing their own snapshots. Long handlers extend the sole writer's occupancy. SQLite isolation details: https://www.sqlite.org/isolation.html. Cancellation and busy timeout can still make acquisition fail.</aside>
   </section>
 
   <section class="implementation-slide">
     <h2>Persistent identity includes the Go row type</h2>
     <pre><code class="language-text">func modelName(t reflect.Type) string {
+    if named, ok := reflect.Zero(t).Interface().(
+        interface{ StoreModelName() string }); ok {
+        return named.StoreModelName()
+    }
     return t.PkgPath() + "." + t.Name()
 }
 
@@ -2124,8 +2136,8 @@ Example model discriminator:
 
 Domain values ↔ row conversion ↔ JSON-backed record</code></pre>
     <div class="callout">A package or row-type rename can be a data migration, not just a refactor.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/store.go">Code: pkg/store/store.go</a></p>
-    <aside class="notes">Exact modelName. Open the real row type to confirm its name when walking the database. The model discriminator partitions records and expression indexes within the shared records table. Changing a persisted JSON field name or its interpretation also requires compatibility review. Explicit registration describes storage, but does not automatically migrate data between model names.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go">Code: pkg/store/store.go</a></p>
+    <aside class="notes">Reflowed modelName. Tagging’s private entityTagRow implements StoreModelName to retain its original persisted identity after moving into internal/dao. Open the real row type to confirm its name when walking the database. The model discriminator partitions records and expression indexes within the shared records table. Changing a persisted JSON field name or its interpretation also requires compatibility review. Explicit registration describes storage, but does not automatically migrate data between model names.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -2141,7 +2153,7 @@ COMMIT
 
 On error: rollback using a non-cancelled cleanup context.</code></pre>
     <div class="callout">Two starting processes must agree on the same schema transition. Recording a version separately from its schema change would break that guarantee.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/store.go">Code: pkg/store/store.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go">Code: pkg/store/store.go</a></p>
     <aside class="notes">Trace migrate in store.go and TestConcurrentMigrationInitialization. The implementation checks highest version and count before applying its ordered migrations. TestMigrationVersionBookkeepingAndFutureVersion and TestRevisionMigrationUpgradesExistingRows exercise compatibility behavior. This is current startup behavior, not a historical engine-migration walkthrough.</aside>
   </section>
 
@@ -2159,7 +2171,7 @@ If the connection fails:
   establish a new baseline
   publish anyway: changes may have occurred in the gap</code></pre>
     <div class="callout">A data_version value is meaningful across observations on the same connection. It is not a global commit sequence.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
     <aside class="notes">Control-flow summary of changes.go, not Go pseudocode intended to compile. The pinned connection observes commits by other connections, including this process's writer connections. A reconnect invalidates even without a comparable old counter. Backoff starts at 25 ms and caps at one second. SQLite documents the per-connection comparison contract at https://www.sqlite.org/pragma.html#pragma_data_version.</aside>
   </section>
 
@@ -2177,7 +2189,7 @@ If the connection fails:
 // Epoch counts monitor publications, not database commits.
 // A signal carries no entity ID or business payload.</code></pre>
     <div class="callout">A full notification channel must not block the writer-observation loop. Consumers reload state rather than reconstructing changes.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
     <aside class="notes">Exact publish implementation. Multiple commits may be noticed in one poll, and multiple monitor publications may occupy one queued signal. Epoch therefore cannot count commits or identify changed resources. The TUI owns deferred invalidation while editing; GUI activation/refresh also re-queries through the application. Do not describe this as a durable event bus or promise one callback per write.</aside>
   </section>
 
@@ -2196,7 +2208,7 @@ tx.Insert("rolled back")
 writer.Rollback(tx)
   → no invalidation for that rollback</code></pre>
     <div class="callout">Use separate connections to test freshness. Reading your own uncommitted write proves a different property.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/store/changes_test.go">Code: pkg/store/changes_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes_test.go">Code: pkg/store/changes_test.go</a></p>
     <aside class="notes">Scenario from TestChangeMonitorSignalsCommittedWritesAndIgnoresRollback; error handling and timing bounds omitted. TestIndependentStoresShareOneDatabase separately verifies shared persistence, and GUI integration tests prove a client reacts to external commits. A monitor-only test is not evidence that an active editor survives refresh or that a UI publishes on its correct thread.</aside>
   </section>
 </section>
@@ -2271,7 +2283,7 @@ writer.Rollback(tx)
       </a>
       <figcaption>The published menu reports readiness and availability beside its curated drinks.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">This is the healthy starting point from the seed data. The detail form is scrolled down to the readiness report and six menu items. Connect these values to the authorized Menus report on the preceding slide. N/A is the seed menu’s unset price; availability is independently reported as available. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -2292,7 +2304,7 @@ ctx.RecordEffect("order_placed", created.ID.EntityUID(),
 ctx.AddEvent(events.OrderPlaced{Order: created})
 return &amp;created, nil</code></pre>
     <div class="callout">The event carries the accepted usage snapshot. Inventory reserves those exact quantities; it does not plan the recipe again.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/internal/commands/place.go">Code: app/domains/orders/internal/commands/place.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/internal/commands/place.go">Code: app/domains/orders/internal/commands/place.go</a></p>
     <aside class="notes">Excerpt after ID, status, menu, and item validation. Open inventory/handlers/order-placed.go next: each usage becomes a Reservation with OrderID, IngredientID, and Amount. Then inspect order completion to see it consumes the stored reservation. Future recipe edits must not silently change an already accepted order.</aside>
   </section>
 
@@ -2312,7 +2324,7 @@ updated := *menu
 updated.Status = models.MenuStatusPublished
 updated.PublishedAt = optional.Some(now)</code></pre>
     <div class="callout">Report findings have severity, code, entity IDs, and a message. RequireReady turns blocker messages into a typed FailedPrecondition.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/internal/commands/publish.go">Code: app/domains/menus/internal/commands/publish.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/internal/commands/publish.go">Code: app/domains/menus/internal/commands/publish.go</a></p>
     <aside class="notes">Selected command lines; now is captured with time.Now().UTC() in the source. Open models/readiness.go and compare a low_stock warning with review_required_drink. The manager can inspect the same findings before submission, but Publish computes them again in the transaction. Do not conflate menu availability's degradation behavior with every error path in the stricter command.</aside>
   </section>
 
@@ -2335,7 +2347,7 @@ menus.FulfillIngredients(ctx, requirements)
 Aggregate picks by ingredient ID
   → sort the resulting IngredientUsage snapshot</code></pre>
     <div class="callout">Two independently feasible recipes can compete for the same stock. The planning scope must match the accepted commitment.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/internal/commands/complete.go">Code: app/domains/orders/internal/commands/complete.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/internal/commands/complete.go">Code: app/domains/orders/internal/commands/complete.go</a></p>
     <aside class="notes">Trace fulfillmentSnapshot in orders/internal/commands/complete.go; despite that filename, Place calls it when creating the order. It gathers requirements across all items, invokes the shared Menus planning query, combines amounts for repeated selected ingredients, and sorts by ID. Placement stores the snapshot; completion consumes the resulting reservations rather than replanning against changed recipes.</aside>
   </section>
 
@@ -2354,7 +2366,7 @@ Sort:
   greater available amount
   ingredient ID as final tie-break</code></pre>
     <div class="callout">A preference ranks choices. It does not prove the preferred choice permits a complete allocation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
     <aside class="notes">Trace availableCandidates. Requirements are scaled by the catalog substitution ratio; explicit substitutes without a catalog rule use ratio 1 and Similar quality. Inventory NotFound removes a candidate, while other lookup or conversion errors propagate in the strict planner. The algorithm uses its declared ordering rather than a global price or quality objective. Available quantities are converted to the requirement unit before comparison.</aside>
   </section>
 
@@ -2373,7 +2385,7 @@ Try A=Shared:
 Undo A's reservation.
 Try A=Fallback, then B=Shared → complete plan</code></pre>
     <div class="callout">Rejecting the order at the first dead end would report a shortage even though a valid plan exists.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/fulfillment_test.go">Code: app/domains/orders/fulfillment_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/fulfillment_test.go">Code: app/domains/orders/fulfillment_test.go</a></p>
     <aside class="notes">Illustrative adversarial variant of the repository's shared-substitute fixture, executed through Place and Complete during this pass. Candidate preference selects Shared first because its available amount is greater. Reversing which requirement has the fallback forces recursion to undo an earlier assignment, rather than merely skip an overcommitted candidate in the final requirement.</aside>
   </section>
 
@@ -2394,7 +2406,7 @@ if hadPrior {
 // No candidate works at this index.
 return false</code></pre>
     <div class="callout">The map is search-local bookkeeping, not persisted Inventory reservations. Undoing a branch must restore the exact prior amount.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
     <aside class="notes">Selected statements from PlanIngredients, with the enclosing candidate loop omitted; the final false return occurs after that loop is exhausted. Earlier code converts prior amounts into the current requirement's unit and adds the candidate requirement before comparing against pick.Available. Each recursive step records total usage by ingredient ID. A true return is the first complete feasible assignment in deterministic candidate order. The map is discarded when planning returns.</aside>
   </section>
 
@@ -2414,7 +2426,7 @@ After Complete:
   Shared on hand=0.5 oz; Fallback on hand=0 oz
   order reservations removed</code></pre>
     <div class="callout">A solver result matters only if the accepted snapshot and later inventory effects preserve that choice.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/fulfillment_test.go">Code: app/domains/orders/fulfillment_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/fulfillment_test.go">Code: app/domains/orders/fulfillment_test.go</a></p>
     <aside class="notes">Observed through a temporary verification test using the real application fixture, domain commands, dispatcher, and SQLite store. The shipped fulfillment tests also cover catalog ratio, quality preference, shared-stock accounting, and insufficient shared substitutes. The plan does not silently rewrite either recipe, and completion does not choose a different substitute after acceptance.</aside>
   </section>
 
@@ -2432,7 +2444,7 @@ return false
 // Included optional: snapshot → reserve → consume → cost.
 // Omitted optional: explicit selection with Omitted=true.</code></pre>
     <div class="callout">The planner can undo an optional choice to make a required ingredient fit. It must never consume an omitted ingredient.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
     <aside class="notes">Exact optional branch with surrounding search omitted. Candidate picks are tried before omission, but a later required shortage backtracks into the omission branch. TestOptionalCannotStarveRequiredAndSnapshotsSurviveCatalogEdits creates this contention; TestOptionalIngredientIsReservedAndConsumed verifies included stock. Readiness uses required ingredients to decide serviceability, while acceptance and costing account for included optionals. There is no unbounded optional garnish consumption.</aside>
   </section>
 
@@ -2449,7 +2461,7 @@ Omitted optional → no cost
 Missing price    → unknown, not zero
 No complete plan → FailedPrecondition</code></pre>
     <div class="callout">A cheap per-line choice is meaningless if two lines spend the same scarce substitute.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/queries/cost.go">Code: app/domains/menus/queries/cost.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/queries/cost.go">Code: app/domains/menus/queries/cost.go</a></p>
     <aside class="notes">Calculate holds one read transaction and uses the same whole-recipe planner as fulfillment. It estimates the current recipe; order placement plans the whole order and captures agreed menu prices, so this is not a promise of identical plans across different scopes or later snapshots. Margin analytics require matching currencies. Price basis is independent of stock display unit.</aside>
   </section>
 
@@ -2467,7 +2479,7 @@ return tx.Insert(&amp;ReservationRow{
     // OrderID, IngredientID, Quantity, Unit
 })</code></pre>
     <div class="callout">Planning chooses a feasible usage snapshot. Inventory remains the owner of the durable reservation invariant.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/inventory/internal/dao/reservations.go">Code: app/domains/inventory/internal/dao/reservations.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/internal/dao/reservations.go">Code: app/domains/inventory/internal/dao/reservations.go</a></p>
     <aside class="notes">Adapted Reserve excerpt: stockUnit, existingReservationRows, and sum abbreviate the actual Unit conversion and row loop. Reserve runs from OrderPlaced's handler in the same transaction as the inserted Order. Reservations use an order/ingredient identity and quantities normalized to the stock unit. A late reservation failure rejects the whole placement, not just the last ingredient.</aside>
   </section>
 
@@ -2483,7 +2495,7 @@ B restock  → BlockedIngredients={};    status=pending
 StockAdjusted changes only its ingredient's membership.
 The stored list is sorted by ingredient ID.</code></pre>
     <div class="callout">One recovery event must not erase another unresolved shortage.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/handlers/stock-adjusted.go">Code: app/domains/orders/handlers/stock-adjusted.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/handlers/stock-adjusted.go">Code: app/domains/orders/handlers/stock-adjusted.go</a></p>
     <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and cancelled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
   </section>
 
@@ -2504,7 +2516,7 @@ FulfillIngredients → PlanIngredients
 Calculate → unavailable on error
 PickIngredients → (nil, false) on error</code></pre>
     <div class="callout">Persisted projections, readiness, costing, and order planning must not turn infrastructure failure into an ordinary shortage.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
     <aside class="notes">Control-flow summary, not executable Go. Read preparedMenus.prepare, queries/readiness.go and queries/cost.go. Missing stock is modeled candidate absence; database and conversion failures propagate. Tolerant Calculate/PickIngredients are not the authoritative mutation path.</aside>
   </section>
 
@@ -2522,7 +2534,7 @@ The implementation:
 
 It does not split one requirement across several sources.</code></pre>
     <div class="callout">Determinism makes choices explainable. It does not make the search globally optimal or constant-time.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/internal/availability/calculator.go">Code: app/domains/menus/internal/availability/calculator.go</a></p>
     <aside class="notes">Complexity and limits inferred directly from PlanIngredients' nested candidate recursion. The small teaching domain keeps this tractable; adding many substitutes or order lines changes the cost inside a write transaction. The recursion also has no explicit context-cancellation check, though preceding database operations use context. If scale requires a different planner, preserve the usage snapshot and reservation contracts while testing the new selection policy.</aside>
   </section>
 </section>
@@ -2546,7 +2558,7 @@ Amendments[]
 IngredientUsage
   aggregated quantities backing current reservations</code></pre>
     <div class="callout">Catalog edits affect future service. They must not reinterpret a customer's accepted order.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/models/snapshot.go">Code: app/domains/orders/models/snapshot.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/models/snapshot.go">Code: app/domains/orders/models/snapshot.go</a></p>
     <aside class="notes">Trace fulfillmentSnapshot during Place. Acceptance and Plan initially contain the selected items; Amend clones the plan and affected nested slices before changing it, preserving acceptance. Historical GUI/TUI details use snapshots rather than looking up today's names and recipe steps. Order-level Notes remain on Order; per-line notes are in ItemSnapshot.</aside>
   </section>
 
@@ -2554,11 +2566,11 @@ IngredientUsage
     <h2>An accepted order has a concrete preparation</h2>
     <figure class="surface-capture">
       <a href="{{ '/assets/images/mixology/gui-order.png' | relative_url }}" target="_blank" rel="noopener" aria-label="Open full-size screenshot: An accepted order has a concrete preparation">
-        <img src="{{ '/assets/images/mixology/gui-order.png' | relative_url }}" alt="Desktop order detail scrolled to two Margaritas for bar seat four and approved preparation: tequila, lime juice, triple sec, recipe steps, and lime wheel garnish." width="1100" height="720">
+        <img src="{{ '/assets/images/mixology/gui-order.png' | relative_url }}" alt="Desktop order detail scrolled to accepted and approved Margarita preparation for quantity two: tequila, lime juice, triple sec, recipe steps, lime wheel garnish, and retained ingredient usage." width="1100" height="720">
       </a>
       <figcaption>Two Margaritas retain their quantities, preparation steps, and garnish in the approved plan.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">The capture harness places two Margaritas through Orders.Place against the seeded published menu, then opens and scrolls the actual order detail. The original acceptance and current plan agree here because no amendment has occurred. The displayed preparation reads the saved Plan; an amendment can change that plan while preserving Acceptance. N/A reflects unset seed menu prices. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -2577,7 +2589,7 @@ created.CompletedAt = optional.None[time.Time]()
 // fulfillmentSnapshot populates Plan and Acceptance.
 // DAO insert owns the initial revision.</code></pre>
     <div class="callout">Do not copy an input model wholesale. A caller cannot smuggle terminal state, acceptance, or reservations through placement.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/internal/commands/place.go">Code: app/domains/orders/internal/commands/place.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/internal/commands/place.go">Code: app/domains/orders/internal/commands/place.go</a></p>
     <aside class="notes">Exact selected initialization. Active Ingredient, Drink, Menu and Order contracts do not expose DeletedAt; catalog deletion metadata remains private. Creation and update own writable fields and lifecycle rules. TestActiveContractsDoNotExposeDeletion protects the model shape; lifecycle tests protect behavior.</aside>
   </section>
 
@@ -2595,7 +2607,7 @@ created.CompletedAt = optional.None[time.Time]()
 // Preparation: approved steps/garnish for selected drink lines.
 // Unspecified preparation retains the previous approved values.</code></pre>
     <div class="callout">Only pending or blocked orders can be amended. Original acceptance and agreed prices stay unchanged.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/models/snapshot.go">Code: app/domains/orders/models/snapshot.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/models/snapshot.go">Code: app/domains/orders/models/snapshot.go</a></p>
     <aside class="notes">Exact Amendment declaration. The command requires a reason and at least one replacement; this is not a general standalone preparation editor. A zero ratio defaults to 1; other ratios must be finite and positive. Replacement keys refer to currently selected ingredients, not merely original recipe IDs. Omitted selections remain omitted. Orders has a dedicated amend Cedar action, permitted to manager and owner; the loaded and resulting Order still pass both pipeline gates.</aside>
   </section>
 
@@ -2613,46 +2625,43 @@ Inventory: validate old reservations, release, reserve new
 Menus: prepare availability from net reservation change
 Orders: reconcile peers helped by the released commitment</code></pre>
     <div class="callout">All steps share one transaction. A late reservation failure restores the original plan and commitments.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/internal/commands/amend.go">Code: app/domains/orders/internal/commands/amend.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/internal/commands/amend.go">Code: app/domains/orders/internal/commands/amend.go</a></p>
     <aside class="notes">Follow FulfillWithReservations and inventory/handlers/order-amended.go. Original acceptance is never overwritten. The planner receives the amended requirements and its configured candidate rules; inspect the actual returned plan rather than assuming the requested replacement alone describes all picks. Ratios multiply current selected quantity. Completion and amendment verify reservation identities and quantities before consuming or replacing them.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>Validate a batch before its own effects change revisions</h2>
-    <pre><code class="language-text">App.AmendOrders(requests):
-  reject duplicate order IDs
-  load every selected order
-  require every submitted revision to match
+    <h2>Orders owns one atomic amendment batch</h2>
+    <pre><code class="language-text">Orders.AmendBatch(requests):
+  reject duplicate IDs; load the complete selection
+  validate every captured revision and authorize every order
+  plan each amendment using projected reservation changes
+  emit one OrdersAmended{Changes}
 
-  then, for each request:
-    reload the current order in this transaction
-    use that revision for Orders.Amend
+Inventory: apply all reservation changes
+Orders: reconcile peers using the combined release
+Menus: prepare availability from the complete reservation delta
 
-App.RetireIngredient(..., requests):
-  amend the explicit selection
-  retire the ingredient in the same workflow</code></pre>
-    <div class="callout">Reconciliation may legitimately advance a peer's revision within the batch. Validate stale user intent before that begins.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/amend_orders.go">Code: app/amend_orders.go</a></p>
-    <aside class="notes">RunWorkflow owns the outer transaction and failure evidence. Re-reading a token after validating the full selection is not a general stale-write bypass; it accounts for effects caused by this very transaction. Unselected orders retain their plan and follow discontinuation/withdrawal policy. The operator supplies approval and reason; the system does not infer customer consent.</aside>
+One transaction commits every selection and one activity.</code></pre>
+    <div class="callout">Submit Ingredients.Retire separately after the approved batch. A retirement failure leaves that committed batch intact.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/amend_batch.go">Code: app/domains/orders/amend_batch.go</a></p>
+    <aside class="notes">The private AmendBatch command plans the selection and queues one aggregate event; it does not loop over public Orders.Amend calls. The domain facade checks and authorizes the complete selection before planning. Unselected orders retain their plan and follow discontinuation or withdrawal policy. The operator supplies approval and reason; the system does not infer customer consent.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>Prove that the second failure undoes the first success</h2>
+    <h2>Prove batch atomicity and separate retirement ownership</h2>
     <pre><code class="language-text">Two selected orders; replacement stock can fulfill only one.
+Orders.AmendBatch:
+  first plan is provisional
+  second plan fails → roll back the command
+  orders and reservations retain their original state
+  one failed command records attempted effects
 
-Attempt App.RetireIngredient with both amendments:
-  first amendment provisionally succeeds
-  second amendment fails
-  outer transaction rolls back
-
-Assert:
-  first order equals its original value
-  replacement reserved amount = 0
-  original ingredient remains active
-  audit count = before + 1; failed workflow has effects</code></pre>
-    <div class="callout">The surviving activity describes the attempted changes. It must not look like committed amendment history.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_regression_test.go">Code: app/cross_domain_regression_test.go</a></p>
-    <aside class="notes">Scenario and assertions from TestFailedSelectedAmendmentsRollBackAllEffectsAndPersistFailure. It checks a nonempty WorkflowID and touches containing the first order. TestAtomicRetirementAmendmentKeepsAcceptanceAndApprovedPreparation covers successful composition; TestLateWorkflowFailureRollsBackEveryDomain injects failure after the domain work.</aside>
+Successful approved batch, then Ingredients.Retire fails:
+  approved amendments stay committed
+  failed retirement rolls back only its own effects</code></pre>
+    <div class="callout">Batch atomicity ends at its command boundary. Retirement has its own transaction and activity.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_regression_test.go">Code: app/cross_domain_regression_test.go</a></p>
+    <aside class="notes">Read TestFailedSelectedAmendmentsRollBackAllEffectsAndPersistFailure and TestExplicitAmendmentThenRetirementKeepsAcceptanceAndApprovedPreparation. app/amend_batch_test.go verifies one activity covers both selected orders and all reservation changes. Keep batch failure distinct from a later independent retirement failure.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -2668,7 +2677,7 @@ A veto during Handling rolls back the source deletion.
 Errors identify dependencies and the corrective action.
 Redrafting preserves the previous PublishedAt value.</code></pre>
     <div class="callout">A retained snapshot does not automatically authorize removal of its referenced catalog identity.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/internal/dao/usage.go">Code: app/domains/orders/internal/dao/usage.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/internal/dao/usage.go">Code: app/domains/orders/internal/dao/usage.go</a></p>
     <aside class="notes">Trace DrinkDeleted and MenuDeleted handlers. An active menu reference can be removed through normal draft curation; historical order references remain a deletion veto, including terminal orders. There is no force flag. Handler wrappers may add an outer Internal classification while retaining the FailedPrecondition cause; do not promise an unwrapped top-level error kind for every reaction.</aside>
   </section>
 </section>
@@ -2690,7 +2699,7 @@ Example:
 
 Discrete units retain their own canonical unit.</code></pre>
     <div class="callout">A compatible catalog unit change must not change physical stock, accepted usage, or the meaning of its price.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/inventory/internal/dao/convert.go">Code: app/domains/inventory/internal/dao/convert.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/internal/dao/convert.go">Code: app/domains/inventory/internal/dao/convert.go</a></p>
     <aside class="notes">Quantity example uses the kernel's 29.5735 ml/oz constant. Reservations persist canonical quantities too. IngredientUpdated changes stock presentation, retaining cost basis. Incompatible dimensional changes require a replacement identity. TestCanonicalStockSurvivesDisplayUnitChange proves reservation and completion behavior across the display change. New explicit prices default to the catalog unit unless CostUnit is supplied.</aside>
   </section>
 
@@ -2710,7 +2719,7 @@ Release quarantine:
 
 Neither replacement nor release transfers physical inventory.</code></pre>
     <div class="callout">Future product intent and existing physical commitments have different owners and lifecycle rules.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/inventory/handlers/ingredient-deleted.go">Code: app/domains/inventory/handlers/ingredient-deleted.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/handlers/ingredient-deleted.go">Code: app/domains/inventory/handlers/ingredient-deleted.go</a></p>
     <aside class="notes">Inventory prepares the retained row before handlers apply. Existing quarantine is not cleared by a later ordinary discontinuation; disposed stock is not revived. Orders' retirement handler blocks only when Withdraw is true. Separate Inventory.Disposition supports quarantine and release with reason and revision. Completion may use discontinued stock but refuses quarantined or inconsistent reservations.</aside>
   </section>
 
@@ -2727,7 +2736,7 @@ Neither replacement nor release transfers physical inventory.</code></pre>
 
 Inventory.History reads retained movements.</code></pre>
     <div class="callout">The absence of a row cannot explain what was discarded, why, or which commitments it affected.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/inventory/internal/commands/dispose.go">Code: app/domains/inventory/internal/commands/dispose.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/internal/commands/dispose.go">Code: app/domains/inventory/internal/commands/dispose.go</a></p>
     <aside class="notes">Trace DAO.Upsert and movement.go for the quantity movement. Stock tags and identity are retained after disposal; no implicit transfer to a replacement occurs. Physical loss can create shortage and block existing orders. The stock event, order reactions, menu projections and audit remain in the originating transaction.</aside>
   </section>
 
@@ -2744,7 +2753,7 @@ Cancel one order:
 
 Amendment release and quarantine release also reconcile.</code></pre>
     <div class="callout">The policy blocks all affected orders during an aggregate deficit. It does not allocate winners by FIFO or priority.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/orders/handlers/order-cancelled.go">Code: app/domains/orders/handlers/order-cancelled.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/handlers/order-cancelled.go">Code: app/domains/orders/handlers/order-cancelled.go</a></p>
     <aside class="notes">Illustrative values for the shipped aggregate policy. Cancellation prepares peer changes before Inventory releases rows, using projected remaining reservations. TestCancellationPreparationRecoversPeersInEveryHandlerOrder proves independence. Quarantined/disposed stock remains blocked even if the numeric deficit disappears. A restored ingredient must not erase other blockers.</aside>
   </section>
 
@@ -2763,7 +2772,7 @@ Amendment release and quarantine release also reconcile.</code></pre>
 // SetSubstitution authorizes update on the original ingredient.
 // SubstitutionRules includes disabled rules for administration.</code></pre>
     <div class="callout">Renaming an ingredient must not change which substitute it means. A rule edit also refreshes dependent availability.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/ingredients/models/substitution.go">Code: app/domains/ingredients/models/substitution.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/models/substitution.go">Code: app/domains/ingredients/models/substitution.go</a></p>
     <aside class="notes">Selected fields, JSON tag omitted. Rule updates require the returned revision. The command verifies dimensional compatibility and Get authority on the substitute, but does not invent permanent replacement intent or require category equality for a temporary rule. IngredientUpdated triggers the dependent refresh. TestIDSubstitutionSurvivesRenameAndTracksStock covers renaming and implicit dependency tracking. A permanent non-1 replacement of an ID-only recipe substitute is rejected until that ambiguous candidate is explicitly revised.</aside>
   </section>
 
@@ -2782,21 +2791,21 @@ mixology inventory dispose --ingredient-id ing-A \
   --quantity 5 --reason 'discard remainder'
 mixology inventory history --ingredient-id ing-A</code></pre>
     <div class="callout">Replace illustrative IDs with seeded IDs. Capture revisions when intent must refer to the state you reviewed.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/cli/order_amend.go">Code: main/cli/order_amend.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/order_amend.go">Code: main/cli/order_amend.go</a></p>
     <aside class="notes">These are command shapes, not a sequential fixture: quarantine/release/dispose need the corresponding lifecycle preconditions. Disposal quantity uses the current stock display unit. Batch input is a JSON array of models.Amendment with each expected revision; preparation changes can be included there. CLI operations without an explicit revision load the current token immediately before writing. The September alignment adds dedicated GUI/TUI interactions for these workflows, summarized next. This is the bridge back to chapter 4.0's output and input toolkit.</aside>
   </section>
 
   <section>
     <h2>September alignment: carry the workflows into every client</h2>
-    <div class="layers"><div class="layer"><strong>Ingredients</strong><span>Revise substitution rules; retire with replacement, ratio, withdrawal, and reason.</span></div><div class="layer"><strong>Orders</strong><span>Amend one order or review an atomic batch; inspect acceptance, approved plans, and amendment history.</span></div><div class="layer"><strong>Inventory</strong><span>Receive stock, quarantine, release, dispose, and inspect retained movements with explicit quantity and cost units.</span></div><div class="layer"><strong>Audit</strong><span>Read workflow correlation, referenced entities, and before/after effects; distinguish committed changes from failed attempts.</span></div></div>
-    <div class="callout">GUI and TUI retain reviewed revisions and preserve drafts after conflicts. Selected batches commit through App.AmendOrders.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md">September 13 surface audit and render checks</a></p>
-    <aside class="notes">This slide follows b070b71, after the original captures. All three clients now expose these workflows. GUI and TUI keep native interaction state while sharing domain-owned amendment request construction and audit detail helpers. An amendment queue preserves every selected order's revision; a conflict retains the queue, and a later failure rolls back earlier amendments. Separate retirement and amendment interactions remain separate transactions. App.RetireIngredient supplies the combined application workflow when both must commit together. The linked audit includes opt-in tests that render GUI PNGs and terminal ANSI frames. Use those captures alongside behavioral tests for permissions, keyboard input, stale revisions, and rollback.</aside>
+    <div class="layers"><div class="layer"><strong>Ingredients</strong><span>Revise substitution rules; retire with replacement, ratio, withdrawal, and reason.</span></div><div class="layer"><strong>Orders</strong><span>Amend one order or review an atomic batch; inspect acceptance, approved plans, and amendment history.</span></div><div class="layer"><strong>Inventory</strong><span>Receive stock, quarantine, release, dispose, and inspect retained movements with explicit quantity and cost units.</span></div><div class="layer"><strong>Audit</strong><span>Read one command activity, referenced entities, and before/after effects; distinguish committed changes from failed attempts.</span></div></div>
+    <div class="callout">GUI and TUI retain reviewed revisions and preserve drafts after conflicts. Selected batches commit through Orders.AmendBatch.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/surface-parity.md">September 13 surface audit and render checks</a></p>
+    <aside class="notes">This slide and the captures follow 0d5e64b. All three clients now expose these workflows. GUI and TUI keep native interaction state while sharing domain-owned amendment request construction and audit detail helpers. An amendment queue preserves every selected order's revision; a conflict retains the queue, and a failure inside the batch rolls back every selected amendment. Separate retirement and amendment interactions remain separate transactions. Ingredients.Retire owns retirement independently; if it fails, an approved amendment batch remains committed. The linked audit includes opt-in tests that render GUI PNGs and terminal ANSI frames. Use those captures alongside behavioral tests for permissions, keyboard input, stale revisions, and rollback.</aside>
   </section>
 </section>
 
 <section>
-  <section class="centered section-slide"><div class="eyebrow">Optional extension 3.2</div><h1>Extend the model with Procurement</h1><p class="lede"><span class="decision">planned, not implemented</span><br>Orders and Inventory already demonstrate reciprocal reactions. Procurement would add a workflow that spans time and commits.</p><div class="section-no">3.2</div><aside class="notes">This chapter is an optional future recording, not part of the current repository onboarding. Continue to 4.0 for the shipped interfaces. If recording the extension, first recap the existing order/reservation loop and ask what changes when a supplier response arrives hours or days later.</aside></section>
+  <section class="centered section-slide"><div class="eyebrow">Optional extension 3.2</div><h1>Extend the model with Procurement</h1><p class="lede"><span class="decision">planned, not implemented</span><br>Orders and Inventory already demonstrate reciprocal reactions. Procurement would own durable demand and purchase-order state, with separate approval and receipt commands.</p><div class="section-no">3.2</div><aside class="notes">This chapter is an optional future recording, not part of the current repository onboarding. Continue to 4.0 for the shipped interfaces. If recording the extension, first recap the existing order/reservation loop and ask what changes when a supplier response arrives hours or days later.</aside></section>
 
   <section>
     <h2>The next build: stock creates demand</h2>
@@ -2806,18 +2815,18 @@ mixology inventory history --ingredient-id ing-A</code></pre>
 
   <section>
     <h2>Establish ownership before packages</h2>
-    <div class="cards"><div class="card"><h3>Inventory owns</h3><p>On-hand amount, reservation, thresholds, and stock facts.</p></div><div class="card"><h3>Procurement owns</h3><p>Suppliers, offerings, purchase orders, receiving workflow, and commercial intent.</p></div><div class="card warn"><h3>Later: Analytics observes</h3><p>Queryable facts beside the completed slice. It does not become a dependency of the write path.</p></div></div>
+    <div class="cards"><div class="card"><h3>Inventory owns</h3><p>On-hand amount, reservation, thresholds, and stock facts.</p></div><div class="card"><h3>Procurement owns</h3><p>Suppliers, offerings, purchase orders, receipt state, and commercial intent.</p></div><div class="card warn"><h3>Later: Analytics observes</h3><p>Queryable facts beside the completed slice. It does not become a dependency of the write path.</p></div></div>
   </section>
 
   <section>
     <h2>Build the slice in visible increments</h2>
-    <div class="timeline"><div class="step"><strong>Suppliers</strong><span>identity and offerings</span></div><div class="step"><strong>Purchase orders</strong><span>stateful lifecycle</span></div><div class="step"><strong>Low-stock facts</strong><span>draft demand, idempotently</span></div><div class="step"><strong>Receipt facts</strong><span>inventory reacts</span></div><div class="step"><strong>Consistency view</strong><span>show what converged</span></div><div class="step"><strong>Workflow limit</strong><span>find hidden coordination</span></div><div class="step"><strong>Outbox</strong><span>only if commit boundary moves</span></div></div>
+    <div class="timeline"><div class="step"><strong>Suppliers</strong><span>identity and offerings</span></div><div class="step"><strong>Purchase orders</strong><span>stateful lifecycle</span></div><div class="step"><strong>Low-stock facts</strong><span>draft demand, idempotently</span></div><div class="step"><strong>Receipt facts</strong><span>inventory reacts</span></div><div class="step"><strong>Consistency view</strong><span>show what converged</span></div><div class="step"><strong>Command boundaries</strong><span>approval and receipt</span></div><div class="step"><strong>Delivery needs</strong><span>prove durability requirements</span></div></div>
   </section>
 
   <section>
-    <h2>When a handler becomes a workflow</h2>
-    <div class="split"><div class="side"><h3>Leaf reaction</h3><p>One fact, bounded local mutation, same transaction, no new event.</p><p class="accent">Keep it in a handler.</p></div><div class="bridge">→</div><div class="side"><h3>Process manager</h3><p>Waits over time, coordinates retries or compensations, tracks intermediate state, spans commits.</p><p class="gold">Name the workflow.</p></div></div>
-    <div class="callout">Add an outbox when delivery must survive a transaction boundary. Do not use it to decorate a transaction that is already atomic.</div>
+    <h2>Persist state between explicit commands</h2>
+    <div class="split"><div class="side"><h3>Leaf reaction</h3><p>One fact, bounded local mutation, same transaction, no new event.</p><p class="accent">Keep it in a handler.</p></div><div class="bridge">→</div><div class="side"><h3>Procurement commands</h3><p>Approval and receipt load durable purchase-order state. Each owns its transaction and emits facts for leaf reactions.</p><p class="gold">Persist the decision; invoke the next command when ready.</p></div></div>
+    <div class="callout">Elapsed time alone does not require orchestration. Add durable delivery only when a demonstrated external-delivery requirement needs it.</div>
   </section>
   <section class="implementation-slide">
     <h2>Proposed receipt processing needs durable identity</h2>
@@ -2835,7 +2844,7 @@ External delivery, if later introduced:
   store an outbox record with the receipt commit
   deliver after commit; deduplicate by receiptID</code></pre>
     <div class="callout">A supplier callback can be retried. The exercise is to place idempotency and transaction ownership before adding asynchronous delivery.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/docs/architecture.md">Code: docs/architecture.md</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/architecture.md">Code: docs/architecture.md</a></p>
     <aside class="notes">This is a proposed contract, not a claim that Procurement or an outbox exists. Use the current architecture as the constraint set. Ask whether a duplicate receipt should return the original result or a typed conflict, and which owner stores that choice. Contrast an explicit Receive operation with a handler trying to wait for a supplier or emit another event.</aside>
   </section>
 
@@ -2887,7 +2896,7 @@ ID:          d.ID.String(),
 Status:      string(d.Status),
 Ingredients: len(d.Recipe.Ingredients),</code></pre>
     <div class="callout">The table/JSON view can summarize a recipe without changing the domain model or exposing its persistence row.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/drinks/surfaces/cli/views.go">Code: app/domains/drinks/surfaces/cli/views.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/surfaces/cli/views.go">Code: app/domains/drinks/surfaces/cli/views.go</a></p>
     <aside class="notes">Exact selected fields from DrinkRow and ToDrinkRow. The row's ingredients count is presentation data, not a replacement for the recipe used by command validation. Follow ToDrinkRows into the CLI list output. The domain still owns filter semantics and authorization; the CLI chooses how to represent an allowed result.</aside>
   </section>
 
@@ -2906,7 +2915,7 @@ if err := clitable.PrintTable(cmd.Writer,
 }
 return printNextCursor(cmd.Writer, res.Next)</code></pre>
     <div class="callout">The toolkit renders values. The command owns the page envelope, cursor reporting, and choice of representation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/cli/ingredients.go">Code: main/cli/ingredients.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/ingredients.go">Code: main/cli/ingredients.go</a></p>
     <aside class="notes">Exact output branch with a line wrapped for the slide. Compare ingredients get: it passes ToIngredientRow to WriteJSON or PrintDetail, without a page envelope. Mutation output is chosen separately: ingredient create emits the result model as JSON or just its ID as text. Do not infer one universal output schema from the generic writer. All of these paths use cmd.Writer, so tests and embedding code can capture output without replacing process stdout. TestTableOutputUsesCommandWriter exercises the composed command with a bytes.Buffer.</aside>
   </section>
 
@@ -2923,7 +2932,7 @@ ing-1  Vodka  2                Menu ID:     mnu-1
                               Created At:  2025-02-03T04:05:06Z
                               Status:      pending</code></pre>
     <div class="callout">Tables opt fields in with <code>table</code> tags. Details use <code>json</code> tags and omit zero values marked <code>omitempty</code>. Neither rule grants or denies access.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/cli/table/table.go">Code: table/table.go</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/cli/table/table_test.go">Tests: table/table_test.go</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/ingredients/surfaces/cli/views.go">IngredientRow</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/cli/table/table.go">Code: table/table.go</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/cli/table/table_test.go">Tests: table/table_test.go</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/surfaces/cli/views.go">IngredientRow</a></p>
     <aside class="notes">The output shows the two separate renderer test fixtures with spacing normalized, not an ingredient record. TestPrintDetail's empty Notes field is omitted; menu_id becomes Menu ID, time.Time uses RFC3339, and the status uses fmt.Stringer. Walk getTableFields, getJSONFields, formatValue, and the tabwriter flush. Reflection inspects exported fields on structs, with one optional outer pointer, rather than recursively deriving a domain view. Flatten recipes and optional prices in the domain adapter. Empty typed slices still print headers. Detail omission uses this renderer's isZero helper, not encoding/json itself; notably it dereferences pointers when testing zero. A table tag hides a column only, so never use it as an authorization boundary.</aside>
   </section>
 
@@ -2935,7 +2944,7 @@ if err := cmd.Run(context.Background(), os.Args); err != nil {
     os.Exit(errors.ExitGeneral)
 }</code></pre>
     <div class="callout">The application returns an error. The executable chooses process behavior through the shared adapter: Conflict → 40, Permission → 30, Internal → 50.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/cli/main.go">Code: main/cli/main.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/main.go">Code: main/cli/main.go</a></p>
     <aside class="notes">Exact main branch. HandleExitCoder exits with the mapped code; the following general exit is a fallback. Connect this to chapter 1.3's wrapped error example. Test the built CLI binary when demonstrating shell exit status: go run adds its own launcher behavior and is not a reliable way to demonstrate the application's exact process exit code.</aside>
   </section>
 
@@ -2951,7 +2960,7 @@ DAO                     → constraints + optimistic revision
 
 JSON decoding is not business validation.</code></pre>
     <div class="callout">The toolkit handles transport mechanics. Domain-specific interpretation and authoritative rules remain separate.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/cli/json.go">Code: pkg/toolkits/cli/json.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/cli/json.go">Code: pkg/toolkits/cli/json.go</a></p>
     <aside class="notes">Trace main/cli/ingredients.go and its domain surfaces/cli package. ReadJSONInput currently decodes one JSON value with the standard decoder; it does not enable DisallowUnknownFields or check for a second trailing value, and stdin is read into memory. Do not teach this helper as a strict schema validator or a streaming import API. Template handling occurs before the reader. The reader's exactly-one-source requirement applies when the command selects JSON input; ingredient create also supports a flags-only path. Conversion varies by command: ingredient update parses its ID and carries the revision, while the tagged-mutation wrapper handles the --tags flag separately.</aside>
   </section>
 
@@ -2967,7 +2976,7 @@ JSON decoding is not business validation.</code></pre>
     return err
 }</code></pre>
     <div class="callout"><code>JSONFlag</code>, <code>TemplateFlag</code>, <code>StdinFlag</code>, and <code>FileFlag</code> keep command spelling consistent. <code>ReadJSONInput[T]</code> selects and decodes one source; <code>WriteJSON</code> emits an indented document and newline.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/cli/json.go">Code: pkg/toolkits/cli/json.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/cli/json.go">Code: pkg/toolkits/cli/json.go</a></p>
     <aside class="notes">Exact writer implementation. Open the reader in the same file: both --stdin and --file return “set only one of --stdin or --file”; neither returns “missing input: set --stdin or --file (or use --template)”; whitespace-only stdin returns “stdin is empty”. Show that --template is handled by the composing command before this reader. The toolkit imports no application models and chooses no business defaults. JSON marshaling and writer errors propagate to the caller. This is a small document-oriented helper: both output marshaling and stdin input materialize bytes in memory.</aside>
   </section>
 
@@ -2975,7 +2984,7 @@ JSON decoding is not business validation.</code></pre>
     <h2>Reuse the surface mechanics as interaction grows</h2>
     <table class="matrix"><thead><tr><th>Toolkit</th><th>Reusable responsibility</th><th>Domain adapter still owns</th></tr></thead><tbody><tr><td>CLI · this chapter</td><td>Decode a document; render a result.</td><td>Flags, input interpretation, view conversion.</td></tr><tr><td>TUI · 4.1</td><td>Route messages, keys, forms, and navigation.</td><td>Screen state and application actions.</td></tr><tr><td>GUI · 4.2a–b</td><td>Compose widgets; execute and publish work safely.</td><td>Presenter state and application actions.</td></tr></tbody></table>
     <div class="callout">Add a CLI operation through the domain facade, its CLI adapter, and <code>main/cli</code> composition. Extract mechanics into the toolkit only when they are independent of the business model.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/cli/readme.md">CLI toolkit extension guide</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/cli/cli_output_test.go">Output contract tests</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/cli/readme.md">CLI toolkit extension guide</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/cli_output_test.go">Output contract tests</a></p>
     <aside class="notes">Close the code walkthrough by running go test ./pkg/toolkits/cli/... ./main/cli. TestTableColumns protects view headings, TestTableRowsIncludeDerivedValues protects domain-to-display conversion, TestEntityJSONViewsExposeCanonicalTags protects structured tag output, and TestTableOutputUsesCommandWriter protects output routing. CLI parsing tests that share package-level urfave flag instances run serially; the parser mutates those instances. For an added command, exercise its real text and JSON paths, input failures, and application errors. Segue to the terminal demo: the same operation now lives inside a persistent session, so selection, input ownership, and refresh need explicit contracts. Toolkit size follows those responsibilities, while business validation and authorization remain behind the facade.</aside>
   </section>
 </section>
@@ -2998,7 +3007,7 @@ JSON decoding is not business validation.</code></pre>
       </a>
       <figcaption>The list and selected ingredient stay together; the shell preserves navigation context.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">The real TUI driver opens Ingredients and moves to London Dry Gin using down keys. Point to the shared domain values in the detail pane, the list on the left, and the shell breadcrumb and status bar. The following image opens this same ingredient for editing. Captured from the real Bubble Tea root model with the repository TUI driver; ANSI output is rasterized in headless Chrome. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -3010,7 +3019,7 @@ JSON decoding is not business validation.</code></pre>
       </a>
       <figcaption>The editor takes keyboard input while the ingredient list remains in view.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">The capture sends e to the selected ingredient. The form owns text and field navigation until save or cancel. Connect this concrete screen to input ownership, pending invalidation, and the operation context discussed later in the TUI chapter. No edit is submitted during capture. Captured from the real Bubble Tea root model with the repository TUI driver; ANSI output is rasterized in headless Chrome. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -3089,7 +3098,7 @@ return func() tea.Msg {
     }
 }</code></pre>
     <div class="callout">The effect captures request values and returns a typed message. It does not mutate the visible list from a background operation.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/ingredients/surfaces/tui/list_vm.go">Code: app/domains/ingredients/surfaces/tui/list_vm.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/surfaces/tui/list_vm.go">Code: app/domains/ingredients/surfaces/tui/list_vm.go</a></p>
     <aside class="notes">Adapted from loadIngredients: ingredientsList is shortened to page and the item-conversion loop is omitted. Capture token and req before the closure executes; reading changing view-model fields inside the effect would blur ownership. Keep fresh operation context separate from the load-generation token.</aside>
   </section>
 
@@ -3108,7 +3117,7 @@ return func() tea.Msg {
     // Rebuild list items, then restore selection by entity ID.
     m.selectIngredient(selected)</code></pre>
     <div class="callout">Selection is an entity identity, not a row index. A late result must not replace the current page, error, cursor, or selected record.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/ingredients/surfaces/tui/list_vm.go">Code: app/domains/ingredients/surfaces/tui/list_vm.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/surfaces/tui/list_vm.go">Code: app/domains/ingredients/surfaces/tui/list_vm.go</a></p>
     <aside class="notes">Selected Update branch; list rebuilding is omitted. Work through load token 7 followed by token 8, with 7 completing last. Then inspect the DataInvalidatedMsg branch: it only reloads while browsing and permitted to list. The shell coordinates deferred invalidation while the screen owns input.</aside>
   </section>
 
@@ -3126,7 +3135,7 @@ Escape + help open     → close help
 Escape + HandlesBack   → child cancels local interaction
 Escape otherwise       → navigate application history</code></pre>
     <div class="callout">A global keybinding is not global while an editor owns that input. Back must unwind the nearest interaction first.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/tui/app.go">Code: main/tui/app.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/tui/app.go">Code: main/tui/app.go</a></p>
     <aside class="notes">The Interaction declaration is selected from the toolkit; routing is summarized from main/tui/app.go. Runes are protected while CapturesText is true; non-rune quit shortcuts still follow the root keymap. A child can own filter editing, a modal, or detail navigation without the root importing its state type. Run TestE2E_ListFilterOwnsPrintableShortcutsAndEscape and TestBackKey_CancelsDomainLocalStateBeforeNavigating.</aside>
   </section>
 
@@ -3142,7 +3151,7 @@ acceptViewUpdate:
   still editing/detail-owned → keep stale flag
   returned to browse         → clear flag; issue normal reload</code></pre>
     <div class="callout">A refresh request must survive the editor, but must not replace the editor. Staleness and interaction ownership are separate state.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/tui/app.go">Code: main/tui/app.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/tui/app.go">Code: main/tui/app.go</a></p>
     <aside class="notes">Trace the databaseChangedMsg branch and acceptViewUpdate. Inactive views refresh when activated; the current view defers while HandlesBack or CapturesText is true. When the interaction finishes, the root emits the ordinary invalidation message and the domain list issues its tokenized query. This is a state machine, not a timer-based workaround.</aside>
   </section>
 </section>
@@ -3165,7 +3174,7 @@ acceptViewUpdate:
       </a>
       <figcaption>Filters and a table expose the same ingredient catalog through retained widgets.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">This is the composed desktop as owner. The navigation belongs to the shell; the filter controls and ingredient table belong to the Ingredients surface. Compare the visible categories, units, and tags with the TUI list. The next slide selects London Dry Gin from this catalog. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -3177,7 +3186,7 @@ acceptViewUpdate:
       </a>
       <figcaption>London Dry Gin carries the same values into native fields and tag controls.</figcaption>
     </figure>
-    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/635c59b4101bdc614beb973cef83e8c2073a9787">go-modular-monolith 635c59b</a> · select image for full size</p>
+    <p class="source">Headless capture · owner persona · <a href="https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c">go-modular-monolith 0d5e64b</a> · select image for full size</p>
     <aside class="notes">Selecting the ingredient as owner opens the editable detail. The capture leaves the form unchanged, so Save and Cancel remain disabled. Scroll to reach further retirement fields. Compare the same ingredient in the TUI editor, then trace the presenter and view rather than treating this form as separate application behavior. Captured from the real composed Fyne desktop with its in-memory driver and deterministic executor. Reproduce with scripts/mixology-captures/capture.sh in the website repository. The seed data, owner persona, and source revision are shared across these captures.</aside>
   </section>
 
@@ -3227,7 +3236,7 @@ acceptViewUpdate:
     })
 }</code></pre>
     <div class="callout">A result can become stale after background work finishes but before the UI queue runs. Checking only before Dispatch leaves that race open.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/gui/async.go">Code: pkg/toolkits/gui/async.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/gui/async.go">Code: pkg/toolkits/gui/async.go</a></p>
     <aside class="notes">Exact method with a reflowed signature. Invalidate increments generation and cancels the context. LoadContext also checks ctx.Err before running queued work. The mutex protects request bookkeeping; production UI dispatch serializes presentation callbacks. Follow this with the manual-queue test in chapter 4.5.</aside>
   </section>
 
@@ -3246,7 +3255,7 @@ acceptViewUpdate:
     return state
 }</code></pre>
     <div class="callout">Snapshot and OnChange publish this copy. The view gets presentation state without sharing the presenter's top-level slice or map storage.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/domains/ingredients/surfaces/gui/presenter.go">Code: app/domains/ingredients/surfaces/gui/presenter.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/surfaces/gui/presenter.go">Code: app/domains/ingredients/surfaces/gui/presenter.go</a></p>
     <aside class="notes">Exact implementation. This is a targeted copy, not recursive immutability: slice element structs or selected structs can still contain nested references. Inspect those types when extending state and decide whether additional copying is necessary. This makes the ownership contract reviewable instead of implying that the word snapshot automatically prevents all aliasing.</aside>
   </section>
 
@@ -3268,7 +3277,7 @@ Submission:
   completion is dispatched to the UI
   release active, then publish the result</code></pre>
     <div class="callout">An obsolete read may be discarded. An accepted mutation still needs an accountable completion.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/gui/async.go">Code: pkg/toolkits/gui/async.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/gui/async.go">Code: pkg/toolkits/gui/async.go</a></p>
     <aside class="notes">Trace both types in async.go. Submission stays active until the UI completion callback runs, not merely until background work returns. It uses Executor.Execute, whereas LatestRequest can use the optional context-aware executor extension. This is per-presenter admission control, not database idempotency or a guarantee against another process submitting the same intent.</aside>
   </section>
 
@@ -3288,7 +3297,7 @@ go func() {
 }()
 return true</code></pre>
     <div class="callout">The accepted-work count must be incremented before Close can stop admission and begin waiting.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/gui/executor.go">Code: pkg/toolkits/gui/executor.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/gui/executor.go">Code: pkg/toolkits/gui/executor.go</a></p>
     <aside class="notes">Exact TryExecute core. Close takes the same mutex, sets closed, cancels its lifetime context, unlocks, then waits. Moving Add outside the admission lock would allow shutdown to miss work accepted just before closure. Execute intentionally discards the acceptance bool; owners that need rejection visibility use TryExecute or ExecuteContext. Producers must stop before executor shutdown.</aside>
   </section>
 
@@ -3304,7 +3313,7 @@ return true</code></pre>
 
 Dashboard stops before executor admission closes.</code></pre>
     <div class="callout">The ordering prevents a producer from counting work the executor will reject, or a worker from reaching a closed database.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/gui/desktop.go">Code: main/gui/desktop.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/desktop.go">Code: main/gui/desktop.go</a></p>
     <aside class="notes">Exact dependency order from desktop.Close. The dashboard has its own activation/work accounting; closing the executor first could strand that accounting. ManagedExecutor cancellation interrupts context-aware loads, while accepted plain work is drained. The UI gate prevents queued publications from reaching closed presentation state. This ordering is a composition responsibility, not something every domain presenter should implement.</aside>
   </section>
 
@@ -3324,7 +3333,7 @@ Dashboard stops before executor admission closes.</code></pre>
 
 // Close sets closed and waits for active callbacks only.</code></pre>
     <div class="callout">Queued is not active. Shutdown drops queued callbacks while allowing already-active callbacks to finish.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/gui/dispatcher.go">Code: pkg/toolkits/gui/dispatcher.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/gui/dispatcher.go">Code: pkg/toolkits/gui/dispatcher.go</a></p>
     <aside class="notes">Adapted GatedDispatcher body: finishAndSignalDrained abbreviates the deferred decrement and condition broadcast. There is also an early closed check before enqueueing. The callback-time check closes the race between enqueue and shutdown. Close waits only for callbacks that passed the inner gate, so it need not execute the entire UI queue. Do not call blocking Close from inside its own active callback.</aside>
   </section>
 
@@ -3343,7 +3352,7 @@ release both tasks
 assert both domain calls succeed
 assert Close then completes</code></pre>
     <div class="callout">A toolkit-only test cannot prove that process shutdown keeps the real application alive long enough.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/gui/desktop_test.go">Code: main/gui/desktop_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/desktop_test.go">Code: main/gui/desktop_test.go</a></p>
     <aside class="notes">Scenario from TestDesktopCloseDrainsRealDomainLoadAndMutationBeforeStoreShutdown. The test uses a real managed executor, isolated database, application session, and domain operations. The release channel controls timing; assertions check store lifetime and returned errors. Run with -tags ci. Separate tests cover executor rejection, cancellation, and queued publication dropping.</aside>
   </section>
 </section>
@@ -3358,7 +3367,7 @@ assert Close then completes</code></pre>
 
   <section>
     <h2>Hidden ownership fails under a different runtime</h2>
-    <table class="matrix"><thead><tr><th>Pressure</th><th>Revealed mistake</th><th>Durable correction</th></tr></thead><tbody><tr><td>Persistent dashboard</td><td>views assembled business aggregates</td><td>shared application read model</td></tr><tr><td>Tag editing</td><td>two commands could partially commit</td><td>atomic <code>RunTaggedMutation</code></td></tr><tr><td>GUI action state</td><td>views duplicated policy-shaped logic</td><td>domain action projectors</td></tr><tr><td>Native shutdown</td><td>store could close under accepted work</td><td>managed executor and gated dispatcher</td></tr></tbody></table>
+    <table class="matrix"><thead><tr><th>Pressure</th><th>Revealed mistake</th><th>Durable correction</th></tr></thead><tbody><tr><td>Persistent dashboard</td><td>views assembled business aggregates</td><td>shared application read model</td></tr><tr><td>Tag editing</td><td>two commands could partially commit</td><td>domain command + <code>TagsReplaced</code></td></tr><tr><td>GUI action state</td><td>views duplicated policy-shaped logic</td><td>domain action projectors</td></tr><tr><td>Native shutdown</td><td>store could close under accepted work</td><td>managed executor and gated dispatcher</td></tr></tbody></table>
   </section>
 
   <section>
@@ -3385,7 +3394,7 @@ output := run("tags", "list", ingredientID)
 testutil.ErrorIf(t, !strings.Contains(output, "origin=fyne"),
     "CLI did not observe Fyne tag after a fresh lifecycle:\n%s", output)</code></pre>
     <div class="callout">The assertion observes persisted state through another adapter after shutdown. It cannot pass merely because two presenters share a fixture.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/main/gui/cross_surface_test.go">Code: main/gui/cross_surface_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/cross_surface_test.go">Code: main/gui/cross_surface_test.go</a></p>
     <aside class="notes">Excerpt from TestCLIAndComposedDesktopShareIngredientInventoryAuditAndTagContracts; navigation and selection setup is omitted. This test explicitly refreshes the composed desktop. Automatic external-commit refresh has its own test in main/gui/desktop_test.go. Distinguish those proofs rather than claiming one test covers both.</aside>
   </section>
 
@@ -3416,13 +3425,13 @@ testutil.ErrorIf(t, !strings.Contains(output, "origin=fyne"),
     <div class="callout">Package shape follows the runtime’s interaction model. Shared application meaning sits below all three.</div>
   </section>
 
-  <section>
+  <section class="implementation-slide">
     <h2>Cross-cutting does not mean ownerless</h2>
-    <div class="flow"><div class="node"><strong>surface</strong>desired tags</div><div class="arrow">→</div><div class="node"><strong>RunTaggedMutation</strong>validate + compose</div><div class="arrow">→</div><div class="node"><strong>domain mutation</strong>owned behavior</div><div class="arrow">+</div><div class="node"><strong>Tags.Replace</strong>owned association</div></div>
-    <div class="transaction">domain result + complete tag set = one transaction</div>
-    <div class="cards"><div class="card"><h3>Application composition</h3><p>Participates in a caller transaction or opens one shared unit of work.</p></div><div class="card"><h3>Narrow contract</h3><p><code>TaggableEntity</code> exposes only <code>EntityUID</code> and <code>SetTags</code>.</p></div><div class="card"><h3>Bespoke interaction</h3><p>Each surface keeps parsing, confirmation, form state, and feedback native.</p></div></div>
-    <div class="callout">Invalid tags never start the mutation. A replacement failure rolls the domain change back with it.</div>
-    <p class="source"><a href="/projects/go-modular-monolith/">Adjacent project commentary: atomic tagged mutations</a></p>
+    <div class="flow"><div class="node"><strong>surface</strong>desired + expected tags</div><div class="arrow">→</div><div class="node"><strong>domain command</strong>optional tag.Edit</div><div class="arrow">→</div><div class="node"><strong>TagsReplaced</strong>owned domain event</div><div class="arrow">→</div><div class="node"><strong>Tagging</strong>leaf handler</div></div>
+    <div class="transaction">domain result + complete tag set + one activity = one transaction</div>
+    <div class="cards"><div class="card"><h3>Command ownership</h3><p>The consuming domain owns the operation and emits the fact.</p></div><div class="card"><h3>Narrow contract</h3><p><code>tag.Edit</code> carries desired and expected complete sets.</p></div><div class="card"><h3>Bespoke interaction</h3><p>Each surface keeps parsing, form state, and feedback native.</p></div></div>
+    <div class="callout">Invalid desired tags fail before the mutation. A later handler veto rolls back every effect.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/tag/edit.go">Code: app/kernel/tag/edit.go</a></p>
   </section>
 
   <section>
@@ -3431,25 +3440,23 @@ testutil.ErrorIf(t, !strings.Contains(output, "origin=fyne"),
     <div class="callout">Share meaning. Specialize interaction. Test equality at the application boundary.</div>
   </section>
   <section class="implementation-slide">
-    <h2>Test atomic composition by forcing the second step to fail</h2>
-    <pre><code class="language-text">TestRunTaggedMutationRollsBackDomainMutationWhenTagReplacementFails
+    <h2>Test one command by forcing its tag reaction to fail</h2>
+    <pre><code class="language-text">TestDomainCommandRollsBackOnStaleTagsAndRecordsOneFailure
 
-Fixture:
-  ingredient name = "Before"
-  audit count = N
+Fixture: ingredient name = "Before"; audit count = N
+Update request: name = "After"; expected tags = {stale}
 
-Mutation callback:
-  update the real ingredient to "After"
-  return a syntactically valid, nonexistent tag target
+Ingredients.Update:
+  validates desired tags; writes provisional ingredient
+  emits Ingredients.TagsReplaced
+Tagging Handling:
+  expected set differs from current tags → Conflict
 
-Tags.Replace:
-  fails to load that target
-
-Assertions after the outer call:
-  error != nil; ingredient name == "Before"; audit count == N</code></pre>
-    <div class="callout">Even the first command's success activity rolls back with the failed composition. The UI must not report a partially saved form.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/tagged_mutation_test.go">Code: app/tagged_mutation_test.go</a></p>
-    <aside class="notes">This is the actual adversarial test scenario, not a mocked rollback callback. The domain update runs through the real pipeline, then the returned target makes the normal tagging command fail. The fixture uses the same store and policy machinery as the application. Point from the test to CLI, TUI, and GUI call sites of RunTaggedMutation.</aside>
+After rollback:
+  result == nil; ingredient equals original; audit count == N + 1</code></pre>
+    <div class="callout">The surviving activity describes one failed command. No domain or tag write partially commits.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/tagged_mutation_test.go">Code: app/tagged_mutation_test.go</a></p>
+    <aside class="notes">The fixture uses the real store, policy, pipeline, and dispatcher. TestLateTagVetoRollsBackCompletionAndEveryReaction additionally checks order completion, stock consumption, and menu projections all roll back together. Point from these tests to native surface calls passing tag.Replace directly to the domain command.</aside>
   </section>
 
 
@@ -3468,7 +3475,7 @@ load := func(target *int, fn func() (int, error)) {
 }
 // Return data plus the first non-permission error.</code></pre>
     <div class="callout">The aggregate distinguishes unknown from zero and keeps successful values when another query fails.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/dashboard.go">Code: app/dashboard.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/dashboard.go">Code: app/dashboard.go</a></p>
     <aside class="notes">Selected code from app.Dashboard. Permission errors leave the target unknown without becoming the returned error. Domain counts may instead succeed with zero visible rows because their page stream elides denied resources. The dashboard reuses authorized domain queries; it is not a raw SQL overview. Unless the caller injects a shared transaction, its several queries are not promised to be one consistent database snapshot. A surface must render partial state deliberately.</aside>
   </section>
 </section>
@@ -3514,7 +3521,7 @@ dispatcher.Drain()
 testutil.ErrorIf(t, len(values) != 1 || values[0] != 2,
     "published values = %v, want [2]", values)</code></pre>
     <div class="callout">Both computations finish before UI publication. Only result 2 may become visible; no timing assumptions or sleeps are needed.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/gui/async_test.go">Code: pkg/toolkits/gui/async_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/gui/async_test.go">Code: pkg/toolkits/gui/async_test.go</a></p>
     <aside class="notes">Excerpt from TestLatestRequestChecksStalenessWhenUIPublicationRuns; the publish callback is summarized. Run go test -tags ci ./pkg/toolkits/gui -run TestLatestRequestChecksStalenessWhenUIPublicationRuns -v. Compare with the separate test that invalidates a request before its queued work starts.</aside>
   </section>
 
@@ -3533,7 +3540,7 @@ driver.Tap("save-drink")
 testutil.ErrorIf(t, entry.Text != "Gimlet" || !tapped,
     "entry=%q tapped=%v", entry.Text, tapped)</code></pre>
     <div class="callout">This verifies real widget wiring in Fyne's test app. Presenter tests alone would not catch a field or button bound to the wrong behavior.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/toolkits/gui/semantic_test.go">Code: pkg/toolkits/gui/semantic_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/gui/semantic_test.go">Code: pkg/toolkits/gui/semantic_test.go</a></p>
     <aside class="notes">Exact test body reflowed. The ci build tag selects the in-memory driver. This does not assert that pixels, focus styling, or assistive technology are correct. Follow it with the existing disabled-control and shortcut tests, then select a screenshot for visual review.</aside>
   </section>
 
@@ -3588,7 +3595,7 @@ if authorize != nil {
 }
 // Only now evaluate Conditions in declaration order.</code></pre>
     <div class="callout">A denial returns hidden state immediately. An evaluation failure returns an error, and prerequisites are not evaluated in either case.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
     <aside class="notes">Exact beginning of evaluateControl. This ordering both avoids unnecessary work and prevents a denied actor from learning a disabled reason. The outer evaluator wraps unexpected failures with control ID and condition index, which is the real call chain used in chapter 1.3.</aside>
   </section>
 
@@ -3605,7 +3612,7 @@ if authorize != nil {
 // A condition returning a dependency error instead produces:
 // states == nil, err != nil</code></pre>
     <div class="callout">Permission denial, an unmet prerequisite, and evaluation failure are three different results. Only the first two become ordinary control state.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/presentation/actions/actions.go">Code: pkg/presentation/actions/actions.go</a></p>
     <aside class="notes">Illustrative JSON using the actual State tags; the reason text is supplied by the condition, not a universal repository constant. PresentError handles operational failure separately. Then compare these values with Menus' domain projector and each surface's transient Busy or form state. The command still rechecks authority and prerequisites on submission.</aside>
   </section>
 

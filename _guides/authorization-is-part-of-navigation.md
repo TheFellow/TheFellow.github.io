@@ -1,7 +1,7 @@
 ---
 title: "Authorization Is Part of Navigation"
 date: 2026-08-01
-last_modified_at: 2026-08-06 12:00:00 -0700
+last_modified_at: 2026-09-13
 excerpt: "How Mixology carries Cedar authorization through workspace discovery, dashboard summaries, row filtering, and action availability without turning the interface into a second policy engine."
 permalink: /articles/authorization-is-part-of-navigation/
 redirect_from: /guides/authorization-is-part-of-navigation/
@@ -98,6 +98,8 @@ Each Mixology domain exposes an `ActionProjector` beside its public module and s
 Menus demonstrates why separating permission from availability matters. Edit supplies the broad permission default, while Publish uses its own Cedar action instead of accidentally inheriting Edit. A draft that is authorized for publication but not yet publishable keeps Publish visible and records the missing prerequisite. The GUI maps that state into visible and enabled controls; the TUI maps it into key availability, help, and explanatory detail text. Both consume the same domain projection without sharing widget code.
 
 Tagging makes domain ownership especially important. It can inspect or mutate targets owned by several other domains, but it does not guess their Cedar action names. Its projector resolves the target type through Tagging's registry and uses the owning domain's registered Get, Tag, and Untag actions against the complete target entity.
+
+Combined entity/tag edits carry the owning domain's Tag and Untag actions in its `TagsReplaced` event. Tagging checks the desired set and expected current set during `Handling`, then authorizes the relevant actions against both before and after tags. Only `Handle` persists the associations. A tag permission veto therefore rolls back the domain command and all its leaf effects, even when the interface had enabled Save. The [replacement handler](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/handlers/replacement.go) keeps that enforcement inside the transaction.
 
 The declaration contains only durable facts that should agree across surfaces. Dirty input, a confirmation dialog, focus, paging, filtering, and an in-flight request remain in the concrete adapter. This keeps the common model small: domains own the meaning of an action, the evaluator owns permission and condition semantics, and each runtime owns its interaction state.
 

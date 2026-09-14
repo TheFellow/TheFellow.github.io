@@ -167,7 +167,7 @@ I use a simple placement test:
 
 The table keeps a parity project from becoming an excuse to centralize everything. A behavior can be important in all clients while still requiring three implementations.
 
-The parity audit is a checkpoint, not a permanent claim about every future feature. The current Go application adds amendment and retained-stock lifecycle commands through the CLI, while GUI/TUI expose their historical results and guarded editing. Adding dedicated forms is a separate adapter task. The [onboarding deck](/talks/building-mixology.md) describes the current coverage.
+The parity audit is a checkpoint, not a permanent claim about every future feature. The [current surface alignment](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/surface-parity.md) covers native CLI, GUI, and TUI interactions for substitution rules, single and batch amendments, initial stock receipt, quarantine, release, disposal, and movement history. A selected batch enters one `Orders.AmendBatch` command with one transaction and audit activity. `Ingredients.Retire` remains a separate command, so a failed retirement preserves an approved batch. Combined entity/tag editors submit an optional `tag.Edit` to the consuming domain command; Tagging handles its event as a leaf. The [onboarding deck](/talks/building-mixology.md) describes the current coverage.
 
 ## A repeatable third-surface audit
 

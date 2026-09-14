@@ -6,9 +6,9 @@ Source: [https://thefellow.github.io/articles/growing-a-reciprocal-domain-workfl
 
 ## Pyramid summary
 
-- **~2 words:** Reciprocal workflow
-- **~8 words:** Procurement and Inventory expose the boundary between reactions and workflows.
-- **Expanded:** A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between transactional handlers and explicit workflows.
+- **~2 words:** Reciprocal domains
+- **~8 words:** Procurement and Inventory collaborate through commands and leaf reactions.
+- **Expanded:** A planned vertical-slice workshop that adds Procurement to Mixology, connects it reciprocally with Inventory, and finds the boundary between domain-owned transactional commands and processes spanning commits.
 
 ## Full content
 
@@ -18,9 +18,9 @@ The next Mixology workshop will add Procurement as a complete vertical slice. It
 
 That reciprocal relationship is the important part. Low stock in Inventory can create purchasing work, while receiving a purchase order in Procurement can replenish Inventory. Neither domain is simply upstream of the other. Their relationship forms a cycle in the business graph even though the package dependency graph must remain controlled.
 
-Orders and Inventory already demonstrate reciprocal consistency in the current repository: placement reserves stock, stock changes block orders, and cancellation or amendment release reconciles affected peers. `App.AmendOrders` and `App.RetireIngredient` also provide explicit same-transaction compositions through `middleware.RunWorkflow`. Procurement remains the proposed extension for work that spans time and commits, not the first example of reciprocal reactions.
+Orders and Inventory already demonstrate reciprocal consistency in the current repository: placement reserves stock, stock changes block orders, and cancellation or amendment release reconciles affected peers. `Orders.AmendBatch` owns a selected batch as one command, emitting `OrdersAmended` for Inventory, Orders, and Menus to prepare and persist their leaf reactions. `Ingredients.Retire` is a separate command with a separate commit; if retirement fails, an approved amendment batch remains committed. Procurement remains the proposed extension for work that spans time and commits, not the first example of reciprocal reactions.
 
-This guide records the intended workshop before the feature is implemented. It gives the future implementation a sequence, a set of ownership decisions, and concrete checkpoints. It also leaves room for the code to teach us where Mixology's current transactional dispatcher is sufficient and where a longer-running workflow deserves a different abstraction.
+This guide records the intended workshop before the feature is implemented. It gives the future implementation a sequence, a set of ownership decisions, and concrete checkpoints. It also leaves room for the code to teach us where Mixology's current transactional dispatcher is sufficient and where Procurement must retain progress across separate decisions and commits.
 
 The workshop builds on [Turning Cross-Domain Calls into Enforced Boundaries](/articles/turning-cross-domain-calls-into-enforced-boundaries.md). That guide derives one-way reactions from an ingredient deletion. This one asks what changes when two stateful domains continually affect one another.
 
@@ -175,7 +175,7 @@ A cross-domain integration test can create ingredients, stock, suppliers, offeri
 
 ## Stop handlers from becoming hidden workflows
 
-Mixology's handler context cannot add events. A handler is a leaf reaction inside the current transaction. That constraint keeps dispatch finite and makes rollback understandable.
+Mixology's handler context cannot add events, and middleware rejects commands invoked from commands, queries, or handlers, including reconstructed contexts. A SQL transaction can be claimed by only one command, so sequential commands cannot share a caller-owned transaction either. A handler is a leaf reaction inside its originating command's transaction. Those constraints keep dispatch finite and make rollback understandable.
 
 The low-stock path immediately tests this rule. A tempting handler might do all of the following:
 
@@ -187,32 +187,32 @@ InventoryBecameLow
   -> notify another domain
 ```
 
-The current dispatcher deliberately prevents that chain. The first implementation should respect the constraint. The Procurement handler can record replenishment demand as a leaf mutation. A user or explicit application operation can later turn selected demand into a draft purchase order and submit it.
+The current dispatcher deliberately prevents that chain. The first implementation should respect the constraint. The Procurement handler can record replenishment demand as a leaf mutation. A later Procurement command can turn selected demand into a draft purchase order. Submission can be another command and commit, or a single domain-owned command can express the business decision to create and submit together. It must persist its own state and publish facts for leaf reactions rather than call those two commands from a callback loop.
 
 That separation is useful teaching material. An event reaction and a business workflow answer different questions:
 
 - A transactional handler applies an immediate consequence that must commit or roll back with its source operation.
-- An application operation coordinates an explicit decision initiated at a boundary.
-- A process manager advances a multi-step workflow over time, remembers progress, handles retries, and responds to facts from several domains.
+- A domain-owned command carries one explicit decision through its own writes, leaf reactions, and audit activity in one transaction.
+- Durable domain state records progress between decisions, such as an approved purchase awaiting receipt, without holding a transaction open.
 
 The workshop should not remove the no-cascading rule merely to make the example flow automatically. It should let the friction identify the point where a new abstraction earns its place.
 
-## Know when a process manager is warranted
+## Preserve progress between domain decisions
 
-Automatic purchasing may eventually be a real requirement. For example, a policy could collect low-stock demand, select approved suppliers, group lines by supplier, request authorization above a spending threshold, submit purchase orders, wait for partial deliveries, and escalate overdue quantities.
+Purchasing spans time. An approved purchase may wait for a supplier, receive only part of its quantity, and remain open until the rest arrives. Procurement should preserve that progress in its own models rather than widening a transaction across the entire business loop.
 
-That work is longer-lived than one database transaction. It may pause for a person or an external supplier, and later facts may arrive in a different order. A process manager becomes appropriate when the application must remember that progress explicitly.
-
-Its state might record:
+Its persisted state might record:
 
 - replenishment demand already incorporated;
 - selected offerings and the policy that selected them;
-- approval state;
-- purchase-order IDs created by the workflow;
+- approval state and agreed quantities;
+- purchase-order and receipt identities;
 - received and outstanding quantities;
-- deadlines, failures, and retry state.
+- deadlines and unresolved exceptions.
 
-The process manager owns coordination, not supplier, purchase-order, or stock invariants. It invokes public application operations and responds to public facts. Its persisted state makes the workflow inspectable instead of hiding it in a chain of handlers.
+Approval now and receipt later are separate explicit Procurement commands. Each validates its own transition, publishes facts, and commits its leaf reactions with one audit activity. A rejected receipt leaves the earlier approval intact. Inventory applies the stock consequence of a receipt as a leaf reaction; Procurement does not invoke an Inventory command.
+
+The workshop should test those durable states and failure boundaries directly. A future process manager or saga would require a separate business requirement and design review. It is not part of this planned slice or a replacement for consuming-domain command ownership.
 
 ## Add an outbox when the transaction boundary changes
 
@@ -262,9 +262,9 @@ The completed workshop should leave a learner with more than a new menu entry. I
 2. Replace record updates with explicit entity transitions.
 3. Assign cross-domain facts to the domain that can truthfully announce them.
 4. React in the interested domain without importing its collaborator's private implementation.
-5. Use a shared transaction when consequences require immediate consistency.
+5. Give one domain command and its leaf reactions a shared transaction when consequences require immediate consistency.
 6. Preserve history through snapshots and audit records.
 7. Recognize when a leaf handler is being asked to become a workflow.
-8. Introduce a process manager or outbox only when time, retries, or external boundaries require one.
+8. Preserve progress in domain-owned state across commits; introduce an outbox when external delivery requires it.
 
-Procurement is useful because it begins as a familiar vertical slice and ends by challenging the architecture. Its reciprocal relationship with Inventory makes the dispatcher and audit pipeline visible, while the no-cascading constraint forces coordination to remain explicit. The result should be both a working feature and a guided way to reason about consistency in a modular monolith.
+Procurement is useful because it begins as a familiar vertical slice and ends by challenging the architecture. Its reciprocal relationship with Inventory makes the dispatcher and audit pipeline visible, while command ownership and the no-cascading constraint keep every transactional consequence explicit. The result should be both a working feature and a guided way to reason about consistency in a modular monolith.

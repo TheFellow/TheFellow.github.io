@@ -10,7 +10,7 @@ import math
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets/diagrams/explicit-architecture'
-SHA = 'a7c2efda8c0cd905089a27060242ff841bb0ad41'
+SHA = '0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c'
 CODE = f'https://github.com/TheFellow/go-modular-monolith/blob/{SHA}/'
 SITE = 'https://thefellow.github.io/'
 # Match the site's Minimal Mistakes neon skin, retaining semantic color groups.
@@ -49,7 +49,7 @@ class SVG:
         color=C['gold'] if flow else C['blue']; marker='flow' if flow else 'arrow'
         self.parts.append(f'<path d="M{x1},{y1} L{x2},{y2}" fill="none" stroke="{color}" stroke-width="2.5"'+(' stroke-dasharray="7 5"' if flow else '')+f' marker-end="url(#{marker})"/>')
     def footer(self):
-        self.text(40,self.h-37,'Ryan Harris · thefellow.github.io · 2026-09-12 · Go baseline a7c2efd',15,cls='muted')
+        self.text(40,self.h-37,'Ryan Harris · thefellow.github.io · 2026-09-13 · Go baseline 0d5e64b',15,cls='muted')
         self.text(40,self.h-14,'Original diagram; progressive approach inspired by Herberto Graça’s Explicit Architecture. Open SVG directly to follow source links.',14,cls='muted')
     def save(self,name):
         self.footer(); self.parts.append('</svg>'); (OUT/name).write_text('\n'.join(self.parts)+'\n')
@@ -93,7 +93,7 @@ def domain_slice():
 def transaction():
     s=SVG(1500,850,'03','One command, one local commit','Dashed numbered arrows describe execution. The preparation barrier applies separately to each event.')
     s.rect(35,175,1430,410,C['sand'],stroke=C['gold'])
-    s.text(55,208,'COMMAND UNIT OF WORK / JOIN EXISTING TRANSACTION OR OWN COMMIT',17,bold=True)
+    s.text(55,208,'ONE DOMAIN COMMAND CLAIMS THE SQL TRANSACTION',17,bold=True)
     steps=[('1 · Load + authorize',['Trusted current input','Policy inside transaction'],'pkg/middleware/run.go'),('2 · Decide + authorize',['Mutate source state','Authorize resulting resource'],'pkg/middleware/run.go'),('3 · Dispatch events',['Prepare, then apply','All interested owners'],'pkg/dispatcher/dispatcher_gen.go'),('4 · Audit + commit',['Record successful activity','Commit all domain writes'],'pkg/middleware/chains.go')]
     for i,(title,lines,path) in enumerate(steps):
         x=55+i*355
@@ -104,8 +104,8 @@ def transaction():
     s.card(485,402,410,140,'Prepare every applicable receiver',['Calculate from pre-reaction state','Menus projects stock + recipe changes'],C['ice'],CODE+'app/domains/menus/handlers/prepared.go',size=17)
     s.arrow(895,468,940,468,True)
     s.card(940,402,505,140,'Apply leaf reactions in the same transaction',['Drinks · Inventory · Menus · Orders','HandlerContext has no AddEvent'],C['lav'],CODE+'pkg/middleware/context.go',size=17)
-    s.card(40,620,685,140,'Failure when this operation owns the transaction',['Roll back domain changes and success activities.','Record the failed attempt separately after rollback.','Workflow owner correlates attempted effects across child commands.'],C['panel'],CODE+'pkg/middleware/workflow.go',size=17)
-    s.card(755,620,705,140,'Ownership and cost',['Caller-supplied transaction → caller owns completion and failure audit.','One slow or failing reaction affects the originating command.','Per-event preparation is a protocol tested with handler permutations.'],C['panel'],CODE+'app/cross_domain_regression_test.go',size=17)
+    s.card(40,620,685,140,'Failure when this operation owns the transaction',['Roll back domain changes and the success activity.','Record the failed attempt separately after rollback.','One command activity includes every leaf effect.'],C['panel'],CODE+'pkg/middleware/uow.go',size=17)
+    s.card(755,620,705,140,'Ownership and cost',['An external transaction admits one command; its caller completes it.','One slow or failing reaction affects the originating command.','Per-event preparation is a protocol tested with handler permutations.'],C['panel'],CODE+'app/cross_domain_regression_test.go',size=17)
     s.save('03-transaction.svg')
 
 
@@ -135,7 +135,7 @@ def complete():
     # Main map: seven conceptual slices, with a common operation boundary.
     cx,cy=1000,585
     s.parts.append(f'<circle cx="{cx}" cy="{cy}" r="410" fill="{C["ice"]}" stroke="{C["blue"]}" stroke-width="3"/>')
-    domains=[('Ingredients',['Catalog · substitutions','Retirement and replacement'],'ingredients'),('Drinks',['Recipes · preparation','Active / review required'],'drinks'),('Inventory',['Stock · reservations','Disposition · movements'],'inventory'),('Menus',['Curation · publication','Readiness · availability'],'menus'),('Orders',['Acceptance · current plan','Amendments · lifecycle'],'orders'),('Audit',['Append-only activities','Touches · participants · effects'],'audit'),('Tagging',['Associations · target registry','Domain-owned action resolution'],'tagging')]
+    domains=[('Ingredients',['Catalog · substitutions','Retirement and replacement'],'ingredients'),('Drinks',['Recipes · preparation','Active / review required'],'drinks'),('Inventory',['Stock · reservations','Disposition · movements'],'inventory'),('Menus',['Curation · publication','Readiness · availability'],'menus'),('Orders',['Acceptance · current plan','Amendments · lifecycle'],'orders'),('Audit',['Append-only activities','Touches · participants · effects'],'audit'),('Tagging',['Associations · target registry','Prepared tag event reactions'],'tagging')]
     for i,(title,lines,path) in enumerate(domains):
         a=-90-360/14+i*360/7;b=a+360/7
         s.link(CODE+f'app/domains/{path}/module.go')
@@ -160,7 +160,7 @@ def complete():
     s.arrow(1405,480,1535,480);s.text(1430,451,'uses policy',16,cls='muted');s.text(1430,471,'contracts',16,cls='muted')
     s.text(515,1043,'Circle = responsibility map, not a literal import graph. Public contracts remain coupled to their named owners.',18,cls='muted')
     # Fine-grained slice vocabulary.
-    s.card(40,1060,1920,130,'WITHIN A REGULAR CONTEXT / OWNERSHIP AND VISIBILITY',['surfaces → public facade → typed pipeline → internal/commands + internal/dao; queries and handlers may use their own DAO.','models / queries / events are public collaboration seams. authz belongs to its domain. Audit and Tagging have explicit smaller profiles.','Peer reads use supported query contracts. Commands publish only their own events. Handlers cannot import facades or commands.'],C['ice'],CODE+'.arch-lint.yaml',size=19)
+    s.card(40,1060,1920,130,'WITHIN A REGULAR CONTEXT / OWNERSHIP AND VISIBILITY',['surfaces → public facade → typed pipeline → internal/commands + internal/dao; queries and handlers may use their own DAO.','models / queries / events are public contracts. Tagging reacts through handlers and owns association writes in internal/dao.','Peer reads use supported query contracts. Commands publish only their own events. Handlers cannot import facades or commands.'],C['ice'],CODE+'.arch-lint.yaml',size=19)
     # Transaction timeline, all constraints inside one box.
     s.rect(40,1220,1920,256,C['sand'],stroke=C['gold'])
     s.text(60,1254,'EXECUTION / ONE LOCAL TRANSACTION / NUMBERED DASHED ARROWS',18,bold=True)
@@ -170,7 +170,7 @@ def complete():
         s.card(x,1275,350,115,title,lines,C['panel'],CODE+('pkg/dispatcher/dispatcher_gen.go' if i==2 else 'pkg/middleware/run.go'),size=17)
         if i<4:s.arrow(x+350,1332,x+379,1332,True)
     s.text(60,1420,'Retirement: IngredientDeleted → Drinks / Inventory / Menus / Orders. Preparation is per event; HandlerContext cannot AddEvent.',19,bold=True)
-    s.text(60,1452,'Failure: owner rolls back, then records failed attempt. RunWorkflow correlates children; an external transaction retains caller ownership.',18,cls='muted')
+    s.text(60,1452,'Failure: owner rolls back, then records failed attempt. One command claims each transaction; nested and sequential command composition is rejected.',18,cls='muted')
     # Foundation taxonomy and observation.
     s.card(40,1510,610,240,'SHARED VALUES + NARROW PORTS',['app/kernel: typed entity IDs, money,','measurement, quality, tags, tag.Repository.','Common identity and unit semantics.','Tagging owns associations; registered','domain loaders preserve target ownership.','Kernel does not depend on domains.'],C['green'],CODE+'app/kernel/readme.md',size=18)
     s.card(680,1510,640,240,'MECHANISMS + EXPLICIT WIRING',['middleware: transactions, activity, dispatch.','app.New injects dispatcher + audit writer.','pkg/dispatcher imports domain receivers.','pkg/authz assembles domain policy material.','Generators: events, policies, IDs, errors.','pkg is not uniformly domain-independent.'],C['lav'],CODE+'app/app.go',size=18)

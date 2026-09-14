@@ -7,7 +7,7 @@ source_repo=${1:?Pass the local go-modular-monolith repository}
 output=${2:-"$site/assets/images/mixology"}
 mkdir -p "$output"
 output=$(cd "$output" && pwd)
-revision=635c59b4101bdc614beb973cef83e8c2073a9787
+revision=0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c
 scratch=$(mktemp -d "${TMPDIR:-/tmp}/mixology-capture.XXXXXX")
 trap 'rm -rf "$scratch"' EXIT
 mkdir -p "$scratch/source" "$scratch/frames"

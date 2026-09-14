@@ -200,7 +200,7 @@ class Poster:
         self.link('pkg/middleware/context.go')
         self.path('M1004 1511 H1504', LINE, 1)
         self.text(1004, 1548, 'Handlers are leaves.', 27, GOLD, 500, cls='serif')
-        self.lines(1004, 1580, ['HandlerContext has no AddEvent.', 'Queries and handlers cannot call commands.'], 20, MUTED, 29)
+        self.lines(1004, 1580, ['HandlerContext has no AddEvent.', 'Nested commands are rejected.'], 20, MUTED, 29)
         self.endlink()
         self.arrow('M1004 1640 H1040')
         self.text(1051, 1646, 'Contract use', 16, MUTED)
@@ -208,9 +208,9 @@ class Poster:
         self.text(1297, 1646, 'Execution', 16, MUTED)
         self.text(72, 1674, 'Public coupling is deliberate. Go internal + arch-lint protect the implementation boundary.', 23, MUTED)
 
-        self.section(1743, '03', 'THE JOURNEY OF A CHANGE', 'One operation. One local commit.', GOLD)
+        self.section(1743, '03', 'THE JOURNEY OF A CHANGE', 'One domain command. One local commit.', GOLD)
         self.rect(72, 1815, 1456, 382, 'url(#transaction)', '#76603e', 18)
-        self.text(96, 1851, 'COMMAND + REACTIONS + SUCCESS AUDIT SHARE A SQLITE TRANSACTION', 17, GOLD, 700, extra='letter-spacing="1"')
+        self.text(96, 1851, 'ONE COMMAND + LEAF REACTIONS + ONE ACTIVITY SHARE A SQLITE TRANSACTION', 17, GOLD, 700, extra='letter-spacing="1"')
         steps = [('Load', 'Authorize input'), ('Decide', 'Authorize result'), ('React', 'Prepare, then apply'), ('Record', 'Success audit'), ('Commit', 'All writes together')]
         for i, (title, subtitle) in enumerate(steps):
             x = 135 + i * 283
@@ -247,7 +247,7 @@ class Poster:
         self.path('M72 2410 H1528', LINE, 1)
         self.text(72, 2446, 'Clean · Explicit · DDD · Fubu · Screaming Architecture → expressed through Go', 19, MUTED)
         self.text(72, 2481, 'Ryan Harris  /  thefellow.github.io  /  2026-09-13', 16, FAINT)
-        self.text(1528, 2481, 'MIXOLOGY  ·  a7c2efd  ·  MAP 01', 16, FAINT, anchor='end', extra='letter-spacing="1"')
+        self.text(1528, 2481, 'MIXOLOGY  ·  0d5e64b  ·  MAP 01', 16, FAINT, anchor='end', extra='letter-spacing="1"')
 
     def save(self, name='06-explicit-modules'):
         self.parts.append('</svg>')

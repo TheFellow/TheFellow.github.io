@@ -1,7 +1,7 @@
 ---
 title: "Building an Application TUI Toolkit"
 date: 2026-07-28 12:13:21 -0700
-last_modified_at: 2026-09-06
+last_modified_at: 2026-09-13
 excerpt: "How Mixology combines proven MVVM ideas with Bubble Tea's message loop to create a consistent, testable terminal application without inventing another framework."
 permalink: /articles/building-an-application-tui-toolkit/
 redirect_from: /guides/building-an-application-tui-toolkit/
@@ -41,7 +41,7 @@ Together, these influences give Mixology both an application structure and a run
 
 ## The shell owns the application
 
-The [`App` root model](https://github.com/TheFellow/go-modular-monolith/blob/main/main/tui/app.go) is the terminal equivalent of an application shell. It owns the current route, back stack, cached view models, outer title and status bars, global help, terminal dimensions, and application-wide keys. It also constructs each domain surface explicitly.
+The [`App` root model](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/tui/app.go) is the terminal equivalent of an application shell. It owns the current route, back stack, cached view models, outer title and status bars, global help, terminal dimensions, and application-wide keys. It also constructs each domain surface explicitly.
 
 That ownership answers questions that otherwise leak into every screen:
 
@@ -57,7 +57,7 @@ The shell also keeps the application session in one place. Domain surfaces recei
 
 ## A small view-model contract
 
-Every top-level domain surface implements the repository-owned [`tui.ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/view.go). It does not implement `tea.Model` directly:
+Every top-level domain surface implements the repository-owned [`tui.ViewModel` interface](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/tui/view.go). It does not implement `tea.Model` directly:
 
 ```go
 type ViewModel interface {
@@ -85,7 +85,7 @@ This tiny protocol does work that desktop frameworks often hide in focus systems
 
 ## Domain surfaces remain domain-owned
 
-Top-level domain view models live below [`app/domains/*/surfaces/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains). Drinks knows how to create a recipe, Menus knows what publishing means, and Orders knows whether completion or cancellation is available. Those decisions do not belong in `pkg/toolkits/tui` simply because they happen to be triggered by a key.
+Top-level domain view models live below [`app/domains/*/surfaces/tui`](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains). Drinks knows how to create a recipe, Menus knows what publishing means, and Orders knows whether completion or cancellation is available. Those decisions do not belong in `pkg/toolkits/tui` simply because they happen to be triggered by a key.
 
 A typical list view model combines four kinds of state:
 
@@ -104,7 +104,7 @@ The package boundary is equally important. Surfaces call exported domain modules
 
 CODE Framework's standard views are not copied as a catalog of WPF templates. Their underlying lesson is retained: when several business screens share presentation mechanics, give those mechanics one tested implementation and let each domain supply the meaning.
 
-[`pkg/toolkits/tui.ListDetail`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/list_detail.go) is the clearest example. It owns:
+[`pkg/toolkits/tui.ListDetail`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/tui/list_detail.go) is the clearest example. It owns:
 
 - Bubbles list configuration, filtering, pagination, and selection.
 - Loading and spinner state.
@@ -114,7 +114,7 @@ CODE Framework's standard views are not copied as a catalog of WPF templates. Th
 
 It deliberately does not load drinks, decide whether a menu can be published, format an order, or choose what happens after deletion. Its caller retains the command, typed selection, detail renderer, and workflow state.
 
-[`ListItem[T]`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/item.go) completes the adapter. It keeps the real typed domain value while supplying the title, description, and filter text Bubbles expects. A caller does not surrender type safety merely to enter a general list.
+[`ListItem[T]`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/tui/item.go) completes the adapter. It keeps the real typed domain value while supplying the title, description, and filter text Bubbles expects. A caller does not surrender type safety merely to enter a general list.
 
 That division gives Mixology a standard list/detail language without creating a giant base view model:
 
@@ -131,7 +131,7 @@ The abstraction is intentionally opinionated. `ListDetail` implements Mixology's
 
 ## Small controls, explicit dependencies
 
-The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/toolkits/tui) forms the lower-level toolkit:
+The rest of [`pkg/toolkits/tui`](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/tui) forms the lower-level toolkit:
 
 - `forms` manages field selection, explicit edit mode, validation, dirty and submitted state, sizing, and text, number, and select fields.
 - `dialog` implements confirmation and cancellation as messages rather than domain callbacks.
@@ -144,7 +144,7 @@ Forms use one interaction grammar across the application. Up and Down, with `k` 
 
 This distinction keeps navigation visible in the state machine. A selected field is not implicitly editing merely because it has terminal focus, and Escape can cancel a value before the surrounding workflow interprets it as Back.
 
-The toolkit supplies only generic shell, list, form, and dialog bindings. Each domain adapter owns bindings for its own workflows, such as publishing a menu, adjusting inventory, completing an order, or managing tags. Dashboard destinations and navigation messages similarly live under [`main/tui`](https://github.com/TheFellow/go-modular-monolith/tree/main/main/tui), because another application cannot reuse them.
+The toolkit supplies only generic shell, list, form, and dialog bindings. Each domain adapter owns bindings for its own workflows, such as publishing a menu, adjusting inventory, completing an order, or managing tags. Dashboard destinations and navigation messages similarly live under [`main/tui`](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/tui), because another application cannot reuse them.
 
 This distinction separates three kinds of ownership. `pkg/toolkits/tui` contains contracts and mechanics that another Bubble Tea application could sensibly reuse. `main/tui` owns Mixology routes and is the leaf composition root. Domain surfaces add behavior, labels, and vocabulary that only their bounded context understands. There is no shared TUI package under `app`, so CLI, TUI, and GUI retain the same domain-adapter architecture.
 
@@ -184,7 +184,7 @@ This narrow shared state does not turn the GUI and TUI into one presentation mod
 
 ## The tag editor shows composition at work
 
-The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/toolkits/tui/components/tag_editor.go) is reusable without knowing Mixology's session, Cedar identity, or tag representation. Its type parameters and injected parse and replacement functions preserve typed results while domain adapters supply application behavior. Underneath, it composes the generic form toolkit.
+The [`TagEditor`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/tui/components/tag_editor.go) is reusable without knowing Mixology's session, Cedar identity, or tag representation. Its type parameters and injected parse and replacement functions preserve typed results while domain adapters supply application behavior. Underneath, it composes the generic form toolkit.
 
 The editor prefills one text field with the canonical complete tag set, validates the collection locally, disables input while saving, invokes its injected replacement function, and returns a `TagsSavedMsg`. Mixology supplies `Session.TagReplacer`, which captures the original tag set and passes it to public `Tags.Replace` for a stale-editor check. A concurrent tag change therefore conflicts instead of disappearing under a full replacement. The toolkit knows neither that policy nor the domain's persistence. It does not mutate its parent view model directly; the parent decides how the successful update affects its typed list and detail.
 
@@ -224,11 +224,11 @@ At the component level, tests send messages directly to forms, dialogs, list/det
 
 At the view-model level, domain tests construct the production application fixture, drive modes and messages, execute returned commands, and inspect both rendered state and persisted behavior. Typed messages make success, failure, and stale results straightforward to express.
 
-[`pkg/testutil/tuitest`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/testutil/tuitest) drives a real Bubble Tea program when routing and ordering matter. Rendering after each message and command catches assumptions that a direct `Update` call could hide. Root tests cover navigation, help, terminal resizing, and input ownership through the shell rather than bypassing it.
+[`pkg/testutil/tuitest`](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/testutil/tuitest) drives a real Bubble Tea program when routing and ordering matter. Rendering after each message and command catches assumptions that a direct `Update` call could hide. Root tests cover navigation, help, terminal resizing, and input ownership through the shell rather than bypassing it.
 
 Rendered text has structure of its own. A table row can fit as plain text and still overflow after cell padding and selection styles are applied; truncating the styled result can expose fragments of an ANSI color sequence instead of readable content. The driver therefore removes valid escape sequences and rejects any malformed styling fragments left behind on every rendered frame. A root test visits every top-level view at minimum and expanded terminal sizes, while focused table tests exercise each result shape across several widths. Width accounting and terminal control data become tested presentation contracts rather than visual details left to manual inspection.
 
-Finally, [cross-surface tag tests](https://github.com/TheFellow/go-modular-monolith/blob/main/main/cli/tags_test.go) perform a mutation through the CLI and observe it through the root TUI, then reverse the direction. The assertion is not that two screens happen to print similar text. It is that both adapters reach the same application behavior and persisted state.
+Finally, [cross-surface tag tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/tags_test.go) perform a mutation through the CLI and observe it through the root TUI, then reverse the direction. The assertion is not that two screens happen to print similar text. It is that both adapters reach the same application behavior and persisted state.
 
 A practical testing ladder is therefore:
 
@@ -241,9 +241,11 @@ A practical testing ladder is therefore:
 
 Go's `internal` directory rule is useful but not sufficient for this layering. The [`go` command documentation](https://pkg.go.dev/cmd/go#hdr-Internal_Directories) says that code beneath an `internal` directory may be imported by code in the tree rooted at its parent. Consequently, `app/domains/drinks/surfaces/tui` may legally import `app/domains/drinks/internal/dao`: both are inside the `drinks` tree. The compiler prevents another domain or `main/tui` from doing so, but it does not know that a same-domain surface should use the public API.
 
-Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) adds the architectural rules Go cannot infer. One specification prevents reusable presentation toolkits below `pkg/toolkits/*` from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
+Mixology's [arch-lint configuration](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml) adds the architectural rules Go cannot infer. One specification prevents reusable presentation toolkits below `pkg/toolkits/*` from importing `app/**` or `main/**`. Another captures the domain owning an imported `internal` package and exempts only that domain's facade, queries, handlers, and other internal implementation packages. A TUI, GUI, CLI, model, event, authz package, or future public layer therefore cannot reach into the implementation even though Go permits the same-domain import.
 
 Every domain surface is also forbidden from importing `main/**`. Shared, application-independent presentation contracts therefore live under `pkg/toolkits/tui`, while Mixology routes stay in the `main/tui` leaf. Separate ownership rules keep another domain's `authz` package private and allow a command implementation to import only its own domain's events. Public models, queries, and events remain deliberate cross-domain contracts.
+
+The command boundary also applies below presentation. Handlers and queries cannot import command implementations, and handlers and commands cannot import domain modules. At runtime, one command claims each transaction; nested command entry and a second command reusing that transaction are rejected. A combined entity/tag form submits `tag.Replace(desired, expected)` to the consuming domain command, whose event lets Tagging validate and persist its own associations as a leaf.
 
 The toolkit boundary is symmetric as well. One captured rule prevents a presentation toolkit from importing a sibling toolkit. Another captures the presentation name in `app/domains/*/surfaces/*` and permits that surface to use only the toolkit with the same name. The TUI can import `pkg/toolkits/tui`, but not the CLI or GUI toolkit; the same statement holds for every current and future matching surface and toolkit pair without adding another named rule.
 

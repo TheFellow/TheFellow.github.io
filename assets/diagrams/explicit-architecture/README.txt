@@ -1,9 +1,10 @@
 Explicit Architecture, with a Go Accent
 Original diagrams by Ryan Harris, September 12, 2026.
 Explicit Modules infographic added September 13, 2026.
+All sheets updated for domain-owned commands on September 13, 2026.
 
 Article: https://thefellow.github.io/articles/explicit-architecture-with-a-go-accent/
-Source baseline: https://github.com/TheFellow/go-modular-monolith/tree/a7c2efda8c0cd905089a27060242ff841bb0ad41
+Source baseline: https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c
 
 01-boundaries.svg: three adapters and the common application boundary.
 02-domain-slice.svg: public contracts, private writes, and checked visibility.
@@ -27,11 +28,14 @@ contracts. Purple arrows therefore point opposite runtime event delivery.
 Node colors distinguish public entry/read packages (blue), private implementation
 (amber), values/contracts/policy (green), and event receivers (purple).
 
-Sheet 07 includes all 23 local import edges after surface grouping; an edge from
+Sheet 07 includes all 24 local import edges after surface grouping; an edge from
 the surface group means one or more of its packages has that import. Sheet 08
 includes all 9 cross-context query-owner edges from non-surface production code
-and all 11 foreign-event imports from domain handlers. Public model imports,
+and all 16 foreign-event imports from domain handlers. Public model imports,
 external/shared packages, and most composition details are outside those graphs.
+The event graph includes Tagging handlers importing five consuming domains'
+TagsReplaced contracts. Each SQL transaction admits one domain-owned command,
+with one activity containing all leaf effects.
 Its lower panel gives selected actual imports for Tagging, Audit and native
 composition. The generator can verify the upper graphs against the pinned Go
 source using git archive, without building the application.
@@ -86,9 +90,8 @@ The infographic embeds its palette and uses local Georgia/Times New Roman and
 Arial/Helvetica font stacks. PNG and PDF freeze the exported appearance; SVG
 retains editable text and uses the reader's available fonts.
 
-Export the poster as a vector PDF, keeping CairoSVG's dependency environment
-outside the repository:
-  uv run --with cairosvg==2.8.2 python -c "import cairosvg; cairosvg.svg2pdf(url='assets/diagrams/explicit-architecture/05-complete.svg', write_to='assets/diagrams/explicit-architecture/05-complete.pdf')"
+Export the complete atlas as a vector PDF with the same librsvg renderer:
+  rsvg-convert -f pdf -o assets/diagrams/explicit-architecture/05-complete.pdf assets/diagrams/explicit-architecture/05-complete.svg
 
 Inspiration and attribution:
 Herberto Graca's Explicit Architecture series supplied the progressive teaching

@@ -24,7 +24,7 @@ I narrowed some of those ideas to suit one local application with strong transac
 
 I call this arrangement **Explicit Modules**, with a Go accent: a domain-first modular monolith with clear ownership and little ceremony. The [infographic below](#explicit-modules-a-map-of-the-territory) gathers the architecture into one picture: who owns the work, how modules collaborate, and what commits together.
 
-At [commit `a7c2efd`][baseline], Procurement remains planned work, and newer amendment and stock-lifecycle operations have broader CLI coverage than GUI/TUI coverage.
+At [commit `0d5e64b`][baseline], Procurement remains planned work. Single and batch amendments, substitution rules, and stock disposition/history are available through all three surfaces.
 
 ## The original map, and the downloadable PDF
 
@@ -89,7 +89,7 @@ app/domains/ingredients/
   surfaces/gui/             desktop presentation
 ```
 
-Contexts that react to events also have `handlers/`. Audit and Tagging use smaller explicit profiles. The [topology test][topology] records those differences, so architectural consistency does not force an append-only audit reader to imitate a recipe editor.
+Contexts that react to events also have `handlers/`. Audit and Tagging use explicit profiles; Tagging includes `handlers/` and private association persistence in `internal/dao/`. The [topology test][topology] records those differences, so architectural consistency does not force an append-only audit reader to imitate a recipe editor.
 
 I want a reader investigating ingredient retirement to find its public operation, command, policy, event, and adapters near each other. The cost is that a directory named `app/domains` contains more than pure domain code. A surface remains an outer adapter even when its path shares the domain's prefix. A DAO remains persistence implementation even when it lives below that same directory.
 
@@ -99,13 +99,13 @@ There is a useful distinction here: some bad programs fail to compile because of
 
 ### Follow the imports inside one module
 
-Menus is a useful module to open up because it has the full set of public queries, private commands, event reactions, readiness calculations, models, policy, and native adapters. This diagram shows **all 23 local production import edges** at the article's baseline, after grouping its CLI, TUI, and GUI packages into one surface node. An edge from that group means at least one of those packages has the import. **Every arrow points from the importer to its dependency.**
+Menus is a useful module to open up because it has the full set of public queries, private commands, event reactions, readiness calculations, models, policy, and native adapters. This diagram shows **all 24 local production import edges** at the article's baseline, after grouping its CLI, TUI, and GUI packages into one surface node. An edge from that group means at least one of those packages has the import. **Every arrow points from the importer to its dependency.**
 
-[![Menus package dependencies. Surfaces import the facade, queries, and models. The facade imports queries, commands, DAO, models, and authz. Queries, commands, and handlers import the private availability helper, DAO, and models; commands and handlers also import local event contracts. Events, availability, and DAO import models, and models imports authz. Arrows point from importer to dependency.](/assets/diagrams/explicit-architecture/07-module-dependencies.svg)](/assets/diagrams/explicit-architecture/07-module-dependencies.svg)
+[![Menus package dependencies. Surfaces import the facade, queries, and models. The facade imports queries, commands, DAO, events, models, and authz. Queries, commands, and handlers import the private availability helper, DAO, and models; commands and handlers also import local event contracts. Events, availability, and DAO import models, and models imports authz. Arrows point from importer to dependency.](/assets/diagrams/explicit-architecture/07-module-dependencies.svg)](/assets/diagrams/explicit-architecture/07-module-dependencies.svg)
 
 *Inside a module: [full-size SVG](/assets/diagrams/explicit-architecture/07-module-dependencies.svg), [vector PDF](/assets/diagrams/explicit-architecture/07-module-dependencies.pdf), or [PNG](/assets/diagrams/explicit-architecture/07-module-dependencies.png).*
 
-The convergence on `models` is intentional: commands, reads, reactions, and adapters share domain values and public types. Menus' models import its `authz` vocabulary. The facade's direct DAO dependency includes registering the private schema during construction. These are source dependencies; their placement does not describe an operation's execution order.
+The convergence on `models` is intentional: commands, reads, reactions, and adapters share domain values and public types. Menus' models import its `authz` vocabulary. The facade's direct DAO dependency includes registering the private schema during construction. Its event import supplies owner-local `TagsReplaced` facts for tagged edits. These are source dependencies; their placement does not describe an operation's execution order.
 
 The absent shortcuts matter too. Surfaces cannot import `internal`, queries and handlers cannot import commands, and handlers cannot import domain facades. The graph records actual imports, while the [architecture rules][rules] constrain imports that could be added later. Peer contracts and shared mechanisms sit outside this local view.
 
@@ -115,7 +115,7 @@ Graça's first article describes a stricter component-decoupling target, includi
 
 Mixology makes a different pair of choices. Public events stay with their owner, and collaborators read through supported query packages. Inventory's retirement handler imports `ingredients/events`; Menus can import `drinks/queries`. This is real source coupling. I accept it because the name tells a reader who owns the contract and where a compatible change must be considered.
 
-Private writes are the stronger boundary. Handlers cannot import domain facades or command packages. Commands may emit only their own domain's events. Queries cannot import commands. The [cross-domain boundary article](/articles/turning-cross-domain-calls-into-enforced-boundaries/) develops the rationale through retirement, while the [context map][architecture] names the actual relationships.
+Private writes are the stronger boundary. Commands cannot import domain facades, and handlers cannot import facades or command packages. Commands may emit only their own domain's events. Queries cannot import commands. The [cross-domain boundary article](/articles/turning-cross-domain-calls-into-enforced-boundaries/) develops the rationale through retirement, while the [context map][architecture] names the actual relationships.
 
 Business relationships can be reciprocal without requiring package cycles. Orders reads Inventory's public contracts; Inventory consumes Order events. Inventory adjustment events can affect Orders in return. Distinct query, model, event, and handler packages make those dependencies expressible without collapsing both modules into one package.
 
@@ -125,7 +125,7 @@ The tradeoff is deliberate. I retain compile-time navigation and an obvious cont
 
 The next diagram separates **read dependencies** from **event-contract dependencies**. Its upper panels include every cross-context public-query import from non-surface production packages and every foreign event import from domain handlers at the same baseline. Multiple package imports between the same two contexts become one read edge. The event panel keeps handler and event packages distinct.
 
-[![Between-module source dependencies. Orders reads Menus, Drinks, Inventory, and Ingredients; Menus reads Drinks, Inventory, and Ingredients; Drinks and Inventory read Ingredients. Receiving handlers import the event owner's package, so dependency arrows point opposite runtime event delivery. Separate examples show operational facades importing Tagging for registration, app composing Audit and middleware, and Menus native surfaces importing the public Drinks facade.](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg)](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg)
+[![Between-module source dependencies. Orders reads Menus, Drinks, Inventory, and Ingredients; Menus reads Drinks, Inventory, and Ingredients; Drinks and Inventory read Ingredients. Tagging handlers consume TagsReplaced events from all five operational contexts. Receiving handlers import the event owner's package, so dependency arrows point opposite runtime event delivery. Separate examples show operational facades importing Tagging for registration, app composing Audit and middleware, and Menus native surfaces importing the public Drinks facade.](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg)](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg)
 
 *Between modules: [full-size SVG](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg), [vector PDF](/assets/diagrams/explicit-architecture/08-between-module-dependencies.pdf), or [PNG](/assets/diagrams/explicit-architecture/08-between-module-dependencies.png).*
 
@@ -135,10 +135,11 @@ The next diagram separates **read dependencies** from **event-contract dependenc
 | Inventory | Ingredients | Ingredients, Orders |
 | Menus | Drinks, Ingredients, Inventory | Drinks, Ingredients, Inventory, Orders |
 | Orders | Drinks, Ingredients, Inventory, Menus | Drinks, Ingredients, Inventory, Menus |
+| Tagging | None | Drinks, Ingredients, Inventory, Menus, Orders |
 
 Event delivery and source dependency point in opposite directions. An Orders event reaches Inventory at runtime, while `inventory/handlers` imports `orders/events` in source. The generated dispatcher imports both the event types and the receiving handlers. Commands know the facts they publish; the dispatcher supplies knowledge of the receivers.
 
-Audit and Tagging have different connections. `app.New` constructs the audit writer and injects its recording function into the pipeline. Operational facades import Tagging to register domain-owned targets, while read/write implementations use the shared `tag.Repository` port. Native surfaces also have deliberate public facade dependencies, such as Menus' GUI and TUI importing Drinks to compose their screens. The lower panel shows selected examples of these dependencies. Public model imports, other shared packages, and third-party dependencies are outside the two upper graphs.
+Audit and Tagging have different connections. `app.New` constructs the audit writer and injects its recording function into the pipeline. Operational facades import Tagging to register domain-owned targets. Read implementations use the shared `tag.Repository` port; tagged domain edits publish owner-local facts consumed by Tagging handlers. Native surfaces also have deliberate public facade dependencies, such as Menus' GUI and TUI importing Drinks to compose their screens. The lower panel shows selected examples of these dependencies. Public model imports, other shared packages, and third-party dependencies are outside the two upper graphs.
 
 ## Use CQRS where it clarifies an operation
 
@@ -159,7 +160,7 @@ return m.pipeline.LoadCommand(ctx, authz.ActionRetire,
 )
 ```
 
-The important detail is where the load happens. `LoadCommand` opens or joins the unit of work before loading trusted authorization state. The pipeline authorizes the input, invokes the command, authorizes its result, then lets transactional dispatch and success auditing finish before commit.
+The important detail is where the load happens. `LoadCommand` claims the command transaction before loading trusted authorization state. The pipeline authorizes the input, invokes the command, authorizes its result, then lets transactional dispatch and success auditing finish before commit.
 
 The [generic-methods note](/notes/go-1-27-generic-methods-and-the-mixology-pipeline/) records how the API became a method on the configured pipeline. The current source uses Go 1.27 generic methods. The architectural point is independent of the syntax: a domain operation selects a typed execution shape, and the shared pipeline owns its surrounding behavior.
 
@@ -198,17 +199,17 @@ Handlers receive `HandlerContext`, which exposes the transaction, principal, and
 
 This buys one understandable success boundary: the originating write, its reactions, and the successful audit commit together. It also couples their latency and availability. One failed reaction rolls the operation back; an expensive scan lengthens a SQLite write transaction. An event has removed the source command's knowledge of its consumers, not removed the cost of coordinating them.
 
-## Put orchestration where its lifetime is visible
+## Give each atomic operation a domain owner
 
-A leaf reaction is too small for every workflow. Mixology's answer is explicit application composition.
+A command owns one SQL transaction, its leaf reactions, and one audit activity. [The implemented contract][commandownership] rejects commands invoked from command, query, or handler contexts, including reconstructed contexts. A SQL transaction can be claimed by only one command, so passing it through a sequence of public calls cannot recreate an outer workflow.
 
-`App.AmendOrders` runs a selected batch of ordinary amendment commands. `App.RetireIngredient` can combine selected amendments with retirement. [`middleware.RunWorkflow`][workflow] supplies the shared transaction and workflow correlation. Each command retains its action and domain semantics.
+`Orders.AmendBatch` owns an atomic selection of approved amendments. It validates and authorizes the complete selection, plans reservation changes, and emits one `OrdersAmended` event. Inventory applies reservations, Orders reconciles released shortages, and Menus prepares availability from the complete delta. Every selected amendment commits or none does.
 
-On managed failure, child success activities roll back with their writes. The workflow owner then records one failed activity containing attempted effects. An externally supplied transaction changes ownership: its caller remains responsible for commit, rollback, and failure recording. An audit failure is preserved alongside the business failure.
+`Ingredients.Retire` is a separate command. When accepted orders need an approved amendment before retirement, the operator submits the amendment batch and then retires the ingredient. Each has its own transaction and activity; a failed retirement leaves the approved amendments intact.
 
-Audit consequently distinguishes changed resources, inspected participants, and domain-authored effects. It explains the attempt and its outcome. The database is not reconstructed by replaying those activities; this is not event sourcing.
+On managed failure, the command's writes and success activity roll back before a failed activity records the attempted effects. An externally supplied transaction still leaves commit, rollback, and failure recording to its caller, but permits only one command. Audit distinguishes changed resources, inspected participants, and domain-authored before/after effects. One activity includes all leaf effects; there is no workflow correlation field. These activities explain outcomes rather than reconstructing the database by replay.
 
-The [reciprocal-workflow workshop](/articles/growing-a-reciprocal-domain-workflow/) explores the next pressure point. Procurement is planned work involving suppliers, receipts, and potentially approvals over time. A process manager or outbox would earn its place when progress must survive separate commits, human waits, or external delivery.
+The [reciprocal-workflow workshop](/articles/growing-a-reciprocal-domain-workflow/) explores the next pressure point. Procurement is planned work involving suppliers, receipts, and approvals over time. Procurement would own durable state, with separate explicit approval and receipt commands driving leaf reactions. Spanning time does not itself require generic command orchestration; delivery infrastructure needs its own demonstrated requirement.
 
 Replacing the local dispatcher with a broker would therefore change the business contract. Serialization, durable delivery, idempotency, retries, and partial outcomes would need explicit designs. An outbox could atomically record an intent to deliver; it would not make remote consumers part of this SQLite transaction.
 
@@ -222,7 +223,7 @@ Mixology's `app/kernel` contains typed entity IDs, money, measurement, quality, 
 
 The practical type-system preference is modest: distinguish identifiers, validate meaningful values, and withhold capabilities that should not be present. My [illegal-states article](/articles/making-illegal-states-unrepresentable-in-go/) develops the broader functional-modeling influence. Mixology's exported models and status values still require runtime validation.
 
-Tagging demonstrates a different kind of sharing. Its module owns associations, while domains register target loaders and actions. The shared tag value type does not make Tagging the owner of Drinks' authorization or private data. The [tag repository port][tagport] and application registration give the cross-cutting feature an explicit seam.
+Tagging demonstrates a different kind of sharing. Its module owns associations, while domains register target loaders and actions. The shared tag value type does not make Tagging the owner of Drinks' authorization or private data. The [tag repository port][tagport] and application registration give the cross-cutting feature an explicit seam. A consuming command accepts `tag.Edit` through `tag.Replace(&desired, expected)` and publishes its own `TagsReplaced` event. Tagging validates the desired set, compares expected tags, and authorizes before/after state during `Handling`; `Handle` persists associations through its private DAO. A veto rolls back the domain edit and tags together. The moved persistence model retains its original storage identity, so existing associations remain visible.
 
 `pkg` is more heterogeneous. `pkg/middleware` supplies mechanisms through configured dependencies. `pkg/store` owns a concrete persistence abstraction. Presentation toolkits own framework mechanics. Crucially, `pkg/dispatcher` contains generated imports of domain events and handlers. `pkg/authz` also assembles generated domain policy material. These are application wiring, despite their `pkg` prefix.
 
@@ -276,7 +277,7 @@ Read the infographic from top to bottom:
 2. **The module boundary.** A regular context keeps its adapters, facade, models, policy, commands, and persistence together. Peers read public query contracts and consume events published by the owning context. Each receiver owns its writes. Go visibility and arch-lint make those seams enforceable.
 3. **The journey of a change.** One command, its leaf reactions, and its successful audit share a local transaction. Ingredient retirement reaches Drinks, Inventory, Menus, and Orders. Every applicable preparation runs before any receiver applies its reaction for that event. Managed failure rolls back the changes before recording the failed attempt separately.
 
-The foundations have distinct jobs: the kernel supplies shared vocabulary and narrow ports, named packages supply mechanisms, and `app.New` plus generated wiring assemble the application. Explicit workflows can join several public calls in one transaction; an externally supplied transaction retains caller ownership, as described above.
+The foundations have distinct jobs: the kernel supplies shared vocabulary and narrow ports, named packages supply mechanisms, and `app.New` plus generated wiring assemble the application. Each SQL transaction admits one domain-owned command. Batch work belongs to an explicit domain command; its reactions remain leaves.
 
 Solid blue arrows indicate calls or contract use. Dashed amber arrows indicate execution. The earlier [detailed architecture atlas](/assets/diagrams/explicit-architecture/05-complete.svg) and its [PDF](/assets/diagrams/explicit-architecture/05-complete.pdf) remain available for the infrastructure and implementation details. The [diagram source and reading notes](/assets/diagrams/explicit-architecture/README.txt) identify the pinned baseline and regeneration commands.
 
@@ -293,37 +294,39 @@ The [high-quality-software series preview](/articles/building-high-quality-softw
 | Every context joins the application | [Registration tests][registration] |
 | Registered domain rows carry concurrency tokens | [Revision tests][revisions] |
 | Retirement reactions preserve results across order changes | [Cross-domain regressions][regressions] |
-| A failed selected workflow rolls back and retains correlated failure evidence | [Workflow tests][workflowtests] |
+| A failed amendment batch rolls back every selection and retains attempted effects | [Command integration tests][commandtests] |
+| A transaction rejects nested or sequential commands | [Transaction ownership tests][transactiontests] |
 | A native client uses the real application boundary | [Headless testing strategy](/articles/testing-native-go-desktop-applications-headlessly/) and [third-surface process tests](/articles/using-a-third-surface-as-an-architecture-test/) |
 
 No single check proves the diagram. Import rules cannot show that a readiness calculation preserved the right business meaning. A successful integration test cannot prevent tomorrow's surface from acquiring a new DAO dependency. Both belong in the feedback loop.
 
 The [.NET port](/projects/modular-monolith/) offers another comparison, with its own stated parity baseline. It asks which ideas survive a different language, persistence stack, and presentation framework. That supports treating the architecture as a set of responsibilities and contracts, while keeping language-specific mechanisms explicit.
 
-What I borrowed most from Explicit Architecture was the habit of putting the whole application on one map and then asking whether the code tells the same story. My additions are preferences with consequences: owner-local public coupling, typed direct operations, bounded synchronous reactions, explicit workflow ownership, practical type constraints, and bespoke interfaces. Their value is visible when a replacement, a failure, or a new feature crosses a boundary and the application still explains what happened.
+What I borrowed most from Explicit Architecture was the habit of putting the whole application on one map and then asking whether the code tells the same story. My additions are preferences with consequences: owner-local public coupling, typed direct operations, bounded synchronous reactions, domain-owned atomic commands, practical type constraints, and bespoke interfaces. Their value is visible when a replacement, a failure, or a new feature crosses a boundary and the application still explains what happened.
 
 [ea1]: https://herbertograca.com/2017/11/16/explicit-architecture-01-ddd-hexagonal-onion-clean-cqrs-how-i-put-it-all-together/
 [ea2]: https://herbertograca.com/2018/07/07/more-than-concentric-layers/
 [ea3]: https://herbertograca.com/2019/06/05/reflecting-architecture-and-domain-in-code/
 [drawing]: https://docs.google.com/drawings/d/1E_hx5B4czRVFVhGJbrbPDlb_JFxJC8fYB86OMzZuAhg/edit
 [pdf]: https://docs.google.com/drawings/d/1E_hx5B4czRVFVhGJbrbPDlb_JFxJC8fYB86OMzZuAhg/export/pdf
-[baseline]: https://github.com/TheFellow/go-modular-monolith/tree/a7c2efda8c0cd905089a27060242ff841bb0ad41
-[architecture]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/docs/architecture.md
-[rules]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml
-[topology]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/architecture/domain_topology_test.go
-[registration]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/architecture/domain_registration_test.go
-[revisions]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/architecture/revision_test.go
-[retire]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/delete.go
-[pipeline]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go
-[dispatcher]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/dispatcher/dispatcher_gen.go
-[prepared]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/handlers/prepared.go
-[context]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go
-[workflow]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/workflow.go
-[regressions]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/cross_domain_regression_test.go
-[workflowtests]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/cross_domain_workflows_test.go
-[tagport]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/kernel/tag/repository.go
-[composition]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go
-[drinkmodel]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/models/drink.go
-[store]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/store.go
-[storeguide]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/README.md
-[filter]: https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/filter/sql.go
+[baseline]: https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c
+[architecture]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/architecture.md
+[rules]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml
+[topology]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_topology_test.go
+[registration]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_registration_test.go
+[revisions]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/revision_test.go
+[retire]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/delete.go
+[pipeline]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go
+[dispatcher]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/dispatcher_gen.go
+[prepared]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/handlers/prepared.go
+[context]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/context.go
+[commandownership]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/transactional-workflows.md
+[regressions]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_regression_test.go
+[commandtests]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_workflows_test.go
+[tagport]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/tag/repository.go
+[composition]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go
+[drinkmodel]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/models/drink.go
+[store]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go
+[storeguide]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md
+[filter]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql.go
+[transactiontests]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/command_tx_test.go

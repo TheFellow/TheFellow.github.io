@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1950" viewBox="0 0 1600 1950" role="img" aria-labelledby="title desc">
 <title id="title">Between modules: public query and event dependencies</title>
-<desc id="desc">Nine cross-context query dependencies and eleven event-contract dependencies at baseline a7c2efd. Arrows point from importer to contract owner. Tagging registry, Audit composition and native facade imports are explained separately.</desc>
+<desc id="desc">Nine cross-context query dependencies and sixteen event-contract dependencies at baseline 0d5e64b. Arrows point from importer to contract owner. Tagging registry, Audit composition and native facade imports are explained separately.</desc>
 <defs>
 <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="#64766c" opacity="0.20"/></pattern>
 <linearGradient id="domain" x2="1" y2="1"><stop stop-color="#203b31"/><stop offset="1" stop-color="#1b2b25"/></linearGradient>
@@ -82,7 +82,7 @@
 
 <g id="08-query-imports-node1" class="node">
 <title>orders</title>
-<g id="08-query-imports-a_node1"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-query-imports-a_node1"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M319.8,-462.64C319.8,-462.64 196,-462.64 196,-462.64 190,-462.64 184,-456.64 184,-450.64 184,-450.64 184,-396.48 184,-396.48 184,-390.48 190,-384.48 196,-384.48 196,-384.48 319.8,-384.48 319.8,-384.48 325.8,-384.48 331.8,-390.48 331.8,-396.48 331.8,-396.48 331.8,-450.64 331.8,-450.64 331.8,-456.64 325.8,-462.64 319.8,-462.64" />
 <text xml:space="preserve" text-anchor="start" x="223.02" y="-429.61" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">Orders</text>
 <text xml:space="preserve" text-anchor="start" x="202.4" y="-402.31" font-family="Arial" font-size="15.00" fill="#c1c6c4">bounded context</text>
@@ -92,7 +92,7 @@
 
 <g id="08-query-imports-node2" class="node">
 <title>menus</title>
-<g id="08-query-imports-a_node2"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-query-imports-a_node2"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M258.8,-334.48C258.8,-334.48 135,-334.48 135,-334.48 129,-334.48 123,-328.48 123,-322.48 123,-322.48 123,-268.32 123,-268.32 123,-262.32 129,-256.32 135,-256.32 135,-256.32 258.8,-256.32 258.8,-256.32 264.8,-256.32 270.8,-262.32 270.8,-268.32 270.8,-268.32 270.8,-322.48 270.8,-322.48 270.8,-328.48 264.8,-334.48 258.8,-334.48" />
 <text xml:space="preserve" text-anchor="start" x="163.53" y="-301.45" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">Menus</text>
 <text xml:space="preserve" text-anchor="start" x="141.4" y="-274.15" font-family="Arial" font-size="15.00" fill="#c1c6c4">bounded context</text>
@@ -102,7 +102,7 @@
 
 <g id="08-query-imports-node3" class="node">
 <title>drinks</title>
-<g id="08-query-imports-a_node3"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-query-imports-a_node3"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M135.8,-206.32C135.8,-206.32 12,-206.32 12,-206.32 6,-206.32 0,-200.32 0,-194.32 0,-194.32 0,-140.16 0,-140.16 0,-134.16 6,-128.16 12,-128.16 12,-128.16 135.8,-128.16 135.8,-128.16 141.8,-128.16 147.8,-134.16 147.8,-140.16 147.8,-140.16 147.8,-194.32 147.8,-194.32 147.8,-200.32 141.8,-206.32 135.8,-206.32" />
 <text xml:space="preserve" text-anchor="start" x="40.9" y="-173.29" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">Drinks</text>
 <text xml:space="preserve" text-anchor="start" x="18.4" y="-145.99" font-family="Arial" font-size="15.00" fill="#c1c6c4">bounded context</text>
@@ -112,7 +112,7 @@
 
 <g id="08-query-imports-node4" class="node">
 <title>inventory</title>
-<g id="08-query-imports-a_node4"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-query-imports-a_node4"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M381.8,-206.32C381.8,-206.32 258,-206.32 258,-206.32 252,-206.32 246,-200.32 246,-194.32 246,-194.32 246,-140.16 246,-140.16 246,-134.16 252,-128.16 258,-128.16 258,-128.16 381.8,-128.16 381.8,-128.16 387.8,-128.16 393.8,-134.16 393.8,-140.16 393.8,-140.16 393.8,-194.32 393.8,-194.32 393.8,-200.32 387.8,-206.32 381.8,-206.32" />
 <text xml:space="preserve" text-anchor="start" x="272.27" y="-173.29" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">Inventory</text>
 <text xml:space="preserve" text-anchor="start" x="264.4" y="-145.99" font-family="Arial" font-size="15.00" fill="#c1c6c4">bounded context</text>
@@ -122,7 +122,7 @@
 
 <g id="08-query-imports-node5" class="node">
 <title>ingredients</title>
-<g id="08-query-imports-a_node5"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-query-imports-a_node5"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M321.3,-78.16C321.3,-78.16 194.5,-78.16 194.5,-78.16 188.5,-78.16 182.5,-72.16 182.5,-66.16 182.5,-66.16 182.5,-12 182.5,-12 182.5,-6 188.5,0 194.5,0 194.5,0 321.3,0 321.3,0 327.3,0 333.3,-6 333.3,-12 333.3,-12 333.3,-66.16 333.3,-66.16 333.3,-72.16 327.3,-78.16 321.3,-78.16" />
 <text xml:space="preserve" text-anchor="start" x="200.9" y="-45.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">Ingredients</text>
 <text xml:space="preserve" text-anchor="start" x="202.4" y="-17.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">bounded context</text>
@@ -136,119 +136,159 @@
 <text x="842" y="350" fill="#c8b1f1" font-size="20" font-weight="700" class="" text-anchor="start" >02  EVENT CONTRACTS</text>
 <text x="842" y="388" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >A receiving handler imports the event type</text>
 <text x="842" y="416" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >from the context that owns the fact.</text>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="676" height="655" viewBox="0.00 0.00 522.00 540.00" x="834" y="446">
-<g id="08-event-imports-graph0" class="graph" transform="scale(1 1) rotate(0) translate(10.8 528.96)">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="676" height="655" viewBox="0.00 0.00 522.00 595.00" x="834" y="446">
+<g id="08-event-imports-graph0" class="graph" transform="scale(1 1) rotate(0) translate(10.8 583.96)">
 <title>G</title>
 
 <g id="08-event-imports-edge1" class="edge">
 <title>drinks_h-&gt;ingredients_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M211.06,-369.08C228.74,-369.08 247.39,-369.08 265.68,-369.08" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="265.68,-371.88 273.68,-369.08 265.68,-366.28 265.68,-371.88" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M211.06,-404.61C228.82,-401.04 247.56,-397.27 265.94,-393.57" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="266.44,-396.33 273.73,-392.01 265.33,-390.84 266.44,-396.33" />
 </g>
 
 <g id="08-event-imports-edge2" class="edge">
 <title>inventory_h-&gt;ingredients_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.6,-439.52C234.44,-430.74 257.7,-421.38 279.89,-412.45" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="280.7,-415.14 287.08,-409.56 278.61,-409.95 280.7,-415.14" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M203.2,-494.51C211.34,-489.71 219.26,-484.56 226.55,-479.08 252.96,-459.24 250.18,-443.97 276.55,-424.08 281.17,-420.59 286.06,-417.23 291.09,-414" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="292.27,-416.56 297.62,-409.98 289.34,-411.79 292.27,-416.56" />
 </g>
 
 <g id="08-event-imports-edge3" class="edge">
 <title>inventory_h-&gt;orders_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M227.07,-479.08C247.96,-479.08 269.62,-479.08 290.01,-479.08" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="289.81,-481.88 297.81,-479.08 289.81,-476.28 289.81,-481.88" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M227.07,-511.39C248.05,-507.17 269.81,-502.79 290.29,-498.67" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="290.56,-501.48 297.85,-497.15 289.46,-495.99 290.56,-501.48" />
 </g>
 
 <g id="08-event-imports-edge5" class="edge">
 <title>menus_h-&gt;ingredients_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.6,-298.64C234.44,-307.42 257.7,-316.78 279.89,-325.71" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="278.61,-328.21 287.08,-328.6 280.7,-323.02 278.61,-328.21" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M213.37,-334.01C230.52,-337.46 248.53,-341.09 266.2,-344.64" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="265.2,-347.29 273.59,-346.13 266.3,-341.8 265.2,-347.29" />
 </g>
 
 <g id="08-event-imports-edge4" class="edge">
 <title>menus_h-&gt;drinks_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.6,-219.52C238.37,-209.15 266.12,-197.99 291.77,-187.67" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="292.49,-190.4 298.87,-184.82 290.4,-185.21 292.49,-190.4" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M203.2,-274.51C211.34,-269.71 219.26,-264.56 226.55,-259.08 252.96,-239.24 250.18,-223.97 276.55,-204.08 281.57,-200.29 286.89,-196.66 292.38,-193.18" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="293.68,-195.67 299.05,-189.12 290.76,-190.89 293.68,-195.67" />
 </g>
 
 <g id="08-event-imports-edge6" class="edge">
 <title>menus_h-&gt;inventory_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M213.37,-259.08C233.51,-259.08 254.82,-259.08 275.38,-259.08" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="275.3,-261.88 283.3,-259.08 275.3,-256.28 275.3,-261.88" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M213.37,-294.15C233.6,-290.08 255.02,-285.77 275.66,-281.62" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="276.06,-284.39 283.35,-280.07 274.95,-278.9 276.06,-284.39" />
 </g>
 
 <g id="08-event-imports-edge7" class="edge">
 <title>menus_h-&gt;orders_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M208.45,-298.71C214.97,-303.36 221.11,-308.48 226.55,-314.08 263.97,-352.6 239.21,-385.49 276.55,-424.08 281.23,-428.91 286.42,-433.39 291.93,-437.52" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="290.07,-439.63 298.22,-441.93 293.28,-435.04 290.07,-439.63" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M203.2,-353.65C211.34,-358.45 219.26,-363.6 226.55,-369.08 252.96,-388.92 250.18,-404.19 276.55,-424.08 281.23,-427.61 286.17,-431.01 291.27,-434.27" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="289.62,-436.55 297.9,-438.35 292.56,-431.78 289.62,-436.55" />
 </g>
 
 <g id="08-event-imports-edge9" class="edge">
 <title>orders_h-&gt;ingredients_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M208.45,-188.71C214.97,-193.36 221.11,-198.48 226.55,-204.08 263.97,-242.6 239.21,-275.49 276.55,-314.08 279.71,-317.34 283.1,-320.45 286.67,-323.39" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="284.76,-325.45 292.81,-328.1 288.17,-321.01 284.76,-325.45" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M210.35,-133.74C216.28,-138.36 221.77,-143.46 226.55,-149.08 276.19,-207.45 227.02,-255.61 276.55,-314.08 279.18,-317.18 282.02,-320.12 285.03,-322.91" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="283.08,-324.93 291,-327.97 286.71,-320.66 283.08,-324.93" />
 </g>
 
 <g id="08-event-imports-edge8" class="edge">
 <title>orders_h-&gt;drinks_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.22,-149.08C237.92,-149.08 265.61,-149.08 291.24,-149.08" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="290.9,-151.88 298.9,-149.08 290.9,-146.28 290.9,-151.88" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.22,-113.78C237.92,-118.95 265.61,-124.52 291.24,-129.68" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="290.56,-132.4 298.95,-131.23 291.66,-126.91 290.56,-132.4" />
 </g>
 
 <g id="08-event-imports-edge10" class="edge">
 <title>orders_h-&gt;inventory_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.22,-188.48C234.2,-197.33 257.65,-206.76 280.01,-215.76" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="278.81,-218.29 287.28,-218.68 280.9,-213.1 278.81,-218.29" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M203.2,-133.65C211.34,-138.45 219.26,-143.6 226.55,-149.08 252.96,-168.92 250.18,-184.19 276.55,-204.08 281.17,-207.57 286.06,-210.93 291.09,-214.16" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="289.34,-216.37 297.62,-218.18 292.27,-211.6 289.34,-216.37" />
 </g>
 
 <g id="08-event-imports-edge11" class="edge">
 <title>orders_h-&gt;menus_e</title>
-<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.22,-109.68C237.35,-99.57 264.4,-88.69 289.54,-78.57" />
-<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="290.46,-81.22 296.83,-75.64 288.37,-76.02 290.46,-81.22" />
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M212.22,-74.38C237.13,-69.37 263.92,-63.98 288.88,-58.96" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="289.42,-61.71 296.71,-57.38 288.31,-56.22 289.42,-61.71" />
+</g>
+
+<g id="08-event-imports-edge13" class="edge">
+<title>tagging_h-&gt;ingredients_e</title>
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M203.2,-243.65C211.34,-248.45 219.26,-253.6 226.55,-259.08 252.96,-278.92 250.18,-294.19 276.55,-314.08 281.17,-317.57 286.06,-320.93 291.09,-324.16" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="289.34,-326.37 297.62,-328.18 292.27,-321.6 289.34,-326.37" />
+</g>
+
+<g id="08-event-imports-edge12" class="edge">
+<title>tagging_h-&gt;drinks_e</title>
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M217.26,-183.37C241.5,-178.49 267.24,-173.31 291.19,-168.49" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="291.66,-171.25 298.96,-166.93 290.56,-165.76 291.66,-171.25" />
+</g>
+
+<g id="08-event-imports-edge14" class="edge">
+<title>tagging_h-&gt;inventory_e</title>
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M217.26,-224.79C236.33,-228.63 256.35,-232.66 275.68,-236.55" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="274.95,-239.26 283.35,-238.09 276.05,-233.77 274.95,-239.26" />
+</g>
+
+<g id="08-event-imports-edge15" class="edge">
+<title>tagging_h-&gt;menus_e</title>
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M203.2,-164.51C211.34,-159.71 219.26,-154.56 226.55,-149.08 252.96,-129.24 250.18,-113.97 276.55,-94.08 281.17,-90.59 286.06,-87.23 291.09,-84" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="292.27,-86.56 297.62,-79.98 289.34,-81.79 292.27,-86.56" />
+</g>
+
+<g id="08-event-imports-edge16" class="edge">
+<title>tagging_h-&gt;orders_e</title>
+<path fill="none" stroke="#c8b1f1" stroke-width="1.6" d="M210.35,-243.74C216.28,-248.36 221.77,-253.46 226.55,-259.08 276.19,-317.45 227.02,-365.61 276.55,-424.08 281.04,-429.38 286.16,-434.21 291.68,-438.62" />
+<polygon fill="#c8b1f1" stroke="#c8b1f1" stroke-width="1.6" points="289.98,-440.85 298.09,-443.34 293.3,-436.34 289.98,-440.85" />
 </g>
 
 <g id="08-event-imports-node1" class="node">
 <title>drinks_h</title>
-<g id="08-event-imports-a_node1"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
-<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M198.8,-408.16C198.8,-408.16 27.75,-408.16 27.75,-408.16 21.75,-408.16 15.75,-402.16 15.75,-396.16 15.75,-396.16 15.75,-342 15.75,-342 15.75,-336 21.75,-330 27.75,-330 27.75,-330 198.8,-330 198.8,-330 204.8,-330 210.8,-336 210.8,-342 210.8,-342 210.8,-396.16 210.8,-396.16 210.8,-402.16 204.8,-408.16 198.8,-408.16" />
-<text xml:space="preserve" text-anchor="start" x="34.15" y="-375.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">drinks/handlers</text>
-<text xml:space="preserve" text-anchor="start" x="86.65" y="-347.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
+<g id="08-event-imports-a_node1"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M198.8,-463.16C198.8,-463.16 27.75,-463.16 27.75,-463.16 21.75,-463.16 15.75,-457.16 15.75,-451.16 15.75,-451.16 15.75,-397 15.75,-397 15.75,-391 21.75,-385 27.75,-385 27.75,-385 198.8,-385 198.8,-385 204.8,-385 210.8,-391 210.8,-397 210.8,-397 210.8,-451.16 210.8,-451.16 210.8,-457.16 204.8,-463.16 198.8,-463.16" />
+<text xml:space="preserve" text-anchor="start" x="34.15" y="-430.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">drinks/handlers</text>
+<text xml:space="preserve" text-anchor="start" x="86.65" y="-402.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
 </a>
 </g>
 </g>
 
 <g id="08-event-imports-node2" class="node">
 <title>inventory_h</title>
-<g id="08-event-imports-a_node2"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
-<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M214.55,-518.16C214.55,-518.16 12,-518.16 12,-518.16 6,-518.16 0,-512.16 0,-506.16 0,-506.16 0,-452 0,-452 0,-446 6,-440 12,-440 12,-440 214.55,-440 214.55,-440 220.55,-440 226.55,-446 226.55,-452 226.55,-452 226.55,-506.16 226.55,-506.16 226.55,-512.16 220.55,-518.16 214.55,-518.16" />
-<text xml:space="preserve" text-anchor="start" x="18.4" y="-485.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">inventory/handlers</text>
-<text xml:space="preserve" text-anchor="start" x="86.65" y="-457.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
+<g id="08-event-imports-a_node2"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M214.55,-573.16C214.55,-573.16 12,-573.16 12,-573.16 6,-573.16 0,-567.16 0,-561.16 0,-561.16 0,-507 0,-507 0,-501 6,-495 12,-495 12,-495 214.55,-495 214.55,-495 220.55,-495 226.55,-501 226.55,-507 226.55,-507 226.55,-561.16 226.55,-561.16 226.55,-567.16 220.55,-573.16 214.55,-573.16" />
+<text xml:space="preserve" text-anchor="start" x="18.4" y="-540.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">inventory/handlers</text>
+<text xml:space="preserve" text-anchor="start" x="86.65" y="-512.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
 </a>
 </g>
 </g>
 
 <g id="08-event-imports-node3" class="node">
 <title>menus_h</title>
-<g id="08-event-imports-a_node3"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
-<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M201.05,-298.16C201.05,-298.16 25.5,-298.16 25.5,-298.16 19.5,-298.16 13.5,-292.16 13.5,-286.16 13.5,-286.16 13.5,-232 13.5,-232 13.5,-226 19.5,-220 25.5,-220 25.5,-220 201.05,-220 201.05,-220 207.05,-220 213.05,-226 213.05,-232 213.05,-232 213.05,-286.16 213.05,-286.16 213.05,-292.16 207.05,-298.16 201.05,-298.16" />
-<text xml:space="preserve" text-anchor="start" x="31.9" y="-265.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">menus/handlers</text>
-<text xml:space="preserve" text-anchor="start" x="86.65" y="-237.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
+<g id="08-event-imports-a_node3"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M201.05,-353.16C201.05,-353.16 25.5,-353.16 25.5,-353.16 19.5,-353.16 13.5,-347.16 13.5,-341.16 13.5,-341.16 13.5,-287 13.5,-287 13.5,-281 19.5,-275 25.5,-275 25.5,-275 201.05,-275 201.05,-275 207.05,-275 213.05,-281 213.05,-287 213.05,-287 213.05,-341.16 213.05,-341.16 213.05,-347.16 207.05,-353.16 201.05,-353.16" />
+<text xml:space="preserve" text-anchor="start" x="31.9" y="-320.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">menus/handlers</text>
+<text xml:space="preserve" text-anchor="start" x="86.65" y="-292.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
 </a>
 </g>
 </g>
 
 <g id="08-event-imports-node4" class="node">
 <title>orders_h</title>
-<g id="08-event-imports-a_node4"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
-<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M199.92,-188.16C199.92,-188.16 26.62,-188.16 26.62,-188.16 20.62,-188.16 14.62,-182.16 14.62,-176.16 14.62,-176.16 14.62,-122 14.62,-122 14.62,-116 20.62,-110 26.62,-110 26.62,-110 199.92,-110 199.92,-110 205.92,-110 211.92,-116 211.92,-122 211.92,-122 211.92,-176.16 211.92,-176.16 211.92,-182.16 205.92,-188.16 199.92,-188.16" />
-<text xml:space="preserve" text-anchor="start" x="33.02" y="-155.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">orders/handlers</text>
-<text xml:space="preserve" text-anchor="start" x="86.65" y="-127.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
+<g id="08-event-imports-a_node4"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M199.92,-133.16C199.92,-133.16 26.62,-133.16 26.62,-133.16 20.62,-133.16 14.62,-127.16 14.62,-121.16 14.62,-121.16 14.62,-67 14.62,-67 14.62,-61 20.62,-55 26.62,-55 26.62,-55 199.92,-55 199.92,-55 205.92,-55 211.92,-61 211.92,-67 211.92,-67 211.92,-121.16 211.92,-121.16 211.92,-127.16 205.92,-133.16 199.92,-133.16" />
+<text xml:space="preserve" text-anchor="start" x="33.02" y="-100.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">orders/handlers</text>
+<text xml:space="preserve" text-anchor="start" x="86.65" y="-72.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
 </a>
 </g>
 </g>
 
 <g id="08-event-imports-node5" class="node">
+<title>tagging_h</title>
+<g id="08-event-imports-a_node5"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M204.8,-243.16C204.8,-243.16 21.75,-243.16 21.75,-243.16 15.75,-243.16 9.75,-237.16 9.75,-231.16 9.75,-231.16 9.75,-177 9.75,-177 9.75,-171 15.75,-165 21.75,-165 21.75,-165 204.8,-165 204.8,-165 210.8,-165 216.8,-171 216.8,-177 216.8,-177 216.8,-231.16 216.8,-231.16 216.8,-237.16 210.8,-243.16 204.8,-243.16" />
+<text xml:space="preserve" text-anchor="start" x="28.15" y="-210.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">tagging/handlers</text>
+<text xml:space="preserve" text-anchor="start" x="86.65" y="-182.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">receiver</text>
+</a>
+</g>
+</g>
+
+<g id="08-event-imports-node6" class="node">
 <title>ingredients_e</title>
-<g id="08-event-imports-a_node5"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/events" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-event-imports-a_node6"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/events" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M488.85,-408.16C488.85,-408.16 288.55,-408.16 288.55,-408.16 282.55,-408.16 276.55,-402.16 276.55,-396.16 276.55,-396.16 276.55,-342 276.55,-342 276.55,-336 282.55,-330 288.55,-330 288.55,-330 488.85,-330 488.85,-330 494.85,-330 500.85,-336 500.85,-342 500.85,-342 500.85,-396.16 500.85,-396.16 500.85,-402.16 494.85,-408.16 488.85,-408.16" />
 <text xml:space="preserve" text-anchor="start" x="294.95" y="-375.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">ingredients/events</text>
 <text xml:space="preserve" text-anchor="start" x="339.2" y="-347.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">contract owner</text>
@@ -256,9 +296,9 @@
 </g>
 </g>
 
-<g id="08-event-imports-node6" class="node">
+<g id="08-event-imports-node7" class="node">
 <title>drinks_e</title>
-<g id="08-event-imports-a_node6"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/events" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-event-imports-a_node7"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/events" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M463.73,-188.16C463.73,-188.16 313.68,-188.16 313.68,-188.16 307.68,-188.16 301.68,-182.16 301.68,-176.16 301.68,-176.16 301.68,-122 301.68,-122 301.68,-116 307.68,-110 313.68,-110 313.68,-110 463.73,-110 463.73,-110 469.73,-110 475.73,-116 475.73,-122 475.73,-122 475.73,-176.16 475.73,-176.16 475.73,-182.16 469.73,-188.16 463.73,-188.16" />
 <text xml:space="preserve" text-anchor="start" x="320.08" y="-155.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">drinks/events</text>
 <text xml:space="preserve" text-anchor="start" x="339.2" y="-127.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">contract owner</text>
@@ -266,9 +306,9 @@
 </g>
 </g>
 
-<g id="08-event-imports-node7" class="node">
+<g id="08-event-imports-node8" class="node">
 <title>inventory_e</title>
-<g id="08-event-imports-a_node7"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory/events" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-event-imports-a_node8"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/events" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M479.48,-298.16C479.48,-298.16 297.93,-298.16 297.93,-298.16 291.93,-298.16 285.93,-292.16 285.93,-286.16 285.93,-286.16 285.93,-232 285.93,-232 285.93,-226 291.93,-220 297.93,-220 297.93,-220 479.48,-220 479.48,-220 485.48,-220 491.48,-226 491.48,-232 491.48,-232 491.48,-286.16 491.48,-286.16 491.48,-292.16 485.48,-298.16 479.48,-298.16" />
 <text xml:space="preserve" text-anchor="start" x="304.33" y="-265.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">inventory/events</text>
 <text xml:space="preserve" text-anchor="start" x="339.2" y="-237.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">contract owner</text>
@@ -276,9 +316,9 @@
 </g>
 </g>
 
-<g id="08-event-imports-node8" class="node">
+<g id="08-event-imports-node9" class="node">
 <title>menus_e</title>
-<g id="08-event-imports-a_node8"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/events" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-event-imports-a_node9"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/events" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M465.98,-78.16C465.98,-78.16 311.43,-78.16 311.43,-78.16 305.43,-78.16 299.43,-72.16 299.43,-66.16 299.43,-66.16 299.43,-12 299.43,-12 299.43,-6 305.43,0 311.43,0 311.43,0 465.98,0 465.98,0 471.98,0 477.98,-6 477.98,-12 477.98,-12 477.98,-66.16 477.98,-66.16 477.98,-72.16 471.98,-78.16 465.98,-78.16" />
 <text xml:space="preserve" text-anchor="start" x="317.83" y="-45.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">menus/events</text>
 <text xml:space="preserve" text-anchor="start" x="339.2" y="-17.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">contract owner</text>
@@ -286,9 +326,9 @@
 </g>
 </g>
 
-<g id="08-event-imports-node9" class="node">
+<g id="08-event-imports-node10" class="node">
 <title>orders_e</title>
-<g id="08-event-imports-a_node9"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders/events" xlink:title="&lt;TABLE&gt;" target="_blank">
+<g id="08-event-imports-a_node10"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/events" xlink:title="&lt;TABLE&gt;" target="_blank">
 <path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M464.85,-518.16C464.85,-518.16 312.55,-518.16 312.55,-518.16 306.55,-518.16 300.55,-512.16 300.55,-506.16 300.55,-506.16 300.55,-452 300.55,-452 300.55,-446 306.55,-440 312.55,-440 312.55,-440 464.85,-440 464.85,-440 470.85,-440 476.85,-446 476.85,-452 476.85,-452 476.85,-506.16 476.85,-506.16 476.85,-512.16 470.85,-518.16 464.85,-518.16" />
 <text xml:space="preserve" text-anchor="start" x="318.95" y="-485.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">orders/events</text>
 <text xml:space="preserve" text-anchor="start" x="339.2" y="-457.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">contract owner</text>
@@ -297,25 +337,25 @@
 </g>
 </g>
 </svg>
-<text x="842" y="1131" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >11 edges · arrow points toward the event owner</text>
+<text x="842" y="1131" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >16 edges · arrow points toward the event owner</text>
 <text x="842" y="1159" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Runtime delivery runs the other way.</text>
 <text x="72" y="1252" fill="#84e5b9" font-size="19" font-weight="700" class="" text-anchor="start" letter-spacing="2">OTHER DEPENDENCIES HAVE DISTINCT JOBS</text>
 <rect x="72" y="1283" width="1456" height="398" rx="16" fill="#202625" stroke="#39433f" />
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/tagging.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/tagging.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/tagging.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/tagging.go" target="_blank">
 <text x="98" y="1323" fill="#84e5b9" font-size="17" font-weight="700" class="" text-anchor="start" >TAGGING</text>
 <text x="379" y="1323" fill="#fff6ed" font-size="22" font-weight="600" class="" text-anchor="start" >Operational facades</text>
 <path d="M735 1316 H813" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
 <text x="842" y="1323" fill="#8bcafb" font-size="22" font-weight="600" class="" text-anchor="start" >tagging</text>
-<text x="379" y="1362" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Registry and target registration; persistence uses the kernel’s tag.Repository port.</text>
+<text x="379" y="1362" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Target registration; domain edits publish TagsReplaced to Tagging’s leaf handlers.</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go" target="_blank">
 <text x="98" y="1440" fill="#84e5b9" font-size="17" font-weight="700" class="" text-anchor="start" >AUDIT + WIRING</text>
 <text x="379" y="1440" fill="#fff6ed" font-size="22" font-weight="600" class="" text-anchor="start" >app</text>
 <path d="M735 1433 H813" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
 <text x="842" y="1440" fill="#8bcafb" font-size="22" font-weight="600" class="" text-anchor="start" >audit + dispatcher + middleware</text>
 <text x="379" y="1479" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >app.New injects the audit writer and dispatcher into the pipeline.</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/surfaces/gui" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/surfaces/gui" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/surfaces/gui" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/surfaces/gui" target="_blank">
 <text x="98" y="1557" fill="#84e5b9" font-size="17" font-weight="700" class="" text-anchor="start" >NATIVE COMPOSITION</text>
 <text x="379" y="1557" fill="#fff6ed" font-size="22" font-weight="600" class="" text-anchor="start" >menus/surfaces/{gui,tui}</text>
 <path d="M735 1550 H813" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
@@ -327,6 +367,6 @@
 <text x="72" y="1808" fill="#c1c6c4" font-size="22" font-weight="400" class="" text-anchor="start" >The generated dispatcher imports event types and receivers. Commands publish their own events.</text>
 <text x="72" y="1842" fill="#c1c6c4" font-size="22" font-weight="400" class="" text-anchor="start" >These views omit standard library, third-party and other shared-package imports.</text>
 <path d="M72 1882 H1528" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-<text x="72" y="1918" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="start" >Ryan Harris  /  thefellow.github.io  /  source baseline a7c2efd</text>
+<text x="72" y="1918" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="start" >Ryan Harris  /  thefellow.github.io  /  source baseline 0d5e64b</text>
 <text x="1528" y="1918" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="end" >Open the SVG to follow package links.</text>
 </svg>

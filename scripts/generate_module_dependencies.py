@@ -23,7 +23,7 @@ from generate_explicit_architecture import CODE, OUT, SHA
 # Every edge below is an observed source import at SHA, rather than a proposed rule.
 LOCAL = {
     'surfaces': ['facade', 'models', 'queries'],
-    'facade': ['authz', 'commands', 'dao', 'models', 'queries'],
+    'facade': ['authz', 'commands', 'dao', 'events', 'models', 'queries'],
     'queries': ['availability', 'dao', 'models'],
     'commands': ['availability', 'dao', 'events', 'models'],
     'handlers': ['availability', 'dao', 'events', 'models'],
@@ -43,6 +43,7 @@ EVENTS = {
     'inventory': ['ingredients', 'orders'],
     'menus': ['drinks', 'ingredients', 'inventory', 'orders'],
     'orders': ['drinks', 'ingredients', 'inventory', 'menus'],
+    'tagging': ['drinks', 'ingredients', 'inventory', 'menus', 'orders'],
 }
 
 
@@ -126,13 +127,13 @@ def header(p, title, subtitle, sheet):
 
 def footer(p, y):
     p.path(f'M72 {y} H1528', LINE, 1)
-    p.text(72, y + 36, 'Ryan Harris  /  thefellow.github.io  /  source baseline a7c2efd', 17, FAINT)
+    p.text(72, y + 36, 'Ryan Harris  /  thefellow.github.io  /  source baseline 0d5e64b', 17, FAINT)
     p.text(1528, y + 36, 'Open the SVG to follow package links.', 17, FAINT, anchor='end')
 
 
 def within():
     p = Poster(1720, 'Inside a module: Menus dependency diagram',
-               'All 23 local production import edges in Menus at baseline a7c2efd, with its three surface packages grouped. Arrows point from importer to dependency. External imports are summarized separately.')
+               'All 24 local production import edges in Menus at baseline 0d5e64b, with its three surface packages grouped. Arrows point from importer to dependency. External imports are summarized separately.')
     header(p, 'Inside a module', 'Menus makes the public entry, private implementation and shared values visible.', '02')
     p.rect(72, 299, 1456, 1010, '#181f1c', '#60796d', 20)
     p.text(98, 339, 'app/domains/menus/', 24, GREEN, 600, cls='mono')
@@ -156,7 +157,7 @@ def within():
     p.text(72, 1361, 'THE BOUNDARIES THE BUILD CHECKS', 18, GOLD, 700, extra='letter-spacing="2"')
     p.lines(72, 1403, ['Surfaces cannot import their own internal packages.',
                        'Queries and handlers cannot import commands.',
-                       'Handlers cannot import domain facades.'], 23, INK, 37)
+                       'Commands and handlers cannot import domain facades.'], 23, INK, 37)
     p.text(842, 1361, 'DEPENDENCIES BEYOND THIS BOX', 18, PURPLE, 700, extra='letter-spacing="2"')
     p.lines(842, 1403, ['Peer models, queries and events keep their owner.',
                         'Surfaces use matching toolkits and public facades.',
@@ -172,7 +173,7 @@ def within():
 
 def between():
     p = Poster(1950, 'Between modules: public query and event dependencies',
-               'Nine cross-context query dependencies and eleven event-contract dependencies at baseline a7c2efd. Arrows point from importer to contract owner. Tagging registry, Audit composition and native facade imports are explained separately.')
+               'Nine cross-context query dependencies and sixteen event-contract dependencies at baseline 0d5e64b. Arrows point from importer to contract owner. Tagging registry, Audit composition and native facade imports are explained separately.')
     header(p, 'Between modules', 'Public contracts expose the coupling. Each context retains its own write implementation.', '03')
     for x in (72, 816):
         p.rect(x, 306, 712, 886, '#181f1c', LINE, 18)
@@ -193,13 +194,13 @@ def between():
         nodes[name + '_e'] = (name + '/events', 'contract owner', f'app/domains/{name}/events', '#25372e', GREEN)
     source = graph(nodes, [(a + '_h', b + '_e') for a, bs in EVENTS.items() for b in bs], PURPLE, 'LR')
     embed(p, source, '08-event-imports', 834, 446, 676, 655)
-    p.lines(842, 1131, ['11 edges · arrow points toward the event owner', 'Runtime delivery runs the other way.'], 19, MUTED, 28)
+    p.lines(842, 1131, ['16 edges · arrow points toward the event owner', 'Runtime delivery runs the other way.'], 19, MUTED, 28)
 
     p.text(72, 1252, 'OTHER DEPENDENCIES HAVE DISTINCT JOBS', 19, GREEN, 700, extra='letter-spacing="2"')
     # These are deliberately selected exact imports; the upper graphs are exhaustive for their stated categories.
     p.rect(72, 1283, 1456, 398, '#202625', LINE, 16)
     for y, title, left, right, note, path in [
-        (1323, 'TAGGING', 'Operational facades', 'tagging', 'Registry and target registration; persistence uses the kernel’s tag.Repository port.', 'app/domains/menus/tagging.go'),
+        (1323, 'TAGGING', 'Operational facades', 'tagging', 'Target registration; domain edits publish TagsReplaced to Tagging’s leaf handlers.', 'app/domains/menus/tagging.go'),
         (1440, 'AUDIT + WIRING', 'app', 'audit + dispatcher + middleware', 'app.New injects the audit writer and dispatcher into the pipeline.', 'app/app.go'),
         (1557, 'NATIVE COMPOSITION', 'menus/surfaces/{gui,tui}', 'drinks', 'Public facade imports compose screens; peer surfaces and private writes stay inaccessible.', 'app/domains/menus/surfaces/gui'),
     ]:
