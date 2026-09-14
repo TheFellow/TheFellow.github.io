@@ -1,0 +1,283 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="1720" viewBox="0 0 1600 1720" role="img" aria-labelledby="title desc">
+<title id="title">Inside a module: Menus dependency diagram</title>
+<desc id="desc">All 23 local production import edges in Menus at baseline a7c2efd, with its three surface packages grouped. Arrows point from importer to dependency. External imports are summarized separately.</desc>
+<defs>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="#64766c" opacity="0.20"/></pattern>
+<linearGradient id="domain" x2="1" y2="1"><stop stop-color="#203b31"/><stop offset="1" stop-color="#1b2b25"/></linearGradient>
+<linearGradient id="transaction"><stop stop-color="#30291f"/><stop offset="1" stop-color="#211f1a"/></linearGradient>
+<marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#8bcafb" stroke-width="1.5"/></marker>
+<marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#f4c879" stroke-width="1.5"/></marker>
+</defs>
+<style>text{font-family:Arial,Helvetica,sans-serif} .serif{font-family:Georgia,"Times New Roman",serif} .mono{font-family:Menlo,Consolas,monospace} a:hover .district{stroke:#fff6ed;stroke-width:2} a:focus .district{stroke:#fff6ed;stroke-width:3}</style>
+<rect x="0" y="0" width="1600" height="1720" rx="0" fill="#141817" stroke="none" />
+<rect x="0" y="0" width="1600" height="1720" rx="0" fill="url(#grid)" stroke="none" />
+<text x="72" y="65" fill="#84e5b9" font-size="18" font-weight="700" class="" text-anchor="start" letter-spacing="2">EXPLICIT MODULES  /  DEPENDENCY FIELD GUIDE  /  02</text>
+<text x="72" y="146" fill="#fff6ed" font-size="65" font-weight="400" class="serif" text-anchor="start" >Inside a module</text>
+<text x="72" y="195" fill="#c1c6c4" font-size="24" font-weight="400" class="" text-anchor="start" >Menus makes the public entry, private implementation and shared values visible.</text>
+<path d="M72 227 H1528" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M74 260 H130" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+<text x="150" y="267" fill="#8bcafb" font-size="23" font-weight="600" class="" text-anchor="start" >A → B means A imports B. Every arrow is a source dependency.</text>
+<rect x="72" y="299" width="1456" height="1010" rx="20" fill="#181f1c" stroke="#60796d" />
+<text x="98" y="339" fill="#84e5b9" font-size="24" font-weight="600" class="mono" text-anchor="start" >app/domains/menus/</text>
+<text x="1500" y="339" fill="#c1c6c4" font-size="16" font-weight="400" class="" text-anchor="end" >ALL LOCAL IMPORTS · SURFACES GROUPED</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1420" height="900" viewBox="0.00 0.00 1003.00 741.00" x="90" y="360">
+<g id="07-module-imports-graph0" class="graph" transform="scale(1 1) rotate(0) translate(10.8 729.76)">
+<title>G</title>
+
+<g id="07-module-imports-edge1" class="edge">
+<title>surfaces-&gt;facade</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M843.15,-640.34C843.15,-627.99 843.15,-614.15 843.15,-601.19" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="845.95,-601.44 843.15,-593.44 840.35,-601.44 845.95,-601.44" />
+</g>
+
+<g id="07-module-imports-edge3" class="edge">
+<title>surfaces-&gt;queries</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M766.06,-640.37C746.44,-627.15 727.23,-610.6 714.15,-590.8 691.05,-555.83 683.44,-508.31 681.23,-473.03" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="684.05,-473.23 680.85,-465.38 678.45,-473.51 684.05,-473.23" />
+</g>
+
+<g id="07-module-imports-edge2" class="edge">
+<title>surfaces-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M925.19,-640.31C943.97,-627.35 961.51,-610.94 972.15,-590.8 988.37,-560.08 979.75,-546.54 972.15,-512.64 944.59,-389.72 938.35,-347.24 851.15,-256.32 834.22,-238.67 812.98,-223.84 791.34,-211.69" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="792.88,-209.34 784.52,-207.98 790.21,-214.26 792.88,-209.34" />
+</g>
+
+<g id="07-module-imports-edge8" class="edge">
+<title>facade-&gt;queries</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M793.67,-512.18C776.32,-498.67 756.68,-483.38 738.73,-469.4" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="740.56,-467.27 732.52,-464.57 737.11,-471.69 740.56,-467.27" />
+</g>
+
+<g id="07-module-imports-edge5" class="edge">
+<title>facade-&gt;commands</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M730.29,-520.1C661.87,-501.54 574.45,-477.82 503.83,-458.66" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="504.77,-456.01 496.32,-456.62 503.31,-461.42 504.77,-456.01" />
+</g>
+
+<g id="07-module-imports-edge6" class="edge">
+<title>facade-&gt;dao</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M836.02,-512.12C828.12,-476.63 812.82,-423.72 786.15,-384.48 775.4,-368.65 761.08,-353.99 746.55,-341.36" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="748.72,-339.52 740.8,-336.5 745.11,-343.8 748.72,-339.52" />
+</g>
+
+<g id="07-module-imports-edge7" class="edge">
+<title>facade-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M848.9,-512.08C855.72,-452.4 860.63,-336.34 811.15,-256.32 800.6,-239.27 785.39,-224.69 769.11,-212.59" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="771.16,-210.61 763.02,-208.25 767.91,-215.17 771.16,-210.61" />
+</g>
+
+<g id="07-module-imports-edge4" class="edge">
+<title>facade-&gt;authz</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M861.57,-512.16C867.83,-497.08 874.03,-479.4 877.15,-462.64 902.27,-327.82 859.71,-167.07 834.2,-88.36" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="836.94,-87.74 831.78,-81.02 831.62,-89.49 836.94,-87.74" />
+</g>
+
+<g id="07-module-imports-edge10" class="edge">
+<title>queries-&gt;dao</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M681.76,-384.02C681.96,-371.67 682.18,-357.83 682.38,-344.87" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="685.18,-345.17 682.51,-337.12 679.58,-345.08 685.18,-345.17" />
+</g>
+
+<g id="07-module-imports-edge9" class="edge">
+<title>queries-&gt;availability</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M592.35,-384.19C559.38,-369.95 521.78,-353.7 487.96,-339.09" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="489.21,-336.58 480.76,-335.98 486.99,-341.72 489.21,-336.58" />
+</g>
+
+<g id="07-module-imports-edge11" class="edge">
+<title>queries-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M741.16,-384.09C757.18,-370.52 772.44,-353.77 781.15,-334.48 795.45,-302.82 795.29,-288.05 781.15,-256.32 773.99,-240.25 762.28,-225.89 749.41,-213.66" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="751.34,-211.62 743.52,-208.33 747.58,-215.77 751.34,-211.62" />
+</g>
+
+<g id="07-module-imports-edge13" class="edge">
+<title>commands-&gt;dao</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M471.32,-384.02C509.35,-368.29 553.22,-350.15 591.13,-334.46" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="592.08,-337.1 598.4,-331.46 589.94,-331.93 592.08,-337.1" />
+</g>
+
+<g id="07-module-imports-edge12" class="edge">
+<title>commands-&gt;availability</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M381.51,-384.02C382.59,-371.67 383.79,-357.83 384.93,-344.87" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="387.7,-345.33 385.6,-337.11 382.12,-344.84 387.7,-345.33" />
+</g>
+
+<g id="07-module-imports-edge15" class="edge">
+<title>commands-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M449.27,-384.05C472.62,-369.9 497.99,-352.81 519.15,-334.48 553.51,-304.71 553.5,-288.96 585.15,-256.32 599.12,-241.91 615.02,-227.04 629.89,-213.71" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="631.63,-215.91 635.74,-208.5 627.91,-211.73 631.63,-215.91" />
+</g>
+
+<g id="07-module-imports-edge14" class="edge">
+<title>commands-&gt;events</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M307.59,-384.02C281.96,-370.02 252.83,-354.12 226.5,-339.73" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="228.17,-337.46 219.8,-336.08 225.48,-342.37 228.17,-337.46" />
+</g>
+
+<g id="07-module-imports-edge21" class="edge">
+<title>dao-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M683.15,-255.86C683.15,-243.51 683.15,-229.67 683.15,-216.71" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="685.95,-216.96 683.15,-208.96 680.35,-216.96 685.95,-216.96" />
+</g>
+
+<g id="07-module-imports-edge20" class="edge">
+<title>availability-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M478.96,-255.86C512.07,-241.65 549.76,-225.48 583.68,-210.93" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="584.66,-213.55 590.91,-207.82 582.45,-208.4 584.66,-213.55" />
+</g>
+
+<g id="07-module-imports-edge17" class="edge">
+<title>handlers-&gt;dao</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M251.27,-640.37C321.07,-600.77 428.62,-534.85 510.15,-462.64 544.19,-432.5 543.8,-416.43 576.15,-384.48 591.16,-369.66 608.43,-354.66 624.66,-341.35" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="626.21,-343.7 630.65,-336.48 622.68,-339.35 626.21,-343.7" />
+</g>
+
+<g id="07-module-imports-edge16" class="edge">
+<title>handlers-&gt;availability</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M185.03,-640.28C194.48,-570.17 216.99,-425.36 246.15,-384.48 258.56,-367.09 275.58,-352.43 293.56,-340.38" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="294.63,-343.02 299.84,-336.33 291.59,-338.31 294.63,-343.02" />
+</g>
+
+<g id="07-module-imports-edge19" class="edge">
+<title>handlers-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M144.58,-640.23C74.69,-559.6 -65.35,-371.41 35.15,-256.32 68.87,-217.71 377.58,-189.73 556.46,-176.61" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="556.53,-179.41 564.31,-176.04 556.13,-173.83 556.53,-179.41" />
+</g>
+
+<g id="07-module-imports-edge18" class="edge">
+<title>handlers-&gt;events</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M176.84,-640.46C170.79,-570.44 158.01,-422.21 151.36,-345.18" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="154.15,-344.94 150.67,-337.21 148.57,-345.42 154.15,-344.94" />
+</g>
+
+<g id="07-module-imports-edge23" class="edge">
+<title>models-&gt;authz</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M724.08,-127.7C738.24,-114.37 754.24,-99.31 768.92,-85.48" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="770.8,-87.56 774.71,-80.04 766.96,-83.49 770.8,-87.56" />
+</g>
+
+<g id="07-module-imports-edge22" class="edge">
+<title>events-&gt;models</title>
+<path fill="none" stroke="#8bcafb" stroke-width="1.6" d="M243.14,-260.91C248.54,-259.3 253.9,-257.75 259.15,-256.32 358.12,-229.32 472.05,-206.08 556.87,-190.26" />
+<polygon fill="#8bcafb" stroke="#8bcafb" stroke-width="1.6" points="557.33,-193.03 564.69,-188.81 556.31,-187.52 557.33,-193.03" />
+</g>
+
+<g id="07-module-imports-node1" class="node">
+<title>surfaces</title>
+<g id="07-module-imports-a_node1"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/surfaces" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M951.18,-718.96C951.18,-718.96 735.13,-718.96 735.13,-718.96 729.13,-718.96 723.13,-712.96 723.13,-706.96 723.13,-706.96 723.13,-652.8 723.13,-652.8 723.13,-646.8 729.13,-640.8 735.13,-640.8 735.13,-640.8 951.18,-640.8 951.18,-640.8 957.18,-640.8 963.18,-646.8 963.18,-652.8 963.18,-652.8 963.18,-706.96 963.18,-706.96 963.18,-712.96 957.18,-718.96 951.18,-718.96" />
+<text xml:space="preserve" text-anchor="start" x="741.53" y="-685.93" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">surfaces/{cli,tui,gui}</text>
+<text xml:space="preserve" text-anchor="start" x="790.65" y="-658.63" font-family="Arial" font-size="15.00" fill="#c1c6c4">Native adapters</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node2" class="node">
+<title>facade</title>
+<g id="07-module-imports-a_node2"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M943.68,-590.8C943.68,-590.8 742.63,-590.8 742.63,-590.8 736.63,-590.8 730.63,-584.8 730.63,-578.8 730.63,-578.8 730.63,-524.64 730.63,-524.64 730.63,-518.64 736.63,-512.64 742.63,-512.64 742.63,-512.64 943.68,-512.64 943.68,-512.64 949.68,-512.64 955.68,-518.64 955.68,-524.64 955.68,-524.64 955.68,-578.8 955.68,-578.8 955.68,-584.8 949.68,-590.8 943.68,-590.8" />
+<text xml:space="preserve" text-anchor="start" x="809.03" y="-557.77" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">menus</text>
+<text xml:space="preserve" text-anchor="start" x="749.03" y="-530.47" font-family="Arial" font-size="15.00" fill="#c1c6c4">Public facade + construction</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node3" class="node">
+<title>queries</title>
+<g id="07-module-imports-a_node3"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/queries" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#21333e" stroke="#8bcafb" stroke-width="1.2" d="M757.68,-462.64C757.68,-462.64 604.63,-462.64 604.63,-462.64 598.63,-462.64 592.63,-456.64 592.63,-450.64 592.63,-450.64 592.63,-396.48 592.63,-396.48 592.63,-390.48 598.63,-384.48 604.63,-384.48 604.63,-384.48 757.68,-384.48 757.68,-384.48 763.68,-384.48 769.68,-390.48 769.68,-396.48 769.68,-396.48 769.68,-450.64 769.68,-450.64 769.68,-456.64 763.68,-462.64 757.68,-462.64" />
+<text xml:space="preserve" text-anchor="start" x="643.28" y="-429.61" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">queries</text>
+<text xml:space="preserve" text-anchor="start" x="611.03" y="-402.31" font-family="Arial" font-size="15.00" fill="#c1c6c4">Public read contracts</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node4" class="node">
+<title>commands</title>
+<g id="07-module-imports-a_node4"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/internal/commands" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#302b21" stroke="#f4c879" stroke-width="1.2" d="M481.68,-462.64C481.68,-462.64 274.63,-462.64 274.63,-462.64 268.63,-462.64 262.63,-456.64 262.63,-450.64 262.63,-450.64 262.63,-396.48 262.63,-396.48 262.63,-390.48 268.63,-384.48 274.63,-384.48 274.63,-384.48 481.68,-384.48 481.68,-384.48 487.68,-384.48 493.68,-390.48 493.68,-396.48 493.68,-396.48 493.68,-450.64 493.68,-450.64 493.68,-456.64 487.68,-462.64 481.68,-462.64" />
+<text xml:space="preserve" text-anchor="start" x="281.03" y="-429.61" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">internal/commands</text>
+<text xml:space="preserve" text-anchor="start" x="327.53" y="-402.31" font-family="Arial" font-size="15.00" fill="#c1c6c4">Write decisions</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node5" class="node">
+<title>dao</title>
+<g id="07-module-imports-a_node5"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/internal/dao" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#302b21" stroke="#f4c879" stroke-width="1.2" d="M753.3,-334.48C753.3,-334.48 613,-334.48 613,-334.48 607,-334.48 601,-328.48 601,-322.48 601,-322.48 601,-268.32 601,-268.32 601,-262.32 607,-256.32 613,-256.32 613,-256.32 753.3,-256.32 753.3,-256.32 759.3,-256.32 765.3,-262.32 765.3,-268.32 765.3,-268.32 765.3,-322.48 765.3,-322.48 765.3,-328.48 759.3,-334.48 753.3,-334.48" />
+<text xml:space="preserve" text-anchor="start" x="623.15" y="-301.45" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">internal/dao</text>
+<text xml:space="preserve" text-anchor="start" x="619.4" y="-274.15" font-family="Arial" font-size="15.00" fill="#c1c6c4">Private persistence</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node6" class="node">
+<title>availability</title>
+<g id="07-module-imports-a_node6"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/internal/availability" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#302b21" stroke="#f4c879" stroke-width="1.2" d="M491.55,-334.48C491.55,-334.48 286.75,-334.48 286.75,-334.48 280.75,-334.48 274.75,-328.48 274.75,-322.48 274.75,-322.48 274.75,-268.32 274.75,-268.32 274.75,-262.32 280.75,-256.32 286.75,-256.32 286.75,-256.32 491.55,-256.32 491.55,-256.32 497.55,-256.32 503.55,-262.32 503.55,-268.32 503.55,-268.32 503.55,-322.48 503.55,-322.48 503.55,-328.48 497.55,-334.48 491.55,-334.48" />
+<text xml:space="preserve" text-anchor="start" x="293.15" y="-301.45" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">internal/availability</text>
+<text xml:space="preserve" text-anchor="start" x="313.4" y="-274.15" font-family="Arial" font-size="15.00" fill="#c1c6c4">Readiness calculations</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node7" class="node">
+<title>handlers</title>
+<g id="07-module-imports-a_node7"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/handlers" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#2e293b" stroke="#c8b1f1" stroke-width="1.2" d="M263.43,-718.96C263.43,-718.96 96.88,-718.96 96.88,-718.96 90.88,-718.96 84.88,-712.96 84.88,-706.96 84.88,-706.96 84.88,-652.8 84.88,-652.8 84.88,-646.8 90.88,-640.8 96.88,-640.8 96.88,-640.8 263.43,-640.8 263.43,-640.8 269.43,-640.8 275.43,-646.8 275.43,-652.8 275.43,-652.8 275.43,-706.96 275.43,-706.96 275.43,-712.96 269.43,-718.96 263.43,-718.96" />
+<text xml:space="preserve" text-anchor="start" x="135.9" y="-685.93" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">handlers</text>
+<text xml:space="preserve" text-anchor="start" x="103.28" y="-658.63" font-family="Arial" font-size="15.00" fill="#c1c6c4">Owned event reactions</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node8" class="node">
+<title>models</title>
+<g id="07-module-imports-a_node8"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/models" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M787.05,-206.32C787.05,-206.32 579.25,-206.32 579.25,-206.32 573.25,-206.32 567.25,-200.32 567.25,-194.32 567.25,-194.32 567.25,-140.16 567.25,-140.16 567.25,-134.16 573.25,-128.16 579.25,-128.16 579.25,-128.16 787.05,-128.16 787.05,-128.16 793.05,-128.16 799.05,-134.16 799.05,-140.16 799.05,-140.16 799.05,-194.32 799.05,-194.32 799.05,-200.32 793.05,-206.32 787.05,-206.32" />
+<text xml:space="preserve" text-anchor="start" x="646.03" y="-173.29" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">models</text>
+<text xml:space="preserve" text-anchor="start" x="585.65" y="-145.99" font-family="Arial" font-size="15.00" fill="#c1c6c4">Domain values + public types</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node9" class="node">
+<title>events</title>
+<g id="07-module-imports-a_node9"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/events" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M230.8,-334.48C230.8,-334.48 63.5,-334.48 63.5,-334.48 57.5,-334.48 51.5,-328.48 51.5,-322.48 51.5,-322.48 51.5,-268.32 51.5,-268.32 51.5,-262.32 57.5,-256.32 63.5,-256.32 63.5,-256.32 230.8,-256.32 230.8,-256.32 236.8,-256.32 242.8,-262.32 242.8,-268.32 242.8,-268.32 242.8,-322.48 242.8,-322.48 242.8,-328.48 236.8,-334.48 230.8,-334.48" />
+<text xml:space="preserve" text-anchor="start" x="113.4" y="-301.45" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">events</text>
+<text xml:space="preserve" text-anchor="start" x="69.9" y="-274.15" font-family="Arial" font-size="15.00" fill="#c1c6c4">Facts owned by Menus</text>
+</a>
+</g>
+</g>
+
+<g id="07-module-imports-node10" class="node">
+<title>authz</title>
+<g id="07-module-imports-a_node10"><a xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/authz" xlink:title="&lt;TABLE&gt;" target="_blank">
+<path fill="#25372e" stroke="#84e5b9" stroke-width="1.2" d="M934.18,-78.16C934.18,-78.16 700.13,-78.16 700.13,-78.16 694.13,-78.16 688.13,-72.16 688.13,-66.16 688.13,-66.16 688.13,-12 688.13,-12 688.13,-6 694.13,0 700.13,0 700.13,0 934.18,0 934.18,0 940.18,0 946.18,-6 946.18,-12 946.18,-12 946.18,-66.16 946.18,-66.16 946.18,-72.16 940.18,-78.16 934.18,-78.16" />
+<text xml:space="preserve" text-anchor="start" x="789.78" y="-45.13" font-family="Arial" font-weight="bold" font-size="21.00" fill="#fff6ed">authz</text>
+<text xml:space="preserve" text-anchor="start" x="706.53" y="-17.83" font-family="Arial" font-size="15.00" fill="#c1c6c4">Domain-owned Cedar vocabulary</text>
+</a>
+</g>
+</g>
+</g>
+</svg>
+<text x="98" y="1282" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >The facade → DAO edge includes schema registration. Model imports converge on values and policy vocabulary.</text>
+<text x="72" y="1361" fill="#f4c879" font-size="18" font-weight="700" class="" text-anchor="start" letter-spacing="2">THE BOUNDARIES THE BUILD CHECKS</text>
+<text x="72" y="1403" fill="#fff6ed" font-size="23" font-weight="400" class="" text-anchor="start" >Surfaces cannot import their own internal packages.</text>
+<text x="72" y="1440" fill="#fff6ed" font-size="23" font-weight="400" class="" text-anchor="start" >Queries and handlers cannot import commands.</text>
+<text x="72" y="1477" fill="#fff6ed" font-size="23" font-weight="400" class="" text-anchor="start" >Handlers cannot import domain facades.</text>
+<text x="842" y="1361" fill="#c8b1f1" font-size="18" font-weight="700" class="" text-anchor="start" letter-spacing="2">DEPENDENCIES BEYOND THIS BOX</text>
+<text x="842" y="1403" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Peer models, queries and events keep their owner.</text>
+<text x="842" y="1440" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Surfaces use matching toolkits and public facades.</text>
+<text x="842" y="1477" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Shared kernel, middleware and store support the module.</text>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml" target="_blank">
+<rect x="72" y="1542" width="1456" height="75" rx="12" fill="#202625" stroke="#39433f" class="district"/>
+<text x="98" y="1573" fill="#84e5b9" font-size="23" font-weight="600" class="" text-anchor="start" >Go internal blocks peer access. arch-lint narrows access inside the owner’s tree.</text>
+<text x="98" y="1601" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Observed imports are shown above; the rules also reject forbidden imports that have not been written.</text>
+</a>
+<path d="M72 1652 H1528" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="72" y="1688" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="start" >Ryan Harris  /  thefellow.github.io  /  source baseline a7c2efd</text>
+<text x="1528" y="1688" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="end" >Open the SVG to follow package links.</text>
+</svg>

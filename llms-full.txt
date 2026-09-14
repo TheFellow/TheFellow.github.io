@@ -1191,6 +1191,8 @@ That is the kind of problem I built [Mixology](/projects/go-modular-monolith.md)
 
 I narrowed some of those ideas to suit one local application with strong transactional behavior. Several of the most useful boundaries became clearer only after replacing the database or adding a third user interface.
 
+I call this arrangement **Explicit Modules**, with a Go accent: a domain-first modular monolith with clear ownership and little ceremony. The [infographic below](#explicit-modules-a-map-of-the-territory) gathers the architecture into one picture: who owns the work, how modules collaborate, and what commits together.
+
 At [commit `a7c2efd`][baseline], Procurement remains planned work, and newer amendment and stock-lifecycle operations have broader CLI coverage than GUI/TUI coverage.
 
 ## The original map, and the downloadable PDF
@@ -1264,6 +1266,18 @@ Go's `internal` rule provides part of the protection. Another context cannot imp
 
 There is a useful distinction here: some bad programs fail to compile because of Go visibility or types; other imports are legal Go but fail the repository's architecture checks.
 
+### Follow the imports inside one module
+
+Menus is a useful module to open up because it has the full set of public queries, private commands, event reactions, readiness calculations, models, policy, and native adapters. This diagram shows **all 23 local production import edges** at the article's baseline, after grouping its CLI, TUI, and GUI packages into one surface node. An edge from that group means at least one of those packages has the import. **Every arrow points from the importer to its dependency.**
+
+[![Menus package dependencies. Surfaces import the facade, queries, and models. The facade imports queries, commands, DAO, models, and authz. Queries, commands, and handlers import the private availability helper, DAO, and models; commands and handlers also import local event contracts. Events, availability, and DAO import models, and models imports authz. Arrows point from importer to dependency.](/assets/diagrams/explicit-architecture/07-module-dependencies.svg)](/assets/diagrams/explicit-architecture/07-module-dependencies.svg)
+
+*Inside a module: [full-size SVG](/assets/diagrams/explicit-architecture/07-module-dependencies.svg), [vector PDF](/assets/diagrams/explicit-architecture/07-module-dependencies.pdf), or [PNG](/assets/diagrams/explicit-architecture/07-module-dependencies.png).*
+
+The convergence on `models` is intentional: commands, reads, reactions, and adapters share domain values and public types. Menus' models import its `authz` vocabulary. The facade's direct DAO dependency includes registering the private schema during construction. These are source dependencies; their placement does not describe an operation's execution order.
+
+The absent shortcuts matter too. Surfaces cannot import `internal`, queries and handlers cannot import commands, and handlers cannot import domain facades. The graph records actual imports, while the [architecture rules][rules] constrain imports that could be added later. Peer contracts and shared mechanisms sit outside this local view.
+
 ## Accept public coupling, preserve write ownership
 
 Graça's first article describes a stricter component-decoupling target, including moving shared events out of the publishing component. It also permits read-only access to another component's data in the shared-storage case. [Explicit Architecture #1][ea1]
@@ -1275,6 +1289,25 @@ Private writes are the stronger boundary. Handlers cannot import domain facades 
 Business relationships can be reciprocal without requiring package cycles. Orders reads Inventory's public contracts; Inventory consumes Order events. Inventory adjustment events can affect Orders in return. Distinct query, model, event, and handler packages make those dependencies expressible without collapsing both modules into one package.
 
 The tradeoff is deliberate. I retain compile-time navigation and an obvious contract owner, while accepting coordinated changes when that public contract evolves. Moving a module into another process would require revisiting these assumptions, especially serialization and transaction semantics.
+
+### Follow the contract owner between modules
+
+The next diagram separates **read dependencies** from **event-contract dependencies**. Its upper panels include every cross-context public-query import from non-surface production packages and every foreign event import from domain handlers at the same baseline. Multiple package imports between the same two contexts become one read edge. The event panel keeps handler and event packages distinct.
+
+[![Between-module source dependencies. Orders reads Menus, Drinks, Inventory, and Ingredients; Menus reads Drinks, Inventory, and Ingredients; Drinks and Inventory read Ingredients. Receiving handlers import the event owner's package, so dependency arrows point opposite runtime event delivery. Separate examples show operational facades importing Tagging for registration, app composing Audit and middleware, and Menus native surfaces importing the public Drinks facade.](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg)](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg)
+
+*Between modules: [full-size SVG](/assets/diagrams/explicit-architecture/08-between-module-dependencies.svg), [vector PDF](/assets/diagrams/explicit-architecture/08-between-module-dependencies.pdf), or [PNG](/assets/diagrams/explicit-architecture/08-between-module-dependencies.png).*
+
+| Importing context | Public query owners | Foreign event owners imported by its handlers |
+| --- | --- | --- |
+| Drinks | Ingredients | Ingredients |
+| Inventory | Ingredients | Ingredients, Orders |
+| Menus | Drinks, Ingredients, Inventory | Drinks, Ingredients, Inventory, Orders |
+| Orders | Drinks, Ingredients, Inventory, Menus | Drinks, Ingredients, Inventory, Menus |
+
+Event delivery and source dependency point in opposite directions. An Orders event reaches Inventory at runtime, while `inventory/handlers` imports `orders/events` in source. The generated dispatcher imports both the event types and the receiving handlers. Commands know the facts they publish; the dispatcher supplies knowledge of the receivers.
+
+Audit and Tagging have different connections. `app.New` constructs the audit writer and injects its recording function into the pipeline. Operational facades import Tagging to register domain-owned targets, while read/write implementations use the shared `tag.Repository` port. Native surfaces also have deliberate public facade dependencies, such as Menus' GUI and TUI importing Drinks to compose their screens. The lower panel shows selected examples of these dependencies. Public model imports, other shared packages, and third-party dependencies are outside the two upper graphs.
 
 ## Use CQRS where it clarifies an operation
 
@@ -1396,21 +1429,27 @@ The [TUI toolkit article](/articles/building-an-application-tui-toolkit.md) reco
 
 Errors cross the same boundary. A typed conflict or permission failure has one application meaning; each surface chooses its presentation. HTTP and gRPC mappings in the error package are mappings, not evidence that Mixology currently has HTTP or gRPC entrypoints.
 
-## Read the complete map in several directions
+## Explicit Modules: a map of the territory
 
-[![Complete Mixology architecture atlas: seven domain contexts, three driving surfaces, typed operation paths, concrete infrastructure, transactional event fan-out, shared contracts, generated wiring, and executable checks.](/assets/diagrams/explicit-architecture/05-complete.svg)](/assets/diagrams/explicit-architecture/05-complete.svg)
+**Explicit Modules** names the two things I want a reader to find in the code: a clear owner for each capability, and visible contracts between owners. **A domain-first modular monolith** is the descriptive subtitle. The Go accent is in the implementation: concrete facades, typed direct calls, small interfaces where a capability needs one, ordinary packages, and explicit construction.
 
-*Stage 5. [Open the full-size SVG](/assets/diagrams/explicit-architecture/05-complete.svg) or [download the printable PDF](/assets/diagrams/explicit-architecture/05-complete.pdf).*
+The name also leaves room for the influences. Clean and Explicit Architecture, DDD, Fubu, and Screaming Architecture all contributed to my preferences. This map brings those preferences back to the application I can inspect and run.
 
-The complete drawing has several reading paths:
+[![Explicit Modules, with a Go accent. Three native surfaces enter public Go operations across Ingredients, Drinks, Menus, Inventory, Orders, Audit, and Tagging. A module cutaway separates adapters, facade and pipeline, models and policy, and private commands and persistence. Public queries and owner-local events connect contexts. A command loads and authorizes, decides and authorizes its result, applies prepared leaf reactions, records success audit, and commits in one SQLite transaction. Shared vocabulary, named mechanisms, and executable checks support these boundaries.](/assets/diagrams/explicit-architecture/06-explicit-modules.svg)](/assets/diagrams/explicit-architecture/06-explicit-modules.svg)
 
-- **Outside inward:** a concrete surface reaches public application operations and domain decisions.
-- **Across contexts:** public queries answer questions; owner-local events announce facts; interested contexts own reactions.
-- **Through time:** a command and prepared reactions complete inside one transaction before successful audit and commit.
-- **Down to foundations:** shared values, narrow ports, concrete adapters, and application wiring have different responsibilities.
-- **Along the evidence strip:** types, import rules, topology, composition, regression tests, and independent clients check different claims.
+*Open the [full-size SVG](/assets/diagrams/explicit-architecture/06-explicit-modules.svg), download the [vector PDF](/assets/diagrams/explicit-architecture/06-explicit-modules.pdf), or save the [PNG](/assets/diagrams/explicit-architecture/06-explicit-modules.png). Source links work when the SVG is opened directly.*
 
-The circles describe conceptual responsibility. They are not a generated import graph. Solid dependency arrows and numbered execution arrows are labeled separately, and each detailed panel links to the source it describes when the SVG is opened directly. The [diagram source and reading notes](/assets/diagrams/explicit-architecture/README.txt) identify the baseline, conventions, and regeneration command.
+Read the infographic from top to bottom:
+
+1. **The territory.** CLI, TUI, and GUI have their own interaction models. Each entrypoint builds the application and calls its public operations. Seven named contexts own the work. The green districts represent ownership; their size and neighbors do not imply dependencies. Audit and Tagging retain their smaller explicit profiles.
+2. **The module boundary.** A regular context keeps its adapters, facade, models, policy, commands, and persistence together. Peers read public query contracts and consume events published by the owning context. Each receiver owns its writes. Go visibility and arch-lint make those seams enforceable.
+3. **The journey of a change.** One command, its leaf reactions, and its successful audit share a local transaction. Ingredient retirement reaches Drinks, Inventory, Menus, and Orders. Every applicable preparation runs before any receiver applies its reaction for that event. Managed failure rolls back the changes before recording the failed attempt separately.
+
+The foundations have distinct jobs: the kernel supplies shared vocabulary and narrow ports, named packages supply mechanisms, and `app.New` plus generated wiring assemble the application. Explicit workflows can join several public calls in one transaction; an externally supplied transaction retains caller ownership, as described above.
+
+Solid blue arrows indicate calls or contract use. Dashed amber arrows indicate execution. The earlier [detailed architecture atlas](/assets/diagrams/explicit-architecture/05-complete.svg) and its [PDF](/assets/diagrams/explicit-architecture/05-complete.pdf) remain available for the infrastructure and implementation details. The [diagram source and reading notes](/assets/diagrams/explicit-architecture/README.txt) identify the pinned baseline and regeneration commands.
+
+The companion dependency views let me check that picture against the imports: [inside Menus](#follow-the-imports-inside-one-module) and [between contexts](#follow-the-contract-owner-between-modules). In those two views, every arrow is a source dependency, including the purple event-contract arrows.
 
 ## Make the map answerable to evidence
 

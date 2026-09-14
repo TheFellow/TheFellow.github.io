@@ -1,0 +1,20 @@
+digraph G {
+graph [bgcolor="transparent", rankdir=TB, pad=0.15, nodesep=0.45, ranksep=0.7, splines=spline, outputorder=edgesfirst];
+node [shape=box, style="rounded,filled", color="#466879", fillcolor="#21333e", fontcolor="#fff6ed", fontname="Arial", fontsize=21, margin="0.20,0.14", penwidth=1.2];
+edge [color="#8bcafb", arrowsize=0.8, penwidth=1.6];
+"orders" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD><B>Orders</B></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c1c6c4">bounded context</FONT></TD></TR></TABLE>>, fillcolor="#21333e", color="#8bcafb", URL="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders", target="_blank"];
+"menus" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD><B>Menus</B></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c1c6c4">bounded context</FONT></TD></TR></TABLE>>, fillcolor="#21333e", color="#8bcafb", URL="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus", target="_blank"];
+"drinks" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD><B>Drinks</B></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c1c6c4">bounded context</FONT></TD></TR></TABLE>>, fillcolor="#21333e", color="#8bcafb", URL="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks", target="_blank"];
+"inventory" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD><B>Inventory</B></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c1c6c4">bounded context</FONT></TD></TR></TABLE>>, fillcolor="#21333e", color="#8bcafb", URL="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory", target="_blank"];
+"ingredients" [label=<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4"><TR><TD><B>Ingredients</B></TD></TR><TR><TD><FONT POINT-SIZE="15" COLOR="#c1c6c4">bounded context</FONT></TD></TR></TABLE>>, fillcolor="#21333e", color="#8bcafb", URL="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients", target="_blank"];
+"drinks" -> "ingredients";
+"inventory" -> "ingredients";
+"menus" -> "drinks";
+"menus" -> "ingredients";
+"menus" -> "inventory";
+"orders" -> "drinks";
+"orders" -> "ingredients";
+"orders" -> "inventory";
+"orders" -> "menus";
+
+}

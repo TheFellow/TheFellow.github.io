@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1600" height="2520" viewBox="0 0 1600 2520" role="img" aria-labelledby="title desc">
+<title id="title">Explicit Modules, with a Go accent</title>
+<desc id="desc">A map of Mixology, a domain-first modular monolith. Three native surfaces call public Go operations. Seven bounded contexts own their capabilities. Public queries and owner-local events connect contexts; writes remain private. A command, prepared leaf reactions, and success audit share one SQLite transaction. Shared values, mechanisms, and explicit wiring support the modules; types and architecture tests enforce boundaries. Original infographic by Ryan Harris. Source baseline a7c2efda8c0cd905089a27060242ff841bb0ad41.</desc>
+<defs>
+<pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="0.8" fill="#64766c" opacity="0.20"/></pattern>
+<linearGradient id="domain" x2="1" y2="1"><stop stop-color="#203b31"/><stop offset="1" stop-color="#1b2b25"/></linearGradient>
+<linearGradient id="transaction"><stop stop-color="#30291f"/><stop offset="1" stop-color="#211f1a"/></linearGradient>
+<marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#8bcafb" stroke-width="1.5"/></marker>
+<marker id="arrow-gold" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 L9 5 L1 9" fill="none" stroke="#f4c879" stroke-width="1.5"/></marker>
+</defs>
+<style>text{font-family:Arial,Helvetica,sans-serif} .serif{font-family:Georgia,"Times New Roman",serif} .mono{font-family:Menlo,Consolas,monospace} a:hover .district{stroke:#fff6ed;stroke-width:2} a:focus .district{stroke:#fff6ed;stroke-width:3}</style>
+<rect x="0" y="0" width="1600" height="2520" rx="0" fill="#141817" stroke="none" />
+<rect x="0" y="0" width="1600" height="2520" rx="0" fill="url(#grid)" stroke="none" />
+<text x="72" y="67" fill="#84e5b9" font-size="18" font-weight="700" class="" text-anchor="start" letter-spacing="3">MIXOLOGY  /  AN ARCHITECTURE FIELD GUIDE</text>
+<text x="72" y="163" fill="#fff6ed" font-size="91" font-weight="400" class="serif" text-anchor="start" >Explicit Modules</text>
+<text x="76" y="237" fill="#84e5b9" font-size="53" font-weight="400" class="serif" text-anchor="start" font-style="italic">with a Go accent.</text>
+<text x="76" y="281" fill="#c1c6c4" font-size="25" font-weight="400" class="" text-anchor="start" >A domain-first modular monolith. Clear ownership. Little ceremony.</text>
+<rect x="1360" y="122" width="48" height="48" rx="6" fill="#203b31" stroke="#84e5b9" />
+<circle cx="1384" cy="146" r="4" fill="#84e5b9" stroke="none"/>
+<rect x="1420" y="122" width="48" height="48" rx="6" fill="#203b31" stroke="#84e5b9" />
+<circle cx="1444" cy="146" r="4" fill="#84e5b9" stroke="none"/>
+<rect x="1360" y="182" width="48" height="48" rx="6" fill="#203b31" stroke="#84e5b9" />
+<circle cx="1384" cy="206" r="4" fill="#84e5b9" stroke="none"/>
+<rect x="1420" y="182" width="48" height="48" rx="6" fill="#203b31" stroke="#84e5b9" />
+<circle cx="1444" cy="206" r="4" fill="#84e5b9" stroke="none"/>
+<rect x="1344" y="106" width="140" height="140" rx="15" fill="none" stroke="#466658" />
+<text x="1414" y="275" fill="#84e5b9" font-size="13" font-weight="700" class="" text-anchor="middle" letter-spacing="1.5">ONE APPLICATION</text>
+<path d="M72 316 H1528" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="91" cy="347" r="19" fill="#84e5b9" stroke="none"/>
+<text x="91" y="353" fill="#141817" font-size="17" font-weight="700" class="" text-anchor="middle" >01</text>
+<text x="125" y="354" fill="#84e5b9" font-size="17" font-weight="700" class="" text-anchor="start" letter-spacing="2.5">THE TERRITORY</text>
+<text x="72" y="401" fill="#fff6ed" font-size="35" font-weight="500" class="serif" text-anchor="start" >Three entrances. Seven owners.</text>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" target="_blank">
+<rect x="72" y="424" width="464" height="99" rx="12" fill="#202625" stroke="#39433f" />
+<g transform="translate(94 446) scale(1)">
+<path d="M4 8 H44 V40 H4 Z" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M11 17 L18 23 L11 29 M24 30 H34" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="159" y="459" fill="#8bcafb" font-size="26" font-weight="700" class="" text-anchor="start" >CLI</text>
+<text x="159" y="494" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >urfave/cli · arguments &amp; output</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" target="_blank">
+<rect x="568" y="424" width="464" height="99" rx="12" fill="#202625" stroke="#39433f" />
+<g transform="translate(590 446) scale(1)">
+<path d="M4 8 H44 V40 H4 Z" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M4 17 H44 M18 17 V40 M9 23 H13 M9 29 H13 M24 24 H37 M24 30 H33" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="655" y="459" fill="#8bcafb" font-size="26" font-weight="700" class="" text-anchor="start" >TUI</text>
+<text x="655" y="494" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Bubble Tea · messages &amp; state</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" target="_blank">
+<rect x="1064" y="424" width="464" height="99" rx="12" fill="#202625" stroke="#39433f" />
+<g transform="translate(1086 446) scale(1)">
+<path d="M4 8 H44 V36 H4 Z" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M18 43 H30 M24 36 V43 M4 16 H44" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M11 23 H23 V30 H11 M29 23 H37 M29 29 H35" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="1151" y="459" fill="#8bcafb" font-size="26" font-weight="700" class="" text-anchor="start" >GUI</text>
+<text x="1151" y="494" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Fyne · controls &amp; callbacks</text>
+</a>
+<rect x="72" y="552" width="1456" height="544" rx="22" fill="#181f1c" stroke="#60796d" />
+<path d="M304 523 V539 H1296 V523 M800 523 V539" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M800 539 V575" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+<rect x="868" y="542" width="627" height="23" rx="0" fill="#141817" stroke="none" />
+<text x="880" y="558" fill="#c1c6c4" font-size="16" font-weight="500" class="" text-anchor="start" >EACH ENTRYPOINT BUILDS THE APPLICATION THROUGH app.New</text>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" target="_blank">
+<rect x="96" y="578" width="1408" height="61" rx="10" fill="#21333e" stroke="#466879" />
+<text x="124" y="618" fill="#8bcafb" font-size="22" font-weight="700" class="" text-anchor="start" >PUBLIC GO OPERATIONS</text>
+<text x="518" y="618" fill="#fff6ed" font-size="23" font-weight="400" class="" text-anchor="start" >Typed facade calls  ·  shared behavior  ·  fresh operation context</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/module.go" target="_blank">
+<rect x="96" y="657" width="450" height="150" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M496 657 L496 672 L546 672" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(118 679) scale(1)">
+<path d="M12 38 C9 10 24 6 40 7 C43 24 31 37 12 38 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M10 42 L32 16" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M20 30 L19 20" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M26 23 L34 23" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="184" y="706" fill="#84e5b9" font-size="32" font-weight="600" class="" text-anchor="start" >Ingredients</text>
+<text x="120" y="750" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Catalog, substitutions &amp; retirement</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/module.go" target="_blank">
+<rect x="562" y="657" width="450" height="150" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M962 657 L962 672 L1012 672" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(584 679) scale(1)">
+<path d="M6 9 H42 L24 28 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M24 28 V42 M14 42 H34" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M12 15 H36" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M31 12 L38 3" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="650" y="706" fill="#84e5b9" font-size="32" font-weight="600" class="" text-anchor="start" >Drinks</text>
+<text x="586" y="750" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Recipes, preparation &amp; review</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/module.go" target="_blank">
+<rect x="1028" y="657" width="476" height="150" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M1454 657 L1454 672 L1504 672" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(1050 679) scale(1)">
+<path d="M8 6 H31 L40 15 V44 H8 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M30 6 V16 H40" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M15 24 H32 M15 31 H32 M15 38 H26" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="1116" y="706" fill="#84e5b9" font-size="32" font-weight="600" class="" text-anchor="start" >Menus</text>
+<text x="1052" y="750" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Curation, readiness &amp; publication</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory/module.go" target="_blank">
+<rect x="96" y="823" width="696" height="150" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M742 823 L742 838 L792 838" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(118 845) scale(1)">
+<path d="M6 17 L24 7 L42 17 V37 L24 47 L6 37 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M6 17 L24 27 L42 17 M24 27 V47" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M15 12 L33 22 V30" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="184" y="872" fill="#84e5b9" font-size="32" font-weight="600" class="" text-anchor="start" >Inventory</text>
+<text x="120" y="916" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Physical stock, reservations &amp; disposition</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders/module.go" target="_blank">
+<rect x="808" y="823" width="696" height="150" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M1454 823 L1454 838 L1504 838" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(830 845) scale(1)">
+<path d="M10 5 H38 V45 L31 41 L24 45 L17 41 L10 45 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M17 15 H31 M17 23 H31" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M17 32 L22 36 L31 28" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="896" y="872" fill="#84e5b9" font-size="32" font-weight="600" class="" text-anchor="start" >Orders</text>
+<text x="832" y="916" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Acceptance, fulfillment plans &amp; amendments</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/audit/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/audit/module.go" target="_blank">
+<rect x="96" y="989" width="696" height="66" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M742 989 L742 1004 L792 1004" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(118 1005) scale(0.75)">
+<path d="M7 10 H34 V44 H7 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M15 19 H27 M15 27 H27 M15 35 H22" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M30 6 L36 2 L42 6 V22 L36 27 L30 22 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="168" y="1027" fill="#84e5b9" font-size="27" font-weight="600" class="" text-anchor="start" >Audit</text>
+<text x="316" y="1027" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Activities, participants &amp; effects</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/tagging/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/tagging/module.go" target="_blank">
+<rect x="808" y="989" width="696" height="66" rx="10" fill="url(#domain)" stroke="#466658" class="district"/>
+<path d="M1454 989 L1454 1004 L1504 1004" stroke="#466658" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<g transform="translate(830 1005) scale(0.75)">
+<path d="M6 6 H25 L45 26 L26 45 L6 25 Z" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M14 15 A2 2 0 1 0 18 15 A2 2 0 1 0 14 15" stroke="#84e5b9" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="880" y="1027" fill="#84e5b9" font-size="27" font-weight="600" class="" text-anchor="start" >Tagging</text>
+<text x="1028" y="1027" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Associations &amp; domain-owned targets</text>
+</a>
+<text x="96" y="1081" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="start" >Districts show ownership. Their size and adjacency carry no dependency meaning.</text>
+<text x="72" y="1132" fill="#c1c6c4" font-size="24" font-weight="400" class="" text-anchor="start" >Every capability keeps its vocabulary, rules, policy, persistence and native adapters close together.</text>
+<circle cx="91" cy="1194" r="19" fill="#8bcafb" stroke="none"/>
+<text x="91" y="1200" fill="#141817" font-size="17" font-weight="700" class="" text-anchor="middle" >02</text>
+<text x="125" y="1201" fill="#8bcafb" font-size="17" font-weight="700" class="" text-anchor="start" letter-spacing="2.5">THE MODULE BOUNDARY</text>
+<text x="72" y="1248" fill="#fff6ed" font-size="35" font-weight="500" class="serif" text-anchor="start" >Public contracts connect. Private writes stay owned.</text>
+<rect x="72" y="1274" width="886" height="365" rx="18" fill="#1b2220" stroke="#39433f" />
+<text x="96" y="1311" fill="#84e5b9" font-size="16" font-weight="700" class="" text-anchor="start" letter-spacing="2">ONE OPERATIONAL CONTEXT</text>
+<text x="927" y="1311" fill="#c1c6c4" font-size="17" font-weight="400" class="mono" text-anchor="end" >app/domains/ingredients/</text>
+<rect x="96" y="1334" width="838" height="56" rx="8" fill="#21333e" stroke="none" />
+<text x="116" y="1370" fill="#8bcafb" font-size="21" font-weight="600" class="mono" text-anchor="start" >surfaces/</text>
+<text x="424" y="1370" fill="#fff6ed" font-size="21" font-weight="400" class="" text-anchor="start" >Native adapters translate intent</text>
+<rect x="96" y="1404" width="838" height="56" rx="8" fill="#21333e" stroke="none" />
+<text x="116" y="1440" fill="#8bcafb" font-size="21" font-weight="600" class="mono" text-anchor="start" >facade + pipeline</text>
+<text x="424" y="1440" fill="#fff6ed" font-size="21" font-weight="400" class="" text-anchor="start" >Typed operations select the behavior</text>
+<rect x="96" y="1474" width="838" height="56" rx="8" fill="#25372e" stroke="none" />
+<text x="116" y="1510" fill="#84e5b9" font-size="21" font-weight="600" class="mono" text-anchor="start" >models + authz</text>
+<text x="424" y="1510" fill="#fff6ed" font-size="21" font-weight="400" class="" text-anchor="start" >Values, domain rules and Cedar policy</text>
+<rect x="96" y="1544" width="838" height="56" rx="8" fill="#302b21" stroke="none" />
+<text x="116" y="1580" fill="#f4c879" font-size="21" font-weight="600" class="mono" text-anchor="start" >internal/</text>
+<text x="424" y="1580" fill="#fff6ed" font-size="21" font-weight="400" class="" text-anchor="start" >Commands and DAO own mutations</text>
+<text x="96" y="1624" fill="#8c9996" font-size="17" font-weight="400" class="" text-anchor="start" >Package organization; models and policy support both reads and writes.</text>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/docs/architecture.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/docs/architecture.md" target="_blank">
+<text x="1002" y="1305" fill="#8bcafb" font-size="16" font-weight="700" class="" text-anchor="start" letter-spacing="2">BETWEEN OWNERS</text>
+<path d="M1004 1344 H1050" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+<text x="1072" y="1351" fill="#fff6ed" font-size="23" font-weight="600" class="" text-anchor="start" >Read through public queries</text>
+<text x="1072" y="1383" fill="#c1c6c4" font-size="18" font-weight="400" class="" text-anchor="start" >models / queries belong to their context</text>
+<path d="M1004 1433 H1050" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<text x="1072" y="1440" fill="#fff6ed" font-size="23" font-weight="600" class="" text-anchor="start" >React to owner-local events</text>
+<text x="1072" y="1472" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Each receiver writes its own state</text>
+</a>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go" target="_blank">
+<path d="M1004 1511 H1504" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="1004" y="1548" fill="#f4c879" font-size="27" font-weight="500" class="serif" text-anchor="start" >Handlers are leaves.</text>
+<text x="1004" y="1580" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >HandlerContext has no AddEvent.</text>
+<text x="1004" y="1609" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Queries and handlers cannot call commands.</text>
+</a>
+<path d="M1004 1640 H1040" stroke="#8bcafb" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-blue)"/>
+<text x="1051" y="1646" fill="#c1c6c4" font-size="16" font-weight="400" class="" text-anchor="start" >Contract use</text>
+<path d="M1250 1640 H1286" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<text x="1297" y="1646" fill="#c1c6c4" font-size="16" font-weight="400" class="" text-anchor="start" >Execution</text>
+<text x="72" y="1674" fill="#c1c6c4" font-size="23" font-weight="400" class="" text-anchor="start" >Public coupling is deliberate. Go internal + arch-lint protect the implementation boundary.</text>
+<circle cx="91" cy="1736" r="19" fill="#f4c879" stroke="none"/>
+<text x="91" y="1742" fill="#141817" font-size="17" font-weight="700" class="" text-anchor="middle" >03</text>
+<text x="125" y="1743" fill="#f4c879" font-size="17" font-weight="700" class="" text-anchor="start" letter-spacing="2.5">THE JOURNEY OF A CHANGE</text>
+<text x="72" y="1790" fill="#fff6ed" font-size="35" font-weight="500" class="serif" text-anchor="start" >One operation. One local commit.</text>
+<rect x="72" y="1815" width="1456" height="382" rx="18" fill="url(#transaction)" stroke="#76603e" />
+<text x="96" y="1851" fill="#f4c879" font-size="17" font-weight="700" class="" text-anchor="start" letter-spacing="1">COMMAND + REACTIONS + SUCCESS AUDIT SHARE A SQLITE TRANSACTION</text>
+<path d="M159 1904 H392" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<circle cx="135" cy="1904" r="21" fill="#f4c879" stroke="none"/>
+<text x="135" y="1911" fill="#141817" font-size="19" font-weight="700" class="" text-anchor="middle" >1</text>
+<text x="110" y="1956" fill="#fff6ed" font-size="29" font-weight="600" class="" text-anchor="start" >Load</text>
+<text x="110" y="1987" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Authorize input</text>
+<path d="M442 1904 H675" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<circle cx="418" cy="1904" r="21" fill="#f4c879" stroke="none"/>
+<text x="418" y="1911" fill="#141817" font-size="19" font-weight="700" class="" text-anchor="middle" >2</text>
+<text x="393" y="1956" fill="#fff6ed" font-size="29" font-weight="600" class="" text-anchor="start" >Decide</text>
+<text x="393" y="1987" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Authorize result</text>
+<path d="M725 1904 H958" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<circle cx="701" cy="1904" r="21" fill="#f4c879" stroke="none"/>
+<text x="701" y="1911" fill="#141817" font-size="19" font-weight="700" class="" text-anchor="middle" >3</text>
+<text x="676" y="1956" fill="#fff6ed" font-size="29" font-weight="600" class="" text-anchor="start" >React</text>
+<text x="676" y="1987" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Prepare, then apply</text>
+<path d="M1008 1904 H1241" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<circle cx="984" cy="1904" r="21" fill="#f4c879" stroke="none"/>
+<text x="984" y="1911" fill="#141817" font-size="19" font-weight="700" class="" text-anchor="middle" >4</text>
+<text x="959" y="1956" fill="#fff6ed" font-size="29" font-weight="600" class="" text-anchor="start" >Record</text>
+<text x="959" y="1987" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >Success audit</text>
+<circle cx="1267" cy="1904" r="21" fill="#f4c879" stroke="none"/>
+<text x="1267" y="1911" fill="#141817" font-size="19" font-weight="700" class="" text-anchor="middle" >5</text>
+<text x="1242" y="1956" fill="#fff6ed" font-size="29" font-weight="600" class="" text-anchor="start" >Commit</text>
+<text x="1242" y="1987" fill="#c1c6c4" font-size="20" font-weight="400" class="" text-anchor="start" >All writes together</text>
+<path d="M96 2010 H1504" stroke="#514635" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="96" y="2044" fill="#f4c879" font-size="15" font-weight="700" class="" text-anchor="start" letter-spacing="2">FOLLOW ONE FACT</text>
+<text x="96" y="2082" fill="#fff6ed" font-size="27" font-weight="600" class="" text-anchor="start" >Ingredient retired</text>
+<text x="96" y="2113" fill="#c1c6c4" font-size="18" font-weight="400" class="mono" text-anchor="start" >IngredientDeleted event</text>
+<path d="M345 2074 H396 V2023 H1366" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 6"/>
+<path d="M547 2023 V2036" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<rect x="421" y="2037" width="252" height="93" rx="10" fill="#29271f" stroke="#65563b" />
+<text x="437" y="2075" fill="#f4c879" font-size="24" font-weight="600" class="" text-anchor="start" >Drinks</text>
+<text x="437" y="2107" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Revise or flag recipes</text>
+<path d="M820 2023 V2036" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<rect x="694" y="2037" width="252" height="93" rx="10" fill="#29271f" stroke="#65563b" />
+<text x="710" y="2075" fill="#f4c879" font-size="24" font-weight="600" class="" text-anchor="start" >Inventory</text>
+<text x="710" y="2107" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Retain stock</text>
+<path d="M1093 2023 V2036" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<rect x="967" y="2037" width="252" height="93" rx="10" fill="#29271f" stroke="#65563b" />
+<text x="983" y="2075" fill="#f4c879" font-size="24" font-weight="600" class="" text-anchor="start" >Menus</text>
+<text x="983" y="2107" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Recheck availability</text>
+<path d="M1366 2023 V2036" stroke="#f4c879" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-gold)" stroke-dasharray="6 6"/>
+<rect x="1240" y="2037" width="252" height="93" rx="10" fill="#29271f" stroke="#65563b" />
+<text x="1256" y="2075" fill="#f4c879" font-size="24" font-weight="600" class="" text-anchor="start" >Orders</text>
+<text x="1256" y="2107" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Preserve acceptance</text>
+<text x="421" y="2164" fill="#f4c879" font-size="19" font-weight="400" class="" text-anchor="start" >For each event: prepare every receiver before applying any reaction. No cascading events.</text>
+<text x="72" y="2234" fill="#c1c6c4" font-size="23" font-weight="400" class="" text-anchor="start" >On managed failure: roll back the changes, then audit the failed attempt separately.</text>
+<path d="M72 2270 H1528" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="72" y="2310" fill="#c8b1f1" font-size="16" font-weight="700" class="" text-anchor="start" letter-spacing="1.5">SHARED VOCABULARY</text>
+<text x="72" y="2347" fill="#fff6ed" font-size="24" font-weight="400" class="" text-anchor="start" >Typed IDs · money · units</text>
+<text x="72" y="2379" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Small kernel + narrow ports</text>
+<text x="568" y="2310" fill="#c8b1f1" font-size="16" font-weight="700" class="" text-anchor="start" letter-spacing="1.5">NAMED MECHANISMS</text>
+<text x="568" y="2347" fill="#fff6ed" font-size="24" font-weight="400" class="" text-anchor="start" >Store · policy · middleware</text>
+<text x="568" y="2379" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >app.New + generated dispatch</text>
+<text x="1064" y="2310" fill="#c8b1f1" font-size="16" font-weight="700" class="" text-anchor="start" letter-spacing="1.5">EXECUTABLE BOUNDARIES</text>
+<text x="1064" y="2347" fill="#fff6ed" font-size="24" font-weight="400" class="" text-anchor="start" >Types · internal · arch-lint</text>
+<text x="1064" y="2379" fill="#c1c6c4" font-size="21" font-weight="400" class="" text-anchor="start" >Topology + behavioral tests</text>
+<path d="M72 2410 H1528" stroke="#39433f" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="72" y="2446" fill="#c1c6c4" font-size="19" font-weight="400" class="" text-anchor="start" >Clean · Explicit · DDD · Fubu · Screaming Architecture → expressed through Go</text>
+<text x="72" y="2481" fill="#8c9996" font-size="16" font-weight="400" class="" text-anchor="start" >Ryan Harris  /  thefellow.github.io  /  2026-09-13</text>
+<text x="1528" y="2481" fill="#8c9996" font-size="16" font-weight="400" class="" text-anchor="end" letter-spacing="1">MIXOLOGY  ·  a7c2efd  ·  MAP 01</text>
+</svg>
