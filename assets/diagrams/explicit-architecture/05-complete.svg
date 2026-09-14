@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="2000" height="2010" viewBox="0 0 2000 2010" role="img" aria-labelledby="title desc">
-<title id="title">Explicit Architecture, with a Go accent</title><desc id="desc">A detailed map of Mixology: conceptual responsibility, supported dependencies, execution, and evidence.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline a7c2efda8c0cd905089a27060242ff841bb0ad41. Linked panels open implementation evidence.</desc>
+<title id="title">Explicit Architecture, with a Go accent</title><desc id="desc">A detailed map of Mixology: conceptual responsibility, supported dependencies, execution, and evidence.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline 0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c. Linked panels open implementation evidence.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74c0fc"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc36b"/></marker></defs>
 <style>text {font-family:Arial,Helvetica,sans-serif;fill:#fff6fb} a:hover rect {stroke:#ff4f94;stroke-width:3} .muted {fill:#d0c8d2} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#ff4f94}</style>
 <rect x="0" y="0" width="2000" height="2010" rx="0" fill="#141010" stroke="none" stroke-width="1.5"/>
@@ -9,47 +9,47 @@
 <text x="40.0" y="163.0" font-size="17" text-anchor="start" font-weight="700">DRIVING SIDE</text>
 <text x="1535.0" y="163.0" font-size="17" text-anchor="start" font-weight="700">DRIVEN TOOLS + OWNED ADAPTERS</text>
 <circle cx="1000" cy="585" r="410" fill="#1c2d46" stroke="#74c0fc" stroke-width="3"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/ingredients/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/module.go" target="_blank">
 <path d="M 842.5002027003264 257.94830095142186 A 363 363 0 0 1 1157.4997972996734 257.9483009514218 L 1061.6114909546932 457.06242075785644 A 142 142 0 0 0 938.3885090453067 457.0624207578565 Z" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="1000.0" y="310.0" font-size="24" text-anchor="middle" font-weight="700">Ingredients</text>
 <text x="1000.0" y="340.0" font-size="15" text-anchor="middle">Catalog · substitutions</text>
 <text x="1000.0" y="363.0" font-size="15" text-anchor="middle">Retirement and replacement</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/drinks/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/module.go" target="_blank">
 <path d="M 1157.4997972996734 257.9483009514218 A 363 363 0 0 1 1353.898832122002 504.22490097385787 L 1138.439763529819 553.4020273782033 A 142 142 0 0 0 1061.6114909546932 457.06242075785644 Z" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="1200.1" y="406.4" font-size="24" text-anchor="middle" font-weight="700">Drinks</text>
 <text x="1200.1" y="436.4" font-size="15" text-anchor="middle">Recipes · preparation</text>
 <text x="1200.1" y="459.4" font-size="15" text-anchor="middle">Active / review required</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/inventory/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/inventory/module.go" target="_blank">
 <path d="M 1353.898832122002 504.22490097385787 A 363 363 0 0 1 1283.8048281358947 811.3267980747203 L 1111.0200705104603 673.5355518639401 A 142 142 0 0 0 1138.439763529819 553.4020273782033 Z" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="1249.6" y="623.0" font-size="24" text-anchor="middle" font-weight="700">Inventory</text>
 <text x="1249.6" y="653.0" font-size="15" text-anchor="middle">Stock · reservations</text>
 <text x="1249.6" y="676.0" font-size="15" text-anchor="middle">Disposition · movements</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/menus/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/menus/module.go" target="_blank">
 <path d="M 1283.804828135895 811.3267980747203 A 363 363 0 0 1 1000.0000000000001 948.0 L 1000.0 727.0 A 142 142 0 0 0 1111.0200705104603 673.5355518639401 Z" fill="#30243e" stroke="#797482" stroke-width="1.5"/>
 <text x="1111.1" y="796.6" font-size="24" text-anchor="middle" font-weight="700">Menus</text>
 <text x="1111.1" y="826.6" font-size="15" text-anchor="middle">Curation · publication</text>
 <text x="1111.1" y="849.6" font-size="15" text-anchor="middle">Readiness · availability</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/orders/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/module.go" target="_blank">
 <path d="M 1000.0 948.0 A 363 363 0 0 1 716.1951718641051 811.3267980747202 L 888.9799294895397 673.5355518639401 A 142 142 0 0 0 1000.0 727.0 Z" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="888.9" y="796.6" font-size="24" text-anchor="middle" font-weight="700">Orders</text>
 <text x="888.9" y="826.6" font-size="15" text-anchor="middle">Acceptance · current plan</text>
 <text x="888.9" y="849.6" font-size="15" text-anchor="middle">Amendments · lifecycle</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/audit/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/audit/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/audit/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/audit/module.go" target="_blank">
 <path d="M 716.1951718641051 811.3267980747202 A 363 363 0 0 1 646.101167877998 504.22490097385776 L 861.560236470181 553.4020273782033 A 142 142 0 0 0 888.9799294895397 673.5355518639401 Z" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="750.4" y="623.0" font-size="24" text-anchor="middle" font-weight="700">Audit</text>
 <text x="750.4" y="653.0" font-size="15" text-anchor="middle">Append-only activities</text>
 <text x="750.4" y="676.0" font-size="15" text-anchor="middle">Touches · participants · effects</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/tagging/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/domains/tagging/module.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/module.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging/module.go" target="_blank">
 <path d="M 646.101167877998 504.2249009738581 A 363 363 0 0 1 842.5002027003263 257.9483009514219 L 938.3885090453067 457.0624207578565 A 142 142 0 0 0 861.560236470181 553.4020273782035 Z" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="799.9" y="406.4" font-size="24" text-anchor="middle" font-weight="700">Tagging</text>
 <text x="799.9" y="436.4" font-size="15" text-anchor="middle">Associations · target registry</text>
-<text x="799.9" y="459.4" font-size="15" text-anchor="middle">Domain-owned action resolution</text>
+<text x="799.9" y="459.4" font-size="15" text-anchor="middle">Prepared tag event reactions</text>
 </a>
 <circle cx="1000" cy="585" r="141" fill="#242021" stroke="#63e6be" stroke-width="2"/>
 <text x="1000.0" y="543.0" font-size="19" text-anchor="middle">DOMAIN DECISIONS</text>
@@ -58,28 +58,28 @@
 <text x="1000.0" y="633.0" font-size="19" text-anchor="middle">Pure transition rules</text>
 <text x="1000.0" y="164.0" font-size="17" text-anchor="middle" font-weight="700">PUBLIC APPLICATION OPERATIONS</text>
 <text x="1000.0" y="1015.0" font-size="16" text-anchor="middle" font-weight="700">TYPED FACADES + CONFIGURED PIPELINE</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/cli/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/cli/README.md" target="_blank">
 <rect x="40" y="195" width="410" height="169" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">CLI · main/cli</text>
 <text x="60.0" y="258.0" font-size="18" text-anchor="start" class="muted">urfave/cli flags + command hierarchy</text>
 <text x="60.0" y="285.0" font-size="18" text-anchor="start" class="muted">Parse args / JSON; print results</text>
 <text x="60.0" y="312.0" font-size="18" text-anchor="start" class="muted">Fresh invocation context</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/tui/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/tui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/tui/README.md" target="_blank">
 <rect x="40" y="397" width="410" height="169" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="430.0" font-size="21" text-anchor="start" font-weight="700">TUI · main/tui</text>
 <text x="60.0" y="460.0" font-size="18" text-anchor="start" class="muted">Bubble Tea messages + commands</text>
 <text x="60.0" y="487.0" font-size="18" text-anchor="start" class="muted">ViewModel / Interaction ownership</text>
 <text x="60.0" y="514.0" font-size="18" text-anchor="start" class="muted">Forms, dialogs, keys, text frames</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/README.md" target="_blank">
 <rect x="40" y="599" width="410" height="169" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="632.0" font-size="21" text-anchor="start" font-weight="700">GUI · main/gui</text>
 <text x="60.0" y="662.0" font-size="18" text-anchor="start" class="muted">Fyne presenters + retained widgets</text>
 <text x="60.0" y="689.0" font-size="18" text-anchor="start" class="muted">Executor → UI dispatcher</text>
 <text x="60.0" y="716.0" font-size="18" text-anchor="start" class="muted">Live input and request generations</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/toolkits/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/toolkits/readme.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/toolkits/readme.md" target="_blank">
 <rect x="40" y="801" width="410" height="166" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="834.0" font-size="21" text-anchor="start" font-weight="700">Independent adapter mechanics</text>
 <text x="60.0" y="864.0" font-size="18" text-anchor="start" class="muted">surfaces/{cli,tui,gui} per domain</text>
@@ -89,7 +89,7 @@
 <path d="M450,480 L595,480" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
 <text x="468.0" y="451.0" font-size="16" text-anchor="start" class="muted">calls public</text>
 <text x="468.0" y="471.0" font-size="16" text-anchor="start" class="muted">operations</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md" target="_blank">
 <rect x="1535" y="195" width="425" height="193" rx="14" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="1555.0" y="228.0" font-size="21" text-anchor="start" font-weight="700">pkg/store → SQLite</text>
 <text x="1555.0" y="258.0" font-size="17" text-anchor="start" class="muted">Owned Store / Tx / Query[T]</text>
@@ -98,7 +98,7 @@
 <text x="1555.0" y="339.0" font-size="17" text-anchor="start" class="muted">WAL readers; serialized writers</text>
 <text x="1555.0" y="366.0" font-size="17" text-anchor="start" class="muted">Revision predicate rejects stale writes</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/authz/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/authz/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authz/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/authz/README.md" target="_blank">
 <rect x="1535" y="415" width="425" height="164" rx="14" fill="#30243e" stroke="#797482" stroke-width="1.5"/>
 <text x="1555.0" y="448.0" font-size="21" text-anchor="start" font-weight="700">Domain authz → Cedar</text>
 <text x="1555.0" y="478.0" font-size="17" text-anchor="start" class="muted">Policies and schemas owned per context</text>
@@ -106,7 +106,7 @@
 <text x="1555.0" y="532.0" font-size="17" text-anchor="start" class="muted">Public models expose Cedar entities</text>
 <text x="1555.0" y="559.0" font-size="17" text-anchor="start" class="muted">Generated policy assembly in pkg/authz</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/filter/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/filter/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/README.md" target="_blank">
 <rect x="1535" y="606" width="425" height="164" rx="14" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="1555.0" y="639.0" font-size="21" text-anchor="start" font-weight="700">Typed filtering → Expr + SQL</text>
 <text x="1555.0" y="669.0" font-size="17" text-anchor="start" class="muted">Domain schema → checked expression</text>
@@ -114,7 +114,7 @@
 <text x="1555.0" y="723.0" font-size="17" text-anchor="start" class="muted">Hydration → complete predicate</text>
 <text x="1555.0" y="750.0" font-size="17" text-anchor="start" class="muted">Authorized paging yields visible matches</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/changes.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/store/changes.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go" target="_blank">
 <rect x="1535" y="797" width="425" height="170" rx="14" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="1555.0" y="830.0" font-size="21" text-anchor="start" font-weight="700">Store changes → client refresh</text>
 <text x="1555.0" y="860.0" font-size="17" text-anchor="start" class="muted">Connection-local data_version monitor</text>
@@ -126,52 +126,52 @@
 <text x="1430.0" y="451.0" font-size="16" text-anchor="start" class="muted">uses policy</text>
 <text x="1430.0" y="471.0" font-size="16" text-anchor="start" class="muted">contracts</text>
 <text x="515.0" y="1043.0" font-size="18" text-anchor="start" class="muted">Circle = responsibility map, not a literal import graph. Public contracts remain coupled to their named owners.</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml" target="_blank">
 <rect x="40" y="1060" width="1920" height="130" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="1093.0" font-size="21" text-anchor="start" font-weight="700">WITHIN A REGULAR CONTEXT / OWNERSHIP AND VISIBILITY</text>
 <text x="60.0" y="1123.0" font-size="19" text-anchor="start" class="muted">surfaces → public facade → typed pipeline → internal/commands + internal/dao; queries and handlers may use their own DAO.</text>
-<text x="60.0" y="1150.0" font-size="19" text-anchor="start" class="muted">models / queries / events are public collaboration seams. authz belongs to its domain. Audit and Tagging have explicit smaller profiles.</text>
+<text x="60.0" y="1150.0" font-size="19" text-anchor="start" class="muted">models / queries / events are public contracts. Tagging reacts through handlers and owns association writes in internal/dao.</text>
 <text x="60.0" y="1177.0" font-size="19" text-anchor="start" class="muted">Peer reads use supported query contracts. Commands publish only their own events. Handlers cannot import facades or commands.</text>
 </a>
 <rect x="40" y="1220" width="1920" height="256" rx="14" fill="#3b2d1b" stroke="#ffc36b" stroke-width="1.5"/>
 <text x="60.0" y="1254.0" font-size="18" text-anchor="start" font-weight="700">EXECUTION / ONE LOCAL TRANSACTION / NUMBERED DASHED ARROWS</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" target="_blank">
 <rect x="60" y="1275" width="350" height="115" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="80.0" y="1308.0" font-size="21" text-anchor="start" font-weight="700">1 · Load + authorize</text>
 <text x="80.0" y="1338.0" font-size="17" text-anchor="start" class="muted">Trusted input</text>
 <text x="80.0" y="1365.0" font-size="17" text-anchor="start" class="muted">Current principal</text>
 </a>
 <path d="M410,1332 L439,1332" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" target="_blank">
 <rect x="440" y="1275" width="350" height="115" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="460.0" y="1308.0" font-size="21" text-anchor="start" font-weight="700">2 · Execute + authorize</text>
 <text x="460.0" y="1338.0" font-size="17" text-anchor="start" class="muted">Source mutation</text>
 <text x="460.0" y="1365.0" font-size="17" text-anchor="start" class="muted">Resulting resource</text>
 </a>
 <path d="M790,1332 L819,1332" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/dispatcher/dispatcher_gen.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/dispatcher/dispatcher_gen.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/dispatcher_gen.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/dispatcher_gen.go" target="_blank">
 <rect x="820" y="1275" width="350" height="115" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="840.0" y="1308.0" font-size="21" text-anchor="start" font-weight="700">3 · Dispatch each event</text>
 <text x="840.0" y="1338.0" font-size="17" text-anchor="start" class="muted">Prepare every receiver</text>
 <text x="840.0" y="1365.0" font-size="17" text-anchor="start" class="muted">Apply leaf reactions</text>
 </a>
 <path d="M1170,1332 L1199,1332" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" target="_blank">
 <rect x="1200" y="1275" width="350" height="115" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="1220.0" y="1308.0" font-size="21" text-anchor="start" font-weight="700">4 · Success audit</text>
 <text x="1220.0" y="1338.0" font-size="17" text-anchor="start" class="muted">Domain effects</text>
 <text x="1220.0" y="1365.0" font-size="17" text-anchor="start" class="muted">Same transaction</text>
 </a>
 <path d="M1550,1332 L1579,1332" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/run.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go" target="_blank">
 <rect x="1580" y="1275" width="350" height="115" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="1600.0" y="1308.0" font-size="21" text-anchor="start" font-weight="700">5 · Commit</text>
 <text x="1600.0" y="1338.0" font-size="17" text-anchor="start" class="muted">All writes together</text>
 <text x="1600.0" y="1365.0" font-size="17" text-anchor="start" class="muted">One result to caller</text>
 </a>
 <text x="60.0" y="1420.0" font-size="19" text-anchor="start" font-weight="700">Retirement: IngredientDeleted → Drinks / Inventory / Menus / Orders. Preparation is per event; HandlerContext cannot AddEvent.</text>
-<text x="60.0" y="1452.0" font-size="18" text-anchor="start" class="muted">Failure: owner rolls back, then records failed attempt. RunWorkflow correlates children; an external transaction retains caller ownership.</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/kernel/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/kernel/readme.md" target="_blank">
+<text x="60.0" y="1452.0" font-size="18" text-anchor="start" class="muted">Failure: owner rolls back, then records failed attempt. One command claims each transaction; nested and sequential command composition is rejected.</text>
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/readme.md" target="_blank">
 <rect x="40" y="1510" width="610" height="240" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="60.0" y="1543.0" font-size="21" text-anchor="start" font-weight="700">SHARED VALUES + NARROW PORTS</text>
 <text x="60.0" y="1573.0" font-size="18" text-anchor="start" class="muted">app/kernel: typed entity IDs, money,</text>
@@ -181,7 +181,7 @@
 <text x="60.0" y="1681.0" font-size="18" text-anchor="start" class="muted">domain loaders preserve target ownership.</text>
 <text x="60.0" y="1708.0" font-size="18" text-anchor="start" class="muted">Kernel does not depend on domains.</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/app.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go" target="_blank">
 <rect x="680" y="1510" width="640" height="240" rx="14" fill="#30243e" stroke="#797482" stroke-width="1.5"/>
 <text x="700.0" y="1543.0" font-size="21" text-anchor="start" font-weight="700">MECHANISMS + EXPLICIT WIRING</text>
 <text x="700.0" y="1573.0" font-size="18" text-anchor="start" class="muted">middleware: transactions, activity, dispatch.</text>
@@ -191,7 +191,7 @@
 <text x="700.0" y="1681.0" font-size="18" text-anchor="start" class="muted">Generators: events, policies, IDs, errors.</text>
 <text x="700.0" y="1708.0" font-size="18" text-anchor="start" class="muted">pkg is not uniformly domain-independent.</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/presentation/actions/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/presentation/actions/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/presentation/actions/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/presentation/actions/README.md" target="_blank">
 <rect x="1350" y="1510" width="610" height="240" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="1370.0" y="1543.0" font-size="21" text-anchor="start" font-weight="700">OBSERVATION + PRESENTATION</text>
 <text x="1370.0" y="1573.0" font-size="18" text-anchor="start" class="muted">Gets authorize results; lists elide denials.</text>
@@ -203,19 +203,19 @@
 </a>
 <rect x="40" y="1780" width="1920" height="133" rx="14" fill="#242021" stroke="#63e6be" stroke-width="1.5"/>
 <text x="60.0" y="1813.0" font-size="20" text-anchor="start" font-weight="700">EXECUTABLE EVIDENCE</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/pkg/middleware/context.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/context.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/context.go" target="_blank">
 <text x="60.0" y="1850.0" font-size="18" text-anchor="start" font-weight="700">Types + Go internal</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/.arch-lint.yaml" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml" target="_blank">
 <text x="425.0" y="1850.0" font-size="18" text-anchor="start" font-weight="700">Captured import rules</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/architecture/domain_topology_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/architecture/domain_topology_test.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_topology_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_topology_test.go" target="_blank">
 <text x="790.0" y="1850.0" font-size="18" text-anchor="start" font-weight="700">Topology + registration</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/cross_domain_regression_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/app/cross_domain_regression_test.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_regression_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_regression_test.go" target="_blank">
 <text x="1220.0" y="1850.0" font-size="18" text-anchor="start" font-weight="700">Permutation + rollback</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/a7c2efda8c0cd905089a27060242ff841bb0ad41/main/gui/README.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/README.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/main/gui/README.md" target="_blank">
 <text x="1625.0" y="1850.0" font-size="18" text-anchor="start" font-weight="700">Independent clients</text>
 </a>
 <text x="60.0" y="1887.0" font-size="18" text-anchor="start" class="muted">Current scope: seven contexts and three UI runtimes. Procurement, Analytics, process managers, brokers, and outboxes are future design pressures.</text>
@@ -224,6 +224,6 @@
 <path d="M535,1940 L585,1940" fill="none" stroke="#ffc36b" stroke-width="2.5" stroke-dasharray="7 5" marker-end="url(#flow)"/>
 <text x="600.0" y="1946.0" font-size="16" text-anchor="start" class="muted">Execution sequence (not imports)</text>
 <text x="1100.0" y="1946.0" font-size="16" text-anchor="start" class="muted">Colored regions group responsibilities; linked panels provide the code trace.</text>
-<text x="40.0" y="1973.0" font-size="15" text-anchor="start" class="muted">Ryan Harris · thefellow.github.io · 2026-09-12 · Go baseline a7c2efd</text>
+<text x="40.0" y="1973.0" font-size="15" text-anchor="start" class="muted">Ryan Harris · thefellow.github.io · 2026-09-13 · Go baseline 0d5e64b</text>
 <text x="40.0" y="1996.0" font-size="14" text-anchor="start" class="muted">Original diagram; progressive approach inspired by Herberto Graça’s Explicit Architecture. Open SVG directly to follow source links.</text>
 </svg>

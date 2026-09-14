@@ -35,17 +35,17 @@ That single operation contains most of the series. The lessons below pull it apa
 
 A package layout can suggest a design, but it cannot preserve one. If Drinks can import the private command code inside Ingredients, eventually some reasonable person under a reasonable deadline will do exactly that. The code will work. The boundary will not.
 
-Mixology treats the repository's dependency rules as source code. Twelve declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/main/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. Captured rules also make the CLI, GUI, and TUI toolkits independent, permit each domain surface to import only the matching toolkit, and keep every surface independent of `main/**` composition. Cross-domain rules keep authorization contracts private to their owner and allow a command implementation to import only its own domain's events, while public models, queries, and events remain collaboration contracts.
+Mixology treats the repository's dependency rules as source code. Fourteen declarations in [`.arch-lint.yaml`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml) keep shared packages independent of domains, isolate concrete presentation surfaces, and protect each domain's implementation packages. The internal-access rule is an allowlist: only the domain facade, its queries, its handlers, and other packages below `internal` may import that domain's internals. Models, events, authz, surfaces, and any future public layer are denied without requiring another package-specific rule. Captured rules also make the CLI, GUI, and TUI toolkits independent, permit each domain surface to import only the matching toolkit, and keep every surface independent of `main/**` composition. Cross-domain rules keep authorization contracts private to their owner and allow a command implementation to import only its own domain's events, while public models, queries, and events remain collaboration contracts. Commands cannot import domain facades, preventing command implementations from composing peer writes.
 
-Import rules cover dependency direction, but they do not catch every architectural omission. Mixology also treats the domain directories as the source of truth for two repository tests. The [topology test](https://github.com/TheFellow/go-modular-monolith/blob/main/architecture/domain_topology_test.go) rejects unrecognized peer layers such as an improvised `services` or `utils` package, while allowing explicit profiles for operational, audit, and tagging domains. The [composition test](https://github.com/TheFellow/go-modular-monolith/blob/main/architecture/domain_registration_test.go) compares those directories with `app.App` and `app.New`, so a new domain cannot exist in the tree without being exposed and initialized. Neither test introduces a second registration manifest. Together with import linting, they check dependency edges, the permitted architectural vocabulary, and whether every declared module actually joins the application.
+Import rules cover dependency direction, but they do not catch every architectural omission. Mixology also treats the domain directories as the source of truth for two repository tests. The [topology test](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_topology_test.go) rejects unrecognized peer layers such as an improvised `services` or `utils` package, while allowing explicit profiles for operational, audit, and tagging domains. The [composition test](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_registration_test.go) compares those directories with `app.App` and `app.New`, so a new domain cannot exist in the tree without being exposed and initialized. Neither test introduces a second registration manifest. Together with import linting, they check dependency edges, the permitted architectural vocabulary, and whether every declared module actually joins the application.
 
 The important part is the feedback loop. Introduce an illegal import and `go tool arch-lint` fails locally and in CI. The lesson will make that failure on purpose, then trace why the rule exists. The goal is not to admire a clean dependency graph. It is to make the wrong graph difficult to create.
 
 ## 2. Let the compiler carry the rules it can
 
-Some mistakes are too cheap to make. A `DrinkID` and a `MenuID` may have the same representation, but accepting either in the same parameter gives a bug somewhere to hide. Mixology generates distinct ID types from one [entity definition](https://github.com/TheFellow/go-modular-monolith/blob/main/app/kernel/entity/entities.go), so exchanging them accidentally is a compile error rather than a test case someone has to remember.
+Some mistakes are too cheap to make. A `DrinkID` and a `MenuID` may have the same representation, but accepting either in the same parameter gives a bug somewhere to hide. Mixology generates distinct ID types from one [entity definition](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/entity/entities.go), so exchanging them accidentally is a compile error rather than a test case someone has to remember.
 
-The more interesting example is an ability that is missing. Commands receive a full middleware context and may add domain events. Event handlers receive the narrower [`HandlerContext`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/context.go), which exposes the transaction, principal, and audit tracking but has no `AddEvent` method. A handler can update its own domain in response to an event; it cannot start an unbounded chain of new events.
+The more interesting example is an ability that is missing. Commands receive a full middleware context and may add domain events. Event handlers receive the narrower [`HandlerContext`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/context.go), which exposes the transaction, principal, and audit tracking but has no `AddEvent` method. A handler can update its own domain in response to an event; it cannot start an unbounded chain of new events.
 
 Not every business rule belongs in a type, and forcing all of them there can make a design harder to read. This lesson is about recognizing the rules that do: distinctions and capabilities the compiler can enforce continuously, at almost no cost to the next person changing the system.
 
@@ -53,7 +53,7 @@ Not every business rule belongs in a type, and forcing all of them there can mak
 
 Logging, metrics, authorization, transaction management, event dispatch, and audit recording apply to almost every operation. Repeating them in every handler would not make the behavior explicit. It would make the differences between handlers accidental.
 
-Mixology composes those concerns into a shared [middleware pipeline](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/chains.go). A domain method describes the operation it needs to perform; the pipeline supplies the surrounding guarantees. Go 1.27 generic methods put that vocabulary on the configured pipeline itself. `Pipeline.Command` handles caller-supplied state, while [`Pipeline.LoadCommand`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/middleware/run.go) loads trusted current state inside the unit of work, authorizes it, invokes the command, and authorizes the resulting resource before anything commits. `Query`, `QueryResource`, `PageQuery`, and `LoadCommandActions` make the other supported operation shapes equally explicit.
+Mixology composes those concerns into a shared [middleware pipeline](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/chains.go). A domain method describes the operation it needs to perform; the pipeline supplies the surrounding guarantees. Go 1.27 generic methods put that vocabulary on the configured pipeline itself. `Pipeline.Command` handles caller-supplied state, while [`Pipeline.LoadCommand`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/run.go) loads trusted current state inside the unit of work, authorizes it, invokes the command, and authorizes the resulting resource before anything commits. `Query`, `QueryResource`, `PageQuery`, and `LoadCommandActions` make the other supported operation shapes equally explicit.
 
 That second authorization check matters. Permission is sometimes a property of a transition, not merely an action name. A policy may allow someone to edit a draft menu without allowing the same edit to produce a published menu. Looking at both sides gives policy enough information to express that distinction while the command remains concerned with menu behavior.
 
@@ -77,7 +77,7 @@ Code generation can remove work, or it can conceal a framework no one wants to d
 
 Mixology's generators handle structure: routing event types to handlers, assembling per-domain Cedar policies, producing typed entity IDs, and keeping error constructors aligned with their test assertions. The decisions remain in ordinary Go, Cedar, and a few small definitions. The generated output is intentionally plain enough to open and read.
 
-The dispatcher makes the tradeoff visible. Its generator scans event and handler declarations, then writes a direct type switch in [`dispatcher_gen.go`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/dispatcher/dispatcher_gen.go). There is no runtime registry to misconfigure and no reflection in the dispatch path. Adding a handler changes the declarations; regeneration produces the boring wiring.
+The dispatcher makes the tradeoff visible. Its generator scans event and handler declarations, then writes a direct type switch in [`dispatcher_gen.go`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/dispatcher/dispatcher_gen.go). There is no runtime registry to misconfigure and no reflection in the dispatch path. Adding a handler changes the declarations; regeneration produces the boring wiring.
 
 This lesson will build one of those generators from its inputs to its output. The broader subject is not how to generate more code. It is how to identify repetition that should have one source of truth without moving the system's meaning into a template.
 
@@ -85,7 +85,7 @@ This lesson will build one of those generators from its inputs to its output. Th
 
 `"not found"` looks adequate until a second surface needs to interpret it. Then a string quietly becomes an API, and every caller invents its own way to parse or replace it.
 
-Mixology defines a small error vocabulary in [`pkg/errors`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/errors). A `NotFound` error is one application fact with several possible presentations: an HTTP 404, a gRPC `NotFound` code, CLI exit code 20, or a warning style in the TUI. Domain code chooses the fact. The surface chooses how that fact appears in its protocol.
+Mixology defines a small error vocabulary in [`pkg/errors`](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/errors). A `NotFound` error is one application fact with several possible presentations: an HTTP 404, a gRPC `NotFound` code, CLI exit code 20, or a warning style in the TUI. Domain code chooses the fact. The surface chooses how that fact appears in its protocol.
 
 The shared payload also separates diagnostic detail from a message safe to show to a user. Generated constructors and assertions keep the common cases easy enough that developers do not fall back to matching strings.
 
@@ -95,7 +95,7 @@ The eventual lesson will start with a single failing lookup and carry it through
 
 Authorization hidden inside business logic has two failure modes. It is difficult to audit because the rule is scattered through control flow, and it is difficult to reuse because every new surface has to reach the same branches in the same way.
 
-Each Mixology domain keeps its permission rules in [Cedar policies](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/drinks/authz). Go code supplies a principal, action, and resource; Cedar decides whether the relationship is allowed. A reviewer can read what a bartender or sommelier may do without first reconstructing a command handler.
+Each Mixology domain keeps its permission rules in [Cedar policies](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/authz). Go code supplies a principal, action, and resource; Cedar decides whether the relationship is allowed. A reviewer can read what a bartender or sommelier may do without first reconstructing a command handler.
 
 The surrounding application still has important choices to make. A denied command returns a permission error. A list query silently omits entities the principal cannot see and keeps reading until it fills a page, so a hidden item neither fails the request nor creates mysteriously short pages. Counts and cursors must describe the visible result, not leak the existence of filtered data.
 
@@ -139,7 +139,7 @@ separation and testability described in
 while treating its warning about duplicated or oversized presentation logic as an architectural
 constraint.
 
-Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/main/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into SQLite while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
+Filtering provides a useful test of the boundary. A human-readable expression begins at the CLI, but the accepted fields belong to each domain's typed schema. [`pkg/filter`](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter) validates the expression and turns it into a transport-neutral tree. Safe comparisons can be pushed into SQLite while the complete predicate remains available for exact evaluation. A future HTTP or gRPC adapter would not need to invent another filtering language inside the domain.
 
 The implementation now exercises the same operations through three surfaces, drives the TUI through
 its real Bubble Tea program, and tests the Fyne client through presenters, retained widgets, and a
@@ -156,23 +156,27 @@ would make one feature five implementations. Letting a central tagging package r
 domain's private storage would erase the boundaries the application is meant to preserve.
 
 Mixology splits the responsibility instead. The shared [`tag` value
-type](https://github.com/TheFellow/go-modular-monolith/tree/main/app/kernel/tag) defines canonical
+type](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/tag) defines canonical
 labels and key/value tags. The [tagging
-domain](https://github.com/TheFellow/go-modular-monolith/tree/main/app/domains/tagging) owns their
-polymorphic associations and the uniform add, remove, list, and replace workflows. Each operational
-domain depends on the narrow [`tag.Repository`](https://github.com/TheFellow/go-modular-monolith/blob/main/app/kernel/tag/repository.go) port, registers a loader and a bulk active-ID query, and supplies its own get, tag, and untag actions. The
-generic workflow can therefore load complete domain-owned state, authorize mutations, and respect
+domain](https://github.com/TheFellow/go-modular-monolith/tree/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/tagging) owns their
+polymorphic associations and standalone add, remove, list, and replace operations. Each operational
+domain depends on the narrow [`tag.Repository`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/tag/repository.go) port, registers a loader and a bulk active-ID query, and supplies its own get, tag, and untag actions. The
+generic tag command can therefore load complete domain-owned state, authorize mutations, and respect
 each domain's lifecycle without importing private models or persistence.
 
 That seam has to hold on reads as well as writes. Domain DAOs hydrate tags for a candidate set in
 one type-scoped query and within the same transaction, avoiding both inconsistent snapshots and an
-N+1 query per result. Complete-set replacements calculate whether the change needs tag permission,
-untag permission, or both. When a surface supplies a complete tag set alongside a domain mutation,
-the application-level `RunTaggedMutation` validates the set first, joins or opens an outer
-transaction, runs the public domain mutation, and then calls `Tags.Replace` with the same middleware
-context. Both operations retain their ordinary command-pipeline authorization, audit, and entity
-touch behavior. A failure in either one rolls back the domain change, tag replacement, and their
-audit effects together. When it owns the transaction, `RunWorkflow` then records one correlated failed attempt outside the rollback. Successful child activities share a workflow ID. Audit distinguishes changed resources, referenced participants, and domain-authored before/after effects; effects on a failed activity are attempted, not committed. GUI/TUI editors additionally supply the tag set they originally loaded, so a concurrent tag change conflicts independently of the entity revision.
+N+1 query per result. When a surface supplies a complete tag set alongside a domain mutation,
+it passes `tag.Edit` directly to that command, for example
+`Ingredients.Update(ctx, ingredient, tag.Replace(&desired, expected))`. A nil desired set preserves
+tags; a non-nil empty set clears them. The domain publishes its own `TagsReplaced` event with its
+tag and untag actions. Tagging validates the set, checks expected state, and authorizes the before
+and after tag sets during `Handling`; `Handle` persists associations through its private DAO.
+A tag veto rolls back the entity edit, associations, and success activity together. The command
+has one activity containing its own writes and all leaf effects. A managed failure records attempted
+effects after rollback. GUI/TUI editors supply their originally loaded tags, so concurrent tag
+changes conflict independently of the entity revision. Tagging's moved persistence model retains
+its original storage identity, preserving existing associations.
 
 Cross-domain discovery makes the ownership choice especially visible. `tags show` finds active
 entities carrying one exact tag or any value for a key, while `tags summary` aggregates active use
@@ -196,9 +200,9 @@ boundary while making each intentional disclosure and ownership decision explici
 
 An integration test becomes expensive when the application depends on a collection of remote infrastructure. In a one-process application with an embedded database, exercising the real stack can be the default.
 
-[`testutil.NewFixture`](https://github.com/TheFellow/go-modular-monolith/blob/main/pkg/testutil/fixture.go) creates an isolated database and constructs the production application around it. Tests call public module methods with real authorization, transactions, dispatch, handlers, audit recording, and in-memory metrics. Builders make domain setup concise, but they do not bypass the application to insert convenient rows.
+[`testutil.NewFixture`](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/testutil/fixture.go) creates an isolated database and constructs the production application around it. Tests call public module methods with real authorization, transactions, dispatch, handlers, audit recording, and in-memory metrics. Builders make domain setup concise, but they do not bypass the application to insert convenient rows.
 
-The cross-domain tests create ingredients, inventory, drinks, orders, and published menus, then exercise retirement through the public module. Discontinuation retains stock and honors usable accepted reservations; explicit withdrawal quarantines stock and blocks orders. Future recipes can be rewritten while acceptance remains unchanged. Explicit amendments move reservations without changing agreed prices, and a failure in a selected batch rolls every member back while preserving one failed workflow activity. Handler-order permutations and optional-ingredient contention test the edges of that design without recreating its orchestration with mocks.
+The cross-domain tests create ingredients, inventory, drinks, orders, and published menus, then exercise retirement through the public module. Discontinuation retains stock and honors usable accepted reservations; explicit withdrawal quarantines stock and blocks orders. Future recipes can be rewritten while acceptance remains unchanged. `Orders.AmendBatch` moves reservations without changing agreed prices and emits one aggregate `OrdersAmended` event for Inventory, Orders, and Menus. Failure rolls every selected amendment back while preserving one failed command activity. `Ingredients.Retire` is separate, so its failure leaves an already approved amendment committed. Middleware rejects nested commands and sequential commands sharing one SQL transaction. Handler-order permutations and optional-ingredient contention test the edges of that design without recreating its orchestration with mocks.
 
 This lesson will use the same fixture at three scales: a focused permission check, a cross-domain behavior test, and an audit assertion that names every touched entity. The aim is not to argue that every test should be an integration test. It is to keep the real path fast and accessible enough that the most important guarantees can be tested together.
 
@@ -216,4 +220,4 @@ Simple does not mean unfinished. It means every piece of complexity can point to
 
 The finished chapters will slow these ideas down. Each will begin with a failure mode, walk a small route through the repository, and end with an experiment that changes the code so the design can push back. They will also spend time on the limits: when the technique stops fitting, what it costs, and what a different system might choose instead.
 
-For now, the repository is the complete worked example. Start with the [ingredient retirement tests](https://github.com/TheFellow/go-modular-monolith/blob/main/app/domains/ingredients/delete_test.go), follow the event into the generated dispatcher, and see how far one ordinary operation travels without dissolving the boundaries around it.
+For now, the repository is the complete worked example. Start with the [ingredient retirement tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/delete_test.go), follow the event into the generated dispatcher, and see how far one ordinary operation travels without dissolving the boundaries around it.

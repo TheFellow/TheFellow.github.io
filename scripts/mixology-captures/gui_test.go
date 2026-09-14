@@ -58,7 +58,7 @@ func TestDeckCapture(t *testing.T) {
 	for i, row := range orders.State().Rows {
 		if row.Order.ID == order.ID {
 			orders.Select(i)
-			test.Scroll(desktop.window.Canvas(), framework.NewPos(650, 450), 0, -620)
+			test.Scroll(desktop.window.Canvas(), framework.NewPos(900, 450), 0, -1050)
 			capture("gui-order")
 			return
 		}

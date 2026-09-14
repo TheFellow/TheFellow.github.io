@@ -30,7 +30,7 @@ The Ingredients domain exposes a Retire operation with its own Cedar action and 
 type Retirement struct {
     Withdraw      bool
     Reason        string
-    ReplacementID IngredientID
+    ReplacementID entity.IngredientID
     Ratio         float64
 }
 ```
@@ -72,7 +72,7 @@ retirement with replacement
 
 That asymmetry is important. If the application silently changed an existing order, it would lose the ability to explain what the customer requested, what inventory commitment was made, and why fulfillment later stopped. Snapshot fields are valuable only when later catalog changes cannot reinterpret them.
 
-Audit distinguishes changed resources in `Touches`, referenced entities in `Participants`, and domain-authored before/after explanations in `Effects`. Merely inspecting a menu does not claim its contents changed. A `WorkflowID` connects composed commands; after a managed rollback, one failed activity records attempted effects, not committed changes. The returned error preserves both the original failure and a failure to record evidence.
+Audit distinguishes changed resources in `Touches`, referenced entities in `Participants`, and domain-authored before/after explanations in `Effects`. Merely inspecting a menu does not claim its contents changed. One command activity covers the originating mutation and every leaf effect. After a managed rollback, one failed activity records attempted effects, not committed changes. Workflow correlation is no longer written or displayed; historical audit JSON remains readable. The returned error preserves both the original failure and a failure to record evidence.
 
 ## Amend the approved plan explicitly
 
@@ -80,7 +80,7 @@ Audit distinguishes changed resources in `Touches`, referenced entities in `Part
 
 The command projects stock with its own reservations released before planning the complete amended order. That prevents an order from competing with its own existing commitment. `OrderAmended` carries before and after state. Inventory verifies the old reservation identities and quantities, releases them, and reserves the new plan; Menus prepares availability from the net change; Orders reconciles peers helped by released commitments. Failure in any reaction rolls the plan, amendment history, reservations, projections, and success audit back together.
 
-`App.AmendOrders` validates every selected order's revision before executing any amendment, because reconciliation can legitimately advance a peer's revision within the batch. It then reloads the in-transaction token for each command. `App.RetireIngredient` can compose those selected amendments and retirement in one workflow. The operator supplies the selection and reason; the system does not infer customer consent or amend unselected orders.
+`Orders.AmendBatch` validates and authorizes every selected order before planning the batch. It projects reservation changes across the selection, then emits one `OrdersAmended` event. Inventory applies the reservation changes, Orders reconciles released shortages, and Menus prepares availability from the complete delta. Every selected amendment and leaf effect commits together with one command activity. Retirement remains a separate `Ingredients.Retire` command: a failed retirement leaves an already approved batch committed. The operator supplies the selection and reason; the system does not infer customer consent or amend unselected orders.
 
 ## Keep physical stock after service eligibility changes
 
@@ -158,11 +158,11 @@ Authorization still executes inside the command and query pipelines. Presentatio
 
 ## Carry the same behavior through every surface
 
-The CLI, Bubble Tea TUI, and Fyne GUI now expose the [same transactional workflows](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/docs/surface-parity.md). Retirement includes a permanent replacement and ratio, withdrawal, and reason. Substitution administration lists enabled and disabled rules and supports creating, revising, disabling, and re-enabling them with captured revisions. Inventory provides initial stock receipt, quarantine, release, disposal, and movement history, including retained stock whose ingredient has retired. Quantity labels use the stock's display unit, while price has a separate explicit cost unit.
+The CLI, Bubble Tea TUI, and Fyne GUI now expose the [same transactional workflows](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/surface-parity.md). Retirement includes a permanent replacement and ratio, withdrawal, and reason. Substitution administration lists enabled and disabled rules and supports creating, revising, disabling, and re-enabling them with captured revisions. Inventory provides initial stock receipt, quarantine, release, disposal, and movement history, including retained stock whose ingredient has retired. Quantity labels use the stock's display unit, while price has a separate explicit cost unit.
 
-GUI and TUI amendment forms start from the current approved plan. The operator can submit one order or queue selected requests, review the batch, and commit it through `App.AmendOrders`. Each request retains the revision seen in its editor; a conflict preserves the draft or queue. Separate retirement and amendment interactions remain separate transactions. A caller needing both to commit together uses `App.RetireIngredient`.
+GUI and TUI amendment forms start from the current approved plan. The operator can submit one order or queue selected requests, review the batch, and commit it through `Orders.AmendBatch`. Each request retains the revision seen in its editor; a conflict preserves the draft or queue. Retirement is a separate `Ingredients.Retire` command with its own transaction and audit activity. If it fails after an approved batch commits, that batch remains intact.
 
-Order details distinguish accepted names, prices, preparation, and omissions from the current approved plan, append-only amendment before/after records, and cancellation metadata. Audit details expose workflow correlation, changed and referenced entities, and labeled field changes. Failed activities identify their effects as attempts that did not commit. The CLI exposes that evidence with audit `--details`; `--json` preserves the structured response and takes precedence when both flags are supplied.
+Order details distinguish accepted names, prices, preparation, and omissions from the current approved plan, append-only amendment before/after records, and cancellation metadata. Audit details expose one command activity with changed and referenced entities and labeled field changes from its leaf reactions. Failed activities identify their effects as attempts that did not commit. The CLI exposes that evidence with audit `--details`; `--json` preserves the structured response and takes precedence when both flags are supplied.
 
 The interfaces share domain operations, control IDs, domain-owned presentation helpers, and the function that composes readiness into an already-authorized Publish action. Each keeps its own views.
 
@@ -183,13 +183,13 @@ The most useful scenarios begin with a healthy, published menu and a pending ord
 7. Force a handler failure. Assert rollback across the retirement and every dependent mutation.
 8. Change interface selection while readiness loads. Assert that stale results are discarded.
 9. Permute retirement and cancellation handler order. Assert identical persisted results.
-10. Fail the second selected amendment. Assert all plans and reservations unchanged and one failed workflow activity retained.
+10. Fail the second selected amendment. Assert all plans and reservations unchanged and one failed command activity retained.
 11. Change display units, quarantine, release, and dispose stock. Assert physical history, cost basis, and existing commitments stay coherent.
 12. Race a stale stock or combined entity/tag editor with another writer. Assert conflict and no partial commit.
 
-The [cross-domain regression tests](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_regression_test.go) and [workflow tests](https://github.com/TheFellow/go-modular-monolith/blob/635c59b4101bdc614beb973cef83e8c2073a9787/app/cross_domain_workflows_test.go) make these distinctions executable. These domain-schema changes use a freshly seeded teaching database, not an invented backfill of missing historical facts.
+The [cross-domain regression tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_regression_test.go) and [transactional command tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/cross_domain_workflows_test.go) make these distinctions executable. The [batch command tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/amend_batch_test.go) also prove atomic selection, reconciliation from the combined release, and rollback after a late tag veto. These domain-schema changes use a freshly seeded teaching database, not an invented backfill of missing historical facts.
 
-The surface alignment adds [GUI amendment tests](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/orders/surfaces/gui/amendment_test.go) for accepted-history preservation, stale drafts, and batch rollback after a later stock failure, plus [TUI keyboard tests](https://github.com/TheFellow/go-modular-monolith/blob/b070b7184878270a69a9a05432d76795a44fe1d3/app/domains/orders/surfaces/tui/amend_vm_test.go) for amendment input and queue retention. Stock-receipt tests also race two editors creating the first row: one receipt cannot silently overwrite the other.
+The surface alignment adds [GUI amendment tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/surfaces/gui/amendment_test.go) for accepted-history preservation, stale drafts, and batch rollback after a later stock failure, plus [TUI keyboard tests](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/surfaces/tui/amend_vm_test.go) for amendment input and queue retention. Stock-receipt tests also race two editors creating the first row: one receipt cannot silently overwrite the other.
 
 Each case protects a semantic boundary. Together they show that consistency means more than making all tables agree. Current plans, historical records, operational availability, user-visible actions, and authorization can legitimately represent different views of the same event.
 

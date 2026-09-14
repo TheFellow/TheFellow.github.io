@@ -1,7 +1,7 @@
 ---
 title: "Migrating Mixology from bstore to SQLite"
 date: 2026-08-10
-last_modified_at: 2026-09-06
+last_modified_at: 2026-09-13
 excerpt: "How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors."
 permalink: /articles/migrating-mixology-from-bstore-to-sqlite/
 redirect_from: /guides/migrating-mixology-from-bstore-to-sqlite/
@@ -103,7 +103,9 @@ Tests exercise the boundary with real temporary databases. They verify commit an
 
 Current domain-schema work uses a freshly seeded teaching database; accepted-order history and canonical stock data are not fabricated by a historical backfill. That is separate from the store's versioned schema migration mechanism described here. Re-seeding is the documented path for this domain-model revision.
 
-The current application also uses expected revisions for absolute stock sets and lifecycle commands, and captured complete tag sets for guarded editor replacements. SQLite writer serialization cannot detect stale user intent on its own. Composed commands use `RunWorkflow` when they own the transaction so a failed operation can record correlated attempted effects after rollback.
+The current application also uses expected revisions for absolute stock sets and lifecycle commands, and captured complete tag sets for guarded editor replacements. SQLite writer serialization cannot detect stale user intent on its own. One domain command owns each transaction, including its leaf handlers and successful audit activity. Middleware rejects nested commands from command, query, or handler contexts, and the store rejects a second command claiming the same transaction, even through a fresh context after the first returns. When middleware owns rollback, it records the command's attempted effects afterward. A caller injecting a transaction for low-level tests retains rollback and failure-recording responsibility.
+
+Tag associations now live under `tagging/internal/dao`. Their persisted storage identity retains the previous package path, so this package move does not hide existing associations or require a data migration. A consuming domain accepts an optional `tag.Edit` and publishes its own `TagsReplaced` event; Tagging prepares validation, expected-set comparison, and authorization during `Handling`, then writes its own associations during `Handle`. Entity and tag changes therefore remain inside the owning command's transaction.
 
 ## Move filtering by preserving semantics
 
