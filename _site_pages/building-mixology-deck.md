@@ -1,7 +1,7 @@
 ---
 title: "Building Mixology: The Slide Deck"
 date: 2026-09-05
-last_modified_at: 2026-09-13
+last_modified_at: 2026-09-22
 permalink: /talks/building-mixology/
 excerpt: "A visual walkthrough of the foundational domain, module, middleware, event, audit, tagging, filtering, persistence, and presentation choices behind go-modular-monolith."
 layout: deck
@@ -14,7 +14,7 @@ search: false
   <h1>Building a modular monolith in Go</h1>
   <p class="lede">A cocktail bar application with seven business owners, three interfaces, and tests that keep their boundaries intact.</p>
   <div class="chapter-path"><span>← / → chapter</span><span>↑ / ↓ detail</span><span><b>S</b> speaker view</span><span><b>Esc</b> map</span></div>
-  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Code links and application captures pin the reviewed repository snapshot 0d5e64b from go-modular-monolith PR #64. Commands own their transaction, leaf reactions, and one audit activity.</aside>
+  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Application captures and unchanged code links pin snapshot 0d5e64b from PR #64. Storage examples pin the relational implementation in 1b6a586 from PR #65. Commands own their transaction, leaf reactions, and one audit activity.</aside>
 </section>
 
 <section>
@@ -557,7 +557,7 @@ return fmt.Errorf("publish menu: %w", err)
 errors.ToCLIExit(errors.New("raw dependency detail"))
 // exit 1, message "raw dependency detail"</code></pre>
     <div class="callout">Expected store failures become domain-facing kinds. Unexpected failures retain their cause under Internal. A new typed wrapper is a semantic decision, not routine decoration.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/errors.go">Code: pkg/store/errors.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/errors.go">Code: pkg/store/errors.go</a></p>
     <aside class="notes">MapError intentionally replaces the message for expected NotFound, Conflict, and Invalid branches; those branches do not preserve the incoming cause. The Internal branch does. Wrapping a Conflict inside Internal leaves both types discoverable in the chain, while a generic payload lookup finds the outer classification. Explain this before asserting that an immutable kind means no layer can ever reclassify a failure. The policy is to preserve existing meaning unless a boundary deliberately changes it.</aside>
   </section>
 
@@ -686,7 +686,7 @@ func Write(ctx Context, f func(*Tx) error) error {
     return f(tx)
 }</code></pre>
     <div class="callout">The lowercase package helper requires a transaction. Domain DAOs cannot accidentally turn one business operation into several commits.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/access.go">Code: pkg/store/access.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/access.go">Code: pkg/store/access.go</a></p>
     <aside class="notes">First block is illustrative; second is the exact store.Write implementation. Store.ReadContext similarly reuses an injected transaction so queries and handlers see its tentative writes. UnitOfWork owns the default outer boundary. Neither the helper nor a joined pipeline command creates a savepoint. A callback error must reach the actual transaction owner.</aside>
   </section>
 
@@ -2037,46 +2037,43 @@ TestApplySQLPushdownBooleanSemantics:
   <section>
     <h2>Treat the file format honestly</h2>
     <div class="cards"><div class="card"><h3>Migration ledger</h3><p>Ordered migrations advance deliberately; a database from a newer schema is rejected.</p></div><div class="card"><h3>Registration</h3><p>Explicit model schemas fail early; imports do not mutate global persistence state.</p></div><div class="card"><h3>Errors</h3><p>Constraints and stale revisions become application kinds, not leaked driver strings.</p></div></div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md">Code guide: pkg/store/README.md</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/README.md">Code guide: pkg/store/README.md</a></p>
   </section>
   <section class="implementation-slide">
-    <h2>The SQLite storage shape is more specific than “tables”</h2>
-    <pre><code class="language-sql">-- Selected SQL actually issued by the store:
-INSERT INTO records(model, id, data, revision)
-VALUES (?, ?, ?, 1);
+    <h2>Entity columns and owned child rows</h2>
+    <pre><code class="language-sql">-- Illustrative queries over the generated relational schema:
+SELECT d.name, i.amount, i.unit
+FROM drinks AS d
+JOIN drinks_recipe_ingredients AS i ON i.__parent_id = d.id
+WHERE d.id = ?
+ORDER BY i.__position;
 
-SELECT data, revision
-FROM records
-WHERE model = ? AND id = ?;
-
-UPDATE records
-SET data = ?, revision = revision + 1
-WHERE model = ? AND id = ? AND revision = ?;</code></pre>
-    <div class="callout">The generic store keeps typed row data as JSON in records, partitioned by model identity. Domain DAOs still own conversion and query meaning.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/query.go">Code: pkg/store/query.go</a></p>
-    <aside class="notes">SQL statements selected from query.go. Open store.go to inspect schema migrations and model registration, then query.go for JSON-backed predicates and indexes. This is not one hand-designed SQL table per aggregate. The replaceable boundary preserves the application contract, while this particular engine adapter makes a concrete representation choice.</aside>
+UPDATE drinks
+SET status = ?, __revision = __revision + 1
+WHERE id = ? AND __revision = ?;</code></pre>
+    <div class="callout">Named STRICT tables hold scalar columns. Recipes, menu items, order history, and audit details live in owned child tables with cascading foreign keys.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/schema.go">Code: pkg/store/schema.go</a></p>
+    <aside class="notes">Illustrative SQL, not a verbatim trace: the store writes all mapped scalar columns, then replaces owned children. schema.go flattens nested structs and maps collections to ordered child tables. Compound indexes follow domain filters and ordering; EXPLAIN QUERY PLAN tests verify their use. Timestamps are fixed-width UTC text with nanosecond precision, and decimal amounts use lossless scalar text. Presence columns retain absent optionals and nil versus empty collections.</aside>
   </section>
 
   <section class="implementation-slide">
     <h2>A stale revision becomes a typed conflict</h2>
-    <pre><code class="language-go">n, _ := r.RowsAffected()
-if n == 0 {
-    var current uint64
-    err := t.tx.QueryRowContext(t.ctx,
-        "SELECT revision FROM records WHERE model=? AND id=?",
-        modelName(typ), idString(id),
-    ).Scan(&amp;current)
-    if errors.Is(err, sql.ErrNoRows) {
-        return errors.NotFoundf("record absent")
-    }
-    if err != nil { return err }
-    return errors.Conflictf(
-        "record changed: expected revision %d, current revision %d",
-        revision, current)
-}</code></pre>
+    <pre><code class="language-go">// The conditional UPDATE delegates a zero-row result to stale.
+var current uint64
+err := t.tx.QueryRowContext(t.ctx,
+    "SELECT __revision FROM "+safeName(schema.name)+
+    " WHERE "+safeName(schema.primary)+"=?", id,
+).Scan(&amp;current)
+if errors.Is(err, sql.ErrNoRows) {
+    return errors.NotFoundf("record absent")
+}
+if err != nil { return err }
+return errors.Conflictf(
+    "record changed: expected revision %d, current revision %d",
+    revision, current)</code></pre>
     <div class="callout">Zero updated rows can mean absence or a stale edit. The store distinguishes those meanings before the DAO maps them to its own operation context.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/query.go">Code: pkg/store/query.go</a></p>
-    <aside class="notes">Reflowed exact branch following the conditional UPDATE. Success calls setRevision(v, revision+1). Open drinks/internal/dao/update.go: toRow carries the revision, MapError adds the operation message, and drink.Revision receives the new token after success. MapError's Conflict branch preserves the kind but replaces the lower-level message, so not every surface displays the expected/current numbers.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/query.go">Code: pkg/store/query.go</a></p>
+    <aside class="notes">Reflowed body of Tx.stale, called after a conditional update or delete affects zero rows. Aggregate writes use a savepoint: a child-write failure rolls back both parent and children even if the caller catches the error and commits the outer transaction. Success calls setRevision(v, revision+1). MapError preserves Conflict while adding domain operation context.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -2091,7 +2088,7 @@ Entity revision:
   read revision 7 → another writer saves revision 8
   submit revision 7 → conditional UPDATE changes 0 rows → Conflict</code></pre>
     <div class="callout">An epoch is a refresh hint, a generation selects a result, and a revision guards a write. None substitutes for the others.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
     <aside class="notes">Trace the epoch in pkg/store/changes.go, generation in pkg/toolkits/gui/async.go, and revision in pkg/store/query.go. The change monitor polls a dedicated connection's PRAGMA data_version. Compare values on that connection, not as a global sequence shared by all processes. A re-query still passes through authorization.</aside>
   </section>
 
@@ -2114,35 +2111,30 @@ Command:
 
 Competing writer waits or returns an error at acquisition.</code></pre>
     <div class="callout">The loaded authorization state and the mutation share one write transaction. WAL does not make SQLite a multi-writer database.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go">Code: pkg/store/store.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go">Code: pkg/store/store.go</a></p>
     <aside class="notes">Trace Store.Begin and UnitOfWork. Immediate acquisition avoids starting with a read snapshot that later cannot be upgraded after another writer commits. Readers on other WAL connections can continue seeing their own snapshots. Long handlers extend the sole writer's occupancy. SQLite isolation details: https://www.sqlite.org/isolation.html. Cancellation and busy timeout can still make acquisition fail.</aside>
   </section>
 
   <section class="implementation-slide">
-    <h2>Persistent identity includes the Go row type</h2>
-    <pre><code class="language-text">func modelName(t reflect.Type) string {
-    if named, ok := reflect.Zero(t).Interface().(
-        interface{ StoreModelName() string }); ok {
-        return named.StoreModelName()
-    }
-    return t.PkgPath() + "." + t.Name()
-}
+    <h2>Domains name their relational tables</h2>
+    <pre><code class="language-go">func (DrinkRow) StoreModelName() string { return "drinks" }
+func (MenuRow) StoreModelName() string { return "menus" }
+func (OrderRow) StoreModelName() string { return "orders" }</code></pre>
+    <pre><code class="language-text">drinks                         primary key: id
+  drinks_recipe_ingredients    parent: drinks.id; ordered position
+    …_substitutes              parent: ingredient child row
+  drinks_recipe_steps          parent: drinks.id; ordered position
 
-records primary key:
-  (model, id)
-
-Example model discriminator:
-  .../app/domains/drinks/internal/dao.DrinkRow
-
-Domain values ↔ row conversion ↔ JSON-backed record</code></pre>
-    <div class="callout">A package or row-type rename can be a data migration, not just a refactor.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go">Code: pkg/store/store.go</a></p>
-    <aside class="notes">Reflowed modelName. Tagging’s private entityTagRow implements StoreModelName to retain its original persisted identity after moving into internal/dao. Open the real row type to confirm its name when walking the database. The model discriminator partitions records and expression indexes within the shared records table. Changing a persisted JSON field name or its interpretation also requires compatibility review. Explicit registration describes storage, but does not automatically migrate data between model names.</aside>
+Domain values ↔ private DAO rows ↔ typed columns and child rows</code></pre>
+    <div class="callout">Readable table names stay independent of Go package moves. Owned children cascade with their parent; historical cross-domain references retain their independence.</div>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/app/domains/drinks/internal/dao/models.go">Code: domain table names</a> · <a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/schema.go">Code: relational mapping</a></p>
+    <aside class="notes">Every domain root declares StoreModelName; the generic fallback remains package path plus type name. Tagging now declares entity_tags. Child keys enforce unique positions within each parent, and map children additionally enforce unique keys. Explicit registration creates the current schema and indexes; it does not automatically alter existing tables or migrate data after a schema change.</aside>
   </section>
 
   <section class="implementation-slide">
     <h2>Migration startup is itself a coordinated write</h2>
     <pre><code class="language-text">BEGIN IMMEDIATE
+  reject the previous records document table
   CREATE TABLE IF NOT EXISTS schema_migrations
   read highest version and applied count
   reject a version newer than this binary understands
@@ -2153,8 +2145,8 @@ COMMIT
 
 On error: rollback using a non-cancelled cleanup context.</code></pre>
     <div class="callout">Two starting processes must agree on the same schema transition. Recording a version separately from its schema change would break that guarantee.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go">Code: pkg/store/store.go</a></p>
-    <aside class="notes">Trace migrate in store.go and TestConcurrentMigrationInitialization. The implementation checks highest version and count before applying its ordered migrations. TestMigrationVersionBookkeepingAndFutureVersion and TestRevisionMigrationUpgradesExistingRows exercise compatibility behavior. This is current startup behavior, not a historical engine-migration walkthrough.</aside>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go">Code: pkg/store/store.go</a></p>
+    <aside class="notes">Trace migrate in store.go and TestConcurrentMigrationInitialization. The implementation checks highest version and count before applying its ordered migrations. TestMigrationVersionBookkeepingAndFutureVersion rejects unsupported versions. TestDocumentDatabaseRequiresExplicitReset rejects the old document database. Use a fresh MIXOLOGY_DB path and run go run ./main/seed. No conversion or historical backfill is provided; close all processes before removing an old database and its sidecars.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -2171,7 +2163,7 @@ If the connection fails:
   establish a new baseline
   publish anyway: changes may have occurred in the gap</code></pre>
     <div class="callout">A data_version value is meaningful across observations on the same connection. It is not a global commit sequence.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
     <aside class="notes">Control-flow summary of changes.go, not Go pseudocode intended to compile. The pinned connection observes commits by other connections, including this process's writer connections. A reconnect invalidates even without a comparable old counter. Backoff starts at 25 ms and caps at one second. SQLite documents the per-connection comparison contract at https://www.sqlite.org/pragma.html#pragma_data_version.</aside>
   </section>
 
@@ -2189,7 +2181,7 @@ If the connection fails:
 // Epoch counts monitor publications, not database commits.
 // A signal carries no entity ID or business payload.</code></pre>
     <div class="callout">A full notification channel must not block the writer-observation loop. Consumers reload state rather than reconstructing changes.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes.go">Code: pkg/store/changes.go</a></p>
     <aside class="notes">Exact publish implementation. Multiple commits may be noticed in one poll, and multiple monitor publications may occupy one queued signal. Epoch therefore cannot count commits or identify changed resources. The TUI owns deferred invalidation while editing; GUI activation/refresh also re-queries through the application. Do not describe this as a durable event bus or promise one callback per write.</aside>
   </section>
 
@@ -2208,7 +2200,7 @@ tx.Insert("rolled back")
 writer.Rollback(tx)
   → no invalidation for that rollback</code></pre>
     <div class="callout">Use separate connections to test freshness. Reading your own uncommitted write proves a different property.</div>
-    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes_test.go">Code: pkg/store/changes_test.go</a></p>
+    <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes_test.go">Code: pkg/store/changes_test.go</a></p>
     <aside class="notes">Scenario from TestChangeMonitorSignalsCommittedWritesAndIgnoresRollback; error handling and timing bounds omitted. TestIndependentStoresShareOneDatabase separately verifies shared persistence, and GUI integration tests prove a client reacts to external commits. A monitor-only test is not evidence that an active editor survives refresh or that a UI publishes on its correct thread.</aside>
   </section>
 </section>

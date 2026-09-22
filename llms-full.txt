@@ -1129,8 +1129,8 @@ and after tag sets during `Handling`; `Handle` persists associations through its
 A tag veto rolls back the entity edit, associations, and success activity together. The command
 has one activity containing its own writes and all leaf effects. A managed failure records attempted
 effects after rollback. GUI/TUI editors supply their originally loaded tags, so concurrent tag
-changes conflict independently of the entity revision. Tagging's moved persistence model retains
-its original storage identity, preserving existing associations.
+changes conflict independently of the entity revision. Tagging's private persistence model declares the stable
+`entity_tags` table, with a compound unique key for entity type, entity ID, and tag key.
 
 Cross-domain discovery makes the ownership choice especially visible. `tags show` finds active
 entities carrying one exact tag or any value for a key, while `tags summary` aggregates active use
@@ -1402,7 +1402,7 @@ Mixology's `app/kernel` contains typed entity IDs, money, measurement, quality, 
 
 The practical type-system preference is modest: distinguish identifiers, validate meaningful values, and withhold capabilities that should not be present. My [illegal-states article](/articles/making-illegal-states-unrepresentable-in-go.md) develops the broader functional-modeling influence. Mixology's exported models and status values still require runtime validation.
 
-Tagging demonstrates a different kind of sharing. Its module owns associations, while domains register target loaders and actions. The shared tag value type does not make Tagging the owner of Drinks' authorization or private data. The [tag repository port][tagport] and application registration give the cross-cutting feature an explicit seam. A consuming command accepts `tag.Edit` through `tag.Replace(&desired, expected)` and publishes its own `TagsReplaced` event. Tagging validates the desired set, compares expected tags, and authorizes before/after state during `Handling`; `Handle` persists associations through its private DAO. A veto rolls back the domain edit and tags together. The moved persistence model retains its original storage identity, so existing associations remain visible.
+Tagging demonstrates a different kind of sharing. Its module owns associations, while domains register target loaders and actions. The shared tag value type does not make Tagging the owner of Drinks' authorization or private data. The [tag repository port][tagport] and application registration give the cross-cutting feature an explicit seam. A consuming command accepts `tag.Edit` through `tag.Replace(&desired, expected)` and publishes its own `TagsReplaced` event. Tagging validates the desired set, compares expected tags, and authorizes before/after state during `Handling`; `Handle` persists associations through its private DAO. A veto rolls back the domain edit and tags together. The private persistence model declares the stable `entity_tags` table name and compound constraints.
 
 `pkg` is more heterogeneous. `pkg/middleware` supplies mechanisms through configured dependencies. `pkg/store` owns a concrete persistence abstraction. Presentation toolkits own framework mechanics. Crucially, `pkg/dispatcher` contains generated imports of domain events and handlers. `pkg/authz` also assembles generated domain policy material. These are application wiring, despite their `pkg` prefix.
 
@@ -1416,9 +1416,9 @@ The [bstore-to-SQLite migration](/articles/migrating-mixology-from-bstore-to-sql
 
 The early application centralized database lifecycle but still used bstore transaction and query types in DAOs. The migration introduced application-owned `Store`, `Tx`, and `Query[T]` types. It preserved public operation semantics while changing the driver, file format, registration, indexes, query execution, concurrency, and error translation.
 
-The current store uses SQLite JSON records keyed by model identity and ID, with declared expression indexes and constraints. Each context explicitly registers private row types during composition. DAOs remain concrete implementation, and domain operations still share one transaction with reactions and success auditing. See the [store implementation][store] and its [guide][storeguide].
+The first SQLite adapter used JSON documents. The current store uses named `STRICT` relational tables, flattened scalar columns, and ordered child tables with cascading ownership foreign keys. Declared column indexes and compound constraints follow domain access paths. Each context explicitly registers private row types during composition. DAOs remain concrete implementation, and domain operations still share one transaction with reactions and success auditing. See the [store implementation][store] and its [guide][storeguide].
 
-That design has a cost. JSON records and an owned typed query layer are a particular storage strategy with particular indexing and query-planning responsibilities. They do not provide every benefit of a bespoke relational schema. What survived the migration was the public behavior and ownership boundary; substantial execution code still changed.
+The owned typed query layer still carries schema, indexing, hydration, and query-planning responsibilities. Query-plan tests verify representative indexes; scalar and aggregate tests check exact values, optional presence, revisions, and rollback. The relational revision starts with freshly seeded data and rejects the former document layout. What survived both storage changes was the public behavior and ownership boundary; substantial execution code still changed.
 
 Filtering makes the distinction precise. The public typed expression survives while the execution adapter is database-aware. SQLite receives only safe constraints implied by the full expression. Candidate rows acquire required data such as tags, then the complete predicate evaluates them before authorized paging yields results. For `A && (B || C)`, pushing down `A` can be safe; arbitrarily choosing `B` cannot be. The [filtering article](/articles/typed-filtering-over-sqlite.md) and [SQL adapter][filter] show that contract.
 
@@ -1505,9 +1505,9 @@ What I borrowed most from Explicit Architecture was the habit of putting the who
 [tagport]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/kernel/tag/repository.go
 [composition]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/app.go
 [drinkmodel]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/drinks/models/drink.go
-[store]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go
-[storeguide]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md
-[filter]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/filter/sql.go
+[store]: https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go
+[storeguide]: https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/README.md
+[filter]: https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/filter/sql.go
 [transactiontests]: https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/middleware/command_tx_test.go
 
 
@@ -2665,17 +2665,20 @@ That distinction also made the migration reviewable. Most DAO edits translated l
 
 ## Use SQLite without turning every DAO into SQL
 
-Mixology stores each private row as JSON in a shared `records` table, keyed by its Go model identity and row ID. The typed query API translates field comparisons into parameterized `json_extract` predicates:
+The first SQLite adapter kept private rows as JSON documents in a shared `records` table. That changed the engine but left the data in a document layout. The [relational revision](https://github.com/TheFellow/go-modular-monolith/pull/65) completes that work: each registered model now has a named `STRICT` table, scalar fields become typed columns, nested structs flatten into columns, and collections become ordered child tables.
+
+Typed queries still belong to the application, but their predicates now address columns directly. For example, the orders status-and-cursor access path has this SQL shape:
 
 ```sql
-SELECT data
-FROM records
-WHERE model = ?
-  AND json_extract(data, '$.Status') = ?
-ORDER BY julianday(json_extract(data, '$.CreatedAt')) DESC
+SELECT id, __revision AS revision, status, created_at
+FROM orders
+WHERE status = ? AND id < ?
+ORDER BY id DESC
 ```
 
-This retains the row-oriented programming model the domains already used while gaining SQLite's file coordination, constraints, and query execution. It is a concrete tradeoff, not a universal persistence abstraction. JSON records keep the migration bounded; expression indexes make selected fields queryable; residual Go predicates remain available for conditions that cannot be represented safely in SQL.
+Owned children reference their parent through foreign keys with cascading deletion. A unique parent/position key preserves collection order; maps also enforce unique keys within each parent. Recipe ingredients, menu entries, accepted order snapshots, amendment history, and audit details all use this relational layout. References across domain boundaries remain correlation identities, so deleting a catalog item cannot erase accepted order or audit history.
+
+Timestamps use fixed-width UTC text with nanosecond precision, and decimal amounts use lossless scalar text. Presence columns preserve absent optional values and distinguish nil collections from empty ones. No aggregate is serialized as JSON. The [schema implementation](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/schema.go) makes those encodings explicit.
 
 Each domain registers its own private rows during explicit application composition:
 
@@ -2686,12 +2689,16 @@ type DrinkRow struct {
     Name     string `store:"unique"`
 }
 
+func (DrinkRow) StoreModelName() string { return "drinks" }
+
 func Register(ctx context.Context, s *store.Store) {
     s.Register(ctx, DrinkRow{})
 }
 ```
 
-Registration creates declared expression indexes and unique constraints idempotently. Competing processes therefore rely on database constraints rather than check-then-insert conventions. Registration happens in constructors, so importing a domain cannot mutate a database schema as a side effect.
+`StoreModelName` declares a stable table name independent of the Go package path. Registration creates tables, column indexes, and unique constraints idempotently. It happens in constructors, so importing a domain cannot mutate a database schema as a side effect. Competing processes rely on database constraints rather than check-then-insert conventions.
+
+Indexes follow the queries that read the data. Orders declare `store:"index=Status+ID"` for status plus cursor, inventory movements use inventory ID plus timestamp and ID, and audit uses principal type plus principal ID and ID. Tag associations enforce uniqueness on entity type, entity ID, and key, with a separate key/value/entity index for discovery. Child ownership keys support hydration and cascading deletion. [Query-plan tests](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/relational_test.go) use `EXPLAIN QUERY PLAN` to check representative access paths.
 
 ## Make process coordination an explicit runtime property
 
@@ -2725,17 +2732,17 @@ The unit-of-work middleware still owns that lifecycle. Read operations use ordin
 
 Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, optimistic conflicts, committed-change signals, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
 
-Current domain-schema work uses a freshly seeded teaching database; accepted-order history and canonical stock data are not fabricated by a historical backfill. That is separate from the store's versioned schema migration mechanism described here. Re-seeding is the documented path for this domain-model revision.
+The relational tests also verify scalar round-trips, optional presence, collection ordering, child constraints, and stale revisions. Per-operation savepoints keep a failed aggregate write from leaving partially updated parent or child rows inside a caller-owned transaction. The existing domain workflows continue to exercise the wider command transaction.
 
 The current application also uses expected revisions for absolute stock sets and lifecycle commands, and captured complete tag sets for guarded editor replacements. SQLite writer serialization cannot detect stale user intent on its own. One domain command owns each transaction, including its leaf handlers and successful audit activity. Middleware rejects nested commands from command, query, or handler contexts, and the store rejects a second command claiming the same transaction, even through a fresh context after the first returns. When middleware owns rollback, it records the command's attempted effects afterward. A caller injecting a transaction for low-level tests retains rollback and failure-recording responsibility.
 
-Tag associations now live under `tagging/internal/dao`. Their persisted storage identity retains the previous package path, so this package move does not hide existing associations or require a data migration. A consuming domain accepts an optional `tag.Edit` and publishes its own `TagsReplaced` event; Tagging prepares validation, expected-set comparison, and authorization during `Handling`, then writes its own associations during `Handle`. Entity and tag changes therefore remain inside the owning command's transaction.
+Tag associations now live under `tagging/internal/dao`. Their private row declares the `entity_tags` table and its lookup and uniqueness indexes. A consuming domain accepts an optional `tag.Edit` and publishes its own `TagsReplaced` event; Tagging prepares validation, expected-set comparison, and authorization during `Handling`, then writes its own associations during `Handle`. Entity and tag changes therefore remain inside the owning command's transaction.
 
 ## Move filtering by preserving semantics
 
 The [typed filtering layer](/articles/typed-filtering-over-sqlite.md) was intentionally concrete about bstore. Its first adapter translated checked Expr trees into bstore filters, hydrated tags, and evaluated the complete expression as a residual authority.
 
-The SQLite migration did not invent a supposedly neutral query language to hide that history. It replaced `ApplyBstore` and `ApplyBstorePushdowns` with `ApplySQL` and `ApplySQLPushdowns`. Safe comparisons now become predicates in the application-owned typed store query, which emits SQL over JSON fields. Hydrated data still joins the candidate row before exact expression evaluation.
+The SQLite migration did not invent a supposedly neutral query language to hide that history. It replaced `ApplyBstore` and `ApplyBstorePushdowns` with `ApplySQL` and `ApplySQLPushdowns`. Safe comparisons now become predicates in the application-owned typed store query, which emits SQL over typed columns. Hydrated data still joins the candidate row before exact expression evaluation.
 
 That is the portability boundary I want: callers retain one typed expression contract, each database gets an honest execution adapter, and the complete predicate determines the answer. The implementation can use the current database well without exposing its syntax as the application's public language.
 
@@ -2747,9 +2754,16 @@ That keeps transports independent of persistence. CLI exit behavior, TUI message
 
 ## Treat the file format honestly
 
-A bstore database is a bbolt file, not a SQLite database. Mixology does not attempt to open it as one or silently rewrite it during startup. Disposable sample data can be reseeded. Data that matters must be exported with the previous application version and imported into a fresh SQLite database, with the original retained until verification is complete.
+The relational schema starts from fresh teaching data. Both legacy bstore/bbolt files and the previous SQLite document layout are incompatible. Startup rejects a database containing the old `records` table with an actionable reset error; it does not convert or backfill those documents.
 
-The SQLite schema has its own ordered migration ledger. Startup creates `schema_migrations`, applies missing versions in an immediate transaction, rejects a database newer than the application understands, and keeps domain data backfills explicit and idempotent. Future SQLite releases can evolve this format normally, but crossing from bstore remains an explicit data migration.
+Close every application process, choose a fresh database path, and seed it from the application repository:
+
+```sh
+export MIXOLOGY_DB=./data/relational-demo.db
+go run ./main/seed
+```
+
+The seeder adds sample data; it does not reset or upgrade an existing database. The [reset instructions](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/docs/development.md#teaching-data-and-schema-changes) also cover removing an old database and its WAL sidecars. Startup retains a versioned `schema_migrations` ledger and rejects future schema versions. Registration describes the current schema; it does not automatically alter existing domain tables. There is no backward-compatibility requirement for this teaching data.
 
 That sharp edge is useful documentation. An API boundary can survive while an on-disk representation does not. Calling both “embedded databases” never made their files interchangeable.
 
@@ -3542,7 +3556,7 @@ category == "spirit" && (name.contains("gin") || tags contains "featured")
 
 The planner descends through Boolean groups, translates checked comparisons with literal values, reverses comparisons when the field appears on the right, and recognizes safe equality sets across compatible `or` branches. It does not push a constraint merely because one branch mentions a mapped field.
 
-SQLite applies those predicates through `json_extract` expressions over the store's JSON records. Time fields use Julian-day comparisons, and registered `store` tags create matching expression indexes and unique constraints. After candidate selection, Mixology still evaluates the complete compiled expression. Pushdowns reduce work; they never redefine the answer.
+SQLite applies those predicates directly to typed columns in named relational tables. Time comparisons use fixed-width UTC text with nanosecond precision, preserving exact boundaries without Julian-day conversion. Registered `store` tags declare column indexes and unique constraints, including compound indexes that pair common filters with cursor ordering. The [relational schema tests](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/relational_test.go) verify representative access paths with `EXPLAIN QUERY PLAN`. After candidate selection, Mixology still evaluates the complete compiled expression. Pushdowns reduce work; they never redefine the answer.
 
 ## Hydrate before exact evaluation
 
@@ -3552,7 +3566,7 @@ Tags require a staged path. Drinks, Ingredients, Inventory, Menus, and Orders fi
 
 ```mermaid
 flowchart TD
-    Q[Typed store query] --> P[SQLite JSON predicates]
+    Q[Typed store query] --> P[SQLite column predicates]
     P --> C[Sorted candidate rows]
     C --> T[Batch hydrate tags in one read transaction]
     T --> F[Evaluate complete typed expression]
@@ -3569,7 +3583,7 @@ The .NET Mixology port consumes the published [Expr for .NET](/projects/expr-dot
 
 This is also a downstream validation of the package boundary. `Mixology.Filtering` exercises the public checker, immutable AST, compatibility rewriting, canonical printer, and exact VM evaluation, then its [SQLite tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/SqlitePushdownTests.cs) compare optimized candidate selection with the complete expression result. The application uses the same NuGet artifact that Expr's own upstream traceability, differential corpus, focused tests, fuzz gate, and Native AOT sample validate before release.
 
-The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through SQL predicates, JSON expressions, registered indexes, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
+The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through typed columns, declared compound indexes, owned child tables, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
 
 
 ---
@@ -5485,7 +5499,7 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), ordered by last updated, newest first. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
-- [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-13. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
+- [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-22. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
 - [go-merkletrie](/projects/go-merkletrie.md): Updated 2026-09-03. An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
 - [Apex](/apex.md): Updated 2026-08-24. A working recreation of the Windows 3.1 unit converter my dad built and released as shareware in the 1990s.
@@ -5983,9 +5997,9 @@ Action availability now follows the same cross-surface discipline. Every domain 
 
 The persistent left navigation opens each authorized workspace through a table and detail layout. Native headers resize columns and support domain ordering, tags render as compact pills, authorized row menus expose contextual operations, and detail action bars keep domain transitions beside the selected state. Create and edit operations use full-width scrolling forms, while token editors validate and normalize tags without exposing their CSV representation. The TUI follows the same product-level interaction language in terminal-native form: arrows select fields, `e` or Enter begins editing, Enter accepts a value, and Escape cancels it. CLI, TUI, and GUI also open `data/mixology.db` by default, so each surface presents the same stored application state.
 
-The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers. Tagging owns event handlers and `internal/dao`; its persistence model retains its original storage identity so existing associations survive the package move.
+The current package shape repeats the same ownership story at every level. `app/domains` contains seven bounded contexts: audit, drinks, ingredients, inventory, menus, orders, and tagging. A full operational context exposes its facade at the package root, keeps collaboration contracts in `models`, `queries`, and `events`, owns Cedar policy in `authz`, and hides commands and persistence below `internal`. Its CLI, GUI, and TUI adapters sit together below `surfaces`, so readers can follow one capability vertically without mixing presentation code into the domain's public API. Audit and tagging use smaller explicit profiles because they need fewer layers. Tagging owns event handlers and `internal/dao`; its private persistence model declares the stable `entity_tags` table and compound uniqueness and lookup indexes.
 
-The shared `pkg/store` boundary now runs on the CGO-free `modernc.org/sqlite` driver. Each domain explicitly registers its private row types during application composition, creating the expression indexes and unique constraints declared by those rows without import-time side effects. Typed queries translate equality, ranges, membership, ordering, and safe filter pushdowns into SQL over JSON records. A `revision` row tag makes the store own optimistic concurrency: inserts establish the first revision, updates advance it atomically, and a stale update or delete returns a typed conflict. A coalesced change monitor turns SQLite data-version changes into invalidation hints, then the TUI and GUI repeat their ordinary authorized queries rather than consuming records from a second data path. Commands, event handlers, and audit entries still use one transaction, and storage failures enter the same transport-neutral application error model as the rest of the system.
+The shared `pkg/store` boundary now runs on the CGO-free `modernc.org/sqlite` driver. Each domain explicitly registers its private row types during application composition, creating named `STRICT` tables, column indexes, and unique constraints declared by those rows without import-time side effects. Typed queries translate equality, ranges, membership, ordering, and safe filter pushdowns into SQL over typed columns. Nested structs flatten into columns, while collections use ordered child tables with cascading foreign keys. Exact timestamp and decimal encodings preserve scalar values, and presence columns preserve optional values and nil collections. Compound indexes follow catalog, order, inventory, audit, and tagging access paths, with query-plan tests checking their use. The [relational storage revision](https://github.com/TheFellow/go-modular-monolith/pull/65) requires a fresh seeded database; the former document schema is rejected with reset instructions. A `revision` row tag makes the store own optimistic concurrency: inserts establish the first revision, updates advance it atomically, and a stale update or delete returns a typed conflict. A coalesced change monitor turns SQLite data-version changes into invalidation hints, then the TUI and GUI repeat their ordinary authorized queries rather than consuming records from a second data path. Commands, event handlers, and audit entries still use one transaction, and storage failures enter the same transport-neutral application error model as the rest of the system.
 
 Mixology began with bstore, and that earlier design shaped its typed query and filtering APIs. The move to SQLite kept those useful application contracts while replacing the execution adapter, database format, concurrency behavior, and schema lifecycle. [The storage migration article](/articles/migrating-mixology-from-bstore-to-sqlite.md) follows that change, including the deliberate decision not to disguise an incompatible database format as an in-place upgrade.
 
@@ -6415,7 +6429,7 @@ Building Mixology
   A cocktail bar application with seven business owners, three interfaces, and tests that keep their boundaries intact.
 
   ← / → chapter↑ / ↓ detail<b>S</b> speaker view<b>Esc</b> map
-  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Code links and application captures pin the reviewed repository snapshot 0d5e64b from go-modular-monolith PR #64. Commands own their transaction, leaf reactions, and one audit activity.</aside>
+  <aside class="notes">This is the backing presentation for peers at staff/principal level who are comfortable in Go and new to this modular-monolith design. Each horizontal chapter is a recording unit; vertical slides move from the design decision into concrete types, execution paths, and adversarial tests. Snippets identify their source and label omitted or illustrative code. The goal is to explain where a change belongs, why it belongs there, and how to prove it works. Explain the current design through its responsibilities and tradeoffs, without requiring knowledge of earlier implementations. Procurement is an optional future workshop. Application captures and unchanged code links pin snapshot 0d5e64b from PR #64. Storage examples pin the relational implementation in 1b6a586 from PR #65. Commands own their transaction, leaf reactions, and one audit activity.</aside>
 
     Orientation
     <h1>Why this application exists</h1>
@@ -6921,7 +6935,7 @@ return fmt.Errorf("publish menu: %w", err)
 errors.ToCLIExit(errors.New("raw dependency detail"))
 // exit 1, message "raw dependency detail"</code></pre>
     Expected store failures become domain-facing kinds. Unexpected failures retain their cause under Internal. A new typed wrapper is a semantic decision, not routine decoration.
-    <p class="source">[Code: pkg/store/errors.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/errors.go)
+    <p class="source">[Code: pkg/store/errors.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/errors.go)
 
     <aside class="notes">MapError intentionally replaces the message for expected NotFound, Conflict, and Invalid branches; those branches do not preserve the incoming cause. The Internal branch does. Wrapping a Conflict inside Internal leaves both types discoverable in the chain, while a generic payload lookup finds the outer classification. Explain this before asserting that an immutable kind means no layer can ever reclassify a failure. The policy is to preserve existing meaning unless a boundary deliberately changes it.</aside>
 
@@ -7046,7 +7060,7 @@ func Write(ctx Context, f func(*Tx) error) error {
     return f(tx)
 }</code></pre>
     The lowercase package helper requires a transaction. Domain DAOs cannot accidentally turn one business operation into several commits.
-    <p class="source">[Code: pkg/store/access.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/access.go)
+    <p class="source">[Code: pkg/store/access.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/access.go)
 
     <aside class="notes">First block is illustrative; second is the exact store.Write implementation. Store.ReadContext similarly reuses an injected transaction so queries and handlers see its tentative writes. UnitOfWork owns the default outer boundary. Neither the helper nor a joined pipeline command creates a savepoint. A callback error must reach the actual transaction owner.</aside>
 
@@ -8298,45 +8312,42 @@ TestApplySQLPushdownBooleanSemantics:
 ### RegistrationExplicit model schemas fail early; imports do not mutate global persistence state.
 ### ErrorsConstraints and stale revisions become application kinds, not leaked driver strings.
 
-    [Code guide: pkg/store/README.md](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/README.md)
+    [Code guide: pkg/store/README.md](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/README.md)
 
-    ## The SQLite storage shape is more specific than “tables”
-    <code class="language-sql">-- Selected SQL actually issued by the store:
-INSERT INTO records(model, id, data, revision)
-VALUES (?, ?, ?, 1);
+    ## Entity columns and owned child rows
+    <code class="language-sql">-- Illustrative queries over the generated relational schema:
+SELECT d.name, i.amount, i.unit
+FROM drinks AS d
+JOIN drinks_recipe_ingredients AS i ON i.__parent_id = d.id
+WHERE d.id = ?
+ORDER BY i.__position;
 
-SELECT data, revision
-FROM records
-WHERE model = ? AND id = ?;
+UPDATE drinks
+SET status = ?, __revision = __revision + 1
+WHERE id = ? AND __revision = ?;</code></pre>
+    Named STRICT tables hold scalar columns. Recipes, menu items, order history, and audit details live in owned child tables with cascading foreign keys.
+    <p class="source">[Code: pkg/store/schema.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/schema.go)
 
-UPDATE records
-SET data = ?, revision = revision + 1
-WHERE model = ? AND id = ? AND revision = ?;</code></pre>
-    The generic store keeps typed row data as JSON in records, partitioned by model identity. Domain DAOs still own conversion and query meaning.
-    <p class="source">[Code: pkg/store/query.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/query.go)
-
-    <aside class="notes">SQL statements selected from query.go. Open store.go to inspect schema migrations and model registration, then query.go for JSON-backed predicates and indexes. This is not one hand-designed SQL table per aggregate. The replaceable boundary preserves the application contract, while this particular engine adapter makes a concrete representation choice.</aside>
+    <aside class="notes">Illustrative SQL, not a verbatim trace: the store writes all mapped scalar columns, then replaces owned children. schema.go flattens nested structs and maps collections to ordered child tables. Compound indexes follow domain filters and ordering; EXPLAIN QUERY PLAN tests verify their use. Timestamps are fixed-width UTC text with nanosecond precision, and decimal amounts use lossless scalar text. Presence columns retain absent optionals and nil versus empty collections.</aside>
 
     ## A stale revision becomes a typed conflict
-    <code class="language-go">n, _ := r.RowsAffected()
-if n == 0 {
-    var current uint64
-    err := t.tx.QueryRowContext(t.ctx,
-        "SELECT revision FROM records WHERE model=? AND id=?",
-        modelName(typ), idString(id),
-    ).Scan(&current)
-    if errors.Is(err, sql.ErrNoRows) {
-        return errors.NotFoundf("record absent")
-    }
-    if err != nil { return err }
-    return errors.Conflictf(
-        "record changed: expected revision %d, current revision %d",
-        revision, current)
-}</code></pre>
+    <code class="language-go">// The conditional UPDATE delegates a zero-row result to stale.
+var current uint64
+err := t.tx.QueryRowContext(t.ctx,
+    "SELECT __revision FROM "+safeName(schema.name)+
+    " WHERE "+safeName(schema.primary)+"=?", id,
+).Scan(&current)
+if errors.Is(err, sql.ErrNoRows) {
+    return errors.NotFoundf("record absent")
+}
+if err != nil { return err }
+return errors.Conflictf(
+    "record changed: expected revision %d, current revision %d",
+    revision, current)</code></pre>
     Zero updated rows can mean absence or a stale edit. The store distinguishes those meanings before the DAO maps them to its own operation context.
-    <p class="source">[Code: pkg/store/query.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/query.go)
+    <p class="source">[Code: pkg/store/query.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/query.go)
 
-    <aside class="notes">Reflowed exact branch following the conditional UPDATE. Success calls setRevision(v, revision+1). Open drinks/internal/dao/update.go: toRow carries the revision, MapError adds the operation message, and drink.Revision receives the new token after success. MapError's Conflict branch preserves the kind but replaces the lower-level message, so not every surface displays the expected/current numbers.</aside>
+    <aside class="notes">Reflowed body of Tx.stale, called after a conditional update or delete affects zero rows. Aggregate writes use a savepoint: a child-write failure rolls back both parent and children even if the caller catches the error and commits the outer transaction. Success calls setRevision(v, revision+1). MapError preserves Conflict while adding domain operation context.</aside>
 
     ## Three counters protect three different races
     <code class="language-text">Database change epoch:
@@ -8349,7 +8360,7 @@ Entity revision:
   read revision 7 → another writer saves revision 8
   submit revision 7 → conditional UPDATE changes 0 rows → Conflict</code></pre>
     An epoch is a refresh hint, a generation selects a result, and a revision guards a write. None substitutes for the others.
-    <p class="source">[Code: pkg/store/changes.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go)
+    <p class="source">[Code: pkg/store/changes.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes.go)
 
     <aside class="notes">Trace the epoch in pkg/store/changes.go, generation in pkg/toolkits/gui/async.go, and revision in pkg/store/query.go. The change monitor polls a dedicated connection's PRAGMA data_version. Compare values on that connection, not as a global sequence shared by all processes. A re-query still passes through authorization.</aside>
 
@@ -8369,33 +8380,28 @@ Command:
 
 Competing writer waits or returns an error at acquisition.</code></pre>
     The loaded authorization state and the mutation share one write transaction. WAL does not make SQLite a multi-writer database.
-    <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go)
+    <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go)
 
     <aside class="notes">Trace Store.Begin and UnitOfWork. Immediate acquisition avoids starting with a read snapshot that later cannot be upgraded after another writer commits. Readers on other WAL connections can continue seeing their own snapshots. Long handlers extend the sole writer's occupancy. SQLite isolation details: https://www.sqlite.org/isolation.html. Cancellation and busy timeout can still make acquisition fail.</aside>
 
-    ## Persistent identity includes the Go row type
-    <code class="language-text">func modelName(t reflect.Type) string {
-    if named, ok := reflect.Zero(t).Interface().(
-        interface{ StoreModelName() string }); ok {
-        return named.StoreModelName()
-    }
-    return t.PkgPath() + "." + t.Name()
-}
+    ## Domains name their relational tables
+    <code class="language-go">func (DrinkRow) StoreModelName() string { return "drinks" }
+func (MenuRow) StoreModelName() string { return "menus" }
+func (OrderRow) StoreModelName() string { return "orders" }</code></pre>
+    <pre><code class="language-text">drinks                         primary key: id
+  drinks_recipe_ingredients    parent: drinks.id; ordered position
+    …_substitutes              parent: ingredient child row
+  drinks_recipe_steps          parent: drinks.id; ordered position
 
-records primary key:
-  (model, id)
+Domain values ↔ private DAO rows ↔ typed columns and child rows</code></pre>
+    Readable table names stay independent of Go package moves. Owned children cascade with their parent; historical cross-domain references retain their independence.
+    <p class="source">[Code: domain table names](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/app/domains/drinks/internal/dao/models.go) · [Code: relational mapping](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/schema.go)
 
-Example model discriminator:
-  .../app/domains/drinks/internal/dao.DrinkRow
-
-Domain values ↔ row conversion ↔ JSON-backed record</code></pre>
-    A package or row-type rename can be a data migration, not just a refactor.
-    <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go)
-
-    <aside class="notes">Reflowed modelName. Tagging’s private entityTagRow implements StoreModelName to retain its original persisted identity after moving into internal/dao. Open the real row type to confirm its name when walking the database. The model discriminator partitions records and expression indexes within the shared records table. Changing a persisted JSON field name or its interpretation also requires compatibility review. Explicit registration describes storage, but does not automatically migrate data between model names.</aside>
+    <aside class="notes">Every domain root declares StoreModelName; the generic fallback remains package path plus type name. Tagging now declares entity_tags. Child keys enforce unique positions within each parent, and map children additionally enforce unique keys. Explicit registration creates the current schema and indexes; it does not automatically alter existing tables or migrate data after a schema change.</aside>
 
     ## Migration startup is itself a coordinated write
     <code class="language-text">BEGIN IMMEDIATE
+  reject the previous records document table
   CREATE TABLE IF NOT EXISTS schema_migrations
   read highest version and applied count
   reject a version newer than this binary understands
@@ -8406,9 +8412,9 @@ COMMIT
 
 On error: rollback using a non-cancelled cleanup context.</code></pre>
     Two starting processes must agree on the same schema transition. Recording a version separately from its schema change would break that guarantee.
-    <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/store.go)
+    <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go)
 
-    <aside class="notes">Trace migrate in store.go and TestConcurrentMigrationInitialization. The implementation checks highest version and count before applying its ordered migrations. TestMigrationVersionBookkeepingAndFutureVersion and TestRevisionMigrationUpgradesExistingRows exercise compatibility behavior. This is current startup behavior, not a historical engine-migration walkthrough.</aside>
+    <aside class="notes">Trace migrate in store.go and TestConcurrentMigrationInitialization. The implementation checks highest version and count before applying its ordered migrations. TestMigrationVersionBookkeepingAndFutureVersion rejects unsupported versions. TestDocumentDatabaseRequiresExplicitReset rejects the old document database. Use a fresh MIXOLOGY_DB path and run go run ./main/seed. No conversion or historical backfill is provided; close all processes before removing an old database and its sidecars.</aside>
 
     ## The monitor pins the connection whose counter it compares
     <code class="language-text">conn, version := openChangeConnection(...)
@@ -8423,7 +8429,7 @@ If the connection fails:
   establish a new baseline
   publish anyway: changes may have occurred in the gap</code></pre>
     A data_version value is meaningful across observations on the same connection. It is not a global commit sequence.
-    <p class="source">[Code: pkg/store/changes.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go)
+    <p class="source">[Code: pkg/store/changes.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes.go)
 
     <aside class="notes">Control-flow summary of changes.go, not Go pseudocode intended to compile. The pinned connection observes commits by other connections, including this process's writer connections. A reconnect invalidates even without a comparable old counter. Backoff starts at 25 ms and caps at one second. SQLite documents the per-connection comparison contract at https://www.sqlite.org/pragma.html#pragma_data_version.</aside>
 
@@ -8440,7 +8446,7 @@ If the connection fails:
 // Epoch counts monitor publications, not database commits.
 // A signal carries no entity ID or business payload.</code></pre>
     A full notification channel must not block the writer-observation loop. Consumers reload state rather than reconstructing changes.
-    <p class="source">[Code: pkg/store/changes.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes.go)
+    <p class="source">[Code: pkg/store/changes.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes.go)
 
     <aside class="notes">Exact publish implementation. Multiple commits may be noticed in one poll, and multiple monitor publications may occupy one queued signal. Epoch therefore cannot count commits or identify changed resources. The TUI owns deferred invalidation while editing; GUI activation/refresh also re-queries through the application. Do not describe this as a durable event bus or promise one callback per write.</aside>
 
@@ -8458,7 +8464,7 @@ tx.Insert("rolled back")
 writer.Rollback(tx)
   → no invalidation for that rollback</code></pre>
     Use separate connections to test freshness. Reading your own uncommitted write proves a different property.
-    <p class="source">[Code: pkg/store/changes_test.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/pkg/store/changes_test.go)
+    <p class="source">[Code: pkg/store/changes_test.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/changes_test.go)
 
     <aside class="notes">Scenario from TestChangeMonitorSignalsCommittedWritesAndIgnoresRollback; error handling and timing bounds omitted. TestIndependentStoresShareOneDatabase separately verifies shared persistence, and GUI integration tests prove a client reacts to external commits. A monitor-only test is not evidence that an active editor survives refresh or that a UI publishes on its correct thread.</aside>
 

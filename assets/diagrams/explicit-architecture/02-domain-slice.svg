@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1280" height="890" viewBox="0 0 1280 890" role="img" aria-labelledby="title desc">
-<title id="title">A domain is a vertical slice</title><desc id="desc">Directory proximity keeps a capability findable; import rules keep its responsibilities separate.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline 0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c. Linked panels open implementation evidence.</desc>
+<title id="title">A domain is a vertical slice</title><desc id="desc">Directory proximity keeps a capability findable; import rules keep its responsibilities separate.. Original Mixology diagram by Ryan Harris, inspired by Herberto Graça’s Explicit Architecture. Source baseline 1b6a586180c116eb1231b3e108e151879881b69b. Linked panels open implementation evidence.</desc>
 <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#74c0fc"/></marker><marker id="flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc36b"/></marker></defs>
 <style>text {font-family:Arial,Helvetica,sans-serif;fill:#fff6fb} a:hover rect {stroke:#ff4f94;stroke-width:3} .muted {fill:#d0c8d2} .mono {font-family:monospace} .eyebrow {font-weight:700;letter-spacing:2px;fill:#ff4f94}</style>
 <rect x="0" y="0" width="1280" height="890" rx="0" fill="#141010" stroke="none" stroke-width="1.5"/>
@@ -8,19 +8,19 @@
 <text x="40.0" y="122.0" font-size="18" text-anchor="start" class="muted">Directory proximity keeps a capability findable; import rules keep its responsibilities separate.</text>
 <rect x="40" y="165" width="950" height="626" rx="14" fill="#242021" stroke="#797482" stroke-width="1.5"/>
 <text x="65.0" y="205.0" font-size="24" text-anchor="start" font-weight="700">app/domains/&lt;context&gt;/</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/readme.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/app/domains/readme.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/app/domains/readme.md" target="_blank">
 <rect x="65" y="230" width="900" height="105" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="85.0" y="263.0" font-size="21" text-anchor="start" font-weight="700">surfaces/{cli,tui,gui}</text>
 <text x="85.0" y="293.0" font-size="17" text-anchor="start" class="muted">Concrete presentation adapters; matching toolkit only; no access to private writes.</text>
 </a>
 <path d="M235,335 L235,375" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/delete.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/ingredients/delete.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/app/domains/ingredients/delete.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/app/domains/ingredients/delete.go" target="_blank">
 <rect x="65" y="375" width="405" height="126" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="85.0" y="408.0" font-size="21" text-anchor="start" font-weight="700">Public facade</text>
 <text x="85.0" y="438.0" font-size="17" text-anchor="start" class="muted">Typed operations select pipeline calls</text>
 <text x="85.0" y="465.0" font-size="17" text-anchor="start" class="muted">Owns construction and application entry</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/architecture.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/architecture.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/docs/architecture.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/docs/architecture.md" target="_blank">
 <rect x="500" y="375" width="465" height="126" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="520.0" y="408.0" font-size="21" text-anchor="start" font-weight="700">Public collaboration contracts</text>
 <text x="520.0" y="438.0" font-size="17" text-anchor="start" class="muted">models / queries / events</text>
@@ -28,13 +28,13 @@
 </a>
 <path d="M235,501 L235,550" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
 <path d="M730,550 L730,501" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/.arch-lint.yaml" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/.arch-lint.yaml" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/.arch-lint.yaml" target="_blank">
 <rect x="65" y="550" width="405" height="125" rx="14" fill="#3b2d1b" stroke="#797482" stroke-width="1.5"/>
 <text x="85.0" y="583.0" font-size="21" text-anchor="start" font-weight="700">internal/commands + internal/dao</text>
 <text x="85.0" y="613.0" font-size="17" text-anchor="start" class="muted">Write decisions and private persistence</text>
 <text x="85.0" y="640.0" font-size="17" text-anchor="start" class="muted">Queries and handlers may use own DAO</text>
 </a>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_topology_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/domain_topology_test.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/architecture/domain_topology_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/architecture/domain_topology_test.go" target="_blank">
 <rect x="500" y="550" width="465" height="125" rx="14" fill="#30243e" stroke="#797482" stroke-width="1.5"/>
 <text x="520.0" y="583.0" font-size="21" text-anchor="start" font-weight="700">handlers + authz</text>
 <text x="520.0" y="613.0" font-size="17" text-anchor="start" class="muted">Owned leaf reactions; domain-owned policy</text>
@@ -42,7 +42,7 @@
 </a>
 <text x="65.0" y="721.0" font-size="18" text-anchor="start" font-weight="700">A surface is an outer adapter even when its directory lives inside the domain.</text>
 <text x="65.0" y="755.0" font-size="17" text-anchor="start" class="muted">Solid arrows: selected source dependencies. Adjacency alone does not grant access.</text>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/architecture.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/docs/architecture.md" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/docs/architecture.md" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/docs/architecture.md" target="_blank">
 <rect x="1020" y="230" width="220" height="270" rx="14" fill="#1c2d46" stroke="#797482" stroke-width="1.5"/>
 <text x="1040.0" y="263.0" font-size="21" text-anchor="start" font-weight="700">Peer context</text>
 <text x="1040.0" y="293.0" font-size="15" text-anchor="start" class="muted">Reads public queries</text>
@@ -51,7 +51,7 @@
 <text x="1040.0" y="374.0" font-size="15" text-anchor="start" class="muted">Owns its own writes</text>
 </a>
 <path d="M1020,472 L965,472" fill="none" stroke="#74c0fc" stroke-width="2.5" marker-end="url(#arrow)"/>
-<a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/arch_lint_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/architecture/arch_lint_test.go" target="_blank">
+<a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/architecture/arch_lint_test.go" xlink:href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/architecture/arch_lint_test.go" target="_blank">
 <rect x="1020" y="550" width="220" height="205" rx="14" fill="#18372f" stroke="#797482" stroke-width="1.5"/>
 <text x="1040.0" y="583.0" font-size="21" text-anchor="start" font-weight="700">Build checks</text>
 <text x="1040.0" y="613.0" font-size="15" text-anchor="start" class="muted">Go internal visibility</text>

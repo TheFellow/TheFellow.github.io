@@ -100,7 +100,7 @@ category == "spirit" && (name.contains("gin") || tags contains "featured")
 
 The planner descends through Boolean groups, translates checked comparisons with literal values, reverses comparisons when the field appears on the right, and recognizes safe equality sets across compatible `or` branches. It does not push a constraint merely because one branch mentions a mapped field.
 
-SQLite applies those predicates through `json_extract` expressions over the store's JSON records. Time fields use Julian-day comparisons, and registered `store` tags create matching expression indexes and unique constraints. After candidate selection, Mixology still evaluates the complete compiled expression. Pushdowns reduce work; they never redefine the answer.
+SQLite applies those predicates directly to typed columns in named relational tables. Time comparisons use fixed-width UTC text with nanosecond precision, preserving exact boundaries without Julian-day conversion. Registered `store` tags declare column indexes and unique constraints, including compound indexes that pair common filters with cursor ordering. The [relational schema tests](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/relational_test.go) verify representative access paths with `EXPLAIN QUERY PLAN`. After candidate selection, Mixology still evaluates the complete compiled expression. Pushdowns reduce work; they never redefine the answer.
 
 ## Hydrate before exact evaluation
 
@@ -110,7 +110,7 @@ Tags require a staged path. Drinks, Ingredients, Inventory, Menus, and Orders fi
 
 ```mermaid
 flowchart TD
-    Q[Typed store query] --> P[SQLite JSON predicates]
+    Q[Typed store query] --> P[SQLite column predicates]
     P --> C[Sorted candidate rows]
     C --> T[Batch hydrate tags in one read transaction]
     T --> F[Evaluate complete typed expression]
@@ -127,4 +127,4 @@ The .NET Mixology port consumes the published [Expr for .NET](/projects/expr-dot
 
 This is also a downstream validation of the package boundary. `Mixology.Filtering` exercises the public checker, immutable AST, compatibility rewriting, canonical printer, and exact VM evaluation, then its [SQLite tests](https://github.com/TheFellow/modular-monolith/blob/master/tests/Mixology.Filtering.Tests/SqlitePushdownTests.cs) compare optimized candidate selection with the complete expression result. The application uses the same NuGet artifact that Expr's own upstream traceability, differential corpus, focused tests, fuzz gate, and Native AOT sample validate before release.
 
-The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through SQL predicates, JSON expressions, registered indexes, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
+The Go implementation now demonstrates that boundary across two persistence generations. bstore shaped the first adapter. SQLite shapes the current one through typed columns, declared compound indexes, owned child tables, and WAL-backed transactions. The public filtering language did not need to pretend those databases were interchangeable. It needed to own the semantics that should survive when they were not.
