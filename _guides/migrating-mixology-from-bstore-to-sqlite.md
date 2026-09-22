@@ -1,7 +1,7 @@
 ---
 title: "Migrating Mixology from bstore to SQLite"
 date: 2026-08-10
-last_modified_at: 2026-09-13
+last_modified_at: 2026-09-22
 excerpt: "How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors."
 permalink: /articles/migrating-mixology-from-bstore-to-sqlite/
 redirect_from: /guides/migrating-mixology-from-bstore-to-sqlite/
@@ -41,17 +41,20 @@ That distinction also made the migration reviewable. Most DAO edits translated l
 
 ## Use SQLite without turning every DAO into SQL
 
-Mixology stores each private row as JSON in a shared `records` table, keyed by its Go model identity and row ID. The typed query API translates field comparisons into parameterized `json_extract` predicates:
+The first SQLite adapter kept private rows as JSON documents in a shared `records` table. That changed the engine but left the data in a document layout. The [relational revision](https://github.com/TheFellow/go-modular-monolith/pull/65) completes that work: each registered model now has a named `STRICT` table, scalar fields become typed columns, nested structs flatten into columns, and collections become ordered child tables.
+
+Typed queries still belong to the application, but their predicates now address columns directly. For example, the orders status-and-cursor access path has this SQL shape:
 
 ```sql
-SELECT data
-FROM records
-WHERE model = ?
-  AND json_extract(data, '$.Status') = ?
-ORDER BY julianday(json_extract(data, '$.CreatedAt')) DESC
+SELECT id, __revision AS revision, status, created_at
+FROM orders
+WHERE status = ? AND id < ?
+ORDER BY id DESC
 ```
 
-This retains the row-oriented programming model the domains already used while gaining SQLite's file coordination, constraints, and query execution. It is a concrete tradeoff, not a universal persistence abstraction. JSON records keep the migration bounded; expression indexes make selected fields queryable; residual Go predicates remain available for conditions that cannot be represented safely in SQL.
+Owned children reference their parent through foreign keys with cascading deletion. A unique parent/position key preserves collection order; maps also enforce unique keys within each parent. Recipe ingredients, menu entries, accepted order snapshots, amendment history, and audit details all use this relational layout. References across domain boundaries remain correlation identities, so deleting a catalog item cannot erase accepted order or audit history.
+
+Timestamps use fixed-width UTC text with nanosecond precision, and decimal amounts use lossless scalar text. Presence columns preserve absent optional values and distinguish nil collections from empty ones. No aggregate is serialized as JSON. The [schema implementation](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/schema.go) makes those encodings explicit.
 
 Each domain registers its own private rows during explicit application composition:
 
@@ -62,12 +65,16 @@ type DrinkRow struct {
     Name     string `store:"unique"`
 }
 
+func (DrinkRow) StoreModelName() string { return "drinks" }
+
 func Register(ctx context.Context, s *store.Store) {
     s.Register(ctx, DrinkRow{})
 }
 ```
 
-Registration creates declared expression indexes and unique constraints idempotently. Competing processes therefore rely on database constraints rather than check-then-insert conventions. Registration happens in constructors, so importing a domain cannot mutate a database schema as a side effect.
+`StoreModelName` declares a stable table name independent of the Go package path. Registration creates tables, column indexes, and unique constraints idempotently. It happens in constructors, so importing a domain cannot mutate a database schema as a side effect. Competing processes rely on database constraints rather than check-then-insert conventions.
+
+Indexes follow the queries that read the data. Orders declare `store:"index=Status+ID"` for status plus cursor, inventory movements use inventory ID plus timestamp and ID, and audit uses principal type plus principal ID and ID. Tag associations enforce uniqueness on entity type, entity ID, and key, with a separate key/value/entity index for discovery. Child ownership keys support hydration and cascading deletion. [Query-plan tests](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/relational_test.go) use `EXPLAIN QUERY PLAN` to check representative access paths.
 
 ## Make process coordination an explicit runtime property
 
@@ -101,17 +108,17 @@ The unit-of-work middleware still owns that lifecycle. Read operations use ordin
 
 Tests exercise the boundary with real temporary databases. They verify commit and rollback, concurrent store handles, optimistic conflicts, committed-change signals, startup registration, unique constraints, migration ledgers, future schema rejection, filtering, and the existing application workflows. The migration changed the engine without weakening the transaction that gives cross-domain reactions their meaning.
 
-Current domain-schema work uses a freshly seeded teaching database; accepted-order history and canonical stock data are not fabricated by a historical backfill. That is separate from the store's versioned schema migration mechanism described here. Re-seeding is the documented path for this domain-model revision.
+The relational tests also verify scalar round-trips, optional presence, collection ordering, child constraints, and stale revisions. Per-operation savepoints keep a failed aggregate write from leaving partially updated parent or child rows inside a caller-owned transaction. The existing domain workflows continue to exercise the wider command transaction.
 
 The current application also uses expected revisions for absolute stock sets and lifecycle commands, and captured complete tag sets for guarded editor replacements. SQLite writer serialization cannot detect stale user intent on its own. One domain command owns each transaction, including its leaf handlers and successful audit activity. Middleware rejects nested commands from command, query, or handler contexts, and the store rejects a second command claiming the same transaction, even through a fresh context after the first returns. When middleware owns rollback, it records the command's attempted effects afterward. A caller injecting a transaction for low-level tests retains rollback and failure-recording responsibility.
 
-Tag associations now live under `tagging/internal/dao`. Their persisted storage identity retains the previous package path, so this package move does not hide existing associations or require a data migration. A consuming domain accepts an optional `tag.Edit` and publishes its own `TagsReplaced` event; Tagging prepares validation, expected-set comparison, and authorization during `Handling`, then writes its own associations during `Handle`. Entity and tag changes therefore remain inside the owning command's transaction.
+Tag associations now live under `tagging/internal/dao`. Their private row declares the `entity_tags` table and its lookup and uniqueness indexes. A consuming domain accepts an optional `tag.Edit` and publishes its own `TagsReplaced` event; Tagging prepares validation, expected-set comparison, and authorization during `Handling`, then writes its own associations during `Handle`. Entity and tag changes therefore remain inside the owning command's transaction.
 
 ## Move filtering by preserving semantics
 
 The [typed filtering layer](/articles/typed-filtering-over-sqlite/) was intentionally concrete about bstore. Its first adapter translated checked Expr trees into bstore filters, hydrated tags, and evaluated the complete expression as a residual authority.
 
-The SQLite migration did not invent a supposedly neutral query language to hide that history. It replaced `ApplyBstore` and `ApplyBstorePushdowns` with `ApplySQL` and `ApplySQLPushdowns`. Safe comparisons now become predicates in the application-owned typed store query, which emits SQL over JSON fields. Hydrated data still joins the candidate row before exact expression evaluation.
+The SQLite migration did not invent a supposedly neutral query language to hide that history. It replaced `ApplyBstore` and `ApplyBstorePushdowns` with `ApplySQL` and `ApplySQLPushdowns`. Safe comparisons now become predicates in the application-owned typed store query, which emits SQL over typed columns. Hydrated data still joins the candidate row before exact expression evaluation.
 
 That is the portability boundary I want: callers retain one typed expression contract, each database gets an honest execution adapter, and the complete predicate determines the answer. The implementation can use the current database well without exposing its syntax as the application's public language.
 
@@ -123,9 +130,16 @@ That keeps transports independent of persistence. CLI exit behavior, TUI message
 
 ## Treat the file format honestly
 
-A bstore database is a bbolt file, not a SQLite database. Mixology does not attempt to open it as one or silently rewrite it during startup. Disposable sample data can be reseeded. Data that matters must be exported with the previous application version and imported into a fresh SQLite database, with the original retained until verification is complete.
+The relational schema starts from fresh teaching data. Both legacy bstore/bbolt files and the previous SQLite document layout are incompatible. Startup rejects a database containing the old `records` table with an actionable reset error; it does not convert or backfill those documents.
 
-The SQLite schema has its own ordered migration ledger. Startup creates `schema_migrations`, applies missing versions in an immediate transaction, rejects a database newer than the application understands, and keeps domain data backfills explicit and idempotent. Future SQLite releases can evolve this format normally, but crossing from bstore remains an explicit data migration.
+Close every application process, choose a fresh database path, and seed it from the application repository:
+
+```sh
+export MIXOLOGY_DB=./data/relational-demo.db
+go run ./main/seed
+```
+
+The seeder adds sample data; it does not reset or upgrade an existing database. The [reset instructions](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/docs/development.md#teaching-data-and-schema-changes) also cover removing an old database and its WAL sidecars. Startup retains a versioned `schema_migrations` ledger and rejects future schema versions. Registration describes the current schema; it does not automatically alter existing domain tables. There is no backward-compatibility requirement for this teaching data.
 
 That sharp edge is useful documentation. An API boundary can survive while an on-disk representation does not. Calling both “embedded databases” never made their files interchangeable.
 

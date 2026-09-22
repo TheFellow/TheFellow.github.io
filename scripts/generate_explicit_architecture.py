@@ -10,7 +10,7 @@ import math
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'assets/diagrams/explicit-architecture'
-SHA = '0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c'
+SHA = '1b6a586180c116eb1231b3e108e151879881b69b'
 CODE = f'https://github.com/TheFellow/go-modular-monolith/blob/{SHA}/'
 SITE = 'https://thefellow.github.io/'
 # Match the site's Minimal Mistakes neon skin, retaining semantic color groups.
@@ -64,7 +64,7 @@ def boundaries():
     s.text(455,231,'PUBLIC APPLICATION OPERATIONS',17,bold=True)
     s.lines(455,277,['Seven domain facades','Typed commands and queries','Fresh operation context'],21,34)
     s.card(453,388,304,224,'One behavioral boundary',['Authorization on current state','Domain decisions and values','Transactions and owned reactions','Audit and typed errors'],url=CODE+'pkg/middleware/README.md',size=16)
-    s.card(890,195,270,165,'Local persistence',['Owned Store / Tx / Query','SQLite JSON records','One local database file'],C['sand'],CODE+'pkg/store/README.md',size=16)
+    s.card(890,195,270,165,'Local persistence',['Owned Store / Tx / Query','Relational SQLite tables','One local database file'],C['sand'],CODE+'pkg/store/README.md',size=16)
     s.card(890,425,270,165,'Policy evaluation',['Domain-owned Cedar policy','Shared evaluation machinery','Models expose Cedar entities'],C['lav'],CODE+'pkg/authz/README.md',size=16)
     s.arrow(780,277,890,277); s.arrow(780,507,890,507)
     s.text(805,256,'uses',16,cls='muted');s.text(805,486,'uses',16,cls='muted')
@@ -153,7 +153,7 @@ def complete():
         s.card(40,y,410,169,title,lines,C['green'],CODE+path,size=18)
     s.card(40,801,410,166,'Independent adapter mechanics',['surfaces/{cli,tui,gui} per domain','Matching pkg/toolkits only','main/seed supplies sample data'],C['green'],CODE+'pkg/toolkits/readme.md',size=18)
     s.arrow(450,480,595,480);s.text(468,451,'calls public',16,cls='muted');s.text(468,471,'operations',16,cls='muted')
-    s.card(1535,195,425,193,'pkg/store → SQLite',['Owned Store / Tx / Query[T]','Private DAO rows → JSON records','Registration → indexes + constraints','WAL readers; serialized writers','Revision predicate rejects stale writes'],C['sand'],CODE+'pkg/store/README.md',size=17)
+    s.card(1535,195,425,193,'pkg/store → SQLite',['Owned Store / Tx / Query[T]','Typed columns + owned child rows','Indexes + cascading foreign keys','WAL readers; serialized writers','Revision predicate rejects stale writes'],C['sand'],CODE+'pkg/store/README.md',size=17)
     s.card(1535,415,425,164,'Domain authz → Cedar',['Policies and schemas owned per context','Input and result authorization','Public models expose Cedar entities','Generated policy assembly in pkg/authz'],C['lav'],CODE+'pkg/authz/README.md',size=17)
     s.card(1535,606,425,164,'Typed filtering → Expr + SQL',['Domain schema → checked expression','Safe SQL candidate constraints','Hydration → complete predicate','Authorized paging yields visible matches'],C['sand'],CODE+'pkg/filter/README.md',size=17)
     s.card(1535,797,425,170,'Store changes → client refresh',['Connection-local data_version monitor','Coalesced invalidation; no record payload','TUI / GUI repeat authorized queries','Separate from transactional domain events'],C['sand'],CODE+'pkg/store/changes.go',size=17)

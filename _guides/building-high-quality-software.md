@@ -1,7 +1,7 @@
 ---
 title: "Building High-Quality Software"
 date: 2026-07-23 12:03:42 -0700
-last_modified_at: 2026-09-13
+last_modified_at: 2026-09-22
 excerpt: "A preview of eleven lessons about turning architectural intent into executable constraints, using Mixology as the worked example."
 permalink: /articles/building-high-quality-software/
 redirect_from: /guides/building-high-quality-software/
@@ -180,8 +180,8 @@ and after tag sets during `Handling`; `Handle` persists associations through its
 A tag veto rolls back the entity edit, associations, and success activity together. The command
 has one activity containing its own writes and all leaf effects. A managed failure records attempted
 effects after rollback. GUI/TUI editors supply their originally loaded tags, so concurrent tag
-changes conflict independently of the entity revision. Tagging's moved persistence model retains
-its original storage identity, preserving existing associations.
+changes conflict independently of the entity revision. Tagging's private persistence model declares the stable
+`entity_tags` table, with a compound unique key for entity type, entity ID, and tag key.
 
 Cross-domain discovery makes the ownership choice especially visible. `tags show` finds active
 entities carrying one exact tag or any value for a key, while `tags summary` aggregates active use
