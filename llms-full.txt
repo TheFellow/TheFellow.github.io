@@ -3810,6 +3810,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Building a Persistent Merkle Trie in Go](/notes/building-a-persistent-merkle-trie-in-go.md): How canonical codecs, radix routing, structural sharing, and lazy snapshots fit together in a generic content-addressed trie.
 - [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
 - [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md): How I use F#kYeah across projects to analyze, implement, validate, and review semantic ports without a human in the execution loop.
+- [Porting the Cedar VS Code Extension to JetBrains IDEs](/notes/porting-vscode-cedar-to-jetbrains.md): How jetbrains-cedar brings the official Cedar VS Code extension to IntelliJ-based IDEs by running the Cedar SDK as WebAssembly and porting the extension near line for line.
 
 
 ---
@@ -4865,6 +4866,126 @@ The result should feel native to .NET without drifting from Cedar's contract: sh
 
 ---
 
+<!-- Generated from https://thefellow.github.io/notes/porting-vscode-cedar-to-jetbrains/ by scripts/generate_llm_content.py; do not edit. -->
+
+# Porting the Cedar VS Code Extension to JetBrains IDEs
+
+Source: [https://thefellow.github.io/notes/porting-vscode-cedar-to-jetbrains/](https://thefellow.github.io/notes/porting-vscode-cedar-to-jetbrains/)
+
+## Pyramid summary
+
+- **~2 words:** JetBrains Cedar
+- **~8 words:** Porting the Cedar VS Code extension to IntelliJ through WebAssembly.
+- **Expanded:** How jetbrains-cedar brings the official Cedar VS Code extension to IntelliJ-based IDEs by running the Cedar SDK as WebAssembly and porting the extension near line for line.
+
+## Full content
+
+The official [Cedar extension for Visual Studio Code](https://github.com/cedar-policy/vscode-cedar) gives policy authors highlighting, validation, formatting, and navigation. [jetbrains-cedar](https://github.com/TheFellow/jetbrains-cedar) is my semantic port of that extension to IntelliJ-based IDEs: GoLand, IntelliJ IDEA, PyCharm, WebStorm, and the rest of the family. It tracks vscode-cedar 0.10.6 with Cedar SDK 4.13.0, and the current release is 0.10.6.1.
+
+The plugin covers the same ground as the extension. Policies, schemas, and entities files get highlighting and validate as you edit, including validation of policies and entities against a detected schema. Formatting, completion, signature help, hover, quick fixes, **Go to Declaration**, the Structure view, and folding all work. Schemas translate between the Cedar and JSON formats, policies export to JSON, and `cedar` fenced code blocks in Markdown are highlighted.
+
+## Run the same Cedar SDK
+
+Most of the extension's behavior comes from the Cedar SDK itself. vscode-cedar compiles a small Rust crate to WebAssembly and calls it from TypeScript for validation, formatting, and schema translation. Reimplementing those in Kotlin would create a second Cedar implementation for an editor plugin, which is the wrong place for one.
+
+The plugin instead runs the same Rust code as WebAssembly inside the JVM on [Chicory](https://chicory.dev), a pure-Java WebAssembly runtime. The modules under `cedar-wasm/src/` are upstream's modules, kept close enough that SDK upgrades port mechanically. The one structural change is the boundary: upstream exposes each function through wasm-bindgen, while the JVM bridge has a single export that takes a JSON request such as `{"fn": "...", "args": [...]}` and returns the upstream result struct serialized as JSON.
+
+That keeps the plugin free of native binaries and gives it the same diagnostics and formatting output as the VS Code extension and the `cedar` CLI.
+
+## Port the extension near line for line
+
+When I ported [Cedar's Go implementation to .NET](/notes/porting-cedar-semantics-from-go-to-dotnet.md), a direct transliteration would have preserved the wrong things; the C# API needed to be idiomatic. The extension is a different case. Its TypeScript modules are editor logic: scanning documents, building completions, mapping SDK errors to ranges. Keeping the Kotlin structurally close to them makes every later upstream commit easier to port and review.
+
+To make that possible, the plugin includes a small re-creation of the VS Code API types the extension uses: `Position`, `Range`, `TextDocument`, `Diagnostic`, `CompletionItem`, and a few others. Each upstream `src/*.ts` file has a matching Kotlin file in `core/`, with the same function names, comments, TODOs, and order. Here is upstream's policy formatter:
+
+```typescript
+export const formatCedarDoc = (
+  cedarDoc: vscode.TextDocument
+): string | null => {
+  let formattedPolicy = null;
+  const { skipFormatting } = scanLeadingComments(cedarDoc);
+
+  if (!skipFormatting) {
+    const editorConfig = vscode.workspace.getConfiguration('editor', {
+      languageId: 'cedar',
+    });
+    const tabSize = editorConfig.get<number>('tabSize', 2);
+    const wordWrapColumn = editorConfig.get<number>('wordWrapColumn', 80);
+
+    const formatResult: cedar.FormatPoliciesResult = cedar.formatPolicies(
+      cedarDoc.getText(),
+      wordWrapColumn,
+      tabSize
+    );
+    if (formatResult.success) {
+      formattedPolicy = formatResult.policy as string;
+    }
+    formatResult.free();
+  }
+
+  return formattedPolicy;
+};
+```
+
+And the port:
+
+```kotlin
+fun formatCedarDoc(
+    cedarDoc: TextDocument,
+    tabSize: Int = 4,
+    wordWrapColumn: Int = 80,
+): String? {
+    var formattedPolicy: String? = null
+    val (_, skipFormatting) = scanLeadingComments(cedarDoc)
+
+    if (!skipFormatting) {
+        val formatResult = Cedar.formatPolicies(
+            cedarDoc.getText(),
+            wordWrapColumn,
+            tabSize,
+        )
+        if (formatResult.success) {
+            formattedPolicy = formatResult.policy
+        }
+    }
+
+    return formattedPolicy
+}
+```
+
+The editor configuration lookup becomes parameters supplied by the IntelliJ Cedar code style, and the manual `free()` disappears because results arrive as JSON. Everything else lines up, so a reviewer can read the two side by side.
+
+The IntelliJ integration lives in a separate `ide/` layer. It adapts IntelliJ documents and projects to the shim types and wires the ported functions into the platform's own extension points: an annotator and the Problems tool window for diagnostics, a formatting service, completion and parameter-info contributors, a structure view, and actions under **Tools \| Cedar**. The `core/` files stay IDE-independent and unit-testable.
+
+Two smaller pieces preserve upstream behavior that is easy to lose in translation. A TextMate grammar interpreter runs upstream's `syntaxes/*.tmLanguage.json` files verbatim, so highlighting comes from the same grammars and upstream's grammar tests port directly. A `Js.kt` helper file replicates the JavaScript semantics the TypeScript relies on, such as `indexOf` with a start position, `substring` clamping, falsy `0` and `""`, and regex `match` and `matchAll`.
+
+## Compare against upstream directly
+
+Parity claims need evidence. Beyond unit and IntelliJ platform tests, the repository has a differential harness for the parser and schema-diagram generator. It runs upstream's own `parser.ts` and `generate.ts` under Node, with stub `vscode` and `vscode-cedar-wasm` modules and the exact `jsonc-parser` version upstream locks, then runs the Kotlin port over the same `testdata/` and fixtures and compares every entry point's output field by field.
+
+The port also has to respect IntelliJ's threading model, which VS Code does not impose. Document and PSI reads happen in read actions, writes happen in write commands on the event dispatch thread, and Cedar SDK calls stay off that thread. Several later commits went into this, moving Cedar SDK calls and problem reporting off the EDT so editing stays responsive.
+
+A few differences are deliberate and documented. Validation runs continuously through the IntelliJ daemon instead of on open and save, the JSON preview opens as a read-only editor tab, and **Activate Cedar Extension** remains as a no-op because the plugin is always active.
+
+## Keep pace with upstream
+
+The initial port covers all 29 reachable upstream commits through vscode-cedar 0.10.6, recorded as baseline events in an append-only `semport/ledger.tsv`. New upstream commits are discovered and processed one at a time, oldest first, using the same ledger model as my other [semantic ports](/notes/autonomous-semantic-porting-with-fkyeah.md): each commit ends as implemented, acknowledged with a written skip rationale, or wedged with its work preserved in a Git stash.
+
+Two drivers share that ledger and its gates. A `/semport` skill in Claude Code runs separate analysis, implementation, and independent review agents. [`semport.dot`](https://github.com/TheFellow/jetbrains-cedar/blob/main/semport/semport.dot) encodes the same workflow as an Attractor graph for [F#kYeah](/projects/fkyeah.md). Both run the same validation contract: `cargo test` for the SDK bridge, the Gradle test suite, `buildPlugin`, and plugin structure verification.
+
+[`semport/MAPPING.md`](https://github.com/TheFellow/jetbrains-cedar/blob/main/semport/MAPPING.md) maps every upstream file to its port, which also documents where typical changes land. A Cedar SDK bump goes to `cedar-wasm/Cargo.toml`, a grammar change is copied verbatim, and a change to `src/*.ts` goes to the mapped Kotlin file. Plugin versions follow upstream, with a fourth component for plugin-only releases like 0.10.6.1, and a tagged release builds, verifies, and publishes the plugin to the JetBrains Marketplace.
+
+The result is Cedar editing in JetBrains IDEs that behaves like the VS Code extension because it runs the same SDK and the same editor logic, with a ledger and a set of checks that make keeping it that way routine.
+
+## Where to look
+
+- [jetbrains-cedar](https://github.com/TheFellow/jetbrains-cedar) for the plugin, install instructions, and releases.
+- [`jetbrains-cedar/semport`](https://github.com/TheFellow/jetbrains-cedar/tree/main/semport) for the ledger, mapping, differential harness, and porting workflow.
+- [vscode-cedar](https://github.com/cedar-policy/vscode-cedar) for the upstream extension that defines the behavior.
+
+
+---
+
 <!-- Generated from https://thefellow.github.io/notes/projecting-actions-across-user-interfaces/ by scripts/generate_llm_content.py; do not edit. -->
 
 # Projecting Actions Across User Interfaces
@@ -5499,6 +5620,7 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), ordered by last updated, newest first. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
+- [jetbrains-cedar](/projects/jetbrains-cedar.md): Updated 2026-09-28. Cedar policy language support for JetBrains IDEs, ported from the official VS Code extension.
 - [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-22. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
 - [go-merkletrie](/projects/go-merkletrie.md): Updated 2026-09-03. An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
@@ -6070,6 +6192,37 @@ The library also treats its trust boundaries as contracts rather than convention
 - The scaling experiment makes the central claim observable: a tenfold increase in set size leaves the number of transmitted cells nearly unchanged.
 
 Start with `go run ./cmd/walkthrough`, then read `codec.go`, `window.go`, and `decoder.go` in that order. The [companion note](/notes/riblt-in-go.md) follows that same path through the concrete example sets, and `cmd/structs`, `cmd/documents`, and `cmd/chunks` compare how the generic core fits different application data.
+
+
+---
+
+<!-- Generated from https://thefellow.github.io/projects/jetbrains-cedar/ by scripts/generate_llm_content.py; do not edit. -->
+
+# jetbrains-cedar
+
+Source: [https://thefellow.github.io/projects/jetbrains-cedar/](https://thefellow.github.io/projects/jetbrains-cedar/)
+
+## Pyramid summary
+
+- **~2 words:** Cedar IDE plugin
+- **~8 words:** Cedar editing for JetBrains IDEs, ported from vscode-cedar.
+- **Expanded:** Cedar policy language support for JetBrains IDEs, ported from the official VS Code extension.
+
+## Full content
+
+[View the repository](https://github.com/TheFellow/jetbrains-cedar)
+
+jetbrains-cedar brings the official [Cedar extension for Visual Studio Code](https://github.com/cedar-policy/vscode-cedar) to GoLand, IntelliJ IDEA, PyCharm, WebStorm, and other IntelliJ-based IDEs. Cedar policies, schemas, and entities files get highlighting, validation as you edit, formatting, completion, hover, quick fixes, navigation, and the extension's export and translation commands.
+
+The Cedar SDK runs inside the IDE as WebAssembly on Chicory, a pure-Java runtime, so validation and formatting match the VS Code extension and the `cedar` CLI without native binaries. The extension's TypeScript modules are ported near line for line against a small re-creation of the VS Code API, and a separate layer wires them into IntelliJ's annotators, formatter, completion, and structure view.
+
+### Why it is worth exploring
+
+- It shows a semantic port where staying structurally close to upstream is the point, because it keeps later upstream commits easy to port and review.
+- Running upstream's Rust crate as WebAssembly in the JVM reuses the SDK instead of reimplementing it.
+- A ledger, a file-by-file mapping, and a differential harness against upstream's own TypeScript keep the plugin in step with vscode-cedar.
+
+The [porting note](/notes/porting-vscode-cedar-to-jetbrains.md) walks through the design. In the repository, start with the README, then `semport/MAPPING.md` to see how each upstream file maps to its Kotlin counterpart.
 
 
 ---
@@ -9816,6 +9969,7 @@ Source: [https://thefellow.github.io/writing/](https://thefellow.github.io/writi
 
 Articles, notes, and series from the projects and experiments behind this site, ordered by publication date, newest first.
 
+- **2026-10-01 · Note:** [Porting the Cedar VS Code Extension to JetBrains IDEs](/notes/porting-vscode-cedar-to-jetbrains.md): How jetbrains-cedar brings the official Cedar VS Code extension to IntelliJ-based IDEs by running the Cedar SDK as WebAssembly and porting the extension near line for line.
 - **2026-09-12 · Note:** [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md): How I use F#kYeah across projects to analyze, implement, validate, and review semantic ports without a human in the execution loop.
 - **2026-09-12 · Article:** [Explicit Architecture, with a Go Accent](/articles/explicit-architecture-with-a-go-accent.md): What Mixology borrows from Herberto Graça's Explicit Architecture, where it deliberately differs, and what transactions, types, three interfaces, and a storage migration taught me about those choices.
 - **2026-09-10 · Note:** [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.

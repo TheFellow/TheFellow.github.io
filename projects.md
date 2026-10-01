@@ -14,6 +14,7 @@ Source: [https://thefellow.github.io/projects/](https://thefellow.github.io/proj
 
 These are selected projects from [my GitHub work](https://github.com/TheFellow), ordered by last updated, newest first. Each page adds context beyond the README: the problem I was exploring, the ideas worth carrying forward, and a practical route into the code.
 
+- [jetbrains-cedar](/projects/jetbrains-cedar.md): Updated 2026-09-28. Cedar policy language support for JetBrains IDEs, ported from the official VS Code extension.
 - [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-22. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
 - [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
 - [go-merkletrie](/projects/go-merkletrie.md): Updated 2026-09-03. An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
