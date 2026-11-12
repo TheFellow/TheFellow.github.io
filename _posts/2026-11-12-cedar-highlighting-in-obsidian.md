@@ -9,7 +9,12 @@ accent: "#845ef7"
 tags: ["Cedar", "TypeScript", "Obsidian", "Developer tools"]
 ---
 
-Obsidian has no highlighting for Cedar, so a `cedar` fenced code block renders as plain text. [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) is a small Obsidian plugin that highlights `cedar` policy blocks and `cedarschema` blocks in the human-readable schema format, in Live Preview, Source mode, and Reading view, using the theme's own code colours. The current release is 0.1.2, and it runs on desktop and mobile.
+Obsidian has no highlighting for Cedar, so a `cedar` fenced code block renders as plain text. [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) is a small Obsidian plugin that highlights `cedar` policy blocks and `cedarschema` blocks in the human-readable schema format, in Live Preview, Source mode, and Reading view, using the theme's own code colours. It is listed in the [Obsidian community directory](https://community.obsidian.md/plugins/cedar) as **Cedar**, the current release is 0.1.2, and it runs on desktop and mobile.
+
+<figure class="article-figure">
+  <img src="{{ '/assets/images/projects/obsidian-cedar/cedar-note.png' | relative_url }}" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code colour, and an invalid string escape has a dashed red underline." width="1400" height="1367">
+  <figcaption>A policy, a template with slots, and the TinyTodo schema in Reading view, coloured by the theme's code colours.</figcaption>
+</figure>
 
 ## Reuse the upstream grammars
 
@@ -48,6 +53,7 @@ The result is Cedar in Obsidian notes that looks like Cedar in VS Code and JetBr
 
 ## Where to look
 
-- [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) for the plugin, install instructions, and releases.
+- [Cedar in the Obsidian community directory](https://community.obsidian.md/plugins/cedar) to install the plugin.
+- [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) for the source and releases.
 - [`src/editor-mode.ts`](https://github.com/TheFellow/obsidian-cedar/blob/main/src/editor-mode.ts) and [`src/reading-view.ts`](https://github.com/TheFellow/obsidian-cedar/blob/main/src/reading-view.ts) for the two adapters over the shared tokenizer.
 - [jetbrains-cedar]({{ '/projects/jetbrains-cedar/' | relative_url }}) for the JetBrains plugin that runs the same grammars.

@@ -43,6 +43,7 @@ SUMMARIES = {
     "/projects/go-merkletrie/": ("Persistent Merkle trie", "A generic immutable trie with content-addressed storage and lazy snapshots."),
     "/projects/arch-lint/": ("Enforced boundaries", "A Go analyzer that makes architectural dependency rules build-time checks."),
     "/projects/jetbrains-cedar/": ("Cedar IDE plugin", "Cedar editing for JetBrains IDEs, ported from vscode-cedar."),
+    "/projects/obsidian-cedar/": ("Obsidian Cedar", "Cedar code block highlighting in Obsidian using upstream grammars."),
     "/projects/fkyeah/": ("Agent pipelines", "An F# engine executing inspectable, resumable AI workflows from DOT graphs."),
     "/projects/enumstruct/": ("Exhaustive unions", "A Go analyzer that detects missing pointer-union cases as models evolve."),
     "/projects/fluid/": ("Fluid simulation", "An interactive Go playground for exploring two-dimensional Eulerian fluid dynamics."),
