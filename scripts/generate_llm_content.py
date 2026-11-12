@@ -69,6 +69,7 @@ SUMMARIES = {
     "/notes/elliptic-curve-cryptography-from-first-principles/": ("ECDSA foundations", "A ground-up route through groups, finite fields, curves, and signatures."),
     "/notes/porting-cedar-semantics-from-go-to-dotnet/": ("Semantic porting", "How conformance tests preserve Cedar behavior while C# APIs remain idiomatic."),
     "/notes/porting-vscode-cedar-to-jetbrains/": ("JetBrains Cedar", "Porting the Cedar VS Code extension to IntelliJ through WebAssembly."),
+    "/notes/cedar-highlighting-in-obsidian/": ("Obsidian Cedar", "Upstream Cedar TextMate grammars highlighting Obsidian code blocks."),
     "/notes/autonomous-semantic-porting-with-fkyeah/": ("Autonomous semports", "Graph-driven semantic ports with validation, agent review, and recovery."),
     "/notes/type-safe-linear-algebra-in-fsharp/": ("Typed dimensions", "Phantom dimensions make invalid matrix arithmetic fail at compile time."),
     "/notes/octonions-and-the-standard-model-in-fsharp/": ("Executable octonions", "Non-associative multiplication produces a Furey-inspired eight-state particle pattern."),
