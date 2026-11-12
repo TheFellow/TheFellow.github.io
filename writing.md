@@ -14,6 +14,7 @@ Source: [https://thefellow.github.io/writing/](https://thefellow.github.io/writi
 
 Articles, notes, and series from the projects and experiments behind this site, ordered by publication date, newest first.
 
+- **2026-11-12 · Note:** [Cedar Highlighting in Obsidian](/notes/cedar-highlighting-in-obsidian.md): How obsidian-cedar highlights Cedar policies and schemas in Obsidian notes by running the official VS Code extension's TextMate grammars, unmodified, in both of Obsidian's highlighters.
 - **2026-10-01 · Note:** [Porting the Cedar VS Code Extension to JetBrains IDEs](/notes/porting-vscode-cedar-to-jetbrains.md): How jetbrains-cedar brings the official Cedar VS Code extension to IntelliJ-based IDEs by running the Cedar SDK as WebAssembly and porting the extension near line for line.
 - **2026-09-12 · Note:** [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md): How I use F#kYeah across projects to analyze, implement, validate, and review semantic ports without a human in the execution loop.
 - **2026-09-12 · Article:** [Explicit Architecture, with a Go Accent](/articles/explicit-architecture-with-a-go-accent.md): What Mixology borrows from Herberto Graça's Explicit Architecture, where it deliberately differs, and what transactions, types, three interfaces, and a storage migration taught me about those choices.

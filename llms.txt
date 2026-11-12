@@ -30,6 +30,7 @@ This is the compact level of a three-level context pyramid: follow a Markdown li
 
 ## Writing
 
+- [Cedar Highlighting in Obsidian](https://thefellow.github.io/notes/cedar-highlighting-in-obsidian.md): 2026-11-12 · Note. Upstream Cedar TextMate grammars highlighting Obsidian code blocks.
 - [Porting the Cedar VS Code Extension to JetBrains IDEs](https://thefellow.github.io/notes/porting-vscode-cedar-to-jetbrains.md): 2026-10-01 · Note. Porting the Cedar VS Code extension to IntelliJ through WebAssembly.
 - [Autonomous Semantic Porting with F#kYeah](https://thefellow.github.io/notes/autonomous-semantic-porting-with-fkyeah.md): 2026-09-12 · Note. Graph-driven semantic ports with validation, agent review, and recovery.
 - [Explicit Architecture, with a Go Accent](https://thefellow.github.io/articles/explicit-architecture-with-a-go-accent.md): 2026-09-12 · Article. Comparing Explicit Architecture with Mixology’s concrete Go design choices.
