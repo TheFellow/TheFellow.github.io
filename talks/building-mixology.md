@@ -1998,7 +1998,7 @@ Domain values ↔ private DAO rows ↔ typed columns and child rows</code></pre>
   record each version in the same transaction
 COMMIT
 
-On error: rollback using a non-cancelled cleanup context.</code></pre>
+On error: rollback using a non-canceled cleanup context.</code></pre>
     Two starting processes must agree on the same schema transition. Recording a version separately from its schema change would break that guarantee.
     <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go)
 
@@ -2072,7 +2072,7 @@ writer.Rollback(tx)
     ## Stock corrections flow back to Orders
     pending→stock below reservations→blocked
     ### ReplenishInventory emits another adjustment. An order returns to pending when none of its committed ingredients remain blocked.
-### CancelA blocked order can be cancelled to release reservations and reconcile peers. It cannot be completed.
+### CancelA blocked order can be canceled to release reservations and reconcile peers. It cannot be completed.
 
     Orders → Inventory and Inventory → Orders are separate business operations with leaf reactions, not an event cascade.
     <aside class="notes">Continue the numerical example: correct on-hand stock from 10 to 3 while 4 is reserved. The system preserves the reservation and blocks affected orders instead of claiming they can be fulfilled. Open orders/handlers/stock-adjusted.go and TestReservationShortageBlocksRestockUnblocksAndCancellationReleases in orders/reservation_lifecycle_test.go. Several ingredients may block one order; replenishing one must not clear the others.</aside>
@@ -2325,7 +2325,7 @@ The stored list is sorted by ingredient ID.</code></pre>
     One recovery event must not erase another unresolved shortage.
     <p class="source">[Code: app/domains/orders/handlers/stock-adjusted.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/handlers/stock-adjusted.go)
 
-    <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and cancelled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
+    <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and canceled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
 
     ## Authoritative availability preserves dependency errors
     <code class="language-go">// PlanIngredients:
@@ -2989,7 +2989,7 @@ acceptViewUpdate:
     ## Closing a window must not close the store too early
     **stop producers**change monitor + dashboard→**close executor**stop admission + drain work→**close UI gate**reject queued callbacks→**close store**release persistence
     A closed window does not mean an accepted database operation has finished.
-    <aside class="notes">Open main/gui and the managed executor and gated dispatcher in pkg/toolkits/gui. Follow the shutdown composition and its lifecycle tests. Stop new admissions, prevent publication to closed widgets, and wait for accepted work before closing persistence. Cancelling a superseded read and abandoning an accepted mutation are different lifecycle decisions.</aside>
+    <aside class="notes">Open main/gui and the managed executor and gated dispatcher in pkg/toolkits/gui. Follow the shutdown composition and its lifecycle tests. Stop new admissions, prevent publication to closed widgets, and wait for accepted work before closing persistence. Canceling a superseded read and abandoning an accepted mutation are different lifecycle decisions.</aside>
 
     ## Check freshness when the UI callback executes
     <code class="language-go">func (r *LatestRequest[T]) dispatch(

@@ -147,7 +147,7 @@ for _, value := range downstream {
 
 For each incoming cell, `AddCoded` subtracts the initial downstream symbols scheduled for that index. Because subtraction and addition are the same operation for the XOR fields, the sign appears in `Count`. Shared symbols cancel, an upstream-only symbol contributes `+1`, and a downstream-only symbol contributes `-1`.
 
-Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgement so the upstream knows when to stop. The decoder limits bound cells admitted, local symbols registered, and symbols peeled. The transport must separately bound bytes and time.
+Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgment so the upstream knows when to stop. The decoder limits bound cells admitted, local symbols registered, and symbols peeled. The transport must separately bound bytes and time.
 
 ## Peel one discovery into the rest of the sketch
 
@@ -200,7 +200,7 @@ add := decoder.Remote()
 remove := decoder.Local()
 ```
 
-The early `break` is the downstream's completion signal inside this in-process example. Over a network, the receiver sends that acknowledgement to the upstream, which stops pulling from the same sequence.
+The early `break` is the downstream's completion signal inside this in-process example. Over a network, the receiver sends that acknowledgment to the upstream, which stops pulling from the same sequence.
 
 `Remote` is what exists only at the upstream, and `Local` is what exists only at the downstream. Those names describe the decoder's perspective, which is worth keeping explicit when the result becomes an application update. The library clones mutable symbols on ingestion, storage, coded-cell output, and decoded-result output. Mutating a caller-owned byte slice after `Add`, or mutating a returned result, does not change internal state.
 
@@ -341,7 +341,7 @@ Together, those tests demonstrate the implementation's behavior for the exercise
 
 The built-in codecs provide keyed, domain-separated hashing and the decoder can enforce finite symbol and cell limits. Those properties make the library a more suitable component for a deployed design, but they do not turn the component into a complete synchronization protocol.
 
-`ProtocolVersion`, currently `go-riblt/v1`, fixes mapping constants, floating-point gap calculation, cell semantics, and built-in hash domains. A surrounding authenticated handshake should exchange that version and `CompatibilityID`, then reject either mismatch. The synchronization protocol still has to define canonical cell serialization and framing, authentication and key agreement, byte limits and deadlines, ordering and retransmission, completion acknowledgement, and atomic application of additions and removals. The mutable encoder, decoder, and sketch types are not safe for concurrent method calls, so callers must also serialize access or provide their own synchronization.
+`ProtocolVersion`, currently `go-riblt/v1`, fixes mapping constants, floating-point gap calculation, cell semantics, and built-in hash domains. A surrounding authenticated handshake should exchange that version and `CompatibilityID`, then reject either mismatch. The synchronization protocol still has to define canonical cell serialization and framing, authentication and key agreement, byte limits and deadlines, ordering and retransmission, completion acknowledgment, and atomic application of additions and removals. The mutable encoder, decoder, and sketch types are not safe for concurrent method calls, so callers must also serialize access or provide their own synchronization.
 
 RIBLT reconciles sets, not arbitrary collections or application state. The implementation rejects true duplicates using `Equal` within a hash bucket rather than treating a hash pair as identity. If multiplicity matters, I would encode a unique occurrence identifier or choose a multiset protocol.
 

@@ -8,7 +8,7 @@ Source: [https://thefellow.github.io/projects/the-line/](https://thefellow.githu
 
 - **~2 words:** Racing playground
 - **~8 words:** Editable roads, car setups, and two-car racecraft experiments.
-- **Expanded:** A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
+- **Expanded:** A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defense.
 
 ## Full content
 
@@ -22,9 +22,9 @@ The Line is a physics playground in the same spirit as [fluid](/projects/fluid.m
   <figcaption>Qualifying on Club Loop, then two-car racecraft in plan and elevated views, with shared-time speed and position-gap charts.</figcaption>
 </figure>
 
-A native Ebitengine viewer exposes editable track geometry, banking, elevation, surfaces, kerbs, and car setup. Smooth candidate lines are evaluated against tyre-force limits, then checked on a finer road mesh. The model includes power, drag, axle drive split, and optional brake bias, downforce, longitudinal load transfer, and tyre load sensitivity.
+A native Ebitengine viewer exposes editable track geometry, banking, elevation, surfaces, curbs, and car setup. Smooth candidate lines are evaluated against tire-force limits, then checked on a finer road mesh. The model includes power, drag, axle drive split, and optional brake bias, downforce, longitudinal load transfer, and tire load sensitivity.
 
-Racecraft adds two solid cars sharing an open corner sequence. Authored tactical intentions explore an over-under, pass/repass, inside defence, and an esses duel. The planner evaluates a finite set of placements and accepts only pairs with continuously certified body clearance. Changing the starting gap or entry caps can change the result: increasing the default over-under gap from 6 m to 11 m prevents its completed pass before the finish.
+Racecraft adds two solid cars sharing an open corner sequence. Authored tactical intentions explore an over-under, pass/repass, inside defense, and an esses duel. The planner evaluates a finite set of placements and accepts only pairs with continuously certified body clearance. Changing the starting gap or entry caps can change the result: increasing the default over-under gap from 6 m to 11 m prevents its completed pass before the finish.
 
 ### Things to try
 

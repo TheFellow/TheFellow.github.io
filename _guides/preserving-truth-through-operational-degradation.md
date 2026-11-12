@@ -101,7 +101,7 @@ Stock and reservations persist canonical quantities, using ml for volume and eac
 
 A stock correction below aggregate reservations blocks every affected open order; it does not choose winners by FIFO or priority. Replenishment, cancellation, amendment release, and quarantine release reconcile the same rule. Clearing one ingredient's blocker must not clear another.
 
-For example, two orders reserve 2 units each against 3 on hand. Both are blocked. Cancelling one releases 2 units; the remaining commitment fits and returns to pending if no other blockers remain. The Orders cancellation handler prepares this result from projected remaining reservations before Inventory removes reservation rows.
+For example, two orders reserve 2 units each against 3 on hand. Both are blocked. Canceling one releases 2 units; the remaining commitment fits and returns to pending if no other blockers remain. The Orders cancellation handler prepares this result from projected remaining reservations before Inventory removes reservation rows.
 
 Optional ingredients participate in planning too. An included optional is snapshotted, reserved, consumed, and costed. If a candidate would prevent fulfilling a required ingredient, the planner can backtrack and omit the optional. Its omission remains explicit in acceptance; nothing silently consumes it later. Cost estimates use a complete feasible recipe plan, skip omitted optionals, preserve unknown prices, and require compatible currencies for margins.
 

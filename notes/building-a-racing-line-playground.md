@@ -7,14 +7,14 @@ Source: [https://thefellow.github.io/notes/building-a-racing-line-playground/](h
 ## Pyramid summary
 
 - **~2 words:** Racing physics
-- **~8 words:** Building racing lines and overtaking experiments from tyre physics.
-- **Expanded:** A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
+- **~8 words:** Building racing lines and overtaking experiments from tire physics.
+- **Expanded:** A fun physics project in Go: turning editable roads and tire-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defense.
 
 ## Full content
 
 I enjoy racing, and I program professionally. [The Line](/projects/the-line.md) is where those interests meet: a little physics playground for asking why one line through a corner works better than another. It has the same appeal as [fluid](/projects/fluid.md). Drag something, change a parameter, and watch the consequences. A line on a road becomes much more interesting when there is a speed trace beneath it and a ghost showing what changed.
 
-The result is a Go application with a native Ebitengine viewer, twelve fictional tracks, editable car setups, authored lines, pinned references, and a CLI that exports images, animations, and numerical results. The latest addition is two-car racecraft: put another car in the corner and explore how starting position, inside defence, and exit speed change an overtaking attempt. The fun is in making a small change and following its consequences through the corner.
+The result is a Go application with a native Ebitengine viewer, twelve fictional tracks, editable car setups, authored lines, pinned references, and a CLI that exports images, animations, and numerical results. The latest addition is two-car racecraft: put another car in the corner and explore how starting position, inside defense, and exit speed change an overtaking attempt. The fun is in making a small change and following its consequences through the corner.
 
 <figure class="article-figure">
   <img src="/assets/images/projects/the-line/club-loop.gif" alt="The Line cycling through a qualifying ghost on Club Loop, an over-under move, and a pass/repass battle with speed and position-gap charts." width="960" height="600">
@@ -23,11 +23,11 @@ The result is a Go application with a native Ebitengine viewer, twelve fictional
 
 ## A road needs more than a smooth outline
 
-The road begins as control points carrying position, width, banking, surface, and kerb information. A natural cubic spline joins an open sequence; a periodic cubic closes a circuit. Both keep position and the first two derivatives continuous at the joins. That matters because curvature drives the car's lateral demand. A small geometric kink can become a large, artificial speed restriction.
+The road begins as control points carrying position, width, banking, surface, and curb information. A natural cubic spline joins an open sequence; a periodic cubic closes a circuit. Both keep position and the first two derivatives continuous at the joins. That matters because curvature drives the car's lateral demand. A small geometric kink can become a large, artificial speed restriction.
 
 Width and bank interpolate smoothly without overshooting their endpoint values. Surface changes remain categorical. The sampled road becomes a triangle ribbon, and a candidate trajectory follows that surface, including triangle crossings and actual three-dimensional segment lengths.
 
-Clearance needed more care than simply subtracting half a car width from each cross-section. A line can fit those cross-sections and still clip a tapering edge between them. The implementation checks the swept circular footprint against actual side-edge segments, including nearby cells. Kerb contact uses the same indexed geometry to determine grip.
+Clearance needed more care than simply subtracting half a car width from each cross-section. A line can fit those cross-sections and still clip a tapering edge between them. The implementation checks the swept circular footprint against actual side-edge segments, including nearby cells. Curb contact uses the same indexed geometry to determine grip.
 
 Changing the centreline interpolant taught me another useful distinction: smooth curvature does not imply one tidy speed minimum per corner. The searched esses line still has small secondary extrema. Those remain visible in the chart, where they can tell us something about the path and the search.
 
@@ -49,7 +49,7 @@ longitudinal_force² + lateral_force² <= (grip × normal_load)²
 
 The model applies axle limits alongside engine power, a braking cap, drag, and signed gravity contributions from grade and bank. A fixed front/rear drive split means unused grip on one axle cannot automatically help the driven axle. Banking can help a turn in one direction and hurt it in the other.
 
-The model is quasi-static: it asks which forces are feasible at a position and speed. Its road, GT, and rally cars are illustrative setups. Steering transients, tyre slip curves, suspension motion, and tyre temperature would require additional state and a different level of modelling. Within this scope, changing grip, weight, power, or drive split has a concrete effect that the viewer can expose.
+The model is quasi-static: it asks which forces are feasible at a position and speed. Its road, GT, and rally cars are illustrative setups. Steering transients, tire slip curves, suspension motion, and tire temperature would require additional state and a different level of modeling. Within this scope, changing grip, weight, power, or drive split has a concrete effect that the viewer can expose.
 
 ## The next corner tells you when to brake
 
@@ -67,11 +67,11 @@ Around that evaluator sits a deterministic search over smooth lateral-offset bum
 
 One recorded default-budget esses run reduced the centreline's **15.8486 seconds to 14.2406 seconds**, a **10.15%** improvement under the same car and boundary caps. Reevaluating that chosen path at 0.25 m changed its time by **0.010%**. Those are two separate observations: searching found a faster path, and refining that path barely changed its evaluated time. The [validation record](https://github.com/TheFellow/the-line/blob/main/docs/VALIDATION.md) keeps both measurements explicit.
 
-## A little axle modelling goes a long way
+## A little axle modeling goes a long way
 
-The optional setup page adds fixed brake bias, downforce and its front/rear balance, longitudinal load transfer, and tyre load sensitivity. These make some familiar handling questions possible without introducing a full suspension simulation.
+The optional setup page adds fixed brake bias, downforce and its front/rear balance, longitudinal load transfer, and tire load sensitivity. These make some familiar handling questions possible without introducing a full suspension simulation.
 
-With positive drive force, longitudinal transfer reduces front normal load and increases rear normal load. Braking reverses that shift. The amount depends on tyre force times CG height divided by wheelbase. That makes front-wheel-drive and rear-wheel-drive launch limits behave differently, and gives brake bias something meaningful to interact with.
+With positive drive force, longitudinal transfer reduces front normal load and increases rear normal load. Braking reverses that shift. The amount depends on tire force times CG height divided by wheelbase. That makes front-wheel-drive and rear-wheel-drive launch limits behave differently, and gives brake bias something meaningful to interact with.
 
 Downforce grows with speed squared and is divided between the axles by aero balance. Lateral force allocation still follows the steady yaw-moment balance implied by the static CG position. Adding all the downforce to the rear can leave the front axle as the cornering bottleneck. The richer model's utilization display therefore reports the most heavily used axle; spare rear capacity cannot conceal an overloaded front.
 
@@ -112,7 +112,7 @@ The [two-car racecraft update](https://github.com/TheFellow/the-line/pull/1) add
 
 I kept the existing vehicle solver and added a bounded tactical planner around it. Each example authors an intention, such as defending the inside or cutting back for a faster exit. The planner evaluates those smooth paths, then checks the pair over their shared race time. If B's preferred placement is occupied, it tries a small set of give-room alternatives that widen the placement, delay the crossover, and reduce the entry cap. The first certified pair becomes the experiment. If none works, the editor retains the last accepted run.
 
-The over-under, pass/repass, and defence examples use the same hairpin. With the default road car, the recorded results are:
+The over-under, pass/repass, and defense examples use the same hairpin. With the default road car, the recorded results are:
 
 | Experiment | Starting gap | B's entry-cap delta | Completed passes |
 | --- | ---: | ---: | --- |

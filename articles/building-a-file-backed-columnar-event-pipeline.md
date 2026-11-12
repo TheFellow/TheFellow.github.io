@@ -94,7 +94,7 @@ A writer groups event records into a micro-batch and periodically emits a Parque
 
 Parquet metadata, including the file footer, must be complete before readers can use the file. The writer therefore produces an unpublished file first. Only after the complete object is durable does it add the file to the visible snapshot.
 
-The acknowledgement boundary follows the desired delivery contract. A pipeline can acknowledge an input after its data file and snapshot commit are durable. It can also acknowledge earlier when an upstream system retains a replayable source position. The second choice moves durability responsibility upstream and makes idempotent replay part of the design.
+The acknowledgment boundary follows the desired delivery contract. A pipeline can acknowledge an input after its data file and snapshot commit are durable. It can also acknowledge earlier when an upstream system retains a replayable source position. The second choice moves durability responsibility upstream and makes idempotent replay part of the design.
 
 Useful identities include:
 
