@@ -84,7 +84,7 @@ Consider an order moving through this lifecycle:
 ```text
 Unvalidated -> Validated -> Priced -> Placed -> Shipped -> Delivered
                                       |
-                                      +-> Cancelled
+                                      +-> Canceled
 ```
 
 A string status and a collection of conditionally populated fields allow combinations that make no sense:
@@ -114,7 +114,7 @@ type OrderStatus =
     | Placed    of placedAt: DateTime
     | Shipped   of trackingNumber: TrackingNumber
     | Delivered of deliveredAt: DateTime
-    | Cancelled of reason: string
+    | Canceled  of reason: string
 ```
 
 There is no tracking-number field to inspect on `Unvalidated`. There is no cancellation reason waiting at its zero value on `Delivered`. Code must first establish which case it has, then it receives the data carried by that case.

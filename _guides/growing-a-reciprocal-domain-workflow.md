@@ -101,7 +101,7 @@ A purchase order should not be a CRUD record with a status string. Its operation
 ```text
 Draft -> Submitted -> PartiallyReceived -> Received
    |          |
-   +----------+-> Cancelled
+   +----------+-> Canceled
 ```
 
 Exact transitions can change during implementation, but invalid states should be difficult to construct. A submitted order snapshots the supplier SKU, price, unit conversion, and ordered quantity used for that commercial decision. Later edits to an offering must not rewrite history.

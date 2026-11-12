@@ -2143,7 +2143,7 @@ Domain values ↔ private DAO rows ↔ typed columns and child rows</code></pre>
   record each version in the same transaction
 COMMIT
 
-On error: rollback using a non-cancelled cleanup context.</code></pre>
+On error: rollback using a non-canceled cleanup context.</code></pre>
     <div class="callout">Two starting processes must agree on the same schema transition. Recording a version separately from its schema change would break that guarantee.</div>
     <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go">Code: pkg/store/store.go</a></p>
     <aside class="notes">Trace migrate in store.go and TestConcurrentMigrationInitialization. The implementation checks highest version and count before applying its ordered migrations. TestMigrationVersionBookkeepingAndFutureVersion rejects unsupported versions. TestDocumentDatabaseRequiresExplicitReset rejects the old document database. Use a fresh MIXOLOGY_DB path and run go run ./main/seed. No conversion or historical backfill is provided; close all processes before removing an old database and its sidecars.</aside>
@@ -2225,7 +2225,7 @@ writer.Rollback(tx)
   <section>
     <h2>Stock corrections flow back to Orders</h2>
     <div class="state-line"><div class="state active">pending</div><div class="arrow">→</div><div class="state review">stock below reservations</div><div class="arrow">→</div><div class="state blocked">blocked</div></div>
-    <div class="cards two"><div class="card"><h3>Replenish</h3><p>Inventory emits another adjustment. An order returns to pending when none of its committed ingredients remain blocked.</p></div><div class="card"><h3>Cancel</h3><p>A blocked order can be cancelled to release reservations and reconcile peers. It cannot be completed.</p></div></div>
+    <div class="cards two"><div class="card"><h3>Replenish</h3><p>Inventory emits another adjustment. An order returns to pending when none of its committed ingredients remain blocked.</p></div><div class="card"><h3>Cancel</h3><p>A blocked order can be canceled to release reservations and reconcile peers. It cannot be completed.</p></div></div>
     <div class="callout">Orders → Inventory and Inventory → Orders are separate business operations with leaf reactions, not an event cascade.</div>
     <aside class="notes">Continue the numerical example: correct on-hand stock from 10 to 3 while 4 is reserved. The system preserves the reservation and blocks affected orders instead of claiming they can be fulfilled. Open orders/handlers/stock-adjusted.go and TestReservationShortageBlocksRestockUnblocksAndCancellationReleases in orders/reservation_lifecycle_test.go. Several ingredients may block one order; replenishing one must not clear the others.</aside>
   </section>
@@ -2488,7 +2488,7 @@ StockAdjusted changes only its ingredient's membership.
 The stored list is sorted by ingredient ID.</code></pre>
     <div class="callout">One recovery event must not erase another unresolved shortage.</div>
     <p class="source"><a href="https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/handlers/stock-adjusted.go">Code: app/domains/orders/handlers/stock-adjusted.go</a></p>
-    <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and cancelled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
+    <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and canceled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
   </section>
 
   <section class="implementation-slide">
@@ -3210,7 +3210,7 @@ acceptViewUpdate:
     <h2>Closing a window must not close the store too early</h2>
     <div class="flow"><div class="node"><strong>stop producers</strong>change monitor + dashboard</div><div class="arrow">→</div><div class="node"><strong>close executor</strong>stop admission + drain work</div><div class="arrow">→</div><div class="node"><strong>close UI gate</strong>reject queued callbacks</div><div class="arrow">→</div><div class="node"><strong>close store</strong>release persistence</div></div>
     <div class="callout">A closed window does not mean an accepted database operation has finished.</div>
-    <aside class="notes">Open main/gui and the managed executor and gated dispatcher in pkg/toolkits/gui. Follow the shutdown composition and its lifecycle tests. Stop new admissions, prevent publication to closed widgets, and wait for accepted work before closing persistence. Cancelling a superseded read and abandoning an accepted mutation are different lifecycle decisions.</aside>
+    <aside class="notes">Open main/gui and the managed executor and gated dispatcher in pkg/toolkits/gui. Follow the shutdown composition and its lifecycle tests. Stop new admissions, prevent publication to closed widgets, and wait for accepted work before closing persistence. Canceling a superseded read and abandoning an accepted mutation are different lifecycle decisions.</aside>
   </section>
 
   <section class="implementation-slide">

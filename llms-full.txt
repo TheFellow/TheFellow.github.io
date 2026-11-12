@@ -482,7 +482,7 @@ A writer groups event records into a micro-batch and periodically emits a Parque
 
 Parquet metadata, including the file footer, must be complete before readers can use the file. The writer therefore produces an unpublished file first. Only after the complete object is durable does it add the file to the visible snapshot.
 
-The acknowledgement boundary follows the desired delivery contract. A pipeline can acknowledge an input after its data file and snapshot commit are durable. It can also acknowledge earlier when an upstream system retains a replayable source position. The second choice moves durability responsibility upstream and makes idempotent replay part of the design.
+The acknowledgment boundary follows the desired delivery contract. A pipeline can acknowledge an input after its data file and snapshot commit are durable. It can also acknowledge earlier when an upstream system retains a replayable source position. The second choice moves durability responsibility upstream and makes idempotent replay part of the design.
 
 Useful identities include:
 
@@ -1614,7 +1614,7 @@ A purchase order should not be a CRUD record with a status string. Its operation
 ```text
 Draft -> Submitted -> PartiallyReceived -> Received
    |          |
-   +----------+-> Cancelled
+   +----------+-> Canceled
 ```
 
 Exact transitions can change during implementation, but invalid states should be difficult to construct. A submitted order snapshots the supplier SKU, price, unit conversion, and ordered quantity used for that commercial decision. Later edits to an offering must not rewrite history.
@@ -1915,7 +1915,7 @@ Review repeatedly found problems that a happy-path screenshot would not reveal:
 
 - **Paging is part of correctness.** Desktop lists often want a complete catalog for selectors or local navigation, while domain APIs remain paged. Drinks and Menus now traverse every page, Ingredients counts drink usage across pages before deletion, and Orders tests forward and backward cursors. Audit preserves the public query's default limit rather than normalizing it into a different request.
 - **A retained widget can be newer than its presenter snapshot.** An ingredient catalog refresh or unrelated publication must not overwrite text a person is currently editing. Views now track the form state they last rendered and update controls only when the presenter changes that form. Busy states disable every mutable control, not only the Save button.
-- **Reopening the same workflow is still a new form.** Comparing only mode and values cannot distinguish a cancelled form from a fresh form containing equal values. Drinks increments a form-instance generation so reopening Create clears dirty selectors and reopening Edit restores persisted values.
+- **Reopening the same workflow is still a new form.** Comparing only mode and values cannot distinguish a canceled form from a fresh form containing equal values. Drinks increments a form-instance generation so reopening Create clears dirty selectors and reopening Edit restores persisted values.
 - **Selectors should carry structure, not ask people to type IDs.** Drink recipes use named ingredient and substitute choices, Menu curation uses drink choices, Inventory holds a selected stock item, and Order placement builds typed menu and drink selections. The presenter retains IDs; the view presents domain names and constrained options.
 - **The mutation target must not drift.** Delete confirmations capture the selected entity before asynchronous dependency checks. Inventory locks selection while an edit is active. Tag results retain both the target identity and display name even if the catalog or current selection changes before publication.
 - **Authorization failures still need a usable form.** A denied mutation rolls back through the ordinary application pipeline, but the presenter preserves correctable input and presents the typed permission error. Orders also tolerates a permission denial while enriching a selected row, retaining enough public list state to enter a tag workflow without inventing a private read path.
@@ -2194,7 +2194,7 @@ Consider an order moving through this lifecycle:
 ```text
 Unvalidated -> Validated -> Priced -> Placed -> Shipped -> Delivered
                                       |
-                                      +-> Cancelled
+                                      +-> Canceled
 ```
 
 A string status and a collection of conditionally populated fields allow combinations that make no sense:
@@ -2224,7 +2224,7 @@ type OrderStatus =
     | Placed    of placedAt: DateTime
     | Shipped   of trackingNumber: TrackingNumber
     | Delivered of deliveredAt: DateTime
-    | Cancelled of reason: string
+    | Canceled  of reason: string
 ```
 
 There is no tracking-number field to inspect on `Unvalidated`. There is no cancellation reason waiting at its zero value on `Delivered`. Code must first establish which case it has, then it receives the data carried by that case.
@@ -2877,7 +2877,7 @@ Stock and reservations persist canonical quantities, using ml for volume and eac
 
 A stock correction below aggregate reservations blocks every affected open order; it does not choose winners by FIFO or priority. Replenishment, cancellation, amendment release, and quarantine release reconcile the same rule. Clearing one ingredient's blocker must not clear another.
 
-For example, two orders reserve 2 units each against 3 on hand. Both are blocked. Cancelling one releases 2 units; the remaining commitment fits and returns to pending if no other blockers remain. The Orders cancellation handler prepares this result from projected remaining reservations before Inventory removes reservation rows.
+For example, two orders reserve 2 units each against 3 on hand. Both are blocked. Canceling one releases 2 units; the remaining commitment fits and returns to pending if no other blockers remain. The Orders cancellation handler prepares this result from projected remaining reservations before Inventory removes reservation rows.
 
 Optional ingredients participate in planning too. An included optional is snapshotted, reserved, consumed, and costed. If a candidate would prevent fulfilling a required ingredient, the planner can backtrack and omit the optional. Its omission remains explicit in acceptance; nothing silently consumes it later. Cost estimates use a complete feasible recipe plan, skip omitted optionals, preserve unknown prices, and require compatible currencies for margins.
 
@@ -3808,7 +3808,7 @@ Shorter technical observations, implementation details, and working ideas drawn 
 - [Retiring Weave](/notes/retiring-weave.md): What I learned from building and benchmarking a compact local code index for coding agents.
 - [Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): How generic methods let Mixology put typed middleware operations on the pipeline they configure.
 - [Building a Persistent Merkle Trie in Go](/notes/building-a-persistent-merkle-trie-in-go.md): How canonical codecs, radix routing, structural sharing, and lazy snapshots fit together in a generic content-addressed trie.
-- [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
+- [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tire-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defense.
 - [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md): How I use F#kYeah across projects to analyze, implement, validate, and review semantic ports without a human in the execution loop.
 - [Porting the Cedar VS Code Extension to JetBrains IDEs](/notes/porting-vscode-cedar-to-jetbrains.md): How jetbrains-cedar brings the official Cedar VS Code extension to IntelliJ-based IDEs by running the Cedar SDK as WebAssembly and porting the extension near line for line.
 - [Cedar Highlighting in Obsidian](/notes/cedar-highlighting-in-obsidian.md): How obsidian-cedar highlights Cedar policies and schemas in Obsidian notes by running the official VS Code extension's TextMate grammars, unmodified, in both of Obsidian's highlighters.
@@ -4052,14 +4052,14 @@ Source: [https://thefellow.github.io/notes/building-a-racing-line-playground/](h
 ## Pyramid summary
 
 - **~2 words:** Racing physics
-- **~8 words:** Building racing lines and overtaking experiments from tyre physics.
-- **Expanded:** A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
+- **~8 words:** Building racing lines and overtaking experiments from tire physics.
+- **Expanded:** A fun physics project in Go: turning editable roads and tire-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defense.
 
 ## Full content
 
 I enjoy racing, and I program professionally. [The Line](/projects/the-line.md) is where those interests meet: a little physics playground for asking why one line through a corner works better than another. It has the same appeal as [fluid](/projects/fluid.md). Drag something, change a parameter, and watch the consequences. A line on a road becomes much more interesting when there is a speed trace beneath it and a ghost showing what changed.
 
-The result is a Go application with a native Ebitengine viewer, twelve fictional tracks, editable car setups, authored lines, pinned references, and a CLI that exports images, animations, and numerical results. The latest addition is two-car racecraft: put another car in the corner and explore how starting position, inside defence, and exit speed change an overtaking attempt. The fun is in making a small change and following its consequences through the corner.
+The result is a Go application with a native Ebitengine viewer, twelve fictional tracks, editable car setups, authored lines, pinned references, and a CLI that exports images, animations, and numerical results. The latest addition is two-car racecraft: put another car in the corner and explore how starting position, inside defense, and exit speed change an overtaking attempt. The fun is in making a small change and following its consequences through the corner.
 
 <figure class="article-figure">
   <img src="/assets/images/projects/the-line/club-loop.gif" alt="The Line cycling through a qualifying ghost on Club Loop, an over-under move, and a pass/repass battle with speed and position-gap charts." width="960" height="600">
@@ -4068,11 +4068,11 @@ The result is a Go application with a native Ebitengine viewer, twelve fictional
 
 ## A road needs more than a smooth outline
 
-The road begins as control points carrying position, width, banking, surface, and kerb information. A natural cubic spline joins an open sequence; a periodic cubic closes a circuit. Both keep position and the first two derivatives continuous at the joins. That matters because curvature drives the car's lateral demand. A small geometric kink can become a large, artificial speed restriction.
+The road begins as control points carrying position, width, banking, surface, and curb information. A natural cubic spline joins an open sequence; a periodic cubic closes a circuit. Both keep position and the first two derivatives continuous at the joins. That matters because curvature drives the car's lateral demand. A small geometric kink can become a large, artificial speed restriction.
 
 Width and bank interpolate smoothly without overshooting their endpoint values. Surface changes remain categorical. The sampled road becomes a triangle ribbon, and a candidate trajectory follows that surface, including triangle crossings and actual three-dimensional segment lengths.
 
-Clearance needed more care than simply subtracting half a car width from each cross-section. A line can fit those cross-sections and still clip a tapering edge between them. The implementation checks the swept circular footprint against actual side-edge segments, including nearby cells. Kerb contact uses the same indexed geometry to determine grip.
+Clearance needed more care than simply subtracting half a car width from each cross-section. A line can fit those cross-sections and still clip a tapering edge between them. The implementation checks the swept circular footprint against actual side-edge segments, including nearby cells. Curb contact uses the same indexed geometry to determine grip.
 
 Changing the centreline interpolant taught me another useful distinction: smooth curvature does not imply one tidy speed minimum per corner. The searched esses line still has small secondary extrema. Those remain visible in the chart, where they can tell us something about the path and the search.
 
@@ -4094,7 +4094,7 @@ longitudinal_force² + lateral_force² <= (grip × normal_load)²
 
 The model applies axle limits alongside engine power, a braking cap, drag, and signed gravity contributions from grade and bank. A fixed front/rear drive split means unused grip on one axle cannot automatically help the driven axle. Banking can help a turn in one direction and hurt it in the other.
 
-The model is quasi-static: it asks which forces are feasible at a position and speed. Its road, GT, and rally cars are illustrative setups. Steering transients, tyre slip curves, suspension motion, and tyre temperature would require additional state and a different level of modelling. Within this scope, changing grip, weight, power, or drive split has a concrete effect that the viewer can expose.
+The model is quasi-static: it asks which forces are feasible at a position and speed. Its road, GT, and rally cars are illustrative setups. Steering transients, tire slip curves, suspension motion, and tire temperature would require additional state and a different level of modeling. Within this scope, changing grip, weight, power, or drive split has a concrete effect that the viewer can expose.
 
 ## The next corner tells you when to brake
 
@@ -4112,11 +4112,11 @@ Around that evaluator sits a deterministic search over smooth lateral-offset bum
 
 One recorded default-budget esses run reduced the centreline's **15.8486 seconds to 14.2406 seconds**, a **10.15%** improvement under the same car and boundary caps. Reevaluating that chosen path at 0.25 m changed its time by **0.010%**. Those are two separate observations: searching found a faster path, and refining that path barely changed its evaluated time. The [validation record](https://github.com/TheFellow/the-line/blob/main/docs/VALIDATION.md) keeps both measurements explicit.
 
-## A little axle modelling goes a long way
+## A little axle modeling goes a long way
 
-The optional setup page adds fixed brake bias, downforce and its front/rear balance, longitudinal load transfer, and tyre load sensitivity. These make some familiar handling questions possible without introducing a full suspension simulation.
+The optional setup page adds fixed brake bias, downforce and its front/rear balance, longitudinal load transfer, and tire load sensitivity. These make some familiar handling questions possible without introducing a full suspension simulation.
 
-With positive drive force, longitudinal transfer reduces front normal load and increases rear normal load. Braking reverses that shift. The amount depends on tyre force times CG height divided by wheelbase. That makes front-wheel-drive and rear-wheel-drive launch limits behave differently, and gives brake bias something meaningful to interact with.
+With positive drive force, longitudinal transfer reduces front normal load and increases rear normal load. Braking reverses that shift. The amount depends on tire force times CG height divided by wheelbase. That makes front-wheel-drive and rear-wheel-drive launch limits behave differently, and gives brake bias something meaningful to interact with.
 
 Downforce grows with speed squared and is divided between the axles by aero balance. Lateral force allocation still follows the steady yaw-moment balance implied by the static CG position. Adding all the downforce to the rear can leave the front axle as the cornering bottleneck. The richer model's utilization display therefore reports the most heavily used axle; spare rear capacity cannot conceal an overloaded front.
 
@@ -4157,7 +4157,7 @@ The [two-car racecraft update](https://github.com/TheFellow/the-line/pull/1) add
 
 I kept the existing vehicle solver and added a bounded tactical planner around it. Each example authors an intention, such as defending the inside or cutting back for a faster exit. The planner evaluates those smooth paths, then checks the pair over their shared race time. If B's preferred placement is occupied, it tries a small set of give-room alternatives that widen the placement, delay the crossover, and reduce the entry cap. The first certified pair becomes the experiment. If none works, the editor retains the last accepted run.
 
-The over-under, pass/repass, and defence examples use the same hairpin. With the default road car, the recorded results are:
+The over-under, pass/repass, and defense examples use the same hairpin. With the default road car, the recorded results are:
 
 | Experiment | Starting gap | B's entry-cap delta | Completed passes |
 | --- | ---: | ---: | --- |
@@ -4210,11 +4210,11 @@ Source: [https://thefellow.github.io/notes/cedar-highlighting-in-obsidian/](http
 
 ## Full content
 
-Obsidian has no highlighting for Cedar, so a `cedar` fenced code block renders as plain text. [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) is a small Obsidian plugin that highlights `cedar` policy blocks and `cedarschema` blocks in the human-readable schema format, in Live Preview, Source mode, and Reading view, using the theme's own code colours. It is listed in the [Obsidian community directory](https://community.obsidian.md/plugins/cedar) as **Cedar**, the current release is 0.1.2, and it runs on desktop and mobile.
+Obsidian has no highlighting for Cedar, so a `cedar` fenced code block renders as plain text. [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) is a small Obsidian plugin that highlights `cedar` policy blocks and `cedarschema` blocks in the human-readable schema format, in Live Preview, Source mode, and Reading view, using the theme's own code colors. It is listed in the [Obsidian community directory](https://community.obsidian.md/plugins/cedar) as **Cedar**, the current release is 0.1.2, and it runs on desktop and mobile.
 
 <figure class="article-figure">
-  <img src="/assets/images/projects/obsidian-cedar/cedar-note.png" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code colour, and an invalid string escape has a dashed red underline." width="1400" height="1367">
-  <figcaption>A policy, a template with slots, and the TinyTodo schema in Reading view, coloured by the theme's code colours.</figcaption>
+  <img src="/assets/images/projects/obsidian-cedar/cedar-note.png" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code color, and an invalid string escape has a dashed red underline." width="1400" height="1367">
+  <figcaption>A policy, a template with slots, and the TinyTodo schema in Reading view, colored by the theme's code colors.</figcaption>
 </figure>
 
 ## Reuse the upstream grammars
@@ -4240,9 +4240,9 @@ for (const t of tokenizer.block(lang, env.code)) {
 }
 ```
 
-## Map scopes to theme colours
+## Map scopes to theme colors
 
-A TextMate grammar produces scopes like `variable.language.cedar` or `entity.name.type.cedar`, not colours. `scopes.ts` mirrors jetbrains-cedar's `CedarColors.forScope`, checking the most specific scope first, and gives each class a CodeMirror token type and a Prism token type that resolve to the same `--code-*` theme variable. Live Preview and Reading view therefore agree with each other and follow whatever theme is installed. Every token also carries a `cedar-<kind>` class, so a CSS snippet such as `.cedar-variable { font-weight: bold; }` can restyle `principal`, `action`, `resource`, and `context` without touching the plugin.
+A TextMate grammar produces scopes like `variable.language.cedar` or `entity.name.type.cedar`, not colors. `scopes.ts` mirrors jetbrains-cedar's `CedarColors.forScope`, checking the most specific scope first, and gives each class a CodeMirror token type and a Prism token type that resolve to the same `--code-*` theme variable. Live Preview and Reading view therefore agree with each other and follow whatever theme is installed. Every token also carries a `cedar-<kind>` class, so a CSS snippet such as `.cedar-variable { font-weight: bold; }` can restyle `principal`, `action`, `resource`, and `context` without touching the plugin.
 
 ## Handle notes that were already open
 
@@ -5362,7 +5362,7 @@ for _, value := range downstream {
 
 For each incoming cell, `AddCoded` subtracts the initial downstream symbols scheduled for that index. Because subtraction and addition are the same operation for the XOR fields, the sign appears in `Count`. Shared symbols cancel, an upstream-only symbol contributes `+1`, and a downstream-only symbol contributes `-1`.
 
-Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgement so the upstream knows when to stop. The decoder limits bound cells admitted, local symbols registered, and symbols peeled. The transport must separately bound bytes and time.
+Cells are positional and must arrive in order. An actual protocol therefore needs ordered delivery or sequence and retransmission machinery, plus a completion acknowledgment so the upstream knows when to stop. The decoder limits bound cells admitted, local symbols registered, and symbols peeled. The transport must separately bound bytes and time.
 
 ## Peel one discovery into the rest of the sketch
 
@@ -5415,7 +5415,7 @@ add := decoder.Remote()
 remove := decoder.Local()
 ```
 
-The early `break` is the downstream's completion signal inside this in-process example. Over a network, the receiver sends that acknowledgement to the upstream, which stops pulling from the same sequence.
+The early `break` is the downstream's completion signal inside this in-process example. Over a network, the receiver sends that acknowledgment to the upstream, which stops pulling from the same sequence.
 
 `Remote` is what exists only at the upstream, and `Local` is what exists only at the downstream. Those names describe the decoder's perspective, which is worth keeping explicit when the result becomes an application update. The library clones mutable symbols on ingestion, storage, coded-cell output, and decoded-result output. Mutating a caller-owned byte slice after `Add`, or mutating a returned result, does not change internal state.
 
@@ -5556,7 +5556,7 @@ Together, those tests demonstrate the implementation's behavior for the exercise
 
 The built-in codecs provide keyed, domain-separated hashing and the decoder can enforce finite symbol and cell limits. Those properties make the library a more suitable component for a deployed design, but they do not turn the component into a complete synchronization protocol.
 
-`ProtocolVersion`, currently `go-riblt/v1`, fixes mapping constants, floating-point gap calculation, cell semantics, and built-in hash domains. A surrounding authenticated handshake should exchange that version and `CompatibilityID`, then reject either mismatch. The synchronization protocol still has to define canonical cell serialization and framing, authentication and key agreement, byte limits and deadlines, ordering and retransmission, completion acknowledgement, and atomic application of additions and removals. The mutable encoder, decoder, and sketch types are not safe for concurrent method calls, so callers must also serialize access or provide their own synchronization.
+`ProtocolVersion`, currently `go-riblt/v1`, fixes mapping constants, floating-point gap calculation, cell semantics, and built-in hash domains. A surrounding authenticated handshake should exchange that version and `CompatibilityID`, then reject either mismatch. The synchronization protocol still has to define canonical cell serialization and framing, authentication and key agreement, byte limits and deadlines, ordering and retransmission, completion acknowledgment, and atomic application of additions and removals. The mutable encoder, decoder, and sketch types are not safe for concurrent method calls, so callers must also serialize access or provide their own synchronization.
 
 RIBLT reconciles sets, not arbitrary collections or application state. The implementation rejects true duplicates using `Equal` within a hash bucket rather than treating a hash pair as identity. If multiplicity matters, I would encode a unique occurrence identifier or choose a multiset protocol.
 
@@ -5690,7 +5690,7 @@ These are selected projects from [my GitHub work](https://github.com/TheFellow),
 - [Obsidian Cedar plugin](/projects/obsidian-cedar.md): Updated 2026-11-11. Cedar policy and schema highlighting for Obsidian notes, using the official VS Code extension's grammars.
 - [jetbrains-cedar](/projects/jetbrains-cedar.md): Updated 2026-09-28. Cedar policy language support for JetBrains IDEs, ported from the official VS Code extension.
 - [go-modular-monolith](/projects/go-modular-monolith.md): Updated 2026-09-22. A Go reference application that makes modular boundaries and cross-cutting concerns executable.
-- [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
+- [the-line](/projects/the-line.md): Updated 2026-09-10. A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defense.
 - [go-merkletrie](/projects/go-merkletrie.md): Updated 2026-09-03. An immutable, generic Merkle trie for Go with canonical codecs, content-addressed persistence, and lazy snapshots.
 - [Apex](/apex.md): Updated 2026-08-24. A working recreation of the Windows 3.1 unit converter my dad built and released as shareware in the 1990s.
 - [Expr for .NET](/projects/expr-dotnet.md): Updated 2026-08-17. A safe, statically checked expression language for .NET, with a public AST, an optimizing bytecode compiler, and bounded execution.
@@ -6364,10 +6364,10 @@ Source: [https://thefellow.github.io/projects/obsidian-cedar/](https://thefellow
 [View the repository](https://github.com/TheFellow/obsidian-cedar)
 [Install from Obsidian](https://community.obsidian.md/plugins/cedar)
 
-The Obsidian Cedar plugin highlights `cedar` policy and `cedarschema` fenced code blocks in Obsidian notes, in Live Preview, Source mode, and Reading view. Colours come from the active theme, and a `cedar-<kind>` class on every token lets a CSS snippet restyle any part of the language.
+The Obsidian Cedar plugin highlights `cedar` policy and `cedarschema` fenced code blocks in Obsidian notes, in Live Preview, Source mode, and Reading view. Colors come from the active theme, and a `cedar-<kind>` class on every token lets a CSS snippet restyle any part of the language.
 
 <figure class="article-figure">
-  <img src="/assets/images/projects/obsidian-cedar/cedar-note.png" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code colour, and an invalid string escape has a dashed red underline." width="1400" height="1367">
+  <img src="/assets/images/projects/obsidian-cedar/cedar-note.png" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code color, and an invalid string escape has a dashed red underline." width="1400" height="1367">
   <figcaption>A Cedar policy and the TinyTodo schema highlighted in Reading view.</figcaption>
 </figure>
 
@@ -6377,7 +6377,7 @@ The highlighting comes from the TextMate grammars in the official [Cedar extensi
 
 - It reuses the same grammars as VS Code and [jetbrains-cedar](/projects/jetbrains-cedar.md), so Cedar is tokenized identically in all three editors.
 - It adapts a line-at-a-time TextMate tokenizer to two very different highlighting APIs without writing a second grammar.
-- Its scope-to-colour mapping mirrors jetbrains-cedar's, so the plugins stay consistent as the grammars change.
+- Its scope-to-color mapping mirrors jetbrains-cedar's, so the plugins stay consistent as the grammars change.
 
 The [build note](/notes/cedar-highlighting-in-obsidian.md) walks through the design. In the repository, start with the README, then `src/editor-mode.ts` and `src/reading-view.ts` for the two adapters.
 
@@ -6394,7 +6394,7 @@ Source: [https://thefellow.github.io/projects/the-line/](https://thefellow.githu
 
 - **~2 words:** Racing playground
 - **~8 words:** Editable roads, car setups, and two-car racecraft experiments.
-- **Expanded:** A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defence.
+- **Expanded:** A racing-line playground in Go for reshaping corners, experimenting with car setup, and exploring two-car overtaking and defense.
 
 ## Full content
 
@@ -6408,9 +6408,9 @@ The Line is a physics playground in the same spirit as [fluid](/projects/fluid.m
   <figcaption>Qualifying on Club Loop, then two-car racecraft in plan and elevated views, with shared-time speed and position-gap charts.</figcaption>
 </figure>
 
-A native Ebitengine viewer exposes editable track geometry, banking, elevation, surfaces, kerbs, and car setup. Smooth candidate lines are evaluated against tyre-force limits, then checked on a finer road mesh. The model includes power, drag, axle drive split, and optional brake bias, downforce, longitudinal load transfer, and tyre load sensitivity.
+A native Ebitengine viewer exposes editable track geometry, banking, elevation, surfaces, curbs, and car setup. Smooth candidate lines are evaluated against tire-force limits, then checked on a finer road mesh. The model includes power, drag, axle drive split, and optional brake bias, downforce, longitudinal load transfer, and tire load sensitivity.
 
-Racecraft adds two solid cars sharing an open corner sequence. Authored tactical intentions explore an over-under, pass/repass, inside defence, and an esses duel. The planner evaluates a finite set of placements and accepts only pairs with continuously certified body clearance. Changing the starting gap or entry caps can change the result: increasing the default over-under gap from 6 m to 11 m prevents its completed pass before the finish.
+Racecraft adds two solid cars sharing an open corner sequence. Authored tactical intentions explore an over-under, pass/repass, inside defense, and an esses duel. The planner evaluates a finite set of placements and accepts only pairs with continuously certified body clearance. Changing the starting gap or entry caps can change the result: increasing the default over-under gap from 6 m to 11 m prevents its completed pass before the finish.
 
 ### Things to try
 
@@ -8668,7 +8668,7 @@ Domain values ↔ private DAO rows ↔ typed columns and child rows</code></pre>
   record each version in the same transaction
 COMMIT
 
-On error: rollback using a non-cancelled cleanup context.</code></pre>
+On error: rollback using a non-canceled cleanup context.</code></pre>
     Two starting processes must agree on the same schema transition. Recording a version separately from its schema change would break that guarantee.
     <p class="source">[Code: pkg/store/store.go](https://github.com/TheFellow/go-modular-monolith/blob/1b6a586180c116eb1231b3e108e151879881b69b/pkg/store/store.go)
 
@@ -8742,7 +8742,7 @@ writer.Rollback(tx)
     ## Stock corrections flow back to Orders
     pending→stock below reservations→blocked
     ### ReplenishInventory emits another adjustment. An order returns to pending when none of its committed ingredients remain blocked.
-### CancelA blocked order can be cancelled to release reservations and reconcile peers. It cannot be completed.
+### CancelA blocked order can be canceled to release reservations and reconcile peers. It cannot be completed.
 
     Orders → Inventory and Inventory → Orders are separate business operations with leaf reactions, not an event cascade.
     <aside class="notes">Continue the numerical example: correct on-hand stock from 10 to 3 while 4 is reserved. The system preserves the reservation and blocks affected orders instead of claiming they can be fulfilled. Open orders/handlers/stock-adjusted.go and TestReservationShortageBlocksRestockUnblocksAndCancellationReleases in orders/reservation_lifecycle_test.go. Several ingredients may block one order; replenishing one must not clear the others.</aside>
@@ -8995,7 +8995,7 @@ The stored list is sorted by ingredient ID.</code></pre>
     One recovery event must not erase another unresolved shortage.
     <p class="source">[Code: app/domains/orders/handlers/stock-adjusted.go](https://github.com/TheFellow/go-modular-monolith/blob/0d5e64b0455f7a5c96d4afada64654a5fdbb9a2c/app/domains/orders/handlers/stock-adjusted.go)
 
-    <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and cancelled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
+    <aside class="notes">Walk the set reconstruction in orders/handlers/stock-adjusted.go. Its DAO only selects pending or blocked orders whose accepted IngredientUsage contains the ingredient; completed and canceled orders are not reopened. Every changed Order is written and explicitly touched for audit. The timeline is a multi-cause illustration of the actual algorithm; the lifecycle fixture tests shortage, recovery, retirement, and cancellation.</aside>
 
     ## Authoritative availability preserves dependency errors
     <code class="language-go">// PlanIngredients:
@@ -9659,7 +9659,7 @@ acceptViewUpdate:
     ## Closing a window must not close the store too early
     **stop producers**change monitor + dashboard→**close executor**stop admission + drain work→**close UI gate**reject queued callbacks→**close store**release persistence
     A closed window does not mean an accepted database operation has finished.
-    <aside class="notes">Open main/gui and the managed executor and gated dispatcher in pkg/toolkits/gui. Follow the shutdown composition and its lifecycle tests. Stop new admissions, prevent publication to closed widgets, and wait for accepted work before closing persistence. Cancelling a superseded read and abandoning an accepted mutation are different lifecycle decisions.</aside>
+    <aside class="notes">Open main/gui and the managed executor and gated dispatcher in pkg/toolkits/gui. Follow the shutdown composition and its lifecycle tests. Stop new admissions, prevent publication to closed widgets, and wait for accepted work before closing persistence. Canceling a superseded read and abandoning an accepted mutation are different lifecycle decisions.</aside>
 
     ## Check freshness when the UI callback executes
     <code class="language-go">func (r *LatestRequest[T]) dispatch(
@@ -10078,7 +10078,7 @@ Articles, notes, and series from the projects and experiments behind this site, 
 - **2026-10-01 · Note:** [Porting the Cedar VS Code Extension to JetBrains IDEs](/notes/porting-vscode-cedar-to-jetbrains.md): How jetbrains-cedar brings the official Cedar VS Code extension to IntelliJ-based IDEs by running the Cedar SDK as WebAssembly and porting the extension near line for line.
 - **2026-09-12 · Note:** [Autonomous Semantic Porting with F#kYeah](/notes/autonomous-semantic-porting-with-fkyeah.md): How I use F#kYeah across projects to analyze, implement, validate, and review semantic ports without a human in the execution loop.
 - **2026-09-12 · Article:** [Explicit Architecture, with a Go Accent](/articles/explicit-architecture-with-a-go-accent.md): What Mixology borrows from Herberto Graça's Explicit Architecture, where it deliberately differs, and what transactions, types, three interfaces, and a storage migration taught me about those choices.
-- **2026-09-10 · Note:** [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tyre-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defence.
+- **2026-09-10 · Note:** [Building a Racing-Line Playground](/notes/building-a-racing-line-playground.md): A fun physics project in Go: turning editable roads and tire-force limits into racing lines, ghost comparisons, and two-car experiments in overtaking and defense.
 - **2026-09-03 · Note:** [Building a Persistent Merkle Trie in Go](/notes/building-a-persistent-merkle-trie-in-go.md): How canonical codecs, radix routing, structural sharing, and lazy snapshots fit together in a generic content-addressed trie.
 - **2026-08-20 · Note:** [Go 1.27 Generic Methods and the Mixology Pipeline](/notes/go-1-27-generic-methods-and-the-mixology-pipeline.md): How generic methods let Mixology put typed middleware operations on the pipeline they configure.
 - **2026-08-10 · Article:** [Migrating Mixology from bstore to SQLite](/articles/migrating-mixology-from-bstore-to-sqlite.md): How Mixology replaced its embedded bstore backend with SQLite while preserving transactions, typed queries, domain ownership, filtering semantics, and application errors.

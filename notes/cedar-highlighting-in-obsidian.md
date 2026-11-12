@@ -12,11 +12,11 @@ Source: [https://thefellow.github.io/notes/cedar-highlighting-in-obsidian/](http
 
 ## Full content
 
-Obsidian has no highlighting for Cedar, so a `cedar` fenced code block renders as plain text. [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) is a small Obsidian plugin that highlights `cedar` policy blocks and `cedarschema` blocks in the human-readable schema format, in Live Preview, Source mode, and Reading view, using the theme's own code colours. It is listed in the [Obsidian community directory](https://community.obsidian.md/plugins/cedar) as **Cedar**, the current release is 0.1.2, and it runs on desktop and mobile.
+Obsidian has no highlighting for Cedar, so a `cedar` fenced code block renders as plain text. [obsidian-cedar](https://github.com/TheFellow/obsidian-cedar) is a small Obsidian plugin that highlights `cedar` policy blocks and `cedarschema` blocks in the human-readable schema format, in Live Preview, Source mode, and Reading view, using the theme's own code colors. It is listed in the [Obsidian community directory](https://community.obsidian.md/plugins/cedar) as **Cedar**, the current release is 0.1.2, and it runs on desktop and mobile.
 
 <figure class="article-figure">
-  <img src="/assets/images/projects/obsidian-cedar/cedar-note.png" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code colour, and an invalid string escape has a dashed red underline." width="1400" height="1367">
-  <figcaption>A policy, a template with slots, and the TinyTodo schema in Reading view, coloured by the theme's code colours.</figcaption>
+  <img src="/assets/images/projects/obsidian-cedar/cedar-note.png" alt="An Obsidian note in the default dark theme with a highlighted Cedar policy and a highlighted Cedar schema. Keywords, entity types, strings, slots, operators, and comments each take a distinct theme code color, and an invalid string escape has a dashed red underline." width="1400" height="1367">
+  <figcaption>A policy, a template with slots, and the TinyTodo schema in Reading view, colored by the theme's code colors.</figcaption>
 </figure>
 
 ## Reuse the upstream grammars
@@ -42,9 +42,9 @@ for (const t of tokenizer.block(lang, env.code)) {
 }
 ```
 
-## Map scopes to theme colours
+## Map scopes to theme colors
 
-A TextMate grammar produces scopes like `variable.language.cedar` or `entity.name.type.cedar`, not colours. `scopes.ts` mirrors jetbrains-cedar's `CedarColors.forScope`, checking the most specific scope first, and gives each class a CodeMirror token type and a Prism token type that resolve to the same `--code-*` theme variable. Live Preview and Reading view therefore agree with each other and follow whatever theme is installed. Every token also carries a `cedar-<kind>` class, so a CSS snippet such as `.cedar-variable { font-weight: bold; }` can restyle `principal`, `action`, `resource`, and `context` without touching the plugin.
+A TextMate grammar produces scopes like `variable.language.cedar` or `entity.name.type.cedar`, not colors. `scopes.ts` mirrors jetbrains-cedar's `CedarColors.forScope`, checking the most specific scope first, and gives each class a CodeMirror token type and a Prism token type that resolve to the same `--code-*` theme variable. Live Preview and Reading view therefore agree with each other and follow whatever theme is installed. Every token also carries a `cedar-<kind>` class, so a CSS snippet such as `.cedar-variable { font-weight: bold; }` can restyle `principal`, `action`, `resource`, and `context` without touching the plugin.
 
 ## Handle notes that were already open
 
