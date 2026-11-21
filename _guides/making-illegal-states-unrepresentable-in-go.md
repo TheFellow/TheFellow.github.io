@@ -2,6 +2,7 @@
 title: "Making Illegal States Unrepresentable in Go"
 date: 2026-03-06
 last_modified_at: 2026-11-21 00:00:00 -0800
+math: true
 excerpt: "What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and typed workflows in Go, including where Result pipelines fit."
 permalink: /articles/making-illegal-states-unrepresentable-in-go/
 redirect_from: /guides/making-illegal-states-unrepresentable-in-go/
