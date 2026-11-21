@@ -1,0 +1,126 @@
+/* Ported from the Obsidian talk's custom.css; layered over reveal.js's black theme. */
+/* ─── Base font ────────────────────────────────────────────────────────────── */
+/* reveal.js default is 42px — dial it back so more content fits per slide    */
+.reveal {
+  font-size: 28px;
+  line-height: 1.4;
+}
+
+/* ─── Headings ─────────────────────────────────────────────────────────────── */
+.reveal h1 {
+  font-size: 1.9em;
+  text-transform: none;      /* kill the ALL CAPS default in some themes */
+  letter-spacing: -0.01em;
+}
+
+.reveal h2 {
+  font-size: 1.35em;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.reveal h3 {
+  font-size: 1.05em;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.reveal h4 {
+  font-size: 0.95em;
+  text-transform: none;
+}
+
+/* Section header slides (Part I / Part II) — let these stay large */
+.reveal .part-header h1 {
+  font-size: 2.4em;
+}
+
+/* ─── Code ─────────────────────────────────────────────────────────────────── */
+.reveal pre {
+  width: 100%;
+  font-size: 0.52em;
+  line-height: 1.35;
+  box-shadow: none;
+  margin: 0.4em 0;
+}
+
+.reveal pre code {
+  max-height: 420px;
+  padding: 0.6em 0.8em;
+}
+
+.reveal code {
+  font-size: 0.85em;
+  padding: 0.05em 0.25em;
+}
+
+/* ─── Prose & lists ────────────────────────────────────────────────────────── */
+.reveal p {
+  margin: 0.4em 0;
+}
+
+.reveal ul,
+.reveal ol {
+  margin: 0.3em 0 0.3em 1.2em;
+}
+
+.reveal li {
+  margin-bottom: 0.25em;
+}
+
+/* ─── Blockquotes ──────────────────────────────────────────────────────────── */
+.reveal blockquote {
+  font-size: 0.9em;
+  padding: 0.4em 1em;
+  width: 95%;
+}
+
+/* ─── Tables ───────────────────────────────────────────────────────────────── */
+.reveal table {
+  font-size: 0.75em;
+  margin: 0.5em auto;
+}
+
+.reveal table th,
+.reveal table td {
+  padding: 0.3em 0.6em;
+}
+
+/* ─── Slide padding + default left-alignment ────────────────────────────────── */
+.reveal .slides section {
+  padding: 0 20px;
+  text-align: left;
+}
+
+.reveal .slides section h1,
+.reveal .slides section h2,
+.reveal .slides section h3 {
+  text-align: left;
+}
+
+/* ─── Centered slides (title, section headers, Q&A) ─────────────────────────── */
+.reveal .slides section.centered,
+.reveal .slides section.centered h1,
+.reveal .slides section.centered h2,
+.reveal .slides section.centered h3 {
+  text-align: center;
+}
+
+/* ─── Site navigation links ─────────────────────────────────────────────────── */
+.deck-home, .deck-scroll {
+  position: fixed;
+  z-index: 30;
+  top: 12px;
+  color: #8a8a8a;
+  font: 500 12px/1 system-ui, sans-serif;
+  letter-spacing: .08em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.deck-home { left: 18px; }
+.deck-scroll { right: 18px; }
+.deck-home:hover, .deck-scroll:hover { color: #42affa; }
+
+@media (max-width: 760px), print {
+  .deck-home, .deck-scroll { display: none; }
+}
