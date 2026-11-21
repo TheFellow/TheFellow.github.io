@@ -52,6 +52,7 @@ SUMMARIES = {
     "/projects/value-types/": ("Structural equality", "A compact C# library for modeling value-object equality and composition."),
     "/series/mixology/": ("Mixology series", "An ordered path through Mixology's executable application architecture."),
     "/talks/building-mixology/": ("Mixology deck", "A visual walkthrough of Mixology's executable modular architecture."),
+    "/talks/fsharp-for-go-devs/": ("F# deck", "F#'s algebraic types taught to Go developers, then translated."),
     "/articles/explicit-architecture-with-a-go-accent/": ("Architecture lineage", "Comparing Explicit Architecture with Mixology’s concrete Go design choices."),
     "/articles/building-high-quality-software/": ("Architecture lessons", "Eleven lessons that turn architectural intent into executable software constraints."),
     "/articles/turning-cross-domain-calls-into-enforced-boundaries/": ("Domain boundaries", "Transactional events replace cross-domain calls with enforced ownership."),
@@ -193,6 +194,9 @@ def clean_body(body: str) -> str:
         (r"\{\{\s*['\"]([^'\"]+)['\"]\s*\|\s*relative_url\s*\}\}", r"\1", 0),
         (r"\{:\s*[^}]+\}", "", 0),
         (r"<link\b[^>]*>", "", re.IGNORECASE),
+        # Markdown slide decks keep their slides in a template script; keep the slides.
+        (r'<script type="text/template">(.*?)</script>', r"\1", re.IGNORECASE | re.DOTALL),
+        (r"<!--\s*\.slide:.*?-->\n?", "", re.DOTALL),
         (r"<script\b.*?</script>", "", re.IGNORECASE | re.DOTALL),
         (r"<noscript\b.*?</noscript>", "", re.IGNORECASE | re.DOTALL),
         (r'<div class="project-meta">.*?</div>', "", re.DOTALL),

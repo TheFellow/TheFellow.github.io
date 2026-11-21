@@ -12,11 +12,14 @@
     <meta property="og:type" content="article">
     <meta property="og:url" content="{{ page.url | absolute_url }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css">
+    {%- if page.deck_theme %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/theme/{{ page.deck_theme }}.css">
+    {%- endif %}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight/monokai.css">
-    <link rel="stylesheet" href="{{ '/assets/css/mixology-deck.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ page.deck_css | default: '/assets/css/mixology-deck.css' | relative_url }}">
   </head>
   <body>
-    <a class="deck-home" href="{{ '/series/mixology/' | relative_url }}" aria-label="Return to the Building Mixology series">← Series</a>
+    <a class="deck-home" href="{{ page.deck_back_url | default: '/series/mixology/' | relative_url }}" aria-label="{{ page.deck_back_aria | default: 'Return to the Building Mixology series' }}">← {{ page.deck_back_label | default: 'Series' }}</a>
     <a class="deck-scroll" href="?view=scroll" aria-label="Read this deck as a scrolling page">Scroll view</a>
     <div class="reveal">
       <div class="slides">
@@ -25,13 +28,16 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/notes.js"></script>
+    {%- if page.deck_markdown %}
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/markdown.js"></script>
+    {%- endif %}
     <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight.js"></script>
     <script>
       const params = new URLSearchParams(window.location.search);
       Reveal.initialize({
         hash: true,
         history: true,
-        center: false,
+        center: {{ page.deck_center | default: false }},
         controlsTutorial: false,
         progress: true,
         slideNumber: 'c/t',
@@ -40,7 +46,7 @@
         backgroundTransition: 'fade',
         view: params.get('view') === 'scroll' ? 'scroll' : 'slide',
         scrollProgress: true,
-        plugins: [RevealNotes, RevealHighlight]
+        plugins: [{% if page.deck_markdown %}RevealMarkdown, {% endif %}RevealNotes, RevealHighlight]
       });
     </script>
   </body>

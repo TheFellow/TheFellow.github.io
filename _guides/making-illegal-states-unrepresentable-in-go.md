@@ -1,7 +1,7 @@
 ---
 title: "Making Illegal States Unrepresentable in Go"
 date: 2026-03-06
-last_modified_at: 2026-08-30 00:00:00 -0700
+last_modified_at: 2026-11-21 00:00:00 -0800
 excerpt: "What F#'s algebraic types teach about modeling identifiers, validated values, closed variants, and typed workflows in Go, including where Result pipelines fit."
 permalink: /articles/making-illegal-states-unrepresentable-in-go/
 redirect_from: /guides/making-illegal-states-unrepresentable-in-go/
@@ -18,6 +18,8 @@ A type can do more than hold data. It can record which states the domain permits
 F# makes these techniques unusually direct. Its records, discriminated unions, private union cases, and exhaustive pattern matching let a model describe both the shape of valid data and the alternatives that may occur. Go has no native discriminated unions, but defined types, package boundaries, sealed interfaces, constructors, and static analysis recover much of the same design value.
 
 I will build one order-processing model in both languages. The comparison is useful because F# exposes the underlying algebra clearly, while Go shows which parts of that algebra survive in an ordinary imperative codebase.
+
+I also present this material as a talk; the [slide deck](/talks/fsharp-for-go-devs/) follows the same path, teaching the F# first and then translating it.
 
 ## Read the F# signatures first
 
@@ -166,7 +168,7 @@ module Email =
 
     let create (raw: string) : Result<Address, string> =
         let value = raw.Trim().ToLowerInvariant()
-        if value.Contains("@") && value.Length >= 5 then
+        if value.Contains("@") && value.Length >= 3 then
             Ok (Address value)
         else
             Error $"'{raw}' is not a valid email address"
@@ -187,7 +189,7 @@ type Address struct {
 
 func New(raw string) (Address, error) {
 	value := strings.ToLower(strings.TrimSpace(raw))
-	if !strings.Contains(value, "@") || len(value) < 5 {
+	if !strings.Contains(value, "@") || len(value) < 3 {
 		return Address{}, fmt.Errorf("%q is not a valid email address", raw)
 	}
 	return Address{value: value}, nil
@@ -308,12 +310,12 @@ func notify(info contact.Info) {
 }
 ```
 
-The [`go-check-sumtype`](https://github.com/alecthomas/go-check-sumtype) analyzer recognizes the `//sumtype:decl` marker and reports a missing case. The [`exhaustive`](https://github.com/nishanths/exhaustive) analyzer performs the corresponding check for switches over enum-like defined types. Running either analyzer in the repository's required lint or build checks changes an omitted case from a review concern into a failed check.
+The [`go-check-sumtype`](https://github.com/alecthomas/go-check-sumtype) analyzer recognizes the `//sumtype:decl` marker and reports a missing case. The [`exhaustive`](https://github.com/nishanths/exhaustive) analyzer performs the corresponding check for switches over enumerated constant types, and it can also report a map literal keyed by such a type that omits a key. Running either analyzer in the repository's required lint or build checks changes an omitted case from a review concern into a failed check.
 
 The three parts work together:
 
 1. An unexported method closes the set of implementations.
-2. `//sumtype:decl` records that exhaustive handling is intended.
+2. `//sumtype:decl` declares the sealed interface as a sum type.
 3. Static analysis rejects type switches that omit a known variant.
 
 Without the sealed interface, another package could add cases the analyzer cannot know about. Without the analyzer, Go accepts a partial switch. The model and its enforcement are one design.
@@ -512,3 +514,4 @@ The goal is not to reproduce F# syntax in Go. It is to make domain decisions vis
 - The [Go 1.27 release notes](https://go.dev/doc/go1.27) describe generic methods and their limits.
 - My [type-safe linear algebra in F#](/notes/type-safe-linear-algebra-in-fsharp/) note shows the same idea applied to matrix dimensions.
 - My [enumstruct project](/projects/enumstruct/) explores exhaustive pointer-union handling in Go.
+- The [F# for Go Devs slide deck](/talks/fsharp-for-go-devs/) presents this material as a talk.

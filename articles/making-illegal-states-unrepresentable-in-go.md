@@ -18,6 +18,8 @@ F# makes these techniques unusually direct. Its records, discriminated unions, p
 
 I will build one order-processing model in both languages. The comparison is useful because F# exposes the underlying algebra clearly, while Go shows which parts of that algebra survive in an ordinary imperative codebase.
 
+I also present this material as a talk; the [slide deck](/talks/fsharp-for-go-devs.md) follows the same path, teaching the F# first and then translating it.
+
 ## Read the F# signatures first
 
 F# function signatures read from left to right. The rightmost type is the result:
@@ -165,7 +167,7 @@ module Email =
 
     let create (raw: string) : Result<Address, string> =
         let value = raw.Trim().ToLowerInvariant()
-        if value.Contains("@") && value.Length >= 5 then
+        if value.Contains("@") && value.Length >= 3 then
             Ok (Address value)
         else
             Error $"'{raw}' is not a valid email address"
@@ -186,7 +188,7 @@ type Address struct {
 
 func New(raw string) (Address, error) {
 	value := strings.ToLower(strings.TrimSpace(raw))
-	if !strings.Contains(value, "@") || len(value) < 5 {
+	if !strings.Contains(value, "@") || len(value) < 3 {
 		return Address{}, fmt.Errorf("%q is not a valid email address", raw)
 	}
 	return Address{value: value}, nil
@@ -307,12 +309,12 @@ func notify(info contact.Info) {
 }
 ```
 
-The [`go-check-sumtype`](https://github.com/alecthomas/go-check-sumtype) analyzer recognizes the `//sumtype:decl` marker and reports a missing case. The [`exhaustive`](https://github.com/nishanths/exhaustive) analyzer performs the corresponding check for switches over enum-like defined types. Running either analyzer in the repository's required lint or build checks changes an omitted case from a review concern into a failed check.
+The [`go-check-sumtype`](https://github.com/alecthomas/go-check-sumtype) analyzer recognizes the `//sumtype:decl` marker and reports a missing case. The [`exhaustive`](https://github.com/nishanths/exhaustive) analyzer performs the corresponding check for switches over enumerated constant types, and it can also report a map literal keyed by such a type that omits a key. Running either analyzer in the repository's required lint or build checks changes an omitted case from a review concern into a failed check.
 
 The three parts work together:
 
 1. An unexported method closes the set of implementations.
-2. `//sumtype:decl` records that exhaustive handling is intended.
+2. `//sumtype:decl` declares the sealed interface as a sum type.
 3. Static analysis rejects type switches that omit a known variant.
 
 Without the sealed interface, another package could add cases the analyzer cannot know about. Without the analyzer, Go accepts a partial switch. The model and its enforcement are one design.
@@ -511,3 +513,4 @@ The goal is not to reproduce F# syntax in Go. It is to make domain decisions vis
 - The [Go 1.27 release notes](https://go.dev/doc/go1.27) describe generic methods and their limits.
 - My [type-safe linear algebra in F#](/notes/type-safe-linear-algebra-in-fsharp.md) note shows the same idea applied to matrix dimensions.
 - My [enumstruct project](/projects/enumstruct.md) explores exhaustive pointer-union handling in Go.
+- The [F# for Go Devs slide deck](/talks/fsharp-for-go-devs.md) presents this material as a talk.
