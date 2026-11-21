@@ -176,7 +176,7 @@ module Email =
     let value (Address value) = value
 ```
 
-Outside the module, `Email.Address "bad"` does not compile because the case is private. Callers receive either `Ok address` or `Error message`. Obtaining the address requires choosing how to handle both cases, and an incomplete match produces a compiler warning that a project can promote to an error. The whole result can still be deliberately discarded; the important property is that its value and failure cannot separate accidentally.
+Outside the module, `Email.Address "bad"` does not compile because the case is private. Callers receive either `Ok address` or `Error message`. Obtaining the address requires choosing how to handle both cases, and an incomplete match is a compiler error. The whole result can still be deliberately discarded; the important property is that its value and failure cannot separate accidentally.
 
 Go can enforce the same constructor path at a package boundary by using an unexported field:
 
@@ -293,7 +293,7 @@ let notify info =
     | EmailAndPhone (email, _) -> sendEmail email
 ```
 
-If a new `PostalOnly` case is added, the compiler reports every incomplete match. Teams commonly treat that warning as an error, turning a domain change into a concrete list of decisions that must be made before the build passes.
+If a new `PostalOnly` case is added, every incomplete match is a compiler error, turning a domain change into a concrete list of decisions that must be made before the build passes.
 
 Go type switches do not provide that check by themselves:
 
@@ -485,7 +485,7 @@ F# and Go can express many of the same domain decisions, but they enforce them a
 | Immutable values      | Language default                      | API design and convention                     |
 | Hidden construction   | Private union case                    | Package and unexported fields                 |
 | Closed variants       | Discriminated union                   | Sealed interface pattern                      |
-| Exhaustive handling   | Compiler warning, optionally an error | Static analyzer in required checks            |
+| Exhaustive handling   | Compiler error                        | Static analyzer in required checks            |
 | Distinct primitives   | Single-case union                     | Defined type                                  |
 | Fallible construction | `Result`                              | `(T, error)`                                  |
 | Fallible composition  | `Result.map` and `Result.bind`        | `(T, error)` by default; local `Result` for unary pipelines |

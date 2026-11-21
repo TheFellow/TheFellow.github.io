@@ -2285,7 +2285,7 @@ module Email =
     let value (Address value) = value
 ```
 
-Outside the module, `Email.Address "bad"` does not compile because the case is private. Callers receive either `Ok address` or `Error message`. Obtaining the address requires choosing how to handle both cases, and an incomplete match produces a compiler warning that a project can promote to an error. The whole result can still be deliberately discarded; the important property is that its value and failure cannot separate accidentally.
+Outside the module, `Email.Address "bad"` does not compile because the case is private. Callers receive either `Ok address` or `Error message`. Obtaining the address requires choosing how to handle both cases, and an incomplete match is a compiler error. The whole result can still be deliberately discarded; the important property is that its value and failure cannot separate accidentally.
 
 Go can enforce the same constructor path at a package boundary by using an unexported field:
 
@@ -2402,7 +2402,7 @@ let notify info =
     | EmailAndPhone (email, _) -> sendEmail email
 ```
 
-If a new `PostalOnly` case is added, the compiler reports every incomplete match. Teams commonly treat that warning as an error, turning a domain change into a concrete list of decisions that must be made before the build passes.
+If a new `PostalOnly` case is added, every incomplete match is a compiler error, turning a domain change into a concrete list of decisions that must be made before the build passes.
 
 Go type switches do not provide that check by themselves:
 
@@ -2594,7 +2594,7 @@ F# and Go can express many of the same domain decisions, but they enforce them a
 | Immutable values      | Language default                      | API design and convention                     |
 | Hidden construction   | Private union case                    | Package and unexported fields                 |
 | Closed variants       | Discriminated union                   | Sealed interface pattern                      |
-| Exhaustive handling   | Compiler warning, optionally an error | Static analyzer in required checks            |
+| Exhaustive handling   | Compiler error                        | Static analyzer in required checks            |
 | Distinct primitives   | Single-case union                     | Defined type                                  |
 | Fallible construction | `Result`                              | `(T, error)`                                  |
 | Fallible composition  | `Result.map` and `Result.bind`        | `(T, error)` by default; local `Result` for unary pipelines |
@@ -10339,7 +10339,7 @@ module Email =
     type Address = private Address of string
 
     let create (s: string) : Result<Address, string> =
-        if s.Contains("@") && s.Length > 3
+        if s.Contains("@") && s.Length >= 3
         then Ok (Address s)
         else Error $"'{s}' is not a valid email"
 
@@ -10407,7 +10407,7 @@ let notifyContact contact =
     // Forgot a case? Compiler error. Every time.
 ```
 
-Add a new variant to `ContactInfo` and **every match expression across the entire codebase** that touches it becomes a compiler warning. The compiler tells you everywhere you need to update.
+Add a new variant to `ContactInfo` and **every match expression across the entire codebase** that touches it becomes a compiler error. The compiler tells you everywhere you need to update.
 
 This is the real payoff. The type and the exhaustiveness check together mean you can refactor with confidence.
 
@@ -10811,8 +10811,7 @@ The backward pipe `<|` is left-associative, so `f <| g <| 3` is a type error: it
 - **"Domain-Driven Design"** — Eric Evans (the original DDD book)
 - Go: `github.com/nishanths/exhaustive` - exhaustive switch linter (we use this)
 - Go: `github.com/alecthomas/go-check-sumtype` - exhaustive type switches over sealed interfaces (we use this)
-- Go: `github.com/GaijinEntertainment/go-exhaustruct`
-- Go: [Go 1.27 release notes](https://go.dev/doc/go1.27) — generic methods and their limits
+- Go: `github.com/GaijinEntertainment/go-exhaustruct`  - exhaustive struct declarations
 - F# demo: [Type-Safe Linear Algebra](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) — phantom types, custom operators, associativity
 - F# demo: [Octonions and the Standard Model](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc070da71633) — Cohl Furey's algebraic approach to particle physics
 

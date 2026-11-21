@@ -276,7 +276,7 @@ module Email =
     type Address = private Address of string
 
     let create (s: string) : Result<Address, string> =
-        if s.Contains("@") && s.Length > 3
+        if s.Contains("@") && s.Length >= 3
         then Ok (Address s)
         else Error $"'{s}' is not a valid email"
 
@@ -344,7 +344,7 @@ let notifyContact contact =
     // Forgot a case? Compiler error. Every time.
 ```
 
-Add a new variant to `ContactInfo` and **every match expression across the entire codebase** that touches it becomes a compiler warning. The compiler tells you everywhere you need to update.
+Add a new variant to `ContactInfo` and **every match expression across the entire codebase** that touches it becomes a compiler error. The compiler tells you everywhere you need to update.
 
 This is the real payoff. The type and the exhaustiveness check together mean you can refactor with confidence.
 
@@ -748,8 +748,7 @@ The backward pipe `<|` is left-associative, so `f <| g <| 3` is a type error: it
 - **"Domain-Driven Design"** — Eric Evans (the original DDD book)
 - Go: `github.com/nishanths/exhaustive` - exhaustive switch linter (we use this)
 - Go: `github.com/alecthomas/go-check-sumtype` - exhaustive type switches over sealed interfaces (we use this)
-- Go: `github.com/GaijinEntertainment/go-exhaustruct`
-- Go: [Go 1.27 release notes](https://go.dev/doc/go1.27) — generic methods and their limits
+- Go: `github.com/GaijinEntertainment/go-exhaustruct`  - exhaustive struct declarations
 - F# demo: [Type-Safe Linear Algebra](https://gist.github.com/TheFellow/4cb72a3dbce7ad0c4033054ecf38c496) — phantom types, custom operators, associativity
 - F# demo: [Octonions and the Standard Model](https://gist.github.com/TheFellow/55fd4f0d58275d8b21b8cc070da71633) — Cohl Furey's algebraic approach to particle physics
 
