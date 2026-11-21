@@ -2,6 +2,7 @@
 title: "Using a Third Surface as an Architecture Test"
 date: 2026-08-01
 last_modified_at: 2026-09-13
+math: true
 excerpt: "What Mixology's Fyne client revealed when a third, substantially different presentation runtime had to use the same application boundaries as its CLI and TUI."
 permalink: /articles/using-a-third-surface-as-an-architecture-test/
 redirect_from: /guides/using-a-third-surface-as-an-architecture-test/
