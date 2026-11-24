@@ -54,6 +54,22 @@
   padding: 0.05em 0.25em;
 }
 
+/* ─── Go domain model recap ────────────────────────────────────────────────── */
+.reveal .order-model {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 5fr);
+  gap: 0.65em;
+}
+
+.reveal .order-model h3 {
+  font-size: 0.8em;
+  margin: 0;
+}
+
+.reveal .order-model + p {
+  font-size: 0.75em;
+}
+
 /* ─── Prose & lists ────────────────────────────────────────────────────────── */
 .reveal p {
   margin: 0.4em 0;
