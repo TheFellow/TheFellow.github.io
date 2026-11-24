@@ -1,7 +1,7 @@
 ---
 title: "F# for Go Devs: The Slide Deck"
 date: 2026-11-21
-last_modified_at: 2026-11-21
+last_modified_at: 2026-11-23
 permalink: /talks/fsharp-for-go-devs/
 excerpt: "A talk for Go developers that teaches F#'s algebraic types, then carries closed variants, smart constructors, exhaustive matching, and typed workflows back into Go."
 layout: deck
@@ -193,17 +193,17 @@ Unvalidated → Validated → Priced → Placed → Shipped → Delivered
                                            ↘ Cancelled
 ```
 
-Goal: Model this using the algebraic type system F# gives us
+Validation and pricing prepare an order for placement. Placement creates the order that fulfillment tracks.
 
 ---
 
-## The order lifecycle as a discriminated union
+## The fulfillment lifecycle as a discriminated union
+
+Once placement creates an `Order`, its status starts at `Placed`.
 
 ```fsharp
 type OrderStatus =
-    | Unvalidated
-    | Validated
-    | Priced    of price: decimal
+    | Placed
     | Shipped   of trackingNumber: TrackingNumber
     | Delivered of deliveredAt: DateTime
     | Cancelled of reason: string
@@ -211,7 +211,7 @@ type OrderStatus =
 
 Each state carries exactly the data that makes sense for it.
 
-A `Shipped` order has a tracking number. A `Cancelled` order has a reason. An `Unvalidated` order has neither, and cannot be confused with either.
+A `Shipped` order has a tracking number. A `Cancelled` order has a reason.
 
 ---
 
@@ -367,10 +367,10 @@ This is the real payoff. The type and the exhaustiveness check together mean you
 // Function signatures are types — they document the contract
 type ValidateOrder = UnvalidatedOrder -> Result<ValidatedOrder, OrderError>
 type PriceOrder    = ValidatedOrder   -> PricedOrder
-type PlaceOrder    = PricedOrder      -> Result<OrderPlaced, OrderError>
+type PlaceOrder    = PricedOrder      -> Result<Order, OrderError>
 ```
 
-Read these three lines. You know what each step needs, what it produces, and what can go wrong — **before reading a line of implementation**.
+Validation and pricing produce distinct types. `placeOrder` returns the new `Order` with status `Placed`.
 
 ```fsharp
 // Compose them into a pipeline:
@@ -381,6 +381,16 @@ let placeOrderWorkflow =
 ```
 
 Each step is a function. Errors short-circuit. The types guarantee the steps connect correctly.
+
+Shipping also names the ways an order can be rejected.
+
+```fsharp
+type ShipError =
+    | AlreadyShipped
+    | OrderWasCancelled of reason: string
+
+type ShipOrder = TrackingNumber -> Order -> Result<Order, ShipError>
+```
 
 ---
 
@@ -396,9 +406,7 @@ module Email =
     let create (s: string) : Result<Address, string> = ...
 
 type OrderStatus =
-    | Unvalidated
-    | Validated
-    | Priced    of price: decimal
+    | Placed
     | Shipped   of trackingNumber: TrackingNumber
     | Delivered of deliveredAt: DateTime
     | Cancelled of reason: string
@@ -407,11 +415,12 @@ type Order = {
     Id       : OrderId
     Customer : CustomerId
     Email    : Email.Address   // if you have one, it's valid
-    Status   : OrderStatus     // one case, always the right one
+    Price    : decimal
+    Status   : OrderStatus     // starts at Placed
 }
 ```
 
-Keep this in mind.
+The placement workflow creates this `Order` with its price and an initial status of `Placed`.
 
 ---
 
@@ -489,23 +498,21 @@ Two differences:
 
 ## Sum types in Go — the sealed interface pattern
 
+`OrderStatus` describes an order from the moment it is placed.
+
 ```go
 //sumtype:decl
 type OrderStatus interface{ orderStatus() }
 
-type Unvalidated struct{}
-type Validated   struct{}
-type Priced      struct{ Price          decimal.Decimal }
-type Shipped     struct{ TrackingNumber string          }
-type Delivered   struct{ DeliveredAt    time.Time       }
-type Cancelled   struct{ Reason         string          }
+type Placed    struct{}
+type Shipped   struct{ TrackingNumber TrackingNumber }
+type Delivered struct{ DeliveredAt time.Time }
+type Cancelled struct{ Reason string }
 
-func (Unvalidated) orderStatus() {}
-func (Validated)   orderStatus() {}
-func (Priced)      orderStatus() {}
-func (Shipped)     orderStatus() {}
-func (Delivered)   orderStatus() {}
-func (Cancelled)   orderStatus() {}
+func (Placed)    orderStatus() {}
+func (Shipped)   orderStatus() {}
+func (Delivered) orderStatus() {}
+func (Cancelled) orderStatus() {}
 ```
 
 Three pieces working as a unit. The unexported method seals the interface; external packages can't satisfy it. `//sumtype:decl` declares a sealed sum type. `go-check-sumtype` enforces it at build time.
@@ -596,12 +603,12 @@ Same guarantee. Different delivery mechanism. We have it.
 
 ## The pipeline — what the types enforce
 
-The enforcement is in the **distinct types at each stage**:
+Before an `Order` exists, **distinct types** represent the stages of placement.
 
 ```go
 func validateOrder(o UnvalidatedOrder) (ValidatedOrder, error) { ... }
 func priceOrder(o ValidatedOrder) PricedOrder                  { ... }
-func placeOrder(o PricedOrder) (*OrderPlaced, error)           { ... }
+func placeOrder(o PricedOrder) (Order, error)                  { ... }
 ```
 
 ```go
@@ -609,16 +616,16 @@ placeOrder(unvalidatedOrder)  // ← compile error: UnvalidatedOrder is not Pric
 ```
 
 ```go
-func PlaceOrderWorkflow(input UnvalidatedOrder) (*OrderPlaced, error) {
+func PlaceOrderWorkflow(input UnvalidatedOrder) (Order, error) {
     validated, err := validateOrder(input)
-    if err != nil { return nil, err }
+    if err != nil { return Order{}, err }
 
     priced := priceOrder(validated)
     return placeOrder(priced)
 }
 ```
 
-Each boundary allocates a new struct — justified when the step does real work. That constraint is the point.
+`placeOrder` returns the new `Order` with `status: Placed{}`.
 
 ---
 
@@ -633,25 +640,105 @@ type UnvalidatedOrder struct {
 }
 
 type ValidatedOrder struct {
-    CustomerID ids.Customer   // parsed, typed — not a string
+    CustomerID CustomerId     // parsed and typed
     Email      email.Address  // proven valid — not a string
 }
 ```
 
 ```go
 func validateOrder(o UnvalidatedOrder) (ValidatedOrder, error) {
-    custID, err := ids.ParseCustomer(o.CustomerID)
+    custID, err := strconv.Atoi(o.CustomerID)
     if err != nil { return ValidatedOrder{}, err }
+
     addr, err := email.New(o.Email)
     if err != nil { return ValidatedOrder{}, err }
-    return ValidatedOrder{        // exhaustruct: missing field → compile error
-        CustomerID: custID,
+
+    return ValidatedOrder { // exhaustruct: missing field → compile error
+        CustomerID: CustomerId(custID),
         Email:      addr,
     }, nil
 }
 ```
 
 `exhaustruct` requires every field to be explicitly provided. Add a field to `ValidatedOrder` and every construction site is a build error until you handle it.
+
+---
+
+## Shipping a placed order
+
+```go
+var (
+    ErrAlreadyShipped = errors.New("order has already shipped")
+    ErrOrderCancelled = errors.New("order was cancelled")
+    ErrInvalidStatus  = errors.New("invalid order status")
+)
+
+func (o Order) Ship(tracking TrackingNumber) (Order, error) {
+    switch o.status.(type) {
+    case Placed:
+        o.status = Shipped{TrackingNumber: tracking}
+        return o, nil
+    case Shipped, Delivered:
+        return o, ErrAlreadyShipped
+    case Cancelled:
+        return o, ErrOrderCancelled
+    }
+    return o, ErrInvalidStatus
+}
+```
+
+`Ship` returns an updated order on success. The caller decides whether to save it.
+
+---
+
+## The full Go picture
+
+<div class="order-model">
+<div>
+<h3>The placed order</h3>
+
+```go
+type OrderId string
+type CustomerId int
+type TrackingNumber string
+
+type Order struct {
+    ID         OrderId
+    CustomerID CustomerId
+    Email      email.Address
+    Price      decimal.Decimal
+    status     OrderStatus
+}
+
+// In package email
+type Address struct{ v string }
+func New(s string) (Address, error) { ... }
+```
+
+</div>
+<div>
+<h3>Fulfillment status</h3>
+
+```go
+//sumtype:decl
+type OrderStatus interface{ orderStatus() }
+
+type Placed    struct{}
+type Shipped   struct{ TrackingNumber TrackingNumber }
+type Delivered struct{ DeliveredAt time.Time }
+type Cancelled struct{ Reason string }
+
+func (Placed)    orderStatus() {}
+func (Shipped)   orderStatus() {}
+func (Delivered) orderStatus() {}
+func (Cancelled) orderStatus() {}
+```
+
+</div>
+</div>
+
+`UnvalidatedOrder` → `ValidatedOrder` → `PricedOrder` → `Order`<br>
+`placeOrder` returns the new `Order` with `status: Placed{}`.
 
 ---
 
@@ -663,7 +750,7 @@ Generic methods can introduce the next contained type `U`. Before Go 1.27, type-
 ```go
 func validateOrder(o UnvalidatedOrder) Result[ValidatedOrder]
 func priceOrder(o ValidatedOrder)      PricedOrder
-func placeOrder(o PricedOrder)         Result[OrderPlaced]
+func placeOrder(o PricedOrder)         Result[Order]
 
 result := validateOrder(input).
     Map(priceOrder).
@@ -682,9 +769,9 @@ Real workflows commonly take a context and call repositories or services:
 
 ```go
 validated, err := validateOrder(ctx, repo, input)
-if err != nil { return OrderPlaced{}, err }
+if err != nil { return Order{}, err }
 priced, err := priceOrder(ctx, pricing, validated)
-if err != nil { return OrderPlaced{}, err }
+if err != nil { return Order{}, err }
 return placeOrder(ctx, repo, priced)
 ```
 
